@@ -2707,6 +2707,9 @@ type Query {
   refundTransactions(offset: Int, limit: Int = 50, where: RefundTransactionWhereInput, orderBy: [RefundTransactionOrderByInput!]): [RefundTransaction!]!
   refundTransactionByUniqueInput(where: RefundTransactionWhereUniqueInput!): RefundTransaction
   refundTransactionsConnection(first: Int, after: String, last: Int, before: String, where: RefundTransactionWhereInput, orderBy: [RefundTransactionOrderByInput!]): RefundTransactionConnection!
+  transfers(offset: Int, limit: Int = 50, where: TransferWhereInput, orderBy: [TransferOrderByInput!]): [Transfer!]!
+  transferByUniqueInput(where: TransferWhereUniqueInput!): Transfer
+  transfersConnection(first: Int, after: String, last: Int, before: String, where: TransferWhereInput, orderBy: [TransferOrderByInput!]): TransferConnection!
   twins(offset: Int, limit: Int = 50, where: TwinWhereInput, orderBy: [TwinOrderByInput!]): [Twin!]!
   twinByUniqueInput(where: TwinWhereUniqueInput!): Twin
   twinsConnection(first: Int, after: String, last: Int, before: String, where: TwinWhereInput, orderBy: [TwinOrderByInput!]): TwinConnection!
@@ -2833,6 +2836,118 @@ type StandardDeleteResponse {
 
 type Subscription {
   stateSubscription: ProcessorState!
+}
+
+type Transfer implements BaseGraphQLObject {
+  id: ID!
+  createdAt: DateTime!
+  createdById: String!
+  updatedAt: DateTime
+  updatedById: String
+  deletedAt: DateTime
+  deletedById: String
+  version: Int!
+  from: String!
+  to: String!
+  amount: BigInt!
+  timestamp: BigInt!
+}
+
+type TransferConnection {
+  totalCount: Int!
+  edges: [TransferEdge!]!
+  pageInfo: PageInfo!
+}
+
+input TransferCreateInput {
+  from: String!
+  to: String!
+  amount: String!
+  timestamp: String!
+}
+
+type TransferEdge {
+  node: Transfer!
+  cursor: String!
+}
+
+enum TransferOrderByInput {
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  deletedAt_ASC
+  deletedAt_DESC
+  from_ASC
+  from_DESC
+  to_ASC
+  to_DESC
+  amount_ASC
+  amount_DESC
+  timestamp_ASC
+  timestamp_DESC
+}
+
+input TransferUpdateInput {
+  from: String
+  to: String
+  amount: String
+  timestamp: String
+}
+
+input TransferWhereInput {
+  id_eq: ID
+  id_in: [ID!]
+  createdAt_eq: DateTime
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  createdById_eq: ID
+  createdById_in: [ID!]
+  updatedAt_eq: DateTime
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  updatedById_eq: ID
+  updatedById_in: [ID!]
+  deletedAt_all: Boolean
+  deletedAt_eq: DateTime
+  deletedAt_lt: DateTime
+  deletedAt_lte: DateTime
+  deletedAt_gt: DateTime
+  deletedAt_gte: DateTime
+  deletedById_eq: ID
+  deletedById_in: [ID!]
+  from_eq: String
+  from_contains: String
+  from_startsWith: String
+  from_endsWith: String
+  from_in: [String!]
+  to_eq: String
+  to_contains: String
+  to_startsWith: String
+  to_endsWith: String
+  to_in: [String!]
+  amount_eq: BigInt
+  amount_gt: BigInt
+  amount_gte: BigInt
+  amount_lt: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  timestamp_eq: BigInt
+  timestamp_gt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lt: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  AND: [TransferWhereInput!]
+  OR: [TransferWhereInput!]
+}
+
+input TransferWhereUniqueInput {
+  id: ID!
 }
 
 type Twin implements BaseGraphQLObject {

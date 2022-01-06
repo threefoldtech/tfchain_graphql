@@ -66,6 +66,9 @@ export interface Query {
     refundTransactions: <T = Array<RefundTransaction>>(args: { offset?: Int | null, limit?: Int | null, where?: RefundTransactionWhereInput | null, orderBy?: Array<RefundTransactionOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     refundTransactionByUniqueInput: <T = RefundTransaction | null>(args: { where: RefundTransactionWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
     refundTransactionsConnection: <T = RefundTransactionConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: RefundTransactionWhereInput | null, orderBy?: Array<RefundTransactionOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    transfers: <T = Array<Transfer>>(args: { offset?: Int | null, limit?: Int | null, where?: TransferWhereInput | null, orderBy?: Array<TransferOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    transferByUniqueInput: <T = Transfer | null>(args: { where: TransferWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
+    transfersConnection: <T = TransferConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: TransferWhereInput | null, orderBy?: Array<TransferOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     twins: <T = Array<Twin>>(args: { offset?: Int | null, limit?: Int | null, where?: TwinWhereInput | null, orderBy?: Array<TwinOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     twinByUniqueInput: <T = Twin | null>(args: { where: TwinWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
     twinsConnection: <T = TwinConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: TwinWhereInput | null, orderBy?: Array<TwinOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
@@ -464,6 +467,21 @@ export type RefundTransactionOrderByInput =   'createdAt_ASC' |
   'target_DESC' |
   'txHash_ASC' |
   'txHash_DESC'
+
+export type TransferOrderByInput =   'createdAt_ASC' |
+  'createdAt_DESC' |
+  'updatedAt_ASC' |
+  'updatedAt_DESC' |
+  'deletedAt_ASC' |
+  'deletedAt_DESC' |
+  'from_ASC' |
+  'from_DESC' |
+  'to_ASC' |
+  'to_DESC' |
+  'amount_ASC' |
+  'amount_DESC' |
+  'timestamp_ASC' |
+  'timestamp_DESC'
 
 export type TwinOrderByInput =   'createdAt_ASC' |
   'createdAt_DESC' |
@@ -2213,6 +2231,75 @@ export interface RefundTransactionWhereUniqueInput {
   id: ID_Output
 }
 
+export interface TransferCreateInput {
+  from: String
+  to: String
+  amount: String
+  timestamp: String
+}
+
+export interface TransferUpdateInput {
+  from?: String | null
+  to?: String | null
+  amount?: String | null
+  timestamp?: String | null
+}
+
+export interface TransferWhereInput {
+  id_eq?: ID_Input | null
+  id_in?: ID_Output[] | ID_Output | null
+  createdAt_eq?: DateTime | null
+  createdAt_lt?: DateTime | null
+  createdAt_lte?: DateTime | null
+  createdAt_gt?: DateTime | null
+  createdAt_gte?: DateTime | null
+  createdById_eq?: ID_Input | null
+  createdById_in?: ID_Output[] | ID_Output | null
+  updatedAt_eq?: DateTime | null
+  updatedAt_lt?: DateTime | null
+  updatedAt_lte?: DateTime | null
+  updatedAt_gt?: DateTime | null
+  updatedAt_gte?: DateTime | null
+  updatedById_eq?: ID_Input | null
+  updatedById_in?: ID_Output[] | ID_Output | null
+  deletedAt_all?: Boolean | null
+  deletedAt_eq?: DateTime | null
+  deletedAt_lt?: DateTime | null
+  deletedAt_lte?: DateTime | null
+  deletedAt_gt?: DateTime | null
+  deletedAt_gte?: DateTime | null
+  deletedById_eq?: ID_Input | null
+  deletedById_in?: ID_Output[] | ID_Output | null
+  from_eq?: String | null
+  from_contains?: String | null
+  from_startsWith?: String | null
+  from_endsWith?: String | null
+  from_in?: String[] | String | null
+  to_eq?: String | null
+  to_contains?: String | null
+  to_startsWith?: String | null
+  to_endsWith?: String | null
+  to_in?: String[] | String | null
+  amount_eq?: BigInt | null
+  amount_gt?: BigInt | null
+  amount_gte?: BigInt | null
+  amount_lt?: BigInt | null
+  amount_lte?: BigInt | null
+  amount_in?: BigInt[] | BigInt | null
+  timestamp_eq?: BigInt | null
+  timestamp_gt?: BigInt | null
+  timestamp_gte?: BigInt | null
+  timestamp_lt?: BigInt | null
+  timestamp_lte?: BigInt | null
+  timestamp_in?: BigInt[] | BigInt | null
+  AND?: TransferWhereInput[] | TransferWhereInput | null
+  OR?: TransferWhereInput[] | TransferWhereInput | null
+}
+
+export interface TransferWhereUniqueInput {
+  id: ID_Output
+}
+
 export interface TwinCreateInput {
   gridVersion: Float
   twinId: Float
@@ -2970,6 +3057,32 @@ export interface RefundTransactionEdge {
 
 export interface StandardDeleteResponse {
   id: ID_Output
+}
+
+export interface Transfer extends BaseGraphQLObject {
+  id: ID_Output
+  createdAt: DateTime
+  createdById: String
+  updatedAt?: DateTime | null
+  updatedById?: String | null
+  deletedAt?: DateTime | null
+  deletedById?: String | null
+  version: Int
+  from: String
+  to: String
+  amount: BigInt
+  timestamp: BigInt
+}
+
+export interface TransferConnection {
+  totalCount: Int
+  edges: Array<TransferEdge>
+  pageInfo: PageInfo
+}
+
+export interface TransferEdge {
+  node: Transfer
+  cursor: String
 }
 
 export interface Twin extends BaseGraphQLObject {

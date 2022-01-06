@@ -38,6 +38,8 @@ import { PublicIp } from '../modules/public-ip/public-ip.model';
 export { PublicIp };
 import { RefundTransaction } from '../modules/refund-transaction/refund-transaction.model';
 export { RefundTransaction };
+import { Transfer } from '../modules/transfer/transfer.model';
+export { Transfer };
 import { Twin } from '../modules/twin/twin.model';
 export { Twin };
 import { UptimeEvent } from '../modules/uptime-event/uptime-event.model';

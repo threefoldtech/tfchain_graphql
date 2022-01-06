@@ -13,6 +13,14 @@ type HistoricalBalance @entity {
   timestamp: BigInt!
 }
 
+type Transfer @entity {
+  id: ID!
+  from: String!
+  to: String!
+  amount: BigInt!
+  timestamp: BigInt!
+}
+
 type Entity @entity {
   gridVersion: Int!
   entityID: Int!

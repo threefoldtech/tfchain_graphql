@@ -1,6 +1,6 @@
 import BN from 'bn.js'
 import { DatabaseManager, EventContext, StoreContext } from '@subsquid/hydra-common'
-import { Account, HistoricalBalance } from '../generated/model'
+import { Account, HistoricalBalance, Transfer } from '../generated/model'
 import { Balances } from '../chain'
 
 
@@ -38,6 +38,14 @@ export async function balancesTransfer({
   hbTo.balance = toAcc.balance;
   hbTo.timestamp = new BN(block.timestamp)
   await store.save(hbTo)
+
+  // save as a transfer as well
+  const transfer = new Transfer()
+  transfer.to = to.toHuman()
+  transfer.from = from.toHuman()
+  transfer.amount = new BN(value)
+  transfer.timestamp = new BN(block.timestamp)
+  await store.save(transfer)
 }
 
 
