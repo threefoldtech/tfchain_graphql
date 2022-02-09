@@ -187,7 +187,11 @@ export async function nodeDeleted({
   const savedNode = await store.get(Node, { where: { nodeId: nodeID.toNumber() } })
 
   if (savedNode) {
-    store.remove(savedNode)
+    const interfaces = await store.getMany(Interfaces, { where: { node: savedNode }})
+    for (let i of interfaces) {
+      await store.remove(i)
+    }
+    await store.remove(savedNode)
   }
 }
 
