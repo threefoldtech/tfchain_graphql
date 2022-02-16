@@ -35,6 +35,11 @@ data:
         "entity_id": "u32",
         "signature": "Vec<u8>"
       },
+      "NodeExtra": {
+        "secure": "bool",
+        "virtualized": "bool",
+        "serial_number": "Vec<u8>"
+      },
       "Node": {
         "version": "u32",
         "id": "u32",
