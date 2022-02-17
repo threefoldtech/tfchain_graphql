@@ -3981,6 +3981,15 @@ export enum NodeOrderByEnum {
 
   certificationType_ASC = "certificationType_ASC",
   certificationType_DESC = "certificationType_DESC",
+
+  secure_ASC = "secure_ASC",
+  secure_DESC = "secure_DESC",
+
+  virtualized_ASC = "virtualized_ASC",
+  virtualized_DESC = "virtualized_DESC",
+
+  serialNumber_ASC = "serialNumber_ASC",
+  serialNumber_DESC = "serialNumber_DESC",
 }
 
 registerEnumType(NodeOrderByEnum, {
@@ -4298,6 +4307,33 @@ export class NodeWhereInput {
   @TypeGraphQLField(() => [CertificationType], { nullable: true })
   certificationType_in?: CertificationType[];
 
+  @TypeGraphQLField(() => Boolean, { nullable: true })
+  secure_eq?: Boolean;
+
+  @TypeGraphQLField(() => [Boolean], { nullable: true })
+  secure_in?: Boolean[];
+
+  @TypeGraphQLField(() => Boolean, { nullable: true })
+  virtualized_eq?: Boolean;
+
+  @TypeGraphQLField(() => [Boolean], { nullable: true })
+  virtualized_in?: Boolean[];
+
+  @TypeGraphQLField({ nullable: true })
+  serialNumber_eq?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  serialNumber_contains?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  serialNumber_startsWith?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  serialNumber_endsWith?: string;
+
+  @TypeGraphQLField(() => [String], { nullable: true })
+  serialNumber_in?: string[];
+
   @TypeGraphQLField(() => LocationWhereInput, { nullable: true })
   location?: LocationWhereInput;
 
@@ -4372,6 +4408,15 @@ export class NodeCreateInput {
 
   @TypeGraphQLField(() => CertificationType)
   certificationType!: CertificationType;
+
+  @TypeGraphQLField({ nullable: true })
+  secure?: boolean;
+
+  @TypeGraphQLField({ nullable: true })
+  virtualized?: boolean;
+
+  @TypeGraphQLField({ nullable: true })
+  serialNumber?: string;
 }
 
 @TypeGraphQLInputType()
@@ -4423,6 +4468,15 @@ export class NodeUpdateInput {
 
   @TypeGraphQLField(() => CertificationType, { nullable: true })
   certificationType?: CertificationType;
+
+  @TypeGraphQLField({ nullable: true })
+  secure?: boolean;
+
+  @TypeGraphQLField({ nullable: true })
+  virtualized?: boolean;
+
+  @TypeGraphQLField({ nullable: true })
+  serialNumber?: string;
 }
 
 @ArgsType()

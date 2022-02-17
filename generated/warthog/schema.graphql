@@ -1875,6 +1875,9 @@ type Node implements BaseGraphQLObject {
   farmingPolicyId: Int!
   interfaces: [Interfaces!]!
   certificationType: CertificationType!
+  secure: Boolean
+  virtualized: Boolean
+  serialNumber: String
 }
 
 type NodeConnection {
@@ -2051,6 +2054,9 @@ input NodeCreateInput {
   created: Float!
   farmingPolicyId: Float!
   certificationType: CertificationType!
+  secure: Boolean
+  virtualized: Boolean
+  serialNumber: String
 }
 
 type NodeEdge {
@@ -2095,6 +2101,12 @@ enum NodeOrderByInput {
   farmingPolicyId_DESC
   certificationType_ASC
   certificationType_DESC
+  secure_ASC
+  secure_DESC
+  virtualized_ASC
+  virtualized_DESC
+  serialNumber_ASC
+  serialNumber_DESC
 }
 
 input NodeUpdateInput {
@@ -2114,6 +2126,9 @@ input NodeUpdateInput {
   created: Float
   farmingPolicyId: Float
   certificationType: CertificationType
+  secure: Boolean
+  virtualized: Boolean
+  serialNumber: String
 }
 
 input NodeWhereInput {
@@ -2220,6 +2235,15 @@ input NodeWhereInput {
   farmingPolicyId_in: [Int!]
   certificationType_eq: CertificationType
   certificationType_in: [CertificationType!]
+  secure_eq: Boolean
+  secure_in: [Boolean!]
+  virtualized_eq: Boolean
+  virtualized_in: [Boolean!]
+  serialNumber_eq: String
+  serialNumber_contains: String
+  serialNumber_startsWith: String
+  serialNumber_endsWith: String
+  serialNumber_in: [String!]
   location: LocationWhereInput
   interfaces_none: InterfacesWhereInput
   interfaces_some: InterfacesWhereInput
@@ -2716,6 +2740,7 @@ type Query {
   uptimeEvents(offset: Int, limit: Int = 50, where: UptimeEventWhereInput, orderBy: [UptimeEventOrderByInput!]): [UptimeEvent!]!
   uptimeEventByUniqueInput(where: UptimeEventWhereUniqueInput!): UptimeEvent
   uptimeEventsConnection(first: Int, after: String, last: Int, before: String, where: UptimeEventWhereInput, orderBy: [UptimeEventOrderByInput!]): UptimeEventConnection!
+  nodesWherePublicConfig: [Node!]
 }
 
 type RefundTransaction implements BaseGraphQLObject {

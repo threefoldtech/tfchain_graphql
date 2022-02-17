@@ -1,7 +1,7 @@
 {
   "name": "graphql_tfgrid",
   "private": "true",
-  "version": "0.0.1",
+  "version": "1.0.3",
   "description": "GraphQL server and Substrate indexer. Generated with ♥ by Hydra-CLI",
   "author": "",
   "license": "ISC",
@@ -21,7 +21,7 @@
     "@subsquid/hydra-cli": "4.2.0-alpha.0",
     "@subsquid/hydra-processor": "4.2.0-alpha.0",
     "@subsquid/hydra-typegen": "4.2.0-alpha.0",
-    "substrate-tfgrid-ts-types": "^0.1.6",
+    "substrate-tfgrid-ts-types": "^0.1.8",
     "tslib": "^2.0.0"
   }
 }

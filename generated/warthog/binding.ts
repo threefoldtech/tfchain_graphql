@@ -74,7 +74,8 @@ export interface Query {
     twinsConnection: <T = TwinConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: TwinWhereInput | null, orderBy?: Array<TwinOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     uptimeEvents: <T = Array<UptimeEvent>>(args: { offset?: Int | null, limit?: Int | null, where?: UptimeEventWhereInput | null, orderBy?: Array<UptimeEventOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     uptimeEventByUniqueInput: <T = UptimeEvent | null>(args: { where: UptimeEventWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
-    uptimeEventsConnection: <T = UptimeEventConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: UptimeEventWhereInput | null, orderBy?: Array<UptimeEventOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> 
+    uptimeEventsConnection: <T = UptimeEventConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: UptimeEventWhereInput | null, orderBy?: Array<UptimeEventOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    nodesWherePublicConfig: <T = Array<Node> | null>(args?: {}, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> 
   }
 
 export interface Mutation {}
@@ -419,7 +420,13 @@ export type NodeOrderByInput =   'createdAt_ASC' |
   'farmingPolicyId_ASC' |
   'farmingPolicyId_DESC' |
   'certificationType_ASC' |
-  'certificationType_DESC'
+  'certificationType_DESC' |
+  'secure_ASC' |
+  'secure_DESC' |
+  'virtualized_ASC' |
+  'virtualized_DESC' |
+  'serialNumber_ASC' |
+  'serialNumber_DESC'
 
 export type PricingPolicyOrderByInput =   'createdAt_ASC' |
   'createdAt_DESC' |
@@ -1732,6 +1739,9 @@ export interface NodeCreateInput {
   created: Float
   farmingPolicyId: Float
   certificationType: CertificationType
+  secure?: Boolean | null
+  virtualized?: Boolean | null
+  serialNumber?: String | null
 }
 
 export interface NodeUpdateInput {
@@ -1751,6 +1761,9 @@ export interface NodeUpdateInput {
   created?: Float | null
   farmingPolicyId?: Float | null
   certificationType?: CertificationType | null
+  secure?: Boolean | null
+  virtualized?: Boolean | null
+  serialNumber?: String | null
 }
 
 export interface NodeWhereInput {
@@ -1857,6 +1870,15 @@ export interface NodeWhereInput {
   farmingPolicyId_in?: Int[] | Int | null
   certificationType_eq?: CertificationType | null
   certificationType_in?: CertificationType[] | CertificationType | null
+  secure_eq?: Boolean | null
+  secure_in?: Boolean[] | Boolean | null
+  virtualized_eq?: Boolean | null
+  virtualized_in?: Boolean[] | Boolean | null
+  serialNumber_eq?: String | null
+  serialNumber_contains?: String | null
+  serialNumber_startsWith?: String | null
+  serialNumber_endsWith?: String | null
+  serialNumber_in?: String[] | String | null
   location?: LocationWhereInput | null
   interfaces_none?: InterfacesWhereInput | null
   interfaces_some?: InterfacesWhereInput | null
@@ -2902,6 +2924,9 @@ export interface Node extends BaseGraphQLObject {
   farmingPolicyId: Int
   interfaces: Array<Interfaces>
   certificationType: CertificationType
+  secure?: Boolean | null
+  virtualized?: Boolean | null
+  serialNumber?: String | null
 }
 
 export interface NodeConnection {

@@ -35,11 +35,6 @@ data:
         "entity_id": "u32",
         "signature": "Vec<u8>"
       },
-      "NodeExtra": {
-        "secure": "bool",
-        "virtualized": "bool",
-        "serial_number": "Vec<u8>"
-      },
       "Node": {
         "version": "u32",
         "id": "u32",
@@ -53,7 +48,10 @@ data:
         "created": "u64",
         "farming_policy_id": "u32",
         "interfaces": "Vec<Interface>",
-        "certification_type": "CertificationType"
+        "certification_type": "CertificationType",
+        "secure": "bool",
+        "virtualized": "bool",
+        "serial_number": "Vec<u8>"
       },
       "PublicConfig": {
         "ipv4": "Vec<u8>",

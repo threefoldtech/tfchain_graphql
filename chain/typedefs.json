@@ -45,7 +45,10 @@
     "created": "u64",
     "farming_policy_id": "u32",
     "interfaces": "Vec<Interface>",
-    "certification_type": "CertificationType"
+    "certification_type": "CertificationType",
+    "secure": "bool",
+    "virtualized": "bool",
+    "serial_number": "Vec<u8>"
   },
   "PublicConfig": {
     "ipv4": "Vec<u8>",

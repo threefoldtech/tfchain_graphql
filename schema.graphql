@@ -79,6 +79,9 @@ type Node @entity {
   farming_policy_id: Int!
   interfaces: [Interfaces!] @derivedFrom(field: "node")
   certificationType: CertificationType!
+  secure: Boolean
+  virtualized: Boolean
+  serialNumber: String
 }
 
 type Interfaces @entity {

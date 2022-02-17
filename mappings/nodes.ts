@@ -70,6 +70,10 @@ export async function nodeStored({
 
   newNode.twinId = node.twin_id.toNumber()
 
+  newNode.secure = node.secure ? true : false
+  newNode.virtualized = node.virtualized ? true : false
+  newNode.serialNumber = hex2a(node.serial_number.toString())
+
   await store.save<Node>(newNode)
 
   const interfacesPromisses = node.interfaces.map(intf => {
@@ -148,6 +152,10 @@ export async function nodeUpdated({
   }
 
   savedNode.twinId = node.twin_id.toNumber()
+
+  savedNode.secure = node.secure ? true : false
+  savedNode.virtualized = node.virtualized ? true : false
+  savedNode.serialNumber = hex2a(node.serial_number.toString())
 
   await store.save<Node>(savedNode)
 

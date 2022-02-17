@@ -1,5 +1,6 @@
 import {
   BaseModel,
+  BooleanField,
   IntField,
   NumericField,
   Model,
@@ -120,6 +121,21 @@ export class Node extends BaseModel {
 
   @EnumField('CertificationType', CertificationType, {})
   certificationType!: CertificationType;
+
+  @BooleanField({
+    nullable: true,
+  })
+  secure?: boolean;
+
+  @BooleanField({
+    nullable: true,
+  })
+  virtualized?: boolean;
+
+  @StringField({
+    nullable: true,
+  })
+  serialNumber?: string;
 
   constructor(init?: Partial<Node>) {
     super();
