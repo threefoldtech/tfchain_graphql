@@ -46,7 +46,7 @@
     "farming_policy_id": "u32",
     "interfaces": "Vec<Interface>",
     "certification_type": "CertificationType",
-    "secure": "bool",
+    "secure_boot": "bool",
     "virtualized": "bool",
     "serial_number": "Vec<u8>"
   },
@@ -265,5 +265,25 @@
   "AccountInfo": "AccountInfoWithProviders",
   "Keys": "SessionKeys2",
   "SessionKeys1": "(AccountId)",
-  "SessionKeys2": "(AccountId, AccountId)"
+  "TermsAndConditions": {
+    "account_id": "AccountId",
+    "timestamp": "u64",
+    "document_link": "Vec<u8>",
+    "document_hash": "Vec<u8>"
+  },
+  "Validator": {
+    "validator_node_account": "AccountId",
+    "stash_account": "AccountId",
+    "description": "Vec<u8>",
+    "tf_connect_id": "Vec<u8>",
+    "info": "Vec<u8>",
+    "state": "ValidatorRequestState"
+  },
+  "ValidatorRequestState": {
+    "_enum": [
+      "Created",
+      "Approved",
+      "Validating"
+    ]
+  }
 }
