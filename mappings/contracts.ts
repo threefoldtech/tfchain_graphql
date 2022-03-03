@@ -20,11 +20,13 @@ export async function contractCreated({
   switch (nodeContract.state.toString()) {
     case 'Created': break
     case 'Deleted': 
-      state = ContractState.Deleted
+      state = ContractState.CanceledByUser
       break
     case 'OutOfFunds': 
       state = ContractState.OutOfFunds
       break
+    case 'Killed':
+      state = ContractState.Killed
   }
 
   let contract
@@ -95,12 +97,14 @@ async function updateNodeContract(ctr: any, contract: NodeContract, store: Datab
   let state = ContractState.Created
   switch (ctr.state.toString()) {
     case 'Created': break
-    case 'Deleted':
-      state = ContractState.Deleted
+    case 'Deleted': 
+      state = ContractState.CanceledByUser
       break
     case 'OutOfFunds': 
       state = ContractState.OutOfFunds
       break
+    case 'Killed':
+      state = ContractState.Killed
   }
   contract.state = state
   await store.save<NodeContract>(contract)
@@ -118,11 +122,13 @@ async function updateNameContract(ctr: any, contract: NameContract, store: Datab
   switch (parsedNameContract.state.toString()) {
     case 'Created': break
     case 'Deleted': 
-      state = ContractState.Deleted
+      state = ContractState.CanceledByUser
       break
     case 'OutOfFunds': 
       state = ContractState.OutOfFunds
       break
+    case 'Killed':
+      state = ContractState.Killed
   }
   contract.state = state
 
@@ -147,7 +153,7 @@ export async function nodeContractCanceled({
     await store.save<PublicIp>(ip)
   })
 
-  savedContract.state = ContractState.Deleted
+  savedContract.state = ContractState.CanceledByUser
 
   console.log(`saving contract to delete state ${id}`)
 
@@ -172,7 +178,7 @@ export async function contractCanceled({
     await store.save<PublicIp>(ip)
   })
 
-  savedContract.state = ContractState.Deleted
+  savedContract.state = ContractState.CanceledByUser
 
   console.log(`saving contract to delete state ${id}`)
 
@@ -191,7 +197,7 @@ export async function nameContractCanceled({
 
   if (!savedContract) return
 
-  savedContract.state = ContractState.Deleted
+  savedContract.state = ContractState.CanceledByUser
 
   await store.save<NameContract>(savedContract)
 }

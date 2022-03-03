@@ -8,8 +8,8 @@ typegen:
     lib: 'substrate-tfgrid-ts-types'
     typedefsLoc: ./indexer/types.json
   metadata:
-    # source: ws://localhost:9944
-    source: wss://tfchain.dev.grid.tf/ws
+    source: ws://localhost:9944
+    # source: wss://tfchain.dev.grid.tf/ws
   events:
     - balances.Transfer
     - tfgridModule.EntityStored
