@@ -4,9 +4,8 @@ export enum CertificationType {
 }
 export enum ContractState {
   Created = 'Created',
-  CanceledByUser = 'CanceledByUser',
+  Deleted = 'Deleted',
   OutOfFunds = 'OutOfFunds',
-  Killed = 'Killed',
 }
 export enum DiscountLevel {
   None = 'None',

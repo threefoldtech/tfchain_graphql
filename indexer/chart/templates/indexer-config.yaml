@@ -151,8 +151,7 @@ data:
       "ContractState": {
         "_enum": {
           "Created": null,
-          "Deleted": "Cause",
-          "Killed": null
+          "Deleted": "Cause"
         }
       },
       "Cause": {

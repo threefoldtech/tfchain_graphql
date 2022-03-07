@@ -163,9 +163,8 @@ type NameContract @entity {
 
 enum ContractState {
   Created,
-  CanceledByUser,
-  OutOfFunds,
-  Killed
+  Deleted,
+  OutOfFunds
 }
 
 type Consumption @entity {

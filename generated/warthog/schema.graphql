@@ -621,9 +621,8 @@ input ContractBillReportWhereUniqueInput {
 
 enum ContractState {
   Created
-  CanceledByUser
+  Deleted
   OutOfFunds
-  Killed
 }
 
 type Country implements BaseGraphQLObject {

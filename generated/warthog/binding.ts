@@ -185,9 +185,8 @@ export type ContractBillReportOrderByInput =   'createdAt_ASC' |
   'timestamp_DESC'
 
 export type ContractState =   'Created' |
-  'CanceledByUser' |
-  'OutOfFunds' |
-  'Killed'
+  'Deleted' |
+  'OutOfFunds'
 
 export type CountryOrderByInput =   'createdAt_ASC' |
   'createdAt_DESC' |
