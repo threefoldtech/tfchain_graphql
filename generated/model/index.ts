@@ -8,6 +8,8 @@ import { Consumption } from '../modules/consumption/consumption.model';
 export { Consumption };
 import { ContractBillReport } from '../modules/contract-bill-report/contract-bill-report.model';
 export { ContractBillReport };
+import { ContractUsedResources } from '../modules/contract-used-resources/contract-used-resources.model';
+export { ContractUsedResources };
 import { Country } from '../modules/country/country.model';
 export { Country };
 import { Entity } from '../modules/entity/entity.model';

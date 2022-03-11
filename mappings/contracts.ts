@@ -1,4 +1,4 @@
-import { Consumption, NodeContract, NameContract, ContractState, DiscountLevel, ContractBillReport, PublicIp } from '../generated/model'
+import { Consumption, NodeContract, NameContract, ContractState, DiscountLevel, ContractBillReport, PublicIp, ContractUsedResources } from '../generated/model'
 import { SmartContractModule } from '../chain'
 import { hex2a } from './util'
 
@@ -207,10 +207,7 @@ export async function consumptionReportReceived({
 
   newConsumptionReport.contractId = consumptionReport.contract_id.toNumber()
   newConsumptionReport.timestamp = consumptionReport.timestamp.toNumber()
-  newConsumptionReport.cru = consumptionReport.cru.toBn()
-  newConsumptionReport.sru = consumptionReport.sru.toBn()
-  newConsumptionReport.hru = consumptionReport.hru.toBn()
-  newConsumptionReport.mru = consumptionReport.mru.toBn()
+  newConsumptionReport.window = consumptionReport.window.toBn()
   newConsumptionReport.nru = consumptionReport.nru.toBn()
 
   await store.save<Consumption>(newConsumptionReport)
@@ -282,4 +279,22 @@ export class ContractCanceledEvent {
     });
     return valid;
   }
+}
+
+export async function contractUpdateUsedResources({
+  store,
+  event,
+  block,
+  extrinsic,
+}: EventContext & StoreContext) {
+  const contractUsedResources = new ContractUsedResources()
+  const [usedResources] = new SmartContractModule.UpdatedUsedResourcesEvent(event).params
+
+  contractUsedResources.contractId = usedResources.contract_id.toNumber()
+  contractUsedResources.cru = usedResources.used.cru.toBn()
+  contractUsedResources.sru = usedResources.used.sru.toBn()
+  contractUsedResources.hru = usedResources.used.hru.toBn()
+  contractUsedResources.mru = usedResources.used.mru.toBn()
+
+  await store.save<ContractUsedResources>(contractUsedResources)
 }

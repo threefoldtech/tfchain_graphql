@@ -373,10 +373,7 @@ type Consumption implements BaseGraphQLObject {
   version: Int!
   contractId: Int!
   timestamp: Int!
-  cru: BigInt
-  sru: BigInt
-  hru: BigInt
-  mru: BigInt
+  window: BigInt
   nru: BigInt
 }
 
@@ -389,10 +386,7 @@ type ConsumptionConnection {
 input ConsumptionCreateInput {
   contractId: Float!
   timestamp: Float!
-  cru: String
-  sru: String
-  hru: String
-  mru: String
+  window: String
   nru: String
 }
 
@@ -412,14 +406,8 @@ enum ConsumptionOrderByInput {
   contractId_DESC
   timestamp_ASC
   timestamp_DESC
-  cru_ASC
-  cru_DESC
-  sru_ASC
-  sru_DESC
-  hru_ASC
-  hru_DESC
-  mru_ASC
-  mru_DESC
+  window_ASC
+  window_DESC
   nru_ASC
   nru_DESC
 }
@@ -427,10 +415,7 @@ enum ConsumptionOrderByInput {
 input ConsumptionUpdateInput {
   contractId: Float
   timestamp: Float
-  cru: String
-  sru: String
-  hru: String
-  mru: String
+  window: String
   nru: String
 }
 
@@ -471,30 +456,12 @@ input ConsumptionWhereInput {
   timestamp_lt: Int
   timestamp_lte: Int
   timestamp_in: [Int!]
-  cru_eq: BigInt
-  cru_gt: BigInt
-  cru_gte: BigInt
-  cru_lt: BigInt
-  cru_lte: BigInt
-  cru_in: [BigInt!]
-  sru_eq: BigInt
-  sru_gt: BigInt
-  sru_gte: BigInt
-  sru_lt: BigInt
-  sru_lte: BigInt
-  sru_in: [BigInt!]
-  hru_eq: BigInt
-  hru_gt: BigInt
-  hru_gte: BigInt
-  hru_lt: BigInt
-  hru_lte: BigInt
-  hru_in: [BigInt!]
-  mru_eq: BigInt
-  mru_gt: BigInt
-  mru_gte: BigInt
-  mru_lt: BigInt
-  mru_lte: BigInt
-  mru_in: [BigInt!]
+  window_eq: BigInt
+  window_gt: BigInt
+  window_gte: BigInt
+  window_lt: BigInt
+  window_lte: BigInt
+  window_in: [BigInt!]
   nru_eq: BigInt
   nru_gt: BigInt
   nru_gte: BigInt
@@ -623,6 +590,131 @@ enum ContractState {
   Created
   Deleted
   OutOfFunds
+}
+
+type ContractUsedResources implements BaseGraphQLObject {
+  id: ID!
+  createdAt: DateTime!
+  createdById: String!
+  updatedAt: DateTime
+  updatedById: String
+  deletedAt: DateTime
+  deletedById: String
+  version: Int!
+  contractId: Int!
+  hru: BigInt
+  sru: BigInt
+  cru: BigInt
+  mru: BigInt
+}
+
+type ContractUsedResourcesConnection {
+  totalCount: Int!
+  edges: [ContractUsedResourcesEdge!]!
+  pageInfo: PageInfo!
+}
+
+input ContractUsedResourcesCreateInput {
+  contractId: Float!
+  hru: String
+  sru: String
+  cru: String
+  mru: String
+}
+
+type ContractUsedResourcesEdge {
+  node: ContractUsedResources!
+  cursor: String!
+}
+
+enum ContractUsedResourcesOrderByInput {
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  deletedAt_ASC
+  deletedAt_DESC
+  contractId_ASC
+  contractId_DESC
+  hru_ASC
+  hru_DESC
+  sru_ASC
+  sru_DESC
+  cru_ASC
+  cru_DESC
+  mru_ASC
+  mru_DESC
+}
+
+input ContractUsedResourcesUpdateInput {
+  contractId: Float
+  hru: String
+  sru: String
+  cru: String
+  mru: String
+}
+
+input ContractUsedResourcesWhereInput {
+  id_eq: ID
+  id_in: [ID!]
+  createdAt_eq: DateTime
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  createdById_eq: ID
+  createdById_in: [ID!]
+  updatedAt_eq: DateTime
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  updatedById_eq: ID
+  updatedById_in: [ID!]
+  deletedAt_all: Boolean
+  deletedAt_eq: DateTime
+  deletedAt_lt: DateTime
+  deletedAt_lte: DateTime
+  deletedAt_gt: DateTime
+  deletedAt_gte: DateTime
+  deletedById_eq: ID
+  deletedById_in: [ID!]
+  contractId_eq: Int
+  contractId_gt: Int
+  contractId_gte: Int
+  contractId_lt: Int
+  contractId_lte: Int
+  contractId_in: [Int!]
+  hru_eq: BigInt
+  hru_gt: BigInt
+  hru_gte: BigInt
+  hru_lt: BigInt
+  hru_lte: BigInt
+  hru_in: [BigInt!]
+  sru_eq: BigInt
+  sru_gt: BigInt
+  sru_gte: BigInt
+  sru_lt: BigInt
+  sru_lte: BigInt
+  sru_in: [BigInt!]
+  cru_eq: BigInt
+  cru_gt: BigInt
+  cru_gte: BigInt
+  cru_lt: BigInt
+  cru_lte: BigInt
+  cru_in: [BigInt!]
+  mru_eq: BigInt
+  mru_gt: BigInt
+  mru_gte: BigInt
+  mru_lt: BigInt
+  mru_lte: BigInt
+  mru_in: [BigInt!]
+  AND: [ContractUsedResourcesWhereInput!]
+  OR: [ContractUsedResourcesWhereInput!]
+}
+
+input ContractUsedResourcesWhereUniqueInput {
+  id: ID!
 }
 
 type Country implements BaseGraphQLObject {
@@ -2686,6 +2778,9 @@ type Query {
   contractBillReports(offset: Int, limit: Int = 50, where: ContractBillReportWhereInput, orderBy: [ContractBillReportOrderByInput!]): [ContractBillReport!]!
   contractBillReportByUniqueInput(where: ContractBillReportWhereUniqueInput!): ContractBillReport
   contractBillReportsConnection(first: Int, after: String, last: Int, before: String, where: ContractBillReportWhereInput, orderBy: [ContractBillReportOrderByInput!]): ContractBillReportConnection!
+  contractUsedResources(offset: Int, limit: Int = 50, where: ContractUsedResourcesWhereInput, orderBy: [ContractUsedResourcesOrderByInput!]): [ContractUsedResources!]!
+  contractUsedResourcesByUniqueInput(where: ContractUsedResourcesWhereUniqueInput!): ContractUsedResources
+  contractUsedResourcesConnection(first: Int, after: String, last: Int, before: String, where: ContractUsedResourcesWhereInput, orderBy: [ContractUsedResourcesOrderByInput!]): ContractUsedResourcesConnection!
   countries(offset: Int, limit: Int = 50, where: CountryWhereInput, orderBy: [CountryOrderByInput!]): [Country!]!
   countryByUniqueInput(where: CountryWhereUniqueInput!): Country
   countriesConnection(first: Int, after: String, last: Int, before: String, where: CountryWhereInput, orderBy: [CountryOrderByInput!]): CountryConnection!

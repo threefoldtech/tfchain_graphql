@@ -3,7 +3,12 @@ import { SubstrateEvent, SubstrateExtrinsic } from "@subsquid/hydra-common";
 import { Codec } from "@polkadot/types/types";
 import { typeRegistry } from ".";
 
-import { Consumption, Contract, ContractBill } from "substrate-tfgrid-ts-types";
+import {
+  Consumption,
+  Contract,
+  ContractBill,
+  ContractResources,
+} from "substrate-tfgrid-ts-types";
 import { u32, u64 } from "@polkadot/types";
 
 export namespace SmartContractModule {
@@ -158,6 +163,35 @@ export namespace SmartContractModule {
         createTypeUnsafe<ContractBill & Codec>(typeRegistry, "ContractBill", [
           this.ctx.params[0].value,
         ]),
+      ];
+    }
+
+    validateParams(): boolean {
+      if (this.expectedParamTypes.length !== this.ctx.params.length) {
+        return false;
+      }
+      let valid = true;
+      this.expectedParamTypes.forEach((type, i) => {
+        if (type !== this.ctx.params[i].type) {
+          valid = false;
+        }
+      });
+      return valid;
+    }
+  }
+
+  export class UpdatedUsedResourcesEvent {
+    public readonly expectedParamTypes = ["types::ContractResources"];
+
+    constructor(public readonly ctx: SubstrateEvent) {}
+
+    get params(): [ContractResources] {
+      return [
+        createTypeUnsafe<ContractResources & Codec>(
+          typeRegistry,
+          "ContractResources",
+          [this.ctx.params[0].value]
+        ),
       ];
     }
 

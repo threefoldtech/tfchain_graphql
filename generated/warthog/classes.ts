@@ -40,6 +40,8 @@ import { Consumption } from "../modules/consumption/consumption.model";
 // @ts-ignore
 import { ContractBillReport } from "../modules/contract-bill-report/contract-bill-report.model";
 // @ts-ignore
+import { ContractUsedResources } from "../modules/contract-used-resources/contract-used-resources.model";
+// @ts-ignore
 import { Country } from "../modules/country/country.model";
 // @ts-ignore
 import { Twin } from "../modules/twin/twin.model";
@@ -892,17 +894,8 @@ export enum ConsumptionOrderByEnum {
   timestamp_ASC = "timestamp_ASC",
   timestamp_DESC = "timestamp_DESC",
 
-  cru_ASC = "cru_ASC",
-  cru_DESC = "cru_DESC",
-
-  sru_ASC = "sru_ASC",
-  sru_DESC = "sru_DESC",
-
-  hru_ASC = "hru_ASC",
-  hru_DESC = "hru_DESC",
-
-  mru_ASC = "mru_ASC",
-  mru_DESC = "mru_DESC",
+  window_ASC = "window_ASC",
+  window_DESC = "window_DESC",
 
   nru_ASC = "nru_ASC",
   nru_DESC = "nru_DESC",
@@ -1023,76 +1016,22 @@ export class ConsumptionWhereInput {
   timestamp_in?: number[];
 
   @TypeGraphQLField(() => BigInt, { nullable: true })
-  cru_eq?: string;
+  window_eq?: string;
 
   @TypeGraphQLField(() => BigInt, { nullable: true })
-  cru_gt?: string;
+  window_gt?: string;
 
   @TypeGraphQLField(() => BigInt, { nullable: true })
-  cru_gte?: string;
+  window_gte?: string;
 
   @TypeGraphQLField(() => BigInt, { nullable: true })
-  cru_lt?: string;
+  window_lt?: string;
 
   @TypeGraphQLField(() => BigInt, { nullable: true })
-  cru_lte?: string;
+  window_lte?: string;
 
   @TypeGraphQLField(() => [BigInt], { nullable: true })
-  cru_in?: string[];
-
-  @TypeGraphQLField(() => BigInt, { nullable: true })
-  sru_eq?: string;
-
-  @TypeGraphQLField(() => BigInt, { nullable: true })
-  sru_gt?: string;
-
-  @TypeGraphQLField(() => BigInt, { nullable: true })
-  sru_gte?: string;
-
-  @TypeGraphQLField(() => BigInt, { nullable: true })
-  sru_lt?: string;
-
-  @TypeGraphQLField(() => BigInt, { nullable: true })
-  sru_lte?: string;
-
-  @TypeGraphQLField(() => [BigInt], { nullable: true })
-  sru_in?: string[];
-
-  @TypeGraphQLField(() => BigInt, { nullable: true })
-  hru_eq?: string;
-
-  @TypeGraphQLField(() => BigInt, { nullable: true })
-  hru_gt?: string;
-
-  @TypeGraphQLField(() => BigInt, { nullable: true })
-  hru_gte?: string;
-
-  @TypeGraphQLField(() => BigInt, { nullable: true })
-  hru_lt?: string;
-
-  @TypeGraphQLField(() => BigInt, { nullable: true })
-  hru_lte?: string;
-
-  @TypeGraphQLField(() => [BigInt], { nullable: true })
-  hru_in?: string[];
-
-  @TypeGraphQLField(() => BigInt, { nullable: true })
-  mru_eq?: string;
-
-  @TypeGraphQLField(() => BigInt, { nullable: true })
-  mru_gt?: string;
-
-  @TypeGraphQLField(() => BigInt, { nullable: true })
-  mru_gte?: string;
-
-  @TypeGraphQLField(() => BigInt, { nullable: true })
-  mru_lt?: string;
-
-  @TypeGraphQLField(() => BigInt, { nullable: true })
-  mru_lte?: string;
-
-  @TypeGraphQLField(() => [BigInt], { nullable: true })
-  mru_in?: string[];
+  window_in?: string[];
 
   @TypeGraphQLField(() => BigInt, { nullable: true })
   nru_eq?: string;
@@ -1134,16 +1073,7 @@ export class ConsumptionCreateInput {
   timestamp!: number;
 
   @TypeGraphQLField({ nullable: true })
-  cru?: string;
-
-  @TypeGraphQLField({ nullable: true })
-  sru?: string;
-
-  @TypeGraphQLField({ nullable: true })
-  hru?: string;
-
-  @TypeGraphQLField({ nullable: true })
-  mru?: string;
+  window?: string;
 
   @TypeGraphQLField({ nullable: true })
   nru?: string;
@@ -1158,16 +1088,7 @@ export class ConsumptionUpdateInput {
   timestamp?: number;
 
   @TypeGraphQLField({ nullable: true })
-  cru?: string;
-
-  @TypeGraphQLField({ nullable: true })
-  sru?: string;
-
-  @TypeGraphQLField({ nullable: true })
-  hru?: string;
-
-  @TypeGraphQLField({ nullable: true })
-  mru?: string;
+  window?: string;
 
   @TypeGraphQLField({ nullable: true })
   nru?: string;
@@ -1417,6 +1338,270 @@ export class ContractBillReportCreateManyArgs {
 export class ContractBillReportUpdateArgs {
   @TypeGraphQLField() data!: ContractBillReportUpdateInput;
   @TypeGraphQLField() where!: ContractBillReportWhereUniqueInput;
+}
+
+export enum ContractUsedResourcesOrderByEnum {
+  createdAt_ASC = "createdAt_ASC",
+  createdAt_DESC = "createdAt_DESC",
+
+  updatedAt_ASC = "updatedAt_ASC",
+  updatedAt_DESC = "updatedAt_DESC",
+
+  deletedAt_ASC = "deletedAt_ASC",
+  deletedAt_DESC = "deletedAt_DESC",
+
+  contractId_ASC = "contractId_ASC",
+  contractId_DESC = "contractId_DESC",
+
+  hru_ASC = "hru_ASC",
+  hru_DESC = "hru_DESC",
+
+  sru_ASC = "sru_ASC",
+  sru_DESC = "sru_DESC",
+
+  cru_ASC = "cru_ASC",
+  cru_DESC = "cru_DESC",
+
+  mru_ASC = "mru_ASC",
+  mru_DESC = "mru_DESC",
+}
+
+registerEnumType(ContractUsedResourcesOrderByEnum, {
+  name: "ContractUsedResourcesOrderByInput",
+});
+
+@TypeGraphQLInputType()
+export class ContractUsedResourcesWhereInput {
+  @TypeGraphQLField(() => ID, { nullable: true })
+  id_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  id_in?: string[];
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_eq?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_lt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_lte?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_gt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_gte?: Date;
+
+  @TypeGraphQLField(() => ID, { nullable: true })
+  createdById_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  createdById_in?: string[];
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_eq?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_lt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_lte?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_gt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_gte?: Date;
+
+  @TypeGraphQLField(() => ID, { nullable: true })
+  updatedById_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  updatedById_in?: string[];
+
+  @TypeGraphQLField({ nullable: true })
+  deletedAt_all?: Boolean;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_eq?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_lt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_lte?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_gt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_gte?: Date;
+
+  @TypeGraphQLField(() => ID, { nullable: true })
+  deletedById_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  deletedById_in?: string[];
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  contractId_eq?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  contractId_gt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  contractId_gte?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  contractId_lt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  contractId_lte?: number;
+
+  @TypeGraphQLField(() => [Int], { nullable: true })
+  contractId_in?: number[];
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  hru_eq?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  hru_gt?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  hru_gte?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  hru_lt?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  hru_lte?: string;
+
+  @TypeGraphQLField(() => [BigInt], { nullable: true })
+  hru_in?: string[];
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  sru_eq?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  sru_gt?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  sru_gte?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  sru_lt?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  sru_lte?: string;
+
+  @TypeGraphQLField(() => [BigInt], { nullable: true })
+  sru_in?: string[];
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  cru_eq?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  cru_gt?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  cru_gte?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  cru_lt?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  cru_lte?: string;
+
+  @TypeGraphQLField(() => [BigInt], { nullable: true })
+  cru_in?: string[];
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  mru_eq?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  mru_gt?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  mru_gte?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  mru_lt?: string;
+
+  @TypeGraphQLField(() => BigInt, { nullable: true })
+  mru_lte?: string;
+
+  @TypeGraphQLField(() => [BigInt], { nullable: true })
+  mru_in?: string[];
+
+  @TypeGraphQLField(() => ContractUsedResourcesWhereInput, { nullable: true })
+  AND?: [ContractUsedResourcesWhereInput];
+
+  @TypeGraphQLField(() => ContractUsedResourcesWhereInput, { nullable: true })
+  OR?: [ContractUsedResourcesWhereInput];
+}
+
+@TypeGraphQLInputType()
+export class ContractUsedResourcesWhereUniqueInput {
+  @TypeGraphQLField(() => ID)
+  id?: string;
+}
+
+@TypeGraphQLInputType()
+export class ContractUsedResourcesCreateInput {
+  @TypeGraphQLField()
+  contractId!: number;
+
+  @TypeGraphQLField({ nullable: true })
+  hru?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  sru?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  cru?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  mru?: string;
+}
+
+@TypeGraphQLInputType()
+export class ContractUsedResourcesUpdateInput {
+  @TypeGraphQLField({ nullable: true })
+  contractId?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  hru?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  sru?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  cru?: string;
+
+  @TypeGraphQLField({ nullable: true })
+  mru?: string;
+}
+
+@ArgsType()
+export class ContractUsedResourcesWhereArgs extends PaginationArgs {
+  @TypeGraphQLField(() => ContractUsedResourcesWhereInput, { nullable: true })
+  where?: ContractUsedResourcesWhereInput;
+
+  @TypeGraphQLField(() => ContractUsedResourcesOrderByEnum, { nullable: true })
+  orderBy?: ContractUsedResourcesOrderByEnum[];
+}
+
+@ArgsType()
+export class ContractUsedResourcesCreateManyArgs {
+  @TypeGraphQLField(() => [ContractUsedResourcesCreateInput])
+  data!: ContractUsedResourcesCreateInput[];
+}
+
+@ArgsType()
+export class ContractUsedResourcesUpdateArgs {
+  @TypeGraphQLField() data!: ContractUsedResourcesUpdateInput;
+  @TypeGraphQLField() where!: ContractUsedResourcesWhereUniqueInput;
 }
 
 export enum CountryOrderByEnum {

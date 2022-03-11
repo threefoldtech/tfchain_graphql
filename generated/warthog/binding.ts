@@ -21,6 +21,9 @@ export interface Query {
     contractBillReports: <T = Array<ContractBillReport>>(args: { offset?: Int | null, limit?: Int | null, where?: ContractBillReportWhereInput | null, orderBy?: Array<ContractBillReportOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     contractBillReportByUniqueInput: <T = ContractBillReport | null>(args: { where: ContractBillReportWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
     contractBillReportsConnection: <T = ContractBillReportConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: ContractBillReportWhereInput | null, orderBy?: Array<ContractBillReportOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    contractUsedResources: <T = Array<ContractUsedResources>>(args: { offset?: Int | null, limit?: Int | null, where?: ContractUsedResourcesWhereInput | null, orderBy?: Array<ContractUsedResourcesOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    contractUsedResourcesByUniqueInput: <T = ContractUsedResources | null>(args: { where: ContractUsedResourcesWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
+    contractUsedResourcesConnection: <T = ContractUsedResourcesConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: ContractUsedResourcesWhereInput | null, orderBy?: Array<ContractUsedResourcesOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     countries: <T = Array<Country>>(args: { offset?: Int | null, limit?: Int | null, where?: CountryWhereInput | null, orderBy?: Array<CountryOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     countryByUniqueInput: <T = Country | null>(args: { where: CountryWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
     countriesConnection: <T = CountryConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: CountryWhereInput | null, orderBy?: Array<CountryOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
@@ -158,14 +161,8 @@ export type ConsumptionOrderByInput =   'createdAt_ASC' |
   'contractId_DESC' |
   'timestamp_ASC' |
   'timestamp_DESC' |
-  'cru_ASC' |
-  'cru_DESC' |
-  'sru_ASC' |
-  'sru_DESC' |
-  'hru_ASC' |
-  'hru_DESC' |
-  'mru_ASC' |
-  'mru_DESC' |
+  'window_ASC' |
+  'window_DESC' |
   'nru_ASC' |
   'nru_DESC'
 
@@ -187,6 +184,23 @@ export type ContractBillReportOrderByInput =   'createdAt_ASC' |
 export type ContractState =   'Created' |
   'Deleted' |
   'OutOfFunds'
+
+export type ContractUsedResourcesOrderByInput =   'createdAt_ASC' |
+  'createdAt_DESC' |
+  'updatedAt_ASC' |
+  'updatedAt_DESC' |
+  'deletedAt_ASC' |
+  'deletedAt_DESC' |
+  'contractId_ASC' |
+  'contractId_DESC' |
+  'hru_ASC' |
+  'hru_DESC' |
+  'sru_ASC' |
+  'sru_DESC' |
+  'cru_ASC' |
+  'cru_DESC' |
+  'mru_ASC' |
+  'mru_DESC'
 
 export type CountryOrderByInput =   'createdAt_ASC' |
   'createdAt_DESC' |
@@ -726,20 +740,14 @@ export interface CityWhereUniqueInput {
 export interface ConsumptionCreateInput {
   contractId: Float
   timestamp: Float
-  cru?: String | null
-  sru?: String | null
-  hru?: String | null
-  mru?: String | null
+  window?: String | null
   nru?: String | null
 }
 
 export interface ConsumptionUpdateInput {
   contractId?: Float | null
   timestamp?: Float | null
-  cru?: String | null
-  sru?: String | null
-  hru?: String | null
-  mru?: String | null
+  window?: String | null
   nru?: String | null
 }
 
@@ -780,30 +788,12 @@ export interface ConsumptionWhereInput {
   timestamp_lt?: Int | null
   timestamp_lte?: Int | null
   timestamp_in?: Int[] | Int | null
-  cru_eq?: BigInt | null
-  cru_gt?: BigInt | null
-  cru_gte?: BigInt | null
-  cru_lt?: BigInt | null
-  cru_lte?: BigInt | null
-  cru_in?: BigInt[] | BigInt | null
-  sru_eq?: BigInt | null
-  sru_gt?: BigInt | null
-  sru_gte?: BigInt | null
-  sru_lt?: BigInt | null
-  sru_lte?: BigInt | null
-  sru_in?: BigInt[] | BigInt | null
-  hru_eq?: BigInt | null
-  hru_gt?: BigInt | null
-  hru_gte?: BigInt | null
-  hru_lt?: BigInt | null
-  hru_lte?: BigInt | null
-  hru_in?: BigInt[] | BigInt | null
-  mru_eq?: BigInt | null
-  mru_gt?: BigInt | null
-  mru_gte?: BigInt | null
-  mru_lt?: BigInt | null
-  mru_lte?: BigInt | null
-  mru_in?: BigInt[] | BigInt | null
+  window_eq?: BigInt | null
+  window_gt?: BigInt | null
+  window_gte?: BigInt | null
+  window_lt?: BigInt | null
+  window_lte?: BigInt | null
+  window_in?: BigInt[] | BigInt | null
   nru_eq?: BigInt | null
   nru_gt?: BigInt | null
   nru_gte?: BigInt | null
@@ -882,6 +872,85 @@ export interface ContractBillReportWhereInput {
 }
 
 export interface ContractBillReportWhereUniqueInput {
+  id: ID_Output
+}
+
+export interface ContractUsedResourcesCreateInput {
+  contractId: Float
+  hru?: String | null
+  sru?: String | null
+  cru?: String | null
+  mru?: String | null
+}
+
+export interface ContractUsedResourcesUpdateInput {
+  contractId?: Float | null
+  hru?: String | null
+  sru?: String | null
+  cru?: String | null
+  mru?: String | null
+}
+
+export interface ContractUsedResourcesWhereInput {
+  id_eq?: ID_Input | null
+  id_in?: ID_Output[] | ID_Output | null
+  createdAt_eq?: DateTime | null
+  createdAt_lt?: DateTime | null
+  createdAt_lte?: DateTime | null
+  createdAt_gt?: DateTime | null
+  createdAt_gte?: DateTime | null
+  createdById_eq?: ID_Input | null
+  createdById_in?: ID_Output[] | ID_Output | null
+  updatedAt_eq?: DateTime | null
+  updatedAt_lt?: DateTime | null
+  updatedAt_lte?: DateTime | null
+  updatedAt_gt?: DateTime | null
+  updatedAt_gte?: DateTime | null
+  updatedById_eq?: ID_Input | null
+  updatedById_in?: ID_Output[] | ID_Output | null
+  deletedAt_all?: Boolean | null
+  deletedAt_eq?: DateTime | null
+  deletedAt_lt?: DateTime | null
+  deletedAt_lte?: DateTime | null
+  deletedAt_gt?: DateTime | null
+  deletedAt_gte?: DateTime | null
+  deletedById_eq?: ID_Input | null
+  deletedById_in?: ID_Output[] | ID_Output | null
+  contractId_eq?: Int | null
+  contractId_gt?: Int | null
+  contractId_gte?: Int | null
+  contractId_lt?: Int | null
+  contractId_lte?: Int | null
+  contractId_in?: Int[] | Int | null
+  hru_eq?: BigInt | null
+  hru_gt?: BigInt | null
+  hru_gte?: BigInt | null
+  hru_lt?: BigInt | null
+  hru_lte?: BigInt | null
+  hru_in?: BigInt[] | BigInt | null
+  sru_eq?: BigInt | null
+  sru_gt?: BigInt | null
+  sru_gte?: BigInt | null
+  sru_lt?: BigInt | null
+  sru_lte?: BigInt | null
+  sru_in?: BigInt[] | BigInt | null
+  cru_eq?: BigInt | null
+  cru_gt?: BigInt | null
+  cru_gte?: BigInt | null
+  cru_lt?: BigInt | null
+  cru_lte?: BigInt | null
+  cru_in?: BigInt[] | BigInt | null
+  mru_eq?: BigInt | null
+  mru_gt?: BigInt | null
+  mru_gte?: BigInt | null
+  mru_lt?: BigInt | null
+  mru_lte?: BigInt | null
+  mru_in?: BigInt[] | BigInt | null
+  AND?: ContractUsedResourcesWhereInput[] | ContractUsedResourcesWhereInput | null
+  OR?: ContractUsedResourcesWhereInput[] | ContractUsedResourcesWhereInput | null
+}
+
+export interface ContractUsedResourcesWhereUniqueInput {
   id: ID_Output
 }
 
@@ -2580,10 +2649,7 @@ export interface Consumption extends BaseGraphQLObject {
   version: Int
   contractId: Int
   timestamp: Int
-  cru?: BigInt | null
-  sru?: BigInt | null
-  hru?: BigInt | null
-  mru?: BigInt | null
+  window?: BigInt | null
   nru?: BigInt | null
 }
 
@@ -2621,6 +2687,33 @@ export interface ContractBillReportConnection {
 
 export interface ContractBillReportEdge {
   node: ContractBillReport
+  cursor: String
+}
+
+export interface ContractUsedResources extends BaseGraphQLObject {
+  id: ID_Output
+  createdAt: DateTime
+  createdById: String
+  updatedAt?: DateTime | null
+  updatedById?: String | null
+  deletedAt?: DateTime | null
+  deletedById?: String | null
+  version: Int
+  contractId: Int
+  hru?: BigInt | null
+  sru?: BigInt | null
+  cru?: BigInt | null
+  mru?: BigInt | null
+}
+
+export interface ContractUsedResourcesConnection {
+  totalCount: Int
+  edges: Array<ContractUsedResourcesEdge>
+  pageInfo: PageInfo
+}
+
+export interface ContractUsedResourcesEdge {
+  node: ContractUsedResources
   cursor: String
 }
 

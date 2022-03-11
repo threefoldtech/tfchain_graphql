@@ -5090,10 +5090,10 @@ subscriptions-transport-ws@^0.9.19:
     symbol-observable "^1.0.4"
     ws "^5.2.0 || ^6.0.0 || ^7.0.0"
 
-substrate-tfgrid-ts-types@^0.1.8:
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/substrate-tfgrid-ts-types/-/substrate-tfgrid-ts-types-0.1.8.tgz#787e6136eae994c10dd2a7620c401164fe4f08fc"
-  integrity sha512-HHoD77Y+MfwUhrByk0YqrGPcTiDHEzWQ0BKn4ftETq8bjjutwkH4EpXBAxfjh3li65dXqWFtDFtsmZt7G+VhCw==
+substrate-tfgrid-ts-types@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/substrate-tfgrid-ts-types/-/substrate-tfgrid-ts-types-0.3.0.tgz#e23135f2e41813c395a0efcc4ed2d239f4834128"
+  integrity sha512-IL/yKRjzo+IL9QUg3hI8eZ9Y5OaOuxWCLM/NpqT6L7ptERFJnzuh/Ibg/3R4G9+gXh+i2L9e+sEog4iDhYo6dw==
   dependencies:
     "@polkadot/api" "^2.3.1"
 
