@@ -1,4 +1,4 @@
-import { Consumption, NodeContract, NameContract, ContractState, DiscountLevel, ContractBillReport, PublicIp, ContractUsedResources } from '../generated/model'
+import { NodeContract, NameContract, ContractState, DiscountLevel, ContractBillReport, PublicIp, ContractUsedResources } from '../generated/model'
 import { SmartContractModule } from '../chain'
 import { hex2a } from './util'
 
@@ -196,22 +196,22 @@ export async function nameContractCanceled({
   await store.save<NameContract>(savedContract)
 }
 
-export async function consumptionReportReceived({
-  store,
-  event,
-  block,
-  extrinsic,
-}: EventContext & StoreContext) {
-  const newConsumptionReport = new Consumption()
-  const [consumptionReport] = new SmartContractModule.ConsumptionReportReceivedEvent(event).params
+// export async function consumptionReportReceived({
+//   store,
+//   event,
+//   block,
+//   extrinsic,
+// }: EventContext & StoreContext) {
+//   const newConsumptionReport = new Consumption()
+//   const [consumptionReport] = new SmartContractModule.ConsumptionReportReceivedEvent(event).params
 
-  newConsumptionReport.contractId = consumptionReport.contract_id.toNumber()
-  newConsumptionReport.timestamp = consumptionReport.timestamp.toNumber()
-  newConsumptionReport.window = consumptionReport.window.toBn()
-  newConsumptionReport.nru = consumptionReport.nru.toBn()
+//   newConsumptionReport.contractId = consumptionReport.contract_id.toNumber()
+//   newConsumptionReport.timestamp = consumptionReport.timestamp.toNumber()
+//   newConsumptionReport.window = consumptionReport.window.toBn()
+//   newConsumptionReport.nru = consumptionReport.nru.toBn()
 
-  await store.save<Consumption>(newConsumptionReport)
-}
+//   await store.save<Consumption>(newConsumptionReport)
+// }
 
 export async function contractBilled({
   store,

@@ -4,7 +4,6 @@ import { Codec } from "@polkadot/types/types";
 import { typeRegistry } from ".";
 
 import {
-  Consumption,
   Contract,
   ContractBill,
   ContractResources,
@@ -12,33 +11,6 @@ import {
 import { u32, u64 } from "@polkadot/types";
 
 export namespace SmartContractModule {
-  export class ConsumptionReportReceivedEvent {
-    public readonly expectedParamTypes = ["types::Consumption"];
-
-    constructor(public readonly ctx: SubstrateEvent) {}
-
-    get params(): [Consumption] {
-      return [
-        createTypeUnsafe<Consumption & Codec>(typeRegistry, "Consumption", [
-          this.ctx.params[0].value,
-        ]),
-      ];
-    }
-
-    validateParams(): boolean {
-      if (this.expectedParamTypes.length !== this.ctx.params.length) {
-        return false;
-      }
-      let valid = true;
-      this.expectedParamTypes.forEach((type, i) => {
-        if (type !== this.ctx.params[i].type) {
-          valid = false;
-        }
-      });
-      return valid;
-    }
-  }
-
   export class ContractCreatedEvent {
     public readonly expectedParamTypes = ["types::Contract"];
 

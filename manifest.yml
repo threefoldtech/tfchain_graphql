@@ -30,7 +30,6 @@ typegen:
     - tfgridModule.FarmingPolicyStored
     - tfgridModule.FarmPayoutV2AddressRegistered
     - tfgridModule.NodePublicConfigStored
-    - smartContractModule.ConsumptionReportReceived
     - smartContractModule.ContractCreated
     - smartContractModule.ContractUpdated
     - smartContractModule.NodeContractCanceled
@@ -83,8 +82,6 @@ mappings:
       handler: farmPayoutV2AddressRegistered
     - event: tfgridModule.NodePublicConfigStored
       handler: nodePublicConfigStored
-    - event: smartContractModule.ConsumptionReportReceived
-      handler: consumptionReportReceived
     - event: smartContractModule.ContractCreated
       handler: contractCreated
     - event: smartContractModule.ContractUpdated
