@@ -14,6 +14,30 @@ import {
 import BN from 'bn.js';
 import { InputType, Field } from 'type-graphql';
 
+@InputType('ContractUsedResourcesInput')
+@ObjectType()
+export class ContractUsedResources {
+  @NumericField({
+    nullable: true,
+  })
+  hru?: BN;
+
+  @NumericField({
+    nullable: true,
+  })
+  sru?: BN;
+
+  @NumericField({
+    nullable: true,
+  })
+  cru?: BN;
+
+  @NumericField({
+    nullable: true,
+  })
+  mru?: BN;
+}
+
 @InputType('PolicyInput')
 @ObjectType()
 export class Policy {

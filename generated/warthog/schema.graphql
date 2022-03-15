@@ -362,120 +362,6 @@ input CityWhereUniqueInput {
   id: ID!
 }
 
-type Consumption implements BaseGraphQLObject {
-  id: ID!
-  createdAt: DateTime!
-  createdById: String!
-  updatedAt: DateTime
-  updatedById: String
-  deletedAt: DateTime
-  deletedById: String
-  version: Int!
-  contractId: Int!
-  timestamp: Int!
-  window: BigInt
-  nru: BigInt
-}
-
-type ConsumptionConnection {
-  totalCount: Int!
-  edges: [ConsumptionEdge!]!
-  pageInfo: PageInfo!
-}
-
-input ConsumptionCreateInput {
-  contractId: Float!
-  timestamp: Float!
-  window: String
-  nru: String
-}
-
-type ConsumptionEdge {
-  node: Consumption!
-  cursor: String!
-}
-
-enum ConsumptionOrderByInput {
-  createdAt_ASC
-  createdAt_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  deletedAt_ASC
-  deletedAt_DESC
-  contractId_ASC
-  contractId_DESC
-  timestamp_ASC
-  timestamp_DESC
-  window_ASC
-  window_DESC
-  nru_ASC
-  nru_DESC
-}
-
-input ConsumptionUpdateInput {
-  contractId: Float
-  timestamp: Float
-  window: String
-  nru: String
-}
-
-input ConsumptionWhereInput {
-  id_eq: ID
-  id_in: [ID!]
-  createdAt_eq: DateTime
-  createdAt_lt: DateTime
-  createdAt_lte: DateTime
-  createdAt_gt: DateTime
-  createdAt_gte: DateTime
-  createdById_eq: ID
-  createdById_in: [ID!]
-  updatedAt_eq: DateTime
-  updatedAt_lt: DateTime
-  updatedAt_lte: DateTime
-  updatedAt_gt: DateTime
-  updatedAt_gte: DateTime
-  updatedById_eq: ID
-  updatedById_in: [ID!]
-  deletedAt_all: Boolean
-  deletedAt_eq: DateTime
-  deletedAt_lt: DateTime
-  deletedAt_lte: DateTime
-  deletedAt_gt: DateTime
-  deletedAt_gte: DateTime
-  deletedById_eq: ID
-  deletedById_in: [ID!]
-  contractId_eq: Int
-  contractId_gt: Int
-  contractId_gte: Int
-  contractId_lt: Int
-  contractId_lte: Int
-  contractId_in: [Int!]
-  timestamp_eq: Int
-  timestamp_gt: Int
-  timestamp_gte: Int
-  timestamp_lt: Int
-  timestamp_lte: Int
-  timestamp_in: [Int!]
-  window_eq: BigInt
-  window_gt: BigInt
-  window_gte: BigInt
-  window_lt: BigInt
-  window_lte: BigInt
-  window_in: [BigInt!]
-  nru_eq: BigInt
-  nru_gt: BigInt
-  nru_gte: BigInt
-  nru_lt: BigInt
-  nru_lte: BigInt
-  nru_in: [BigInt!]
-  AND: [ConsumptionWhereInput!]
-  OR: [ConsumptionWhereInput!]
-}
-
-input ConsumptionWhereUniqueInput {
-  id: ID!
-}
-
 type ContractBillReport implements BaseGraphQLObject {
   id: ID!
   createdAt: DateTime!
@@ -592,62 +478,28 @@ enum ContractState {
   OutOfFunds
 }
 
-type ContractUsedResources implements BaseGraphQLObject {
-  id: ID!
-  createdAt: DateTime!
-  createdById: String!
-  updatedAt: DateTime
-  updatedById: String
-  deletedAt: DateTime
-  deletedById: String
-  version: Int!
-  contractId: Int!
+type ContractUsedResources {
   hru: BigInt
   sru: BigInt
   cru: BigInt
   mru: BigInt
 }
 
-type ContractUsedResourcesConnection {
-  totalCount: Int!
-  edges: [ContractUsedResourcesEdge!]!
-  pageInfo: PageInfo!
-}
-
 input ContractUsedResourcesCreateInput {
-  contractId: Float!
   hru: String
   sru: String
   cru: String
   mru: String
 }
 
-type ContractUsedResourcesEdge {
-  node: ContractUsedResources!
-  cursor: String!
-}
-
-enum ContractUsedResourcesOrderByInput {
-  createdAt_ASC
-  createdAt_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  deletedAt_ASC
-  deletedAt_DESC
-  contractId_ASC
-  contractId_DESC
-  hru_ASC
-  hru_DESC
-  sru_ASC
-  sru_DESC
-  cru_ASC
-  cru_DESC
-  mru_ASC
-  mru_DESC
+input ContractUsedResourcesInput {
+  hru: BigInt
+  sru: BigInt
+  cru: BigInt
+  mru: BigInt
 }
 
 input ContractUsedResourcesUpdateInput {
-  contractId: Float
   hru: String
   sru: String
   cru: String
@@ -679,12 +531,6 @@ input ContractUsedResourcesWhereInput {
   deletedAt_gte: DateTime
   deletedById_eq: ID
   deletedById_in: [ID!]
-  contractId_eq: Int
-  contractId_gt: Int
-  contractId_gte: Int
-  contractId_lt: Int
-  contractId_lte: Int
-  contractId_in: [Int!]
   hru_eq: BigInt
   hru_gt: BigInt
   hru_gte: BigInt
@@ -1994,6 +1840,7 @@ type NodeContract implements BaseGraphQLObject {
   deploymentHash: String!
   numberOfPublicIPs: Int!
   state: ContractState!
+  resourcesUsed: ContractUsedResources
 }
 
 type NodeContractConnection {
@@ -2011,6 +1858,7 @@ input NodeContractCreateInput {
   deploymentHash: String!
   numberOfPublicIPs: Float!
   state: ContractState!
+  resourcesUsed: ContractUsedResourcesInput
 }
 
 type NodeContractEdge {
@@ -2052,6 +1900,7 @@ input NodeContractUpdateInput {
   deploymentHash: String
   numberOfPublicIPs: Float
   state: ContractState
+  resourcesUsed: ContractUsedResourcesInput
 }
 
 input NodeContractWhereInput {
@@ -2121,6 +1970,7 @@ input NodeContractWhereInput {
   numberOfPublicIPs_in: [Int!]
   state_eq: ContractState
   state_in: [ContractState!]
+  resourcesUsed_json: JSONObject
   AND: [NodeContractWhereInput!]
   OR: [NodeContractWhereInput!]
 }
@@ -2345,6 +2195,120 @@ input NodeWhereInput {
 }
 
 input NodeWhereUniqueInput {
+  id: ID!
+}
+
+type NruConsumption implements BaseGraphQLObject {
+  id: ID!
+  createdAt: DateTime!
+  createdById: String!
+  updatedAt: DateTime
+  updatedById: String
+  deletedAt: DateTime
+  deletedById: String
+  version: Int!
+  contractId: Int!
+  timestamp: Int!
+  window: BigInt
+  nru: BigInt
+}
+
+type NruConsumptionConnection {
+  totalCount: Int!
+  edges: [NruConsumptionEdge!]!
+  pageInfo: PageInfo!
+}
+
+input NruConsumptionCreateInput {
+  contractId: Float!
+  timestamp: Float!
+  window: String
+  nru: String
+}
+
+type NruConsumptionEdge {
+  node: NruConsumption!
+  cursor: String!
+}
+
+enum NruConsumptionOrderByInput {
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  deletedAt_ASC
+  deletedAt_DESC
+  contractId_ASC
+  contractId_DESC
+  timestamp_ASC
+  timestamp_DESC
+  window_ASC
+  window_DESC
+  nru_ASC
+  nru_DESC
+}
+
+input NruConsumptionUpdateInput {
+  contractId: Float
+  timestamp: Float
+  window: String
+  nru: String
+}
+
+input NruConsumptionWhereInput {
+  id_eq: ID
+  id_in: [ID!]
+  createdAt_eq: DateTime
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  createdById_eq: ID
+  createdById_in: [ID!]
+  updatedAt_eq: DateTime
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  updatedById_eq: ID
+  updatedById_in: [ID!]
+  deletedAt_all: Boolean
+  deletedAt_eq: DateTime
+  deletedAt_lt: DateTime
+  deletedAt_lte: DateTime
+  deletedAt_gt: DateTime
+  deletedAt_gte: DateTime
+  deletedById_eq: ID
+  deletedById_in: [ID!]
+  contractId_eq: Int
+  contractId_gt: Int
+  contractId_gte: Int
+  contractId_lt: Int
+  contractId_lte: Int
+  contractId_in: [Int!]
+  timestamp_eq: Int
+  timestamp_gt: Int
+  timestamp_gte: Int
+  timestamp_lt: Int
+  timestamp_lte: Int
+  timestamp_in: [Int!]
+  window_eq: BigInt
+  window_gt: BigInt
+  window_gte: BigInt
+  window_lt: BigInt
+  window_lte: BigInt
+  window_in: [BigInt!]
+  nru_eq: BigInt
+  nru_gt: BigInt
+  nru_gte: BigInt
+  nru_lt: BigInt
+  nru_lte: BigInt
+  nru_in: [BigInt!]
+  AND: [NruConsumptionWhereInput!]
+  OR: [NruConsumptionWhereInput!]
+}
+
+input NruConsumptionWhereUniqueInput {
   id: ID!
 }
 
@@ -2772,15 +2736,9 @@ type Query {
   cities(offset: Int, limit: Int = 50, where: CityWhereInput, orderBy: [CityOrderByInput!]): [City!]!
   cityByUniqueInput(where: CityWhereUniqueInput!): City
   citiesConnection(first: Int, after: String, last: Int, before: String, where: CityWhereInput, orderBy: [CityOrderByInput!]): CityConnection!
-  consumptions(offset: Int, limit: Int = 50, where: ConsumptionWhereInput, orderBy: [ConsumptionOrderByInput!]): [Consumption!]!
-  consumptionByUniqueInput(where: ConsumptionWhereUniqueInput!): Consumption
-  consumptionsConnection(first: Int, after: String, last: Int, before: String, where: ConsumptionWhereInput, orderBy: [ConsumptionOrderByInput!]): ConsumptionConnection!
   contractBillReports(offset: Int, limit: Int = 50, where: ContractBillReportWhereInput, orderBy: [ContractBillReportOrderByInput!]): [ContractBillReport!]!
   contractBillReportByUniqueInput(where: ContractBillReportWhereUniqueInput!): ContractBillReport
   contractBillReportsConnection(first: Int, after: String, last: Int, before: String, where: ContractBillReportWhereInput, orderBy: [ContractBillReportOrderByInput!]): ContractBillReportConnection!
-  contractUsedResources(offset: Int, limit: Int = 50, where: ContractUsedResourcesWhereInput, orderBy: [ContractUsedResourcesOrderByInput!]): [ContractUsedResources!]!
-  contractUsedResourcesByUniqueInput(where: ContractUsedResourcesWhereUniqueInput!): ContractUsedResources
-  contractUsedResourcesConnection(first: Int, after: String, last: Int, before: String, where: ContractUsedResourcesWhereInput, orderBy: [ContractUsedResourcesOrderByInput!]): ContractUsedResourcesConnection!
   countries(offset: Int, limit: Int = 50, where: CountryWhereInput, orderBy: [CountryOrderByInput!]): [Country!]!
   countryByUniqueInput(where: CountryWhereUniqueInput!): Country
   countriesConnection(first: Int, after: String, last: Int, before: String, where: CountryWhereInput, orderBy: [CountryOrderByInput!]): CountryConnection!
@@ -2817,6 +2775,9 @@ type Query {
   nodes(offset: Int, limit: Int = 50, where: NodeWhereInput, orderBy: [NodeOrderByInput!]): [Node!]!
   nodeByUniqueInput(where: NodeWhereUniqueInput!): Node
   nodesConnection(first: Int, after: String, last: Int, before: String, where: NodeWhereInput, orderBy: [NodeOrderByInput!]): NodeConnection!
+  nruConsumptions(offset: Int, limit: Int = 50, where: NruConsumptionWhereInput, orderBy: [NruConsumptionOrderByInput!]): [NruConsumption!]!
+  nruConsumptionByUniqueInput(where: NruConsumptionWhereUniqueInput!): NruConsumption
+  nruConsumptionsConnection(first: Int, after: String, last: Int, before: String, where: NruConsumptionWhereInput, orderBy: [NruConsumptionOrderByInput!]): NruConsumptionConnection!
   pricingPolicies(offset: Int, limit: Int = 50, where: PricingPolicyWhereInput, orderBy: [PricingPolicyOrderByInput!]): [PricingPolicy!]!
   pricingPolicyByUniqueInput(where: PricingPolicyWhereUniqueInput!): PricingPolicy
   pricingPoliciesConnection(first: Int, after: String, last: Int, before: String, where: PricingPolicyWhereInput, orderBy: [PricingPolicyOrderByInput!]): PricingPolicyConnection!

@@ -5,20 +5,12 @@ import BN from 'bn.js';
 import * as jsonTypes from '../jsonfields/jsonfields.model';
 
 @Model({ api: {} })
-export class ContractUsedResources extends BaseModel {
+export class NruConsumption extends BaseModel {
   @IntField({})
   contractId!: number;
 
-  @NumericField({
-    nullable: true,
-
-    transformer: {
-      to: (entityValue: BN) => (entityValue !== undefined ? entityValue.toString(10) : null),
-      from: (dbValue: string) =>
-        dbValue !== undefined && dbValue !== null && dbValue.length > 0 ? new BN(dbValue, 10) : undefined,
-    },
-  })
-  hru?: BN;
+  @IntField({})
+  timestamp!: number;
 
   @NumericField({
     nullable: true,
@@ -29,7 +21,7 @@ export class ContractUsedResources extends BaseModel {
         dbValue !== undefined && dbValue !== null && dbValue.length > 0 ? new BN(dbValue, 10) : undefined,
     },
   })
-  sru?: BN;
+  window?: BN;
 
   @NumericField({
     nullable: true,
@@ -40,20 +32,9 @@ export class ContractUsedResources extends BaseModel {
         dbValue !== undefined && dbValue !== null && dbValue.length > 0 ? new BN(dbValue, 10) : undefined,
     },
   })
-  cru?: BN;
+  nru?: BN;
 
-  @NumericField({
-    nullable: true,
-
-    transformer: {
-      to: (entityValue: BN) => (entityValue !== undefined ? entityValue.toString(10) : null),
-      from: (dbValue: string) =>
-        dbValue !== undefined && dbValue !== null && dbValue.length > 0 ? new BN(dbValue, 10) : undefined,
-    },
-  })
-  mru?: BN;
-
-  constructor(init?: Partial<ContractUsedResources>) {
+  constructor(init?: Partial<NruConsumption>) {
     super();
     Object.assign(this, init);
   }

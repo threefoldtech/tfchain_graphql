@@ -3,14 +3,14 @@ import { Repository, SelectQueryBuilder } from 'typeorm';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { WhereInput, HydraBaseService } from '@subsquid/warthog';
 
-import { Consumption } from './consumption.model';
+import { NruConsumption } from './nru-consumption.model';
 
-import { ConsumptionWhereArgs, ConsumptionWhereInput } from '../../warthog';
+import { NruConsumptionWhereArgs, NruConsumptionWhereInput } from '../../warthog';
 
-@Service('ConsumptionService')
-export class ConsumptionService extends HydraBaseService<Consumption> {
-  constructor(@InjectRepository(Consumption) protected readonly repository: Repository<Consumption>) {
-    super(Consumption, repository);
+@Service('NruConsumptionService')
+export class NruConsumptionService extends HydraBaseService<NruConsumption> {
+  constructor(@InjectRepository(NruConsumption) protected readonly repository: Repository<NruConsumption>) {
+    super(NruConsumption, repository);
   }
 
   async find<W extends WhereInput>(
@@ -19,7 +19,7 @@ export class ConsumptionService extends HydraBaseService<Consumption> {
     limit?: number,
     offset?: number,
     fields?: string[]
-  ): Promise<Consumption[]> {
+  ): Promise<NruConsumption[]> {
     return this.findWithRelations<W>(where, orderBy, limit, offset, fields);
   }
 
@@ -29,7 +29,7 @@ export class ConsumptionService extends HydraBaseService<Consumption> {
     limit?: number,
     offset?: number,
     fields?: string[]
-  ): Promise<Consumption[]> {
+  ): Promise<NruConsumption[]> {
     return this.buildFindWithRelationsQuery(_where, orderBy, limit, offset, fields).getMany();
   }
 
@@ -39,8 +39,8 @@ export class ConsumptionService extends HydraBaseService<Consumption> {
     limit?: number,
     offset?: number,
     fields?: string[]
-  ): SelectQueryBuilder<Consumption> {
-    const where = <ConsumptionWhereInput>(_where || {});
+  ): SelectQueryBuilder<NruConsumption> {
+    const where = <NruConsumptionWhereInput>(_where || {});
 
     let mainQuery = this.buildFindQueryWithParams(<any>where, orderBy, undefined, fields, 'main').take(undefined); // remove LIMIT
 

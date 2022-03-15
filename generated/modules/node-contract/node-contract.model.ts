@@ -31,6 +31,9 @@ export class NodeContract extends BaseModel {
   @EnumField('ContractState', ContractState, {})
   state!: ContractState;
 
+  @JSONField({ filter: true, gqlFieldType: jsonTypes.ContractUsedResources, nullable: true })
+  resourcesUsed?: jsonTypes.ContractUsedResources;
+
   constructor(init?: Partial<NodeContract>) {
     super();
     Object.assign(this, init);

@@ -151,6 +151,7 @@ type NodeContract @entity {
   deployment_hash: String!
   numberOfPublicIPs: Int!
   state: ContractState!
+  resourcesUsed: ContractUsedResources
 }
 
 type NameContract @entity {
@@ -167,15 +168,14 @@ enum ContractState {
   OutOfFunds
 }
 
-type Consumption @entity {
+type NruConsumption @entity {
   contractID: Int!
   timestamp: Int!
   window: BigInt
   nru: BigInt
 }
 
-type ContractUsedResources @entity {
-  contractID: Int!
+type ContractUsedResources @jsonField {
   hru: BigInt
   sru: BigInt
   cru: BigInt

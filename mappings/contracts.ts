@@ -1,4 +1,4 @@
-import { Consumption, NodeContract, NameContract, ContractState, DiscountLevel, ContractBillReport, PublicIp, ContractUsedResources } from '../generated/model'
+import { NruConsumption, NodeContract, NameContract, ContractState, DiscountLevel, ContractBillReport, PublicIp, ContractUsedResources } from '../generated/model'
 import { SmartContractModule } from '../chain'
 import { hex2a } from './util'
 
@@ -19,10 +19,10 @@ export async function contractCreated({
   let state = ContractState.Created
   switch (nodeContract.state.toString()) {
     case 'Created': break
-    case 'Deleted': 
+    case 'Deleted':
       state = ContractState.Deleted
       break
-    case 'OutOfFunds': 
+    case 'OutOfFunds':
       state = ContractState.OutOfFunds
       break
   }
@@ -98,7 +98,7 @@ async function updateNodeContract(ctr: any, contract: NodeContract, store: Datab
     case 'Deleted':
       state = ContractState.Deleted
       break
-    case 'OutOfFunds': 
+    case 'OutOfFunds':
       state = ContractState.OutOfFunds
       break
   }
@@ -117,10 +117,10 @@ async function updateNameContract(ctr: any, contract: NameContract, store: Datab
   let state = ContractState.Created
   switch (parsedNameContract.state.toString()) {
     case 'Created': break
-    case 'Deleted': 
+    case 'Deleted':
       state = ContractState.Deleted
       break
-    case 'OutOfFunds': 
+    case 'OutOfFunds':
       state = ContractState.OutOfFunds
       break
   }
@@ -196,21 +196,21 @@ export async function nameContractCanceled({
   await store.save<NameContract>(savedContract)
 }
 
-export async function consumptionReportReceived({
+export async function nruConsumptionReportReceived({
   store,
   event,
   block,
   extrinsic,
 }: EventContext & StoreContext) {
-  const newConsumptionReport = new Consumption()
-  const [consumptionReport] = new SmartContractModule.ConsumptionReportReceivedEvent(event).params
+  const newConsumptionReport = new NruConsumption()
+  const [consumptionReport] = new SmartContractModule.NruConsumptionReportReceivedEvent(event).params
 
   newConsumptionReport.contractId = consumptionReport.contract_id.toNumber()
   newConsumptionReport.timestamp = consumptionReport.timestamp.toNumber()
   newConsumptionReport.window = consumptionReport.window.toBn()
   newConsumptionReport.nru = consumptionReport.nru.toBn()
 
-  await store.save<Consumption>(newConsumptionReport)
+  await store.save<NruConsumption>(newConsumptionReport)
 }
 
 export async function contractBilled({
@@ -230,10 +230,10 @@ export async function contractBilled({
     case 'Default':
       level = DiscountLevel.Default
       break
-    case 'Bronze': 
+    case 'Bronze':
       level = DiscountLevel.Bronze
       break
-    case 'Silver': 
+    case 'Silver':
       level = DiscountLevel.Silver
       break
     case 'Gold': level = DiscountLevel.Gold
@@ -245,6 +245,27 @@ export async function contractBilled({
   await store.save<ContractBillReport>(newContractBilledReport)
 }
 
+export async function contractUpdateUsedResources({
+  store,
+  event,
+  block,
+  extrinsic,
+}: EventContext & StoreContext) {
+  const contractUsedResources = new ContractUsedResources()
+  const [usedResources] = new SmartContractModule.UpdatedUsedResourcesEvent(event).params
+
+  const savedContract = await store.get(NodeContract, { where: { contractId: usedResources.contract_id.toNumber() } })
+  if (!savedContract) return
+
+  contractUsedResources.cru = usedResources.used.cru.toBn()
+  contractUsedResources.sru = usedResources.used.sru.toBn()
+  contractUsedResources.hru = usedResources.used.hru.toBn()
+  contractUsedResources.mru = usedResources.used.mru.toBn()
+
+  savedContract.resourcesUsed = contractUsedResources
+
+  await store.save<NodeContract>(savedContract)
+}
 
 // Deprecated event types
 import { createTypeUnsafe } from "@polkadot/types/create";
@@ -257,7 +278,7 @@ import { u64 } from "@polkadot/types";
 export class ContractCanceledEvent {
   public readonly expectedParamTypes = ["u64"];
 
-  constructor(public readonly ctx: SubstrateEvent) {}
+  constructor(public readonly ctx: SubstrateEvent) { }
 
   get params(): [u64] {
     return [
@@ -279,22 +300,4 @@ export class ContractCanceledEvent {
     });
     return valid;
   }
-}
-
-export async function contractUpdateUsedResources({
-  store,
-  event,
-  block,
-  extrinsic,
-}: EventContext & StoreContext) {
-  const contractUsedResources = new ContractUsedResources()
-  const [usedResources] = new SmartContractModule.UpdatedUsedResourcesEvent(event).params
-
-  contractUsedResources.contractId = usedResources.contract_id.toNumber()
-  contractUsedResources.cru = usedResources.used.cru.toBn()
-  contractUsedResources.sru = usedResources.used.sru.toBn()
-  contractUsedResources.hru = usedResources.used.hru.toBn()
-  contractUsedResources.mru = usedResources.used.mru.toBn()
-
-  await store.save<ContractUsedResources>(contractUsedResources)
 }

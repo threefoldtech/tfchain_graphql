@@ -1,6 +1,6 @@
 apiVersion: v1
 data:
-  types.json: |-
+  types.json: |
     {
       "Farm": {
         "version": "u32",
@@ -105,7 +105,8 @@ data:
         "unique_name": "Policy",
         "domain_name": "Policy",
         "foundation_account": "AccountId",
-        "certified_sales_account": "AccountId"
+        "certified_sales_account": "AccountId",
+        "discount_for_dedication_nodes": "u8"
       },
       "Policy": {
         "value": "u32",
@@ -130,7 +131,8 @@ data:
       "ContractData": {
         "_enum": {
           "NodeContract": "NodeContract",
-          "NameContract": "NameContract"
+          "NameContract": "NameContract",
+          "RentContract": "RentContract"
         }
       },
       "NodeContract": {
@@ -142,6 +144,9 @@ data:
       },
       "NameContract": {
         "name": "Vec<u8>"
+      },
+      "RentContract": {
+        "node_id": "u32"
       },
       "ContractBillingInformation": {
         "previous_nu_reported": "u64",
@@ -164,10 +169,19 @@ data:
           "OutOfFunds"
         ]
       },
-      "Consumption": {
+      "NruConsumption": {
         "contract_id": "u64",
         "timestamp": "u64",
         "window": "u64",
+        "nru": "u64"
+      },
+      "Consumption": {
+        "contract_id": "u64",
+        "timestamp": "u64",
+        "cru": "u64",
+        "sru": "u64",
+        "hru": "u64",
+        "mru": "u64",
         "nru": "u64"
       },
       "DiscountLevel": {

@@ -15,15 +15,9 @@ export interface Query {
     cities: <T = Array<City>>(args: { offset?: Int | null, limit?: Int | null, where?: CityWhereInput | null, orderBy?: Array<CityOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     cityByUniqueInput: <T = City | null>(args: { where: CityWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
     citiesConnection: <T = CityConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: CityWhereInput | null, orderBy?: Array<CityOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
-    consumptions: <T = Array<Consumption>>(args: { offset?: Int | null, limit?: Int | null, where?: ConsumptionWhereInput | null, orderBy?: Array<ConsumptionOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
-    consumptionByUniqueInput: <T = Consumption | null>(args: { where: ConsumptionWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
-    consumptionsConnection: <T = ConsumptionConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: ConsumptionWhereInput | null, orderBy?: Array<ConsumptionOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     contractBillReports: <T = Array<ContractBillReport>>(args: { offset?: Int | null, limit?: Int | null, where?: ContractBillReportWhereInput | null, orderBy?: Array<ContractBillReportOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     contractBillReportByUniqueInput: <T = ContractBillReport | null>(args: { where: ContractBillReportWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
     contractBillReportsConnection: <T = ContractBillReportConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: ContractBillReportWhereInput | null, orderBy?: Array<ContractBillReportOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
-    contractUsedResources: <T = Array<ContractUsedResources>>(args: { offset?: Int | null, limit?: Int | null, where?: ContractUsedResourcesWhereInput | null, orderBy?: Array<ContractUsedResourcesOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
-    contractUsedResourcesByUniqueInput: <T = ContractUsedResources | null>(args: { where: ContractUsedResourcesWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
-    contractUsedResourcesConnection: <T = ContractUsedResourcesConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: ContractUsedResourcesWhereInput | null, orderBy?: Array<ContractUsedResourcesOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     countries: <T = Array<Country>>(args: { offset?: Int | null, limit?: Int | null, where?: CountryWhereInput | null, orderBy?: Array<CountryOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     countryByUniqueInput: <T = Country | null>(args: { where: CountryWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
     countriesConnection: <T = CountryConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: CountryWhereInput | null, orderBy?: Array<CountryOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
@@ -60,6 +54,9 @@ export interface Query {
     nodes: <T = Array<Node>>(args: { offset?: Int | null, limit?: Int | null, where?: NodeWhereInput | null, orderBy?: Array<NodeOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     nodeByUniqueInput: <T = Node | null>(args: { where: NodeWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
     nodesConnection: <T = NodeConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: NodeWhereInput | null, orderBy?: Array<NodeOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    nruConsumptions: <T = Array<NruConsumption>>(args: { offset?: Int | null, limit?: Int | null, where?: NruConsumptionWhereInput | null, orderBy?: Array<NruConsumptionOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    nruConsumptionByUniqueInput: <T = NruConsumption | null>(args: { where: NruConsumptionWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
+    nruConsumptionsConnection: <T = NruConsumptionConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: NruConsumptionWhereInput | null, orderBy?: Array<NruConsumptionOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     pricingPolicies: <T = Array<PricingPolicy>>(args: { offset?: Int | null, limit?: Int | null, where?: PricingPolicyWhereInput | null, orderBy?: Array<PricingPolicyOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     pricingPolicyByUniqueInput: <T = PricingPolicy | null>(args: { where: PricingPolicyWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
     pricingPoliciesConnection: <T = PricingPolicyConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: PricingPolicyWhereInput | null, orderBy?: Array<PricingPolicyOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
@@ -151,21 +148,6 @@ export type CityOrderByInput =   'createdAt_ASC' |
   'name_ASC' |
   'name_DESC'
 
-export type ConsumptionOrderByInput =   'createdAt_ASC' |
-  'createdAt_DESC' |
-  'updatedAt_ASC' |
-  'updatedAt_DESC' |
-  'deletedAt_ASC' |
-  'deletedAt_DESC' |
-  'contractId_ASC' |
-  'contractId_DESC' |
-  'timestamp_ASC' |
-  'timestamp_DESC' |
-  'window_ASC' |
-  'window_DESC' |
-  'nru_ASC' |
-  'nru_DESC'
-
 export type ContractBillReportOrderByInput =   'createdAt_ASC' |
   'createdAt_DESC' |
   'updatedAt_ASC' |
@@ -184,23 +166,6 @@ export type ContractBillReportOrderByInput =   'createdAt_ASC' |
 export type ContractState =   'Created' |
   'Deleted' |
   'OutOfFunds'
-
-export type ContractUsedResourcesOrderByInput =   'createdAt_ASC' |
-  'createdAt_DESC' |
-  'updatedAt_ASC' |
-  'updatedAt_DESC' |
-  'deletedAt_ASC' |
-  'deletedAt_DESC' |
-  'contractId_ASC' |
-  'contractId_DESC' |
-  'hru_ASC' |
-  'hru_DESC' |
-  'sru_ASC' |
-  'sru_DESC' |
-  'cru_ASC' |
-  'cru_DESC' |
-  'mru_ASC' |
-  'mru_DESC'
 
 export type CountryOrderByInput =   'createdAt_ASC' |
   'createdAt_DESC' |
@@ -441,6 +406,21 @@ export type NodeOrderByInput =   'createdAt_ASC' |
   'virtualized_DESC' |
   'serialNumber_ASC' |
   'serialNumber_DESC'
+
+export type NruConsumptionOrderByInput =   'createdAt_ASC' |
+  'createdAt_DESC' |
+  'updatedAt_ASC' |
+  'updatedAt_DESC' |
+  'deletedAt_ASC' |
+  'deletedAt_DESC' |
+  'contractId_ASC' |
+  'contractId_DESC' |
+  'timestamp_ASC' |
+  'timestamp_DESC' |
+  'window_ASC' |
+  'window_DESC' |
+  'nru_ASC' |
+  'nru_DESC'
 
 export type PricingPolicyOrderByInput =   'createdAt_ASC' |
   'createdAt_DESC' |
@@ -737,77 +717,6 @@ export interface CityWhereUniqueInput {
   id: ID_Output
 }
 
-export interface ConsumptionCreateInput {
-  contractId: Float
-  timestamp: Float
-  window?: String | null
-  nru?: String | null
-}
-
-export interface ConsumptionUpdateInput {
-  contractId?: Float | null
-  timestamp?: Float | null
-  window?: String | null
-  nru?: String | null
-}
-
-export interface ConsumptionWhereInput {
-  id_eq?: ID_Input | null
-  id_in?: ID_Output[] | ID_Output | null
-  createdAt_eq?: DateTime | null
-  createdAt_lt?: DateTime | null
-  createdAt_lte?: DateTime | null
-  createdAt_gt?: DateTime | null
-  createdAt_gte?: DateTime | null
-  createdById_eq?: ID_Input | null
-  createdById_in?: ID_Output[] | ID_Output | null
-  updatedAt_eq?: DateTime | null
-  updatedAt_lt?: DateTime | null
-  updatedAt_lte?: DateTime | null
-  updatedAt_gt?: DateTime | null
-  updatedAt_gte?: DateTime | null
-  updatedById_eq?: ID_Input | null
-  updatedById_in?: ID_Output[] | ID_Output | null
-  deletedAt_all?: Boolean | null
-  deletedAt_eq?: DateTime | null
-  deletedAt_lt?: DateTime | null
-  deletedAt_lte?: DateTime | null
-  deletedAt_gt?: DateTime | null
-  deletedAt_gte?: DateTime | null
-  deletedById_eq?: ID_Input | null
-  deletedById_in?: ID_Output[] | ID_Output | null
-  contractId_eq?: Int | null
-  contractId_gt?: Int | null
-  contractId_gte?: Int | null
-  contractId_lt?: Int | null
-  contractId_lte?: Int | null
-  contractId_in?: Int[] | Int | null
-  timestamp_eq?: Int | null
-  timestamp_gt?: Int | null
-  timestamp_gte?: Int | null
-  timestamp_lt?: Int | null
-  timestamp_lte?: Int | null
-  timestamp_in?: Int[] | Int | null
-  window_eq?: BigInt | null
-  window_gt?: BigInt | null
-  window_gte?: BigInt | null
-  window_lt?: BigInt | null
-  window_lte?: BigInt | null
-  window_in?: BigInt[] | BigInt | null
-  nru_eq?: BigInt | null
-  nru_gt?: BigInt | null
-  nru_gte?: BigInt | null
-  nru_lt?: BigInt | null
-  nru_lte?: BigInt | null
-  nru_in?: BigInt[] | BigInt | null
-  AND?: ConsumptionWhereInput[] | ConsumptionWhereInput | null
-  OR?: ConsumptionWhereInput[] | ConsumptionWhereInput | null
-}
-
-export interface ConsumptionWhereUniqueInput {
-  id: ID_Output
-}
-
 export interface ContractBillReportCreateInput {
   contractId: Float
   discountReceived: DiscountLevel
@@ -876,15 +785,20 @@ export interface ContractBillReportWhereUniqueInput {
 }
 
 export interface ContractUsedResourcesCreateInput {
-  contractId: Float
   hru?: String | null
   sru?: String | null
   cru?: String | null
   mru?: String | null
 }
 
+export interface ContractUsedResourcesInput {
+  hru?: BigInt | null
+  sru?: BigInt | null
+  cru?: BigInt | null
+  mru?: BigInt | null
+}
+
 export interface ContractUsedResourcesUpdateInput {
-  contractId?: Float | null
   hru?: String | null
   sru?: String | null
   cru?: String | null
@@ -916,12 +830,6 @@ export interface ContractUsedResourcesWhereInput {
   deletedAt_gte?: DateTime | null
   deletedById_eq?: ID_Input | null
   deletedById_in?: ID_Output[] | ID_Output | null
-  contractId_eq?: Int | null
-  contractId_gt?: Int | null
-  contractId_gte?: Int | null
-  contractId_lt?: Int | null
-  contractId_lte?: Int | null
-  contractId_in?: Int[] | Int | null
   hru_eq?: BigInt | null
   hru_gt?: BigInt | null
   hru_gte?: BigInt | null
@@ -1703,6 +1611,7 @@ export interface NodeContractCreateInput {
   deploymentHash: String
   numberOfPublicIPs: Float
   state: ContractState
+  resourcesUsed?: ContractUsedResourcesInput | null
 }
 
 export interface NodeContractUpdateInput {
@@ -1714,6 +1623,7 @@ export interface NodeContractUpdateInput {
   deploymentHash?: String | null
   numberOfPublicIPs?: Float | null
   state?: ContractState | null
+  resourcesUsed?: ContractUsedResourcesInput | null
 }
 
 export interface NodeContractWhereInput {
@@ -1783,6 +1693,7 @@ export interface NodeContractWhereInput {
   numberOfPublicIPs_in?: Int[] | Int | null
   state_eq?: ContractState | null
   state_in?: ContractState[] | ContractState | null
+  resourcesUsed_json?: JSONObject | null
   AND?: NodeContractWhereInput[] | NodeContractWhereInput | null
   OR?: NodeContractWhereInput[] | NodeContractWhereInput | null
 }
@@ -1957,6 +1868,77 @@ export interface NodeWhereInput {
 }
 
 export interface NodeWhereUniqueInput {
+  id: ID_Output
+}
+
+export interface NruConsumptionCreateInput {
+  contractId: Float
+  timestamp: Float
+  window?: String | null
+  nru?: String | null
+}
+
+export interface NruConsumptionUpdateInput {
+  contractId?: Float | null
+  timestamp?: Float | null
+  window?: String | null
+  nru?: String | null
+}
+
+export interface NruConsumptionWhereInput {
+  id_eq?: ID_Input | null
+  id_in?: ID_Output[] | ID_Output | null
+  createdAt_eq?: DateTime | null
+  createdAt_lt?: DateTime | null
+  createdAt_lte?: DateTime | null
+  createdAt_gt?: DateTime | null
+  createdAt_gte?: DateTime | null
+  createdById_eq?: ID_Input | null
+  createdById_in?: ID_Output[] | ID_Output | null
+  updatedAt_eq?: DateTime | null
+  updatedAt_lt?: DateTime | null
+  updatedAt_lte?: DateTime | null
+  updatedAt_gt?: DateTime | null
+  updatedAt_gte?: DateTime | null
+  updatedById_eq?: ID_Input | null
+  updatedById_in?: ID_Output[] | ID_Output | null
+  deletedAt_all?: Boolean | null
+  deletedAt_eq?: DateTime | null
+  deletedAt_lt?: DateTime | null
+  deletedAt_lte?: DateTime | null
+  deletedAt_gt?: DateTime | null
+  deletedAt_gte?: DateTime | null
+  deletedById_eq?: ID_Input | null
+  deletedById_in?: ID_Output[] | ID_Output | null
+  contractId_eq?: Int | null
+  contractId_gt?: Int | null
+  contractId_gte?: Int | null
+  contractId_lt?: Int | null
+  contractId_lte?: Int | null
+  contractId_in?: Int[] | Int | null
+  timestamp_eq?: Int | null
+  timestamp_gt?: Int | null
+  timestamp_gte?: Int | null
+  timestamp_lt?: Int | null
+  timestamp_lte?: Int | null
+  timestamp_in?: Int[] | Int | null
+  window_eq?: BigInt | null
+  window_gt?: BigInt | null
+  window_gte?: BigInt | null
+  window_lt?: BigInt | null
+  window_lte?: BigInt | null
+  window_in?: BigInt[] | BigInt | null
+  nru_eq?: BigInt | null
+  nru_gt?: BigInt | null
+  nru_gte?: BigInt | null
+  nru_lt?: BigInt | null
+  nru_lte?: BigInt | null
+  nru_in?: BigInt[] | BigInt | null
+  AND?: NruConsumptionWhereInput[] | NruConsumptionWhereInput | null
+  OR?: NruConsumptionWhereInput[] | NruConsumptionWhereInput | null
+}
+
+export interface NruConsumptionWhereUniqueInput {
   id: ID_Output
 }
 
@@ -2638,32 +2620,6 @@ export interface CityEdge {
   cursor: String
 }
 
-export interface Consumption extends BaseGraphQLObject {
-  id: ID_Output
-  createdAt: DateTime
-  createdById: String
-  updatedAt?: DateTime | null
-  updatedById?: String | null
-  deletedAt?: DateTime | null
-  deletedById?: String | null
-  version: Int
-  contractId: Int
-  timestamp: Int
-  window?: BigInt | null
-  nru?: BigInt | null
-}
-
-export interface ConsumptionConnection {
-  totalCount: Int
-  edges: Array<ConsumptionEdge>
-  pageInfo: PageInfo
-}
-
-export interface ConsumptionEdge {
-  node: Consumption
-  cursor: String
-}
-
 export interface ContractBillReport extends BaseGraphQLObject {
   id: ID_Output
   createdAt: DateTime
@@ -2690,31 +2646,11 @@ export interface ContractBillReportEdge {
   cursor: String
 }
 
-export interface ContractUsedResources extends BaseGraphQLObject {
-  id: ID_Output
-  createdAt: DateTime
-  createdById: String
-  updatedAt?: DateTime | null
-  updatedById?: String | null
-  deletedAt?: DateTime | null
-  deletedById?: String | null
-  version: Int
-  contractId: Int
+export interface ContractUsedResources {
   hru?: BigInt | null
   sru?: BigInt | null
   cru?: BigInt | null
   mru?: BigInt | null
-}
-
-export interface ContractUsedResourcesConnection {
-  totalCount: Int
-  edges: Array<ContractUsedResourcesEdge>
-  pageInfo: PageInfo
-}
-
-export interface ContractUsedResourcesEdge {
-  node: ContractUsedResources
-  cursor: String
 }
 
 export interface Country extends BaseGraphQLObject {
@@ -3044,6 +2980,7 @@ export interface NodeContract extends BaseGraphQLObject {
   deploymentHash: String
   numberOfPublicIPs: Int
   state: ContractState
+  resourcesUsed?: ContractUsedResources | null
 }
 
 export interface NodeContractConnection {
@@ -3059,6 +2996,32 @@ export interface NodeContractEdge {
 
 export interface NodeEdge {
   node: Node
+  cursor: String
+}
+
+export interface NruConsumption extends BaseGraphQLObject {
+  id: ID_Output
+  createdAt: DateTime
+  createdById: String
+  updatedAt?: DateTime | null
+  updatedById?: String | null
+  deletedAt?: DateTime | null
+  deletedById?: String | null
+  version: Int
+  contractId: Int
+  timestamp: Int
+  window?: BigInt | null
+  nru?: BigInt | null
+}
+
+export interface NruConsumptionConnection {
+  totalCount: Int
+  edges: Array<NruConsumptionEdge>
+  pageInfo: PageInfo
+}
+
+export interface NruConsumptionEdge {
+  node: NruConsumption
   cursor: String
 }
 
