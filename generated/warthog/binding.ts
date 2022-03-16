@@ -66,6 +66,9 @@ export interface Query {
     refundTransactions: <T = Array<RefundTransaction>>(args: { offset?: Int | null, limit?: Int | null, where?: RefundTransactionWhereInput | null, orderBy?: Array<RefundTransactionOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     refundTransactionByUniqueInput: <T = RefundTransaction | null>(args: { where: RefundTransactionWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
     refundTransactionsConnection: <T = RefundTransactionConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: RefundTransactionWhereInput | null, orderBy?: Array<RefundTransactionOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    rentContracts: <T = Array<RentContract>>(args: { offset?: Int | null, limit?: Int | null, where?: RentContractWhereInput | null, orderBy?: Array<RentContractOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
+    rentContractByUniqueInput: <T = RentContract | null>(args: { where: RentContractWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
+    rentContractsConnection: <T = RentContractConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: RentContractWhereInput | null, orderBy?: Array<RentContractOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     transfers: <T = Array<Transfer>>(args: { offset?: Int | null, limit?: Int | null, where?: TransferWhereInput | null, orderBy?: Array<TransferOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
     transferByUniqueInput: <T = Transfer | null>(args: { where: TransferWhereUniqueInput }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T | null> ,
     transfersConnection: <T = TransferConnection>(args: { first?: Int | null, after?: String | null, last?: Int | null, before?: String | null, where?: TransferWhereInput | null, orderBy?: Array<TransferOrderByInput> | null }, info?: GraphQLResolveInfo | string, options?: Options) => Promise<T> ,
@@ -468,6 +471,21 @@ export type RefundTransactionOrderByInput =   'createdAt_ASC' |
   'target_DESC' |
   'txHash_ASC' |
   'txHash_DESC'
+
+export type RentContractOrderByInput =   'createdAt_ASC' |
+  'createdAt_DESC' |
+  'updatedAt_ASC' |
+  'updatedAt_DESC' |
+  'deletedAt_ASC' |
+  'deletedAt_DESC' |
+  'contractId_ASC' |
+  'contractId_DESC' |
+  'nodeId_ASC' |
+  'nodeId_DESC' |
+  'twinId_ASC' |
+  'twinId_DESC' |
+  'state_ASC' |
+  'state_DESC'
 
 export type TransferOrderByInput =   'createdAt_ASC' |
   'createdAt_DESC' |
@@ -2304,6 +2322,73 @@ export interface RefundTransactionWhereUniqueInput {
   id: ID_Output
 }
 
+export interface RentContractCreateInput {
+  contractId: Float
+  nodeId: Float
+  twinId: Float
+  state: ContractState
+}
+
+export interface RentContractUpdateInput {
+  contractId?: Float | null
+  nodeId?: Float | null
+  twinId?: Float | null
+  state?: ContractState | null
+}
+
+export interface RentContractWhereInput {
+  id_eq?: ID_Input | null
+  id_in?: ID_Output[] | ID_Output | null
+  createdAt_eq?: DateTime | null
+  createdAt_lt?: DateTime | null
+  createdAt_lte?: DateTime | null
+  createdAt_gt?: DateTime | null
+  createdAt_gte?: DateTime | null
+  createdById_eq?: ID_Input | null
+  createdById_in?: ID_Output[] | ID_Output | null
+  updatedAt_eq?: DateTime | null
+  updatedAt_lt?: DateTime | null
+  updatedAt_lte?: DateTime | null
+  updatedAt_gt?: DateTime | null
+  updatedAt_gte?: DateTime | null
+  updatedById_eq?: ID_Input | null
+  updatedById_in?: ID_Output[] | ID_Output | null
+  deletedAt_all?: Boolean | null
+  deletedAt_eq?: DateTime | null
+  deletedAt_lt?: DateTime | null
+  deletedAt_lte?: DateTime | null
+  deletedAt_gt?: DateTime | null
+  deletedAt_gte?: DateTime | null
+  deletedById_eq?: ID_Input | null
+  deletedById_in?: ID_Output[] | ID_Output | null
+  contractId_eq?: Int | null
+  contractId_gt?: Int | null
+  contractId_gte?: Int | null
+  contractId_lt?: Int | null
+  contractId_lte?: Int | null
+  contractId_in?: Int[] | Int | null
+  nodeId_eq?: Int | null
+  nodeId_gt?: Int | null
+  nodeId_gte?: Int | null
+  nodeId_lt?: Int | null
+  nodeId_lte?: Int | null
+  nodeId_in?: Int[] | Int | null
+  twinId_eq?: Int | null
+  twinId_gt?: Int | null
+  twinId_gte?: Int | null
+  twinId_lt?: Int | null
+  twinId_lte?: Int | null
+  twinId_in?: Int[] | Int | null
+  state_eq?: ContractState | null
+  state_in?: ContractState[] | ContractState | null
+  AND?: RentContractWhereInput[] | RentContractWhereInput | null
+  OR?: RentContractWhereInput[] | RentContractWhereInput | null
+}
+
+export interface RentContractWhereUniqueInput {
+  id: ID_Output
+}
+
 export interface TransferCreateInput {
   from: String
   to: String
@@ -3133,6 +3218,32 @@ export interface RefundTransactionConnection {
 
 export interface RefundTransactionEdge {
   node: RefundTransaction
+  cursor: String
+}
+
+export interface RentContract extends BaseGraphQLObject {
+  id: ID_Output
+  createdAt: DateTime
+  createdById: String
+  updatedAt?: DateTime | null
+  updatedById?: String | null
+  deletedAt?: DateTime | null
+  deletedById?: String | null
+  version: Int
+  contractId: Int
+  nodeId: Int
+  twinId: Int
+  state: ContractState
+}
+
+export interface RentContractConnection {
+  totalCount: Int
+  edges: Array<RentContractEdge>
+  pageInfo: PageInfo
+}
+
+export interface RentContractEdge {
+  node: RentContract
   cursor: String
 }
 

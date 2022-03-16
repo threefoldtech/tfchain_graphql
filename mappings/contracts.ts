@@ -1,4 +1,4 @@
-import { NruConsumption, NodeContract, NameContract, ContractState, DiscountLevel, ContractBillReport, PublicIp, ContractUsedResources } from '../generated/model'
+import { NruConsumption, NodeContract, NameContract, RentContract, ContractState, DiscountLevel, ContractBillReport, PublicIp, ContractUsedResources } from '../generated/model'
 import { SmartContractModule } from '../chain'
 import { hex2a } from './util'
 
@@ -59,6 +59,14 @@ export async function contractCreated({
         await store.save<PublicIp>(savedIp)
       }
     })
+  } else if (nodeContract.contract_type.isRentContract) {
+    let rentContract = new RentContract()
+    contract = nodeContract.contract_type.asRentContract
+    rentContract.nodeId = contract.node_id.toNumber()
+    rentContract.contractId = nodeContract.contract_id.toNumber()
+    rentContract.twinId = nodeContract.twin_id.toNumber()
+    rentContract.state = state
+    await store.save<RentContract>(rentContract)
   }
 }
 

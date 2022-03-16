@@ -2787,6 +2787,9 @@ type Query {
   refundTransactions(offset: Int, limit: Int = 50, where: RefundTransactionWhereInput, orderBy: [RefundTransactionOrderByInput!]): [RefundTransaction!]!
   refundTransactionByUniqueInput(where: RefundTransactionWhereUniqueInput!): RefundTransaction
   refundTransactionsConnection(first: Int, after: String, last: Int, before: String, where: RefundTransactionWhereInput, orderBy: [RefundTransactionOrderByInput!]): RefundTransactionConnection!
+  rentContracts(offset: Int, limit: Int = 50, where: RentContractWhereInput, orderBy: [RentContractOrderByInput!]): [RentContract!]!
+  rentContractByUniqueInput(where: RentContractWhereUniqueInput!): RentContract
+  rentContractsConnection(first: Int, after: String, last: Int, before: String, where: RentContractWhereInput, orderBy: [RentContractOrderByInput!]): RentContractConnection!
   transfers(offset: Int, limit: Int = 50, where: TransferWhereInput, orderBy: [TransferOrderByInput!]): [Transfer!]!
   transferByUniqueInput(where: TransferWhereUniqueInput!): Transfer
   transfersConnection(first: Int, after: String, last: Int, before: String, where: TransferWhereInput, orderBy: [TransferOrderByInput!]): TransferConnection!
@@ -2908,6 +2911,116 @@ input RefundTransactionWhereInput {
 }
 
 input RefundTransactionWhereUniqueInput {
+  id: ID!
+}
+
+type RentContract implements BaseGraphQLObject {
+  id: ID!
+  createdAt: DateTime!
+  createdById: String!
+  updatedAt: DateTime
+  updatedById: String
+  deletedAt: DateTime
+  deletedById: String
+  version: Int!
+  contractId: Int!
+  nodeId: Int!
+  twinId: Int!
+  state: ContractState!
+}
+
+type RentContractConnection {
+  totalCount: Int!
+  edges: [RentContractEdge!]!
+  pageInfo: PageInfo!
+}
+
+input RentContractCreateInput {
+  contractId: Float!
+  nodeId: Float!
+  twinId: Float!
+  state: ContractState!
+}
+
+type RentContractEdge {
+  node: RentContract!
+  cursor: String!
+}
+
+enum RentContractOrderByInput {
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  deletedAt_ASC
+  deletedAt_DESC
+  contractId_ASC
+  contractId_DESC
+  nodeId_ASC
+  nodeId_DESC
+  twinId_ASC
+  twinId_DESC
+  state_ASC
+  state_DESC
+}
+
+input RentContractUpdateInput {
+  contractId: Float
+  nodeId: Float
+  twinId: Float
+  state: ContractState
+}
+
+input RentContractWhereInput {
+  id_eq: ID
+  id_in: [ID!]
+  createdAt_eq: DateTime
+  createdAt_lt: DateTime
+  createdAt_lte: DateTime
+  createdAt_gt: DateTime
+  createdAt_gte: DateTime
+  createdById_eq: ID
+  createdById_in: [ID!]
+  updatedAt_eq: DateTime
+  updatedAt_lt: DateTime
+  updatedAt_lte: DateTime
+  updatedAt_gt: DateTime
+  updatedAt_gte: DateTime
+  updatedById_eq: ID
+  updatedById_in: [ID!]
+  deletedAt_all: Boolean
+  deletedAt_eq: DateTime
+  deletedAt_lt: DateTime
+  deletedAt_lte: DateTime
+  deletedAt_gt: DateTime
+  deletedAt_gte: DateTime
+  deletedById_eq: ID
+  deletedById_in: [ID!]
+  contractId_eq: Int
+  contractId_gt: Int
+  contractId_gte: Int
+  contractId_lt: Int
+  contractId_lte: Int
+  contractId_in: [Int!]
+  nodeId_eq: Int
+  nodeId_gt: Int
+  nodeId_gte: Int
+  nodeId_lt: Int
+  nodeId_lte: Int
+  nodeId_in: [Int!]
+  twinId_eq: Int
+  twinId_gt: Int
+  twinId_gte: Int
+  twinId_lt: Int
+  twinId_lte: Int
+  twinId_in: [Int!]
+  state_eq: ContractState
+  state_in: [ContractState!]
+  AND: [RentContractWhereInput!]
+  OR: [RentContractWhereInput!]
+}
+
+input RentContractWhereUniqueInput {
   id: ID!
 }
 

@@ -76,6 +76,8 @@ import { PricingPolicy } from "../modules/pricing-policy/pricing-policy.model";
 // @ts-ignore
 import { RefundTransaction } from "../modules/refund-transaction/refund-transaction.model";
 // @ts-ignore
+import { RentContract } from "../modules/rent-contract/rent-contract.model";
+// @ts-ignore
 import { Transfer } from "../modules/transfer/transfer.model";
 // @ts-ignore
 import { UptimeEvent } from "../modules/uptime-event/uptime-event.model";
@@ -6183,6 +6185,231 @@ export class RefundTransactionCreateManyArgs {
 export class RefundTransactionUpdateArgs {
   @TypeGraphQLField() data!: RefundTransactionUpdateInput;
   @TypeGraphQLField() where!: RefundTransactionWhereUniqueInput;
+}
+
+export enum RentContractOrderByEnum {
+  createdAt_ASC = "createdAt_ASC",
+  createdAt_DESC = "createdAt_DESC",
+
+  updatedAt_ASC = "updatedAt_ASC",
+  updatedAt_DESC = "updatedAt_DESC",
+
+  deletedAt_ASC = "deletedAt_ASC",
+  deletedAt_DESC = "deletedAt_DESC",
+
+  contractId_ASC = "contractId_ASC",
+  contractId_DESC = "contractId_DESC",
+
+  nodeId_ASC = "nodeId_ASC",
+  nodeId_DESC = "nodeId_DESC",
+
+  twinId_ASC = "twinId_ASC",
+  twinId_DESC = "twinId_DESC",
+
+  state_ASC = "state_ASC",
+  state_DESC = "state_DESC",
+}
+
+registerEnumType(RentContractOrderByEnum, {
+  name: "RentContractOrderByInput",
+});
+
+@TypeGraphQLInputType()
+export class RentContractWhereInput {
+  @TypeGraphQLField(() => ID, { nullable: true })
+  id_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  id_in?: string[];
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_eq?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_lt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_lte?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_gt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  createdAt_gte?: Date;
+
+  @TypeGraphQLField(() => ID, { nullable: true })
+  createdById_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  createdById_in?: string[];
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_eq?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_lt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_lte?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_gt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  updatedAt_gte?: Date;
+
+  @TypeGraphQLField(() => ID, { nullable: true })
+  updatedById_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  updatedById_in?: string[];
+
+  @TypeGraphQLField({ nullable: true })
+  deletedAt_all?: Boolean;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_eq?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_lt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_lte?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_gt?: Date;
+
+  @TypeGraphQLField(() => DateTime, { nullable: true })
+  deletedAt_gte?: Date;
+
+  @TypeGraphQLField(() => ID, { nullable: true })
+  deletedById_eq?: string;
+
+  @TypeGraphQLField(() => [ID], { nullable: true })
+  deletedById_in?: string[];
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  contractId_eq?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  contractId_gt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  contractId_gte?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  contractId_lt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  contractId_lte?: number;
+
+  @TypeGraphQLField(() => [Int], { nullable: true })
+  contractId_in?: number[];
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  nodeId_eq?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  nodeId_gt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  nodeId_gte?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  nodeId_lt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  nodeId_lte?: number;
+
+  @TypeGraphQLField(() => [Int], { nullable: true })
+  nodeId_in?: number[];
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  twinId_eq?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  twinId_gt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  twinId_gte?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  twinId_lt?: number;
+
+  @TypeGraphQLField(() => Int, { nullable: true })
+  twinId_lte?: number;
+
+  @TypeGraphQLField(() => [Int], { nullable: true })
+  twinId_in?: number[];
+
+  @TypeGraphQLField(() => ContractState, { nullable: true })
+  state_eq?: ContractState;
+
+  @TypeGraphQLField(() => [ContractState], { nullable: true })
+  state_in?: ContractState[];
+
+  @TypeGraphQLField(() => RentContractWhereInput, { nullable: true })
+  AND?: [RentContractWhereInput];
+
+  @TypeGraphQLField(() => RentContractWhereInput, { nullable: true })
+  OR?: [RentContractWhereInput];
+}
+
+@TypeGraphQLInputType()
+export class RentContractWhereUniqueInput {
+  @TypeGraphQLField(() => ID)
+  id?: string;
+}
+
+@TypeGraphQLInputType()
+export class RentContractCreateInput {
+  @TypeGraphQLField()
+  contractId!: number;
+
+  @TypeGraphQLField()
+  nodeId!: number;
+
+  @TypeGraphQLField()
+  twinId!: number;
+
+  @TypeGraphQLField(() => ContractState)
+  state!: ContractState;
+}
+
+@TypeGraphQLInputType()
+export class RentContractUpdateInput {
+  @TypeGraphQLField({ nullable: true })
+  contractId?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  nodeId?: number;
+
+  @TypeGraphQLField({ nullable: true })
+  twinId?: number;
+
+  @TypeGraphQLField(() => ContractState, { nullable: true })
+  state?: ContractState;
+}
+
+@ArgsType()
+export class RentContractWhereArgs extends PaginationArgs {
+  @TypeGraphQLField(() => RentContractWhereInput, { nullable: true })
+  where?: RentContractWhereInput;
+
+  @TypeGraphQLField(() => RentContractOrderByEnum, { nullable: true })
+  orderBy?: RentContractOrderByEnum[];
+}
+
+@ArgsType()
+export class RentContractCreateManyArgs {
+  @TypeGraphQLField(() => [RentContractCreateInput])
+  data!: RentContractCreateInput[];
+}
+
+@ArgsType()
+export class RentContractUpdateArgs {
+  @TypeGraphQLField() data!: RentContractUpdateInput;
+  @TypeGraphQLField() where!: RentContractWhereUniqueInput;
 }
 
 export enum TransferOrderByEnum {

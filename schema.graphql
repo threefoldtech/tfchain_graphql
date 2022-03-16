@@ -162,6 +162,13 @@ type NameContract @entity {
   state: ContractState!
 }
 
+type RentContract @entity {
+  contractID: Int!
+  nodeID: Int!
+  twinID: Int!
+  state: ContractState!
+}
+
 enum ContractState {
   Created,
   Deleted,

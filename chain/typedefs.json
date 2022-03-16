@@ -280,7 +280,6 @@
   "AccountInfo": "AccountInfoWithProviders",
   "Keys": "SessionKeys2",
   "SessionKeys1": "(AccountId)",
-  "SessionKeys2": "(AccountId, AccountId)",
   "TermsAndConditions": {
     "account_id": "AccountId",
     "timestamp": "u64",
