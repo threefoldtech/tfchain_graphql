@@ -58,7 +58,7 @@ type PublicIp @entity {
   farm: Farm!
   gateway: String!
   ip: String!
-  contract_id: Int!
+  contractId: Int!
 }
 
 type Node @entity {
@@ -76,7 +76,7 @@ type Node @entity {
   publicConfig: PublicConfig
   uptime: Int
   created: Int!
-  farming_policy_id: Int!
+  farmingPolicyId: Int!
   interfaces: [Interfaces!] @derivedFrom(field: "node")
   certificationType: CertificationType!
   secure: Boolean
@@ -117,8 +117,8 @@ type PricingPolicy @entity {
   cu: Policy!
   nu: Policy!
   ipu: Policy!
-  foundation_account: String!
-  certified_sales_account: String!
+  foundationAccount: String!
+  certifiedSalesAccount: String!
 }
 
 type Policy @jsonField {
@@ -147,8 +147,8 @@ type NodeContract @entity {
   contractID: Int!
   twinID: Int!
   nodeID: Int!
-  deployment_data: String!
-  deployment_hash: String!
+  deploymentData: String!
+  deploymentHash: String!
   numberOfPublicIPs: Int!
   state: ContractState!
   resourcesUsed: ContractUsedResources
@@ -184,8 +184,8 @@ type ContractUsedResources @jsonField {
 
 type ContractBillReport @entity {
   contractID: Int!
-  discount_received: DiscountLevel!
-  amount_billed: BigInt!
+  discountReceived: DiscountLevel!
+  amountBilled: BigInt!
   timestamp: Int!
 }
 
@@ -206,7 +206,7 @@ type FarmingPolicy @entity {
   nu: Int!
   ipv4: Int!
   timestamp: Int!
-  certification_type: CertificationType!
+  certificationType: CertificationType!
 }
 
 type UptimeEvent @entity {
