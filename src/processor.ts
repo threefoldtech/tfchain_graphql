@@ -6,19 +6,18 @@ import { balancesTransfer } from './mappings/balances'
 // export * from './contracts'
 // export * from './policies'
 // export * from './bridge'
-
 import {
   SubstrateProcessor,
 } from "@subsquid/substrate-processor";
 
-const processor = new SubstrateProcessor("substrate-threefold");
+const processor = new SubstrateProcessor("substrate_threefold");
 
-processor.setTypesBundle("substrate-threefold");
+processor.setTypesBundle("typegen/typesBundle.json");
 processor.setBatchSize(500);
 
 processor.setDataSource({
-  archive: "http://localhost:4010/v5/graphql",
-  chain: "ws://tfchain.test.grid.tf",
+  archive: "http://localhost:4010/v1/graphql",
+  chain: "wss://tfchain.test.grid.tf",
 });
 
 processor.addEventHandler('balances.Transfer', ctx => balancesTransfer(ctx));

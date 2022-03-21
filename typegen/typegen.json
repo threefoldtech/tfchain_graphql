@@ -32,11 +32,5 @@
     "tftBridgeModule.MintCompleted",
     "tftBridgeModule.BurnTransactionProcessed",
     "tftBridgeModule.RefundTransactionProcessed"
-  ],
-  "calls": [
-    "timestamp.set"
-  ],
-  "storage": [
-    "System.Account"
   ]
 }

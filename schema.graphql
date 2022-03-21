@@ -96,7 +96,7 @@ enum CertificationType {
   Certified
 }
 
-type PublicConfig @jsonField {
+type PublicConfig {
   ipv4: String
   ipv6: String
   gw4: String
@@ -121,7 +121,7 @@ type PricingPolicy @entity {
   certifiedSalesAccount: String!
 }
 
-type Policy @jsonField {
+type Policy {
   value: Int
   unit: String
 }
@@ -175,7 +175,7 @@ type NruConsumption @entity {
   nru: BigInt
 }
 
-type ContractUsedResources @jsonField {
+type ContractUsedResources {
   hru: BigInt
   sru: BigInt
   cru: BigInt
@@ -218,7 +218,7 @@ type UptimeEvent @entity {
 type MintTransaction @entity {
   amount: BigInt!
   target: String!
-  block: Int! 
+  block: Int!
 }
 
 type BurnTransaction @entity {

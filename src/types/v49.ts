@@ -1,3 +1,4 @@
+import type {Result} from './support'
 
 export interface NruConsumption {
   contractId: bigint

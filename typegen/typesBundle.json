@@ -304,7 +304,7 @@
           "created": "u64",
           "farming_policy_id": "u32",
           "interfaces": "Vec<Interface>"
-        }  
+        }
       }
     },
     {
@@ -356,6 +356,5 @@
         }
       }
     }
-
   ]
 }

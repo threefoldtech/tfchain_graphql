@@ -321,7 +321,7 @@
     is-wsl "^2.1.1"
     tslib "^2.3.1"
 
-"@oclif/core@^1.0.11", "@oclif/core@^1.0.8", "@oclif/core@^1.2.1", "@oclif/core@^1.3.0", "@oclif/core@^1.3.6":
+"@oclif/core@^1.0.8", "@oclif/core@^1.2.1", "@oclif/core@^1.3.0", "@oclif/core@^1.3.6":
   version "1.6.1"
   resolved "https://registry.npmjs.org/@oclif/core/-/core-1.6.1.tgz"
   integrity sha512-qB33YT3JUc7oH3Mtoov8yRETdMiQKsQNdoB2ozRq8JOCxtqI2f0XiQ6eqes3GpeMZKucl4mmonws5LYraLdQlg==
@@ -397,7 +397,7 @@
     chalk "^4.1.0"
     tslib "^2.3.1"
 
-"@oclif/plugin-help@^5.1.10", "@oclif/plugin-help@^5.1.11":
+"@oclif/plugin-help@^5.1.11":
   version "5.1.12"
   resolved "https://registry.npmjs.org/@oclif/plugin-help/-/plugin-help-5.1.12.tgz"
   integrity sha512-HvH/RubJxqCinP0vUWQLTOboT+SfjfL8h40s+PymkWaldIcXlpoRaJX50vz+SjZIs7uewZwEk8fzLqpF/BWXlg==
@@ -813,26 +813,26 @@
   resolved "https://registry.npmjs.org/@sqltools/formatter/-/formatter-1.2.3.tgz"
   integrity sha512-O3uyB/JbkAEMZaP3YqyHH7TMnex7tWyCbCI4EfJdOCoN6HIhqdJBWTM6aCCiWQ/5f5wxjgU735QAIpJbjDvmzg==
 
-"@subsquid/cli@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.npmjs.org/@subsquid/cli/-/cli-0.0.6.tgz"
-  integrity sha512-ansYPt4mvMk/o8tWZAoM2MJZI5NfmbDY0+JjjFXxpGQtSAu/vIlwUqtZQ4j32y/Dxc0sD2Eeyfni/bVYxhrs9w==
+"@subsquid/cli@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/cli/-/cli-0.2.0.tgz#9c91249e2dd2b39117c4b1a2d0bca1d598cca072"
+  integrity sha512-4AQQZe3VGJuMAGdOp0OsHjtqyUUVqGOhOioWJ5JgF8B/Hv+FdyArcjebh/O5O2d6Xe4DficSDEMYqlE2ZmOmTA==
   dependencies:
-    "@oclif/core" "^1.0.11"
-    "@oclif/plugin-help" "^5.1.10"
+    "@oclif/core" "^1.3.0"
+    "@oclif/plugin-help" "^5.1.11"
     "@octokit/auth-oauth-device" "^3.1.2"
-    "@subsquid/openreader" "^0.3.3"
-    "@subsquid/typeorm-config" "^0.0.3"
-    "@subsquid/util" "^0.0.3"
+    "@subsquid/openreader" "^0.5.0"
+    "@subsquid/typeorm-config" "^0.0.4"
+    "@subsquid/util" "^0.0.4"
     chalk "^4.1.2"
     cli-select "^1.1.2"
     cli-ux "^5.6.7"
     dotenv "^10.0.0"
-    node-fetch "^2.6.6"
-    oclif "^2.1.0"
+    node-fetch "^2.6.7"
+    oclif "^2.4.3"
     pg "^8.7.1"
     pgtools "^0.3.2"
-    query-string "^7.0.1"
+    query-string "^7.1.0"
     simple-git "^2.48.0"
     typeorm "^0.2.41"
 
@@ -841,130 +841,142 @@
   resolved "https://registry.npmjs.org/@subsquid/graphiql-console/-/graphiql-console-0.2.0.tgz"
   integrity sha512-Wh2Oxi9JkK79Y728yDEeY7JelcY1cGiQTbzVIRMFLT2tjkkoQ69goAGXdh9QmM/ANAVrHQkBUNJOLd5oAg//oQ==
 
-"@subsquid/graphql-server@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.npmjs.org/@subsquid/graphql-server/-/graphql-server-0.1.2.tgz"
-  integrity sha512-twgYbzm5X9uGWrMx4Y1tLG1SWXNv4TWnKJ8uRMaicP5oX8O4+Ql5NjXTrWVf5zVP9OrZleN+DXT/voALNvoxoQ==
+"@subsquid/graphql-server@^0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@subsquid/graphql-server/-/graphql-server-0.1.5.tgz#18f6cd6bc3ce0b9d165793f369e5f60cc2bbf113"
+  integrity sha512-LpHv1Q6vEFMtWJ7oRvrtBWLFuI53EXyk90UVnnp+s0pcEPNIk6apNCrw5igh8ABGz6kIFbqe37JA+r1HFnZiWw==
   dependencies:
     "@graphql-tools/merge" "^8"
     "@graphql-tools/utils" "^8"
-    "@subsquid/openreader" "^0.3.3"
-    "@subsquid/typeorm-config" "^0.0.3"
-    "@subsquid/util" "^0.0.3"
-    apollo-server-core "^3.5.0"
-    apollo-server-express "^3.5.0"
+    "@subsquid/openreader" "^0.5.0"
+    "@subsquid/typeorm-config" "^0.0.4"
+    "@subsquid/util" "^0.0.4"
+    apollo-server-core "^3.6.2"
+    apollo-server-express "^3.6.2"
     dotenv "^10.0.0"
     express "^4.17.2"
     graphql "^15.8.0"
     pg "^8.7.1"
 
-"@subsquid/openreader@^0.3.3":
-  version "0.3.3"
-  resolved "https://registry.npmjs.org/@subsquid/openreader/-/openreader-0.3.3.tgz"
-  integrity sha512-bY5wMRUWqpuPZUNA006LKKdMJ6U8JyTPSFdz9Y1NWtLXl2NRRnPdYU15x3uMf2co461BkbQifeeOjsBrns6jlA==
+"@subsquid/openreader@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/openreader/-/openreader-0.5.0.tgz#fde0025786277af8e1d936c4b7cf5257bddf6677"
+  integrity sha512-Ve2dz8MWDZkPTuZWxXah5FEqpnvXxcjt0EHMgIjyh+I+8vZZF6a1fvWMXSDy34+YnIulFFNM8rC0q3zitMYVhQ==
   dependencies:
     "@graphql-tools/merge" "^8"
     "@graphql-tools/utils" "^8"
     "@subsquid/graphiql-console" "^0.2.0"
-    "@subsquid/util" "^0.0.3"
-    apollo-server-core "^3.5.0"
-    apollo-server-express "^3.5.0"
+    "@subsquid/util" "^0.0.4"
+    apollo-server-core "^3.6.2"
+    apollo-server-express "^3.6.2"
     express "^4.17.2"
     graphql "^15.8.0"
     graphql-parse-resolve-info "^4.12.0"
     pg "^8.7.1"
 
-"@subsquid/rpc-client@^0.1.2":
+"@subsquid/rpc-client@^0.1.3", "@subsquid/rpc-client@^0.1.5":
   version "0.1.5"
-  resolved "https://registry.npmjs.org/@subsquid/rpc-client/-/rpc-client-0.1.5.tgz"
+  resolved "https://registry.yarnpkg.com/@subsquid/rpc-client/-/rpc-client-0.1.5.tgz#df42e6505b581d15ded3a90e60c1c0fde7fc3513"
   integrity sha512-E97vV97Cu+xquhlPS7YqzcR8NK7sXApVvaVg027pAQWX48KeclJk3H42BxlJUDdzLhKl+ldP2xSmt4qGAlYYWQ==
   dependencies:
     websocket "^1.0.34"
 
-"@subsquid/scale-codec-json@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.npmjs.org/@subsquid/scale-codec-json/-/scale-codec-json-0.0.5.tgz"
-  integrity sha512-kx/5IsaaJQRlj3sFsj4G01uD00sR1su1Q9oVyNgSUPiSjtpijm63FPQbLe0Y2yOHqGG3/fcwJnHvQpFasVH1QA==
+"@subsquid/scale-codec-json@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@subsquid/scale-codec-json/-/scale-codec-json-0.1.2.tgz#aa617527e863b9f10c4f764bd78a0a76aecb86bc"
+  integrity sha512-kiCNa2nuZLYQ3EcHo9W+932vtyhOjusR2dZTgWdeHoxO8ugjywYZ4VW09MQWVVUu5LLpE2EvBf0ljN8bbciWWA==
   dependencies:
-    "@subsquid/scale-codec" "^0.2.2"
-    "@subsquid/ss58-codec" "^0.0.2"
+    "@subsquid/scale-codec" "^0.4.0"
+    "@subsquid/ss58-codec" "^0.1.0"
 
-"@subsquid/scale-codec@^0.2.2":
-  version "0.2.3"
-  resolved "https://registry.npmjs.org/@subsquid/scale-codec/-/scale-codec-0.2.3.tgz"
-  integrity sha512-FFQOoCUsxL5eIiUXL4FLfZudeC8ecX+wSLT7VAEzD/u8DKgc00DJn9oWbPe89Mwa5BsEbQH5RrjJZqwORJy7rQ==
+"@subsquid/scale-codec@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/scale-codec/-/scale-codec-0.4.0.tgz#24cc08d6be031fdb379906799a0df8f190242961"
+  integrity sha512-ykl2PdMyESiaDRdayyNIhUswy0DmhfkmNAr2PhlPkYjiKdqnRAJzLh0zPAtKmN69tPhjyMEpEy49RdSFuTuegw==
   dependencies:
-    "@subsquid/ss58-codec" "^0.0.2"
+    "@subsquid/ss58-codec" "^0.1.0"
 
-"@subsquid/ss58-codec@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.npmjs.org/@subsquid/ss58-codec/-/ss58-codec-0.0.2.tgz"
-  integrity sha512-M6Q1ZthEIOAppuFzI/ZEfc32JfA1euOev9wjl+bz7J+4CaSiyfE52amzUowfdy3rHT7m6A2GLRgXDS6tbpLKnw==
+"@subsquid/ss58-codec@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/ss58-codec/-/ss58-codec-0.1.0.tgz#9c68b3da8b9dc05b3fd5ba12126f098f3ab82641"
+  integrity sha512-MXXc2xGYm/Mqok6v8QaR6vpamTIgS3bCWf8iYG4lVbVBYzL8wZhPZCAOm1Z7dmgLFTEnyOWbc+Bt4wv4HL2+GA==
   dependencies:
     base-x "^3.0.9"
     blake2b "^2.1.4"
 
-"@subsquid/ss58@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.npmjs.org/@subsquid/ss58/-/ss58-0.0.2.tgz"
-  integrity sha512-r74ieBG2m8d9z4HbmKwEipevJgnoR6gUJHAAsqGnm4EUGzuXX0z006OWUhK97uOzwVL9YG+IQ9yR+fO4yWpX5A==
+"@subsquid/ss58@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@subsquid/ss58/-/ss58-0.0.4.tgz#9b6cb1f03be373ffa778ab12b3ede0e39fead55f"
+  integrity sha512-H1UEZYcJMG5yIBCUDA3PPA49KgcMuVecZdjqdnm04S5FWXcDFUbz3uMslFbXHeiMp2Qz2H3Lp2IJNp2d/8YHNg==
   dependencies:
-    "@subsquid/ss58-codec" "^0.0.2"
+    "@subsquid/ss58-codec" "^0.1.0"
 
-"@subsquid/substrate-metadata-explorer@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.npmjs.org/@subsquid/substrate-metadata-explorer/-/substrate-metadata-explorer-0.0.6.tgz"
-  integrity sha512-1m9NugEvwXTOdod2CrF1aepBguxr8OMADo6Jrc825RsVsGidErAQ2FGvSqEErOXLkfnrKCEBrbzBm9Src4PyBg==
+"@subsquid/substrate-metadata-explorer@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@subsquid/substrate-metadata-explorer/-/substrate-metadata-explorer-0.0.7.tgz#b69d9be003b2dfa469e928ea75185afc41115212"
+  integrity sha512-Vq3OGjaVlMJUqFm6g3DYhmvUQ49yTcVmkPRDHY0Awy8eI0WTh894S1UX8RyGRRbm9g0TobQHPT1qouiQG7NwWg==
   dependencies:
-    "@subsquid/rpc-client" "^0.1.2"
+    "@subsquid/rpc-client" "^0.1.3"
     commander "^8.3.0"
-    node-fetch "^2.6.6"
+    node-fetch "^2.6.7"
 
-"@subsquid/substrate-metadata@^0.1.2":
-  version "0.1.3"
-  resolved "https://registry.npmjs.org/@subsquid/substrate-metadata/-/substrate-metadata-0.1.3.tgz"
-  integrity sha512-Mw6EOO+nMQ6SSyTOazYYsxIKmWFXsmk2my1Ilwic1PwQdjp6aYtqS5/VZrRG2tucvBlgx9lrFKExbdr8eqe/RQ==
+"@subsquid/substrate-metadata@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/substrate-metadata/-/substrate-metadata-0.7.0.tgz#49495bd3b072277a7c2a11d07ff06272239a482a"
+  integrity sha512-XmSfJ+VmKIMBqHAeEQkegU96A+lm1OZBpwNtXG9ePDEC40LYc9nV+gk3i3eT7ZqoQM62/erS0nSffx7E1rmN2A==
   dependencies:
-    "@subsquid/scale-codec" "^0.2.2"
-    "@subsquid/util" "^0.0.3"
+    "@subsquid/scale-codec" "^0.4.0"
+    "@subsquid/util" "^0.0.4"
 
-"@subsquid/substrate-processor@^0.2.3":
-  version "0.2.3"
-  resolved "https://registry.npmjs.org/@subsquid/substrate-processor/-/substrate-processor-0.2.3.tgz"
-  integrity sha512-Y2FEP5rgyaRVrzd7hADkBvws84D3KNS+wHsgQwEvmGc/jFcbFEQiEooQT6kYdi744CHEGn6KrHYyZ6n1vvWkww==
+"@subsquid/substrate-processor@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/substrate-processor/-/substrate-processor-0.6.0.tgz#5021049470eb502b3a4d1c3cf8454d82e3e69047"
+  integrity sha512-l1lDVYCtUFmwS9V+AZtouBnwhOBSjceFS8xlEMXxq40L+2onIzKG4cHfHJAeoir6yTSpFFmvKWKAFegatBIuRA==
   dependencies:
-    "@subsquid/rpc-client" "^0.1.2"
-    "@subsquid/scale-codec-json" "^0.0.5"
-    "@subsquid/substrate-metadata" "^0.1.2"
-    "@subsquid/typeorm-config" "^0.0.3"
-    "@subsquid/util" "^0.0.3"
-    node-fetch "^2.6.6"
+    "@subsquid/rpc-client" "^0.1.5"
+    "@subsquid/scale-codec" "^0.4.0"
+    "@subsquid/scale-codec-json" "^0.1.2"
+    "@subsquid/substrate-metadata" "^0.7.0"
+    "@subsquid/typeorm-config" "^0.0.4"
+    "@subsquid/util" "^0.0.4"
+    "@subsquid/util-xxhash" "^0.0.0"
+    blake2b "^2.1.4"
+    node-fetch "^2.6.7"
     prom-client "^14.0.1"
     stoppable "^1.1.0"
 
-"@subsquid/substrate-typegen@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.npmjs.org/@subsquid/substrate-typegen/-/substrate-typegen-0.0.6.tgz"
-  integrity sha512-AiJVEY2GpqqPqvNdbvyyCanyy478Ur+8XJnCvEeGcQcuYua5Wt24iztElGSJ8AXu9FMtqe8qUm0ZrKk342GYhQ==
+"@subsquid/substrate-typegen@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/substrate-typegen/-/substrate-typegen-0.4.0.tgz#5d7d13e71b8ab18ca5f0635c97a8c2483e2241e9"
+  integrity sha512-fd5BagExrXUuucVF8viDXJ3QwnxxW62rQud2s1iBYbO1+jIOoHWr7Y6yzgV835HAuIDEdKY1HVjywE7Jx8WTyQ==
   dependencies:
-    "@subsquid/substrate-metadata" "^0.1.2"
-    "@subsquid/util" "^0.0.3"
-    ajv "^8.8.2"
+    "@subsquid/scale-codec" "^0.4.0"
+    "@subsquid/substrate-metadata" "^0.7.0"
+    "@subsquid/util" "^0.0.4"
+    ajv "^8.9.0"
     commander "^8.3.0"
 
-"@subsquid/typeorm-config@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.npmjs.org/@subsquid/typeorm-config/-/typeorm-config-0.0.3.tgz"
-  integrity sha512-SwaoCRlpirpOoX4Y6x9fikLB3GQS9ktQReg6QfXqJrjTu96gyTyoNzlUV+zM+sz2t8j7ikCYPOdObwovLAwCRw==
+"@subsquid/typeorm-config@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@subsquid/typeorm-config/-/typeorm-config-0.0.4.tgz#210c5c285a204d4c485760c4499aaa8fec8d8c93"
+  integrity sha512-HFJGywcHLL/aXqDUpnALuaiKxUNp093B0dV1m4rUQ4YyEKrMhAY35khnrvUF4dVOefCRduF1TNVtNr9VRwOJ+Q==
   dependencies:
-    "@subsquid/util" "^0.0.3"
+    "@subsquid/util" "^0.0.4"
 
-"@subsquid/util@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.npmjs.org/@subsquid/util/-/util-0.0.3.tgz"
-  integrity sha512-NTnI9xfpIbbcUufzBOMtDzNrgo4Q38wNF+guV060Xyzx/xTHwUQP36IqFTVFMN3Wn9ryWwejqLEi5DQnrfdCSg==
+"@subsquid/util-xxhash@^0.0.0":
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/util-xxhash/-/util-xxhash-0.0.0.tgz#5a6885d78a272403060befe0032cf013d26b1bff"
+  integrity sha512-HS8F+fDG2DGyabVQg1WpnsCmqSCUjmveP9iss2njia4dq9ACEu9p/BtLkyMfSfWVu+jCxzmwXNw9mfRvey0Jrg==
   dependencies:
-    camelcase "^6.2.1"
+    xxhash-wasm "^1.0.1"
+    xxhashjs "^0.2.2"
+
+"@subsquid/util@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@subsquid/util/-/util-0.0.4.tgz#d03d9948124a2d4abeea160ac4b01a7d7f084b80"
+  integrity sha512-H62DBxWzfWhzbpKNnaRMdFNL8ZksxNAxOlFfZFFBwFGiV5xEFKrjPa/nI/Iz6+8luCo8zcOMZ+xd1IMGlT/FZQ==
+  dependencies:
+    camelcase "^6.3.0"
     inflected "^2.1.0"
 
 "@tootallnate/once@1":
@@ -1156,9 +1168,9 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-ajv@^8.8.2:
+ajv@^8.9.0:
   version "8.10.0"
-  resolved "https://registry.npmjs.org/ajv/-/ajv-8.10.0.tgz"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.10.0.tgz#e573f719bd3af069017e3b66538ab968d040e54d"
   integrity sha512-bzqAEZOjkrUMl2afH8dknrq5KEk2SrwdBROR+vH1EKVQTqaUbJVPdc/gEdggTMM0Se+s+Ja4ju4TlNcStKl2Hw==
   dependencies:
     fast-deep-equal "^3.1.1"
@@ -1244,7 +1256,7 @@ apollo-server-caching@^3.3.0:
   dependencies:
     lru-cache "^6.0.0"
 
-apollo-server-core@^3.5.0, apollo-server-core@^3.6.4:
+apollo-server-core@^3.6.2, apollo-server-core@^3.6.4:
   version "3.6.4"
   resolved "https://registry.npmjs.org/apollo-server-core/-/apollo-server-core-3.6.4.tgz"
   integrity sha512-zttpu/3IeDGhRgIGK84z9HwTgvETDl9zntXiQ0G1tBJgOhDvehSkMiOmy+FKR1HW9+94ao1Olz6ZIyhP0dvzSg==
@@ -1282,9 +1294,9 @@ apollo-server-errors@^3.3.1:
   resolved "https://registry.npmjs.org/apollo-server-errors/-/apollo-server-errors-3.3.1.tgz"
   integrity sha512-xnZJ5QWs6FixHICXHxUfm+ZWqqxrNuPlQ+kj5m6RtEgIpekOPssH/SD9gf2B4HuWV0QozorrygwZnux8POvyPA==
 
-apollo-server-express@^3.5.0:
+apollo-server-express@^3.6.2:
   version "3.6.4"
-  resolved "https://registry.npmjs.org/apollo-server-express/-/apollo-server-express-3.6.4.tgz"
+  resolved "https://registry.yarnpkg.com/apollo-server-express/-/apollo-server-express-3.6.4.tgz#759b64047a41068deb3af068ce02381404e3d6d0"
   integrity sha512-lN73Ka7UZJINJzvMeRFIFn7898hGjTxVtRQwAzzmw5XSpWZZHZkTcAkoDxUs0GwU6h2LE14ogu2WJ4G8AZVl1Q==
   dependencies:
     "@types/accepts" "^1.3.5"
@@ -1657,9 +1669,9 @@ camelcase@^5.3.1:
   resolved "https://registry.npmjs.org/camelcase/-/camelcase-5.3.1.tgz"
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
 
-camelcase@^6.2.1:
+camelcase@^6.3.0:
   version "6.3.0"
-  resolved "https://registry.npmjs.org/camelcase/-/camelcase-6.3.0.tgz"
+  resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-6.3.0.tgz#5685b95eb209ac9c0c177467778c9c84df58ba9a"
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 cardinal@^2.1.1:
@@ -3719,7 +3731,7 @@ nice-try@^1.0.4:
   resolved "https://registry.npmjs.org/nice-try/-/nice-try-1.0.5.tgz"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
-node-fetch@^2.6.1, node-fetch@^2.6.6, node-fetch@^2.6.7:
+node-fetch@^2.6.1, node-fetch@^2.6.7:
   version "2.6.7"
   resolved "https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.7.tgz"
   integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
@@ -3888,9 +3900,9 @@ object-treeify@^1.1.33, object-treeify@^1.1.4:
   resolved "https://registry.npmjs.org/object-treeify/-/object-treeify-1.1.33.tgz"
   integrity sha512-EFVjAYfzWqWsBMRHPMAXLCDIJnpMhdWAqR7xG6M6a2cs6PMFpl/+Z20w9zDW4vkxOFfddegBKq9Rehd0bxWE7A==
 
-oclif@^2.1.0:
+oclif@^2.4.3:
   version "2.6.0"
-  resolved "https://registry.npmjs.org/oclif/-/oclif-2.6.0.tgz"
+  resolved "https://registry.yarnpkg.com/oclif/-/oclif-2.6.0.tgz#d62375f43d830654c8ae4f51f7146903adb928f4"
   integrity sha512-MWjSimZ/+BVeKWOehg+p8cUOoU6l64GG1L73L2tWq/JIALaewUQ8TaoEjhhV80b2lQIOBucm19PfSFnCUiUsOQ==
   dependencies:
     "@oclif/core" "^1.3.0"
@@ -4400,9 +4412,9 @@ qs@6.9.7:
   resolved "https://registry.npmjs.org/qs/-/qs-6.9.7.tgz"
   integrity sha512-IhMFgUmuNpyRfxA90umL7ByLlgRXu6tIfKPpF5TmcfRLlLCckfP/g3IQmju6jjpu+Hh8rA+2p6A27ZSPOOHdKw==
 
-query-string@^7.0.1:
+query-string@^7.1.0:
   version "7.1.1"
-  resolved "https://registry.npmjs.org/query-string/-/query-string-7.1.1.tgz"
+  resolved "https://registry.yarnpkg.com/query-string/-/query-string-7.1.1.tgz#754620669db978625a90f635f12617c271a088e1"
   integrity sha512-MplouLRDHBZSG9z7fpuAAcI7aAYjDLhtsiVZsevsfaHWDS2IDdORKbSd1kWUA+V4zyva/HZoSfpwnYMMQDhb0w==
   dependencies:
     decode-uri-component "^0.2.0"
@@ -5230,9 +5242,9 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typeorm@^0.2.41:
+typeorm@^0.2.41, typeorm@^0.2.45:
   version "0.2.45"
-  resolved "https://registry.npmjs.org/typeorm/-/typeorm-0.2.45.tgz"
+  resolved "https://registry.yarnpkg.com/typeorm/-/typeorm-0.2.45.tgz#e5bbb3af822dc4646bad96cfa48cd22fa4687cea"
   integrity sha512-c0rCO8VMJ3ER7JQ73xfk0zDnVv0WDjpsP6Q1m6CVKul7DB9iVdWLRjPzc8v2eaeBuomsbZ2+gTaYr8k1gm3bYA==
   dependencies:
     "@sqltools/formatter" "^1.2.2"
@@ -5252,6 +5264,11 @@ typeorm@^0.2.41:
     xml2js "^0.4.23"
     yargs "^17.0.1"
     zen-observable-ts "^1.0.0"
+
+typescript@^4.6.2:
+  version "4.6.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.2.tgz#fe12d2727b708f4eef40f51598b3398baa9611d4"
+  integrity sha512-HM/hFigTBHZhLXshn9sN37H085+hQGeJHJ/X7LpBWLID/fbc2acUMfU+lGD98X81sKP+pFa9f0DZmCwB9GnbAg==
 
 unique-filename@^1.1.1:
   version "1.1.1"
@@ -5564,6 +5581,11 @@ xtend@^4.0.0:
   version "4.0.2"
   resolved "https://registry.npmjs.org/xtend/-/xtend-4.0.2.tgz"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
+
+xxhash-wasm@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/xxhash-wasm/-/xxhash-wasm-1.0.1.tgz#8a0f0eeb3ab76c16bbb889f5acca286b62d98626"
+  integrity sha512-Lc9CTvDrH2vRoiaUzz25q7lRaviMhz90pkx6YxR9EPYtF99yOJnv2cB+CQ0hp/TLoqrUsk8z/W2EN31T568Azw==
 
 xxhashjs@^0.2.2:
   version "0.2.2"
