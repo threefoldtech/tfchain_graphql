@@ -21,7 +21,9 @@
     "@subsquid/graphql-server": "^0.1.5",
     "@subsquid/ss58": "^0.0.4",
     "@subsquid/substrate-processor": "^0.6.0",
+    "axios": "^0.26.1",
     "dotenv": "^16.0.0",
+    "pg-format": "^1.0.4",
     "substrate-tfgrid-ts-types": "^0.4.0",
     "typeorm": "^0.2.45"
   },
