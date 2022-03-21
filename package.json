@@ -10,9 +10,10 @@
     "init": "node db/init.js",
     "db:migrate": "npx sqd db migrate",
     "db:init": "node init-countries.js",
+    "db:up": "docker-compose up -d db",
     "schema:reset": "",
     "processor:migrate": "echo skip",
-    "processor:start": "node lib/processor.js",
+    "processor:start": "node src/processor.ts",
     "query-node:start": "squid-graphql-server",
     "lint": "npm run lint:prod -- --fix",
     "lint:prod": "eslint . --ext .ts --ignore-path .gitignore --max-warnings 0"
