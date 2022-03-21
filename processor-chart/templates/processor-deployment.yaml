@@ -166,7 +166,7 @@ spec:
       - name: init-processor
         image: "{{ .Values.image.processor.repository }}:{{ .Values.image.processor.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.processor.pullPolicy }}
-        command: ['/bin/sh', '-c', 'yarn && yarn db:migrate && yarn db:init && yarn processor:migrate']
+        command: ['/bin/sh', '-c', 'yarn && yarn db:migrate && yarn processor:migrate && yarn db:init']
         envFrom:
           - configMapRef:
               name: env
