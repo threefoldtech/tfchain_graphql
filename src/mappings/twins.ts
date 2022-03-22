@@ -1,11 +1,9 @@
 import * as ss58 from "@subsquid/ss58";
 import {
   EventHandlerContext,
-  Store,
 } from "@subsquid/substrate-processor";
 import { Twin, EntityProof } from "../model";
 import { TfgridModuleTwinStoredEvent, TfgridModuleTwinDeletedEvent, TfgridModuleTwinEntityStoredEvent, TfgridModuleTwinEntityRemovedEvent } from "../types/events";
-import { hex2a } from "./util";
 
 export async function twinStored(ctx: EventHandlerContext) {
   const twinEvent = new TfgridModuleTwinStoredEvent(ctx)

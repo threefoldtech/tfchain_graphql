@@ -1,122 +1,101 @@
-// import { Farm, CertificationType, PublicIp } from '../generated/model'
-// import { TfgridModule } from '../chain'
-// import { hex2a } from './util'
-
-// import {
-//   EventContext,
-//   StoreContext,
-// } from '@subsquid/hydra-common'
-
-// export async function farmStored({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const [farm]  = new TfgridModule.FarmStoredEvent(event).params
-
-//   const newFarm = new Farm()
+import {
+    EventHandlerContext,
+  } from "@subsquid/substrate-processor";
+  import { Farm, CertificationType, PublicIp } from "../model";
+  import { TfgridModuleFarmStoredEvent, TfgridModuleFarmDeletedEvent, TfgridModuleFarmUpdatedEvent, TfgridModuleFarmPayoutV2AddressRegisteredEvent } from "../types/events";
   
-//   newFarm.gridVersion = farm.version.toNumber()
-//   newFarm.farmId = farm.id.toNumber()
-//   newFarm.name = hex2a(Buffer.from(farm.name.toString()).toString())
-//   newFarm.twinId = farm.twin_id.toNumber()
-//   newFarm.pricingPolicyId = farm.pricing_policy_id.toNumber()
+export async function farmStored(ctx: EventHandlerContext) {
+  const farmStoredEvent  = new TfgridModuleFarmStoredEvent(ctx).asV9
 
-//   const certificationTypeAsString = farm.certification_type.toString()
-//   let certType = CertificationType.Diy
-//   switch (certificationTypeAsString) {
-//     case 'Diy': 
-//       certType = CertificationType.Diy
-//       break
-//     case 'Certified': 
-//       certType = CertificationType.Certified
-//       break
-//   }
-
-//   newFarm.certificationType = certType
-
-//   await store.save<Farm>(newFarm)
-
-//   const ipPromises = farm.public_ips.map(ip => {
-//     const newIP = new PublicIp()
-
-//     newIP.ip = hex2a(Buffer.from(ip.ip.toString()).toString())
-//     newIP.gateway = hex2a(Buffer.from(ip.gateway.toString()).toString())
-//     newIP.contractId = ip.contract_id.toNumber()
-//     newIP.farm = newFarm
-
-//     newFarm.publicIPs?.push(newIP)
-
-//     return store.save<PublicIp>(newIP)
-//   })
-//   await Promise.all(ipPromises)
-//   await store.save<Farm>(newFarm)
-// }
-
-// export async function farmUpdated({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const [farm]  = new TfgridModule.FarmUpdatedEvent(event).params
+  const newFarm = new Farm()
   
-//   const savedFarm = await store.get(Farm, { where: { farmId: farm.id.toNumber() } })
+  newFarm.id = ctx.event.id
+  newFarm.gridVersion = farmStoredEvent.version
+  newFarm.farmID = farmStoredEvent.id
+  newFarm.name = farmStoredEvent.name.toString()
+  newFarm.twinID = farmStoredEvent.twinId
+  newFarm.pricingPolicyID = farmStoredEvent.pricingPolicyId
+
+  const certificationTypeAsString = farmStoredEvent.certificationType.toString()
+  let certType = CertificationType.Diy
+  switch (certificationTypeAsString) {
+    case 'Diy': 
+      certType = CertificationType.Diy
+      break
+    case 'Certified': 
+      certType = CertificationType.Certified
+      break
+  }
+
+  newFarm.certificationType = certType
+
+  await ctx.store.save<Farm>(newFarm)
+
+  const ipPromises = farmStoredEvent.publicIps.map(ip => {
+    const newIP = new PublicIp()
+
+    newIP.id = ctx.event.id
+    newIP.ip = ip.ip.toString()
+    newIP.gateway = ip.gateway.toString()
+    newIP.contractId = ip.contractId
+    newIP.farm = newFarm
+
+    newFarm.publicIPs?.push(newIP)
+
+    return ctx.store.save<PublicIp>(newIP)
+  })
+  await Promise.all(ipPromises)
+  await ctx.store.save<Farm>(newFarm)
+}
+
+export async function farmUpdated(ctx: EventHandlerContext) {
+  const farmUpdatedEvent  = new TfgridModuleFarmUpdatedEvent(ctx).asV9
   
-//   if (savedFarm) {
-//     savedFarm.gridVersion = farm.version.toNumber()
-//     // savedFarm.farmId = farm.id.toNumber()
-//     savedFarm.name = hex2a(Buffer.from(farm.name.toString()).toString())
-//     savedFarm.twinId = farm.twin_id.toNumber()
-//     savedFarm.pricingPolicyId = farm.pricing_policy_id.toNumber()
-
-//     const ipPromises = farm.public_ips.map(async ip => {
-//       const newIP = new PublicIp()
-
-//       const savedIP = await store.get(PublicIp, { where: { ip: hex2a(Buffer.from(ip.ip.toString()).toString()) }})
-//       // ip is already there in storage, don't save it again
-//       if (savedIP) return
+  const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmUpdatedEvent.id } })
   
-//       newIP.ip = hex2a(Buffer.from(ip.ip.toString()).toString())
-//       newIP.gateway = hex2a(Buffer.from(ip.gateway.toString()).toString())
-//       newIP.contractId = ip.contract_id.toNumber()
-//       newIP.farm = savedFarm
+  if (savedFarm) {
+    savedFarm.gridVersion = farmUpdatedEvent.version
+    savedFarm.name = farmUpdatedEvent.name.toString()
+    savedFarm.twinID = farmUpdatedEvent.twinId
+    savedFarm.pricingPolicyID = farmUpdatedEvent.pricingPolicyId
+
+    const ipPromises = farmUpdatedEvent.publicIps.map(async ip => {
+      const newIP = new PublicIp()
+
+      const savedIP = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() }})
+      // ip is already there in storage, don't save it again
+      if (savedIP) return
   
-//       return await store.save<PublicIp>(newIP)
-//     })
+      newIP.id = ctx.event.id
+      newIP.ip = ip.ip.toString()
+      newIP.gateway = ip.gateway.toString()
+      newIP.contractId = ip.contractId
+      newIP.farm = savedFarm
+  
+      return await ctx.store.save<PublicIp>(newIP)
+    })
 
-//     await Promise.all(ipPromises)
-//   }
-// }
+    await Promise.all(ipPromises)
+  }
+}
 
-// export async function farmDeleted({
-//     store,
-//     event,
-//     block,
-//     extrinsic,
-//   }: EventContext & StoreContext) {
-//   const [farmID] = new TfgridModule.FarmDeletedEvent(event).params
+export async function farmDeleted(ctx: EventHandlerContext) {
+  const farmID = new TfgridModuleFarmDeletedEvent(ctx).asV9
 
-//   const savedFarm = await store.get(Farm, { where: { farmId: farmID.toNumber() } })
+  const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmID } })
 
-//   if (savedFarm) {
-//     store.remove(savedFarm)
-//   }
-// }
+  if (savedFarm) {
+    ctx.store.remove(savedFarm)
+  }
+}
 
-// export async function farmPayoutV2AddressRegistered({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const [farmID, stellarAddress] = new TfgridModule.FarmPayoutV2AddressRegisteredEvent(event).params
+export async function farmPayoutV2AddressRegistered(ctx: EventHandlerContext) {
+  const [farmID, stellarAddress] = new TfgridModuleFarmPayoutV2AddressRegisteredEvent(ctx).asV9
 
-//   const savedFarm = await store.get(Farm, { where: { farmId: farmID.toNumber() } })
+  const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmID } })
 
-//   if (savedFarm) {
-//     savedFarm.stellarAddress = hex2a(Buffer.from(stellarAddress.toString()).toString())
-//     await store.save<Farm>(savedFarm)
-//   }
-// }
+  if (savedFarm) {
+    savedFarm.stellarAddress = stellarAddress.toString()
+    await ctx.store.save<Farm>(savedFarm)
+  }
+}

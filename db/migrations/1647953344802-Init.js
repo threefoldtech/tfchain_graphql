@@ -1,5 +1,5 @@
-module.exports = class Init1647952394083 {
-  name = 'Init1647952394083'
+module.exports = class Init1647953344802 {
+  name = 'Init1647953344802'
 
   async up(db) {
     await db.query(`CREATE TABLE "historical_balance" ("id" character varying NOT NULL, "balance" numeric NOT NULL, "timestamp" numeric NOT NULL, "account_id" character varying NOT NULL, CONSTRAINT "PK_74ac29ad0bdffb6d1281a1e17e8" PRIMARY KEY ("id"))`)
@@ -10,7 +10,7 @@ module.exports = class Init1647952394083 {
     await db.query(`CREATE TABLE "twin" ("id" character varying NOT NULL, "grid_version" integer NOT NULL, "twin_id" integer NOT NULL, "account_id" text NOT NULL, "ip" text NOT NULL, CONSTRAINT "PK_18457170fa91d0a787d9f635d7c" PRIMARY KEY ("id"))`)
     await db.query(`CREATE TABLE "entity_proof" ("id" character varying NOT NULL, "entity_id" integer NOT NULL, "signature" text NOT NULL, "twin_rel_id" character varying NOT NULL, CONSTRAINT "PK_b55dee5f461106682013d0beef8" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_3d9cbf30c68b79a801e1d5c9b4" ON "entity_proof" ("twin_rel_id") `)
-    await db.query(`CREATE TABLE "public_ip" ("id" character varying NOT NULL, "gateway" text NOT NULL, "ip" text NOT NULL, "contract_id" integer NOT NULL, "farm_id" character varying NOT NULL, CONSTRAINT "PK_f170b0b519632730f41d2ef78f4" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "public_ip" ("id" character varying NOT NULL, "gateway" text NOT NULL, "ip" text NOT NULL, "contract_id" numeric NOT NULL, "farm_id" character varying NOT NULL, CONSTRAINT "PK_f170b0b519632730f41d2ef78f4" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_5cc2d1af1d8132b614abd340b0" ON "public_ip" ("farm_id") `)
     await db.query(`CREATE TABLE "farm" ("id" character varying NOT NULL, "grid_version" integer NOT NULL, "farm_id" integer NOT NULL, "name" text NOT NULL, "twin_id" integer NOT NULL, "pricing_policy_id" integer NOT NULL, "certification_type" character varying(9) NOT NULL, "stellar_address" text, CONSTRAINT "PK_3bf246b27a3b6678dfc0b7a3f64" PRIMARY KEY ("id"))`)
     await db.query(`CREATE TABLE "location" ("id" character varying NOT NULL, "longitude" text NOT NULL, "latitude" text NOT NULL, CONSTRAINT "PK_876d7bdba03c72251ec4c2dc827" PRIMARY KEY ("id"))`)
@@ -25,7 +25,7 @@ module.exports = class Init1647952394083 {
     await db.query(`CREATE TABLE "name_contract" ("id" character varying NOT NULL, "version" integer NOT NULL, "contract_id" integer NOT NULL, "twin_id" integer NOT NULL, "name" text NOT NULL, "state" character varying(10) NOT NULL, CONSTRAINT "PK_7b4cd056bbb83602d211996360f" PRIMARY KEY ("id"))`)
     await db.query(`CREATE TABLE "nru_consumption" ("id" character varying NOT NULL, "contract_id" integer NOT NULL, "timestamp" integer NOT NULL, "window" numeric, "nru" numeric, CONSTRAINT "PK_ca7956fb8fcdb7198737387d9a8" PRIMARY KEY ("id"))`)
     await db.query(`CREATE TABLE "contract_bill_report" ("id" character varying NOT NULL, "contract_id" integer NOT NULL, "discount_received" character varying(7) NOT NULL, "amount_billed" numeric NOT NULL, "timestamp" integer NOT NULL, CONSTRAINT "PK_5b21fd81e47bddc5f1fdbc8d7ee" PRIMARY KEY ("id"))`)
-    await db.query(`CREATE TABLE "farming_policy" ("id" character varying NOT NULL, "grid_version" integer NOT NULL, "farming_policy_id" integer NOT NULL, "name" text NOT NULL, "cu" integer NOT NULL, "su" integer NOT NULL, "nu" integer NOT NULL, "ipv4" integer NOT NULL, "timestamp" integer NOT NULL, "certification_type" character varying(9) NOT NULL, CONSTRAINT "PK_5d2ec9534104f44e4d989c4e82f" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "farming_policy" ("id" character varying NOT NULL, "grid_version" integer NOT NULL, "farming_policy_id" integer NOT NULL, "name" text NOT NULL, "cu" integer NOT NULL, "su" integer NOT NULL, "nu" integer NOT NULL, "ipv4" integer NOT NULL, "timestamp" numeric NOT NULL, "certification_type" character varying(9) NOT NULL, CONSTRAINT "PK_5d2ec9534104f44e4d989c4e82f" PRIMARY KEY ("id"))`)
     await db.query(`CREATE TABLE "uptime_event" ("id" character varying NOT NULL, "node_id" integer NOT NULL, "uptime" numeric NOT NULL, "timestamp" numeric NOT NULL, CONSTRAINT "PK_90783463b0d0b660367ebd7f5ff" PRIMARY KEY ("id"))`)
     await db.query(`CREATE TABLE "mint_transaction" ("id" character varying NOT NULL, "amount" numeric NOT NULL, "target" text NOT NULL, "block" integer NOT NULL, CONSTRAINT "PK_19f4328320501dfd14e2bae0855" PRIMARY KEY ("id"))`)
     await db.query(`CREATE TABLE "burn_transaction" ("id" character varying NOT NULL, "block" integer NOT NULL, "amount" numeric NOT NULL, "target" text NOT NULL, CONSTRAINT "PK_20ec76c5c56dd6b47dec5f0aaa8" PRIMARY KEY ("id"))`)

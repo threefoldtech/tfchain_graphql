@@ -1,11 +1,8 @@
-import * as ss58 from "@subsquid/ss58";
 import {
   EventHandlerContext,
-  Store,
 } from "@subsquid/substrate-processor";
 import { Node, Location, PublicConfig, CertificationType, Interfaces, UptimeEvent } from "../model";
 import { TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
-import { hex2a } from "./util";
 
 export async function nodeStored(ctx: EventHandlerContext) {
   const node  = new TfgridModuleNodeStoredEvent(ctx)

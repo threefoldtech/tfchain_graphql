@@ -1,88 +1,78 @@
-// import { PricingPolicy, FarmingPolicy, Policy, CertificationType } from '../generated/model'
-// import { TfgridModule } from '../chain'
-// import { hex2a } from './util'
+import {
+    EventHandlerContext,
+  } from "@subsquid/substrate-processor";
+  import { PricingPolicy, FarmingPolicy, Policy, CertificationType } from "../model";
+  import { TfgridModulePricingPolicyStoredEvent, TfgridModuleFarmingPolicyStoredEvent } from "../types/events";
+  
+export async function pricingPolicyStored(ctx: EventHandlerContext) {
+  let pricingPolicyEvent = new TfgridModulePricingPolicyStoredEvent(ctx).asV9
+  
+  let pricingPolicy = new PricingPolicy()
+  pricingPolicy.id = ctx.event.id
 
-// import {
-//   EventContext,
-//   StoreContext,
-// } from '@subsquid/hydra-common'
+  const savedPolicy = await ctx.store.get(PricingPolicy, { where: { pricingPolicyID: pricingPolicyEvent.id }})
+  if (savedPolicy) {
+    pricingPolicy = savedPolicy
+  }
 
-// export async function pricingPolicyStored({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   let pricingPolicy = new PricingPolicy()
-//   const [pricing_policy] = new TfgridModule.PricingPolicyStoredEvent(event).params
+  pricingPolicy.gridVersion = pricingPolicyEvent.version
+  pricingPolicy.pricingPolicyID = pricingPolicyEvent.id
+  pricingPolicy.name = pricingPolicyEvent.name.toString()
 
-//   const savedPolicy = await store.get(PricingPolicy, { where: { pricingPolicyId: pricing_policy.id.toNumber() }})
-//   if (savedPolicy) {
-//     pricingPolicy = savedPolicy
-//   }
+  pricingPolicy.foundationAccount = pricingPolicyEvent.foundationAccount.toString()
+  pricingPolicy.certifiedSalesAccount = pricingPolicyEvent.certifiedSalesAccount.toString()
 
-//   pricingPolicy.gridVersion = pricing_policy.version.toNumber()
-//   pricingPolicy.pricingPolicyId = pricing_policy.id.toNumber()
-//   pricingPolicy.name = hex2a(Buffer.from(pricing_policy.name.toString()).toString())
+  const suPolicy = new Policy()
+  suPolicy.value = pricingPolicyEvent.su.value
+  suPolicy.unit = pricingPolicyEvent.su.unit.toString()
 
-//   pricingPolicy.foundationAccount = Buffer.from(pricing_policy.foundation_account.toHex()).toString()
-//   pricingPolicy.certifiedSalesAccount = Buffer.from(pricing_policy.certified_sales_account.toHex()).toString()
+  const nuPolicy = new Policy()
+  nuPolicy.value = pricingPolicyEvent.nu.value
+  nuPolicy.unit = pricingPolicyEvent.nu.unit.toString()
 
-//   const suPolicy = new Policy()
-//   suPolicy.value = pricing_policy.su.value.toNumber()
-//   suPolicy.unit = pricing_policy.su.unit.toString()
+  const cuPolicy = new Policy()
+  cuPolicy.value = pricingPolicyEvent.cu.value
+  cuPolicy.unit = pricingPolicyEvent.cu.unit.toString()
 
-//   const nuPolicy = new Policy()
-//   nuPolicy.value = pricing_policy.nu.value.toNumber()
-//   nuPolicy.unit = pricing_policy.nu.unit.toString()
+  const IpuPolicy = new Policy()
+  IpuPolicy.value = pricingPolicyEvent.ipu.value
+  IpuPolicy.unit = pricingPolicyEvent.ipu.unit.toString()
 
-//   const cuPolicy = new Policy()
-//   cuPolicy.value = pricing_policy.cu.value.toNumber()
-//   cuPolicy.unit = pricing_policy.cu.unit.toString()
+  pricingPolicy.su = suPolicy
+  pricingPolicy.cu = cuPolicy
+  pricingPolicy.nu = nuPolicy
+  pricingPolicy.ipu = IpuPolicy
 
-//   const IpuPolicy = new Policy()
-//   IpuPolicy.value = pricing_policy.ipu.value.toNumber()
-//   IpuPolicy.unit = pricing_policy.ipu.unit.toString()
+  await ctx.store.save<PricingPolicy>(pricingPolicy)
+}
 
-//   pricingPolicy.su = suPolicy
-//   pricingPolicy.cu = cuPolicy
-//   pricingPolicy.nu = nuPolicy
-//   pricingPolicy.ipu = IpuPolicy
+export async function farmingPolicyStored(ctx: EventHandlerContext) {
+  const farmingPolicyEvent = new TfgridModuleFarmingPolicyStoredEvent(ctx).asV9
 
-//   await store.save<PricingPolicy>(pricingPolicy)
-// }
+  const newFarmingPolicy = new FarmingPolicy()
+  newFarmingPolicy.id = ctx.event.id
+  newFarmingPolicy.gridVersion = farmingPolicyEvent.version
+  newFarmingPolicy.farmingPolicyID = farmingPolicyEvent.id
+  newFarmingPolicy.name = farmingPolicyEvent.name.toString()
 
-// export async function farmingPolicyStored({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const newFarmingPolicy = new FarmingPolicy()
-//   const [farming_policy] = new TfgridModule.FarmingPolicyStoredEvent(event).params
+  newFarmingPolicy.cu = farmingPolicyEvent.cu
+  newFarmingPolicy.su = farmingPolicyEvent.su
+  newFarmingPolicy.nu = farmingPolicyEvent.nu
+  newFarmingPolicy.ipv4 = farmingPolicyEvent.ipv4
+  newFarmingPolicy.timestamp = farmingPolicyEvent.timestamp
 
-//   newFarmingPolicy.gridVersion = farming_policy.version.toNumber()
-//   newFarmingPolicy.farmingPolicyId = farming_policy.id.toNumber()
-//   newFarmingPolicy.name = hex2a(Buffer.from(farming_policy.name.toString()).toString())
+  const certificationTypeAsString = farmingPolicyEvent.certificationType.toString()
+  let certType = CertificationType.Diy
+  switch (certificationTypeAsString) {
+    case 'Diy': 
+      certType = CertificationType.Diy
+      break
+    case 'Certified': 
+      certType = CertificationType.Certified
+      break
+  }
 
-//   newFarmingPolicy.cu = farming_policy.cu.toNumber()
-//   newFarmingPolicy.su = farming_policy.su.toNumber()
-//   newFarmingPolicy.nu = farming_policy.nu.toNumber()
-//   newFarmingPolicy.ipv4 = farming_policy.ipv4.toNumber()
-//   newFarmingPolicy.timestamp = farming_policy.timestamp.toNumber()
+  newFarmingPolicy.certificationType = certType
 
-//   const certificationTypeAsString = farming_policy.certification_type.toString()
-//   let certType = CertificationType.Diy
-//   switch (certificationTypeAsString) {
-//     case 'Diy': 
-//       certType = CertificationType.Diy
-//       break
-//     case 'Certified': 
-//       certType = CertificationType.Certified
-//       break
-//   }
-
-//   newFarmingPolicy.certificationType = certType
-
-//   await store.save<FarmingPolicy>(newFarmingPolicy)
-// }
+  await ctx.store.save<FarmingPolicy>(newFarmingPolicy)
+}

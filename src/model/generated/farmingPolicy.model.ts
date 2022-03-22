@@ -1,4 +1,5 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_} from "typeorm"
+import * as marshal from "./marshal"
 import {CertificationType} from "./_certificationType"
 
 @Entity_()
@@ -31,8 +32,8 @@ export class FarmingPolicy {
   @Column_("integer", {nullable: false})
   ipv4!: number
 
-  @Column_("integer", {nullable: false})
-  timestamp!: number
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  timestamp!: bigint
 
   @Column_("varchar", {length: 9, nullable: false})
   certificationType!: CertificationType

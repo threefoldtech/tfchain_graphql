@@ -1,4 +1,5 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
+import * as marshal from "./marshal"
 import {Farm} from "./farm.model"
 
 @Entity_()
@@ -20,6 +21,6 @@ export class PublicIp {
   @Column_("text", {nullable: false})
   ip!: string
 
-  @Column_("integer", {nullable: false})
-  contractId!: number
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  contractId!: bigint
 }

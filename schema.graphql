@@ -58,7 +58,7 @@ type PublicIp @entity {
   farm: Farm!
   gateway: String!
   ip: String!
-  contractId: Int!
+  contractId: BigInt!
 }
 
 type Node @entity {
@@ -205,7 +205,7 @@ type FarmingPolicy @entity {
   su: Int!
   nu: Int!
   ipv4: Int!
-  timestamp: Int!
+  timestamp: BigInt!
   certificationType: CertificationType!
 }
 
