@@ -11,8 +11,8 @@ export class ContractBillReport {
   @PrimaryColumn_()
   id!: string
 
-  @Column_("integer", {nullable: false})
-  contractID!: number
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  contractID!: bigint
 
   @Column_("varchar", {length: 7, nullable: false})
   discountReceived!: DiscountLevel
@@ -20,6 +20,6 @@ export class ContractBillReport {
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   amountBilled!: bigint
 
-  @Column_("integer", {nullable: false})
-  timestamp!: number
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  timestamp!: bigint
 }

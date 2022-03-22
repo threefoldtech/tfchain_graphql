@@ -4,7 +4,8 @@ import { nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported, nodePublicCon
 import { farmingPolicyStored, pricingPolicyStored } from './mappings/policies';
 import { farmDeleted, farmPayoutV2AddressRegistered, farmStored, farmUpdated } from './mappings/farms';
 import { entityDeleted, entityStored, entityUpdated } from './mappings/entity';
-import { contractCreated } from './mappings/contracts';
+import { contractBilled, contractCreated, contractUpdated, contractUpdateUsedResources, nameContractCanceled, nodeContractCanceled } from './mappings/contracts';
+import { burnProcessed, mintCompleted, refundProcessed } from './mappings/bridge';
 
 import {
   SubstrateProcessor,
@@ -28,10 +29,10 @@ processor.addEventHandler('tfgridModule.TwinEntityStored', ctx => twinEntityStor
 processor.addEventHandler('tfgridModule.TwinEntityDeleted', ctx => twinEntityRemoved(ctx));
 
 processor.addEventHandler('tfgridModule.NodeStored', ctx => nodeStored(ctx));
-// processor.addEventHandler('tfgridModule.NodeUpdated', ctx => nodeUpdated(ctx));
-processor.addEventHandler('tfgridModule.NodeDeleted', ctx => nodeDeleted(ctx));
 processor.addEventHandler('tfgridModule.NodeUptimeReported', ctx => nodeUptimeReported(ctx));
+processor.addEventHandler('tfgridModule.NodeDeleted', ctx => nodeDeleted(ctx));
 processor.addEventHandler('tfgridModule.NodePublicConfigStored', ctx => nodePublicConfigStored(ctx));
+processor.addEventHandler('tfgridModule.NodeUpdated', ctx => nodeUpdated(ctx));
 
 processor.addEventHandler('tfgridModule.PricingPolicyStored', ctx => pricingPolicyStored(ctx));
 processor.addEventHandler('tfgridModule.FarmingPolicyStored', ctx => farmingPolicyStored(ctx));
@@ -46,5 +47,14 @@ processor.addEventHandler('tfgridModule.EntityUpdated', ctx => entityUpdated(ctx
 processor.addEventHandler('tfgridModule.EntityDeleted', ctx => entityDeleted(ctx));
 
 processor.addEventHandler('smartContractModule.ContractCreated', ctx => contractCreated(ctx));
+processor.addEventHandler('smartContractModule.ContractUpdated', ctx => contractUpdated(ctx));
+processor.addEventHandler('smartContractModule.NodeContractCanceled', ctx => nodeContractCanceled(ctx));
+processor.addEventHandler('smartContractModule.NameContractCanceled', ctx => nameContractCanceled(ctx));
+processor.addEventHandler('smartContractModule.ContractBilled', ctx => contractBilled(ctx));
+processor.addEventHandler('smartContractModule.ContractUpdateUsedResources', ctx => contractUpdateUsedResources(ctx));
+
+processor.addEventHandler('tftBridgeModule.MintCompleted', ctx => mintCompleted(ctx));
+processor.addEventHandler('tfgridModule.BurnTransactionProcessed', ctx => burnProcessed(ctx));
+processor.addEventHandler('tfgridModule.RefundTransactionProcessed', ctx => refundProcessed(ctx));
 
 processor.run();

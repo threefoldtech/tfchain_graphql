@@ -1,28 +1,19 @@
 import {
   EventHandlerContext,
+  Store
 } from "@subsquid/substrate-processor";
-import { ContractState, PublicIp, NameContract, NodeContract } from "../model";
-import { SmartContractModuleContractCreatedEvent } from "../types/events";
-
+import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractUsedResources } from "../model";
+import { SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent, SmartContractModuleNodeContractCanceledEvent, SmartContractModuleNameContractCanceledEvent, SmartContractModuleContractBilledEvent, SmartContractModuleUpdatedUsedResourcesEvent } from "../types/events";
+import { Contract } from "../types/v9";
 
 export async function contractCreated(ctx: EventHandlerContext) {
   let contractCreatedEvent = new SmartContractModuleContractCreatedEvent(ctx)
 
   if (!contractCreatedEvent.isV9) return
 
-  console.log(`got contract V9 event: ${contractCreatedEvent.asV9}`)
   const contractCreatedEventV9 = contractCreatedEvent.asV9
 
   let state = ContractState.Created
-  switch (contractCreatedEventV9.state.toString()) {
-    case 'Created': break
-    case 'Deleted':
-      state = ContractState.Deleted
-      break
-    case 'OutOfFunds':
-      state = ContractState.OutOfFunds
-      break
-  }
 
   let contract
   if (contractCreatedEventV9.contractType.__kind === "NameContract") {
@@ -63,242 +54,146 @@ export async function contractCreated(ctx: EventHandlerContext) {
   }
 }
 
-// export async function contractUpdated({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const [contract] = new SmartContractModule.ContractUpdatedEvent(event).params
+export async function contractUpdated(ctx: EventHandlerContext) {
+  const contract = new SmartContractModuleContractUpdatedEvent(ctx).asV9
 
-//   const SavedNodeContract = await store.get(NodeContract, { where: { contractId: contract.contract_id.toNumber() } })
-//   if (SavedNodeContract) {
-//     await updateNodeContract(contract, SavedNodeContract, store)
-//   }
+  const SavedNodeContract = await ctx.store.get(NodeContract, { where: { contractID: contract.contractId } })
+  if (SavedNodeContract) {
+    await updateNodeContract(contract, SavedNodeContract, ctx.store)
+  }
 
-//   const SavedNameContract = await store.get(NameContract, { where: { contractId: contract.contract_id.toNumber() } })
-//   if (SavedNameContract) {
-//     await updateNameContract(contract, SavedNameContract, store)
-//   }
-// }
+  const SavedNameContract = await ctx.store.get(NameContract, { where: { contractID: contract.contractId } })
+  if (SavedNameContract) {
+    await updateNameContract(contract, SavedNameContract, ctx.store)
+  }
+}
 
-// async function updateNodeContract(ctr: any, contract: NodeContract, store: DatabaseManager) {
-//   const parsedNodeContract = ctr.contract_type.asNodeContract
+async function updateNodeContract(ctr: Contract, contract: NodeContract, store: Store) {
+  if (ctr.contractType.__kind !== "NodeContract") return
 
-//   contract.contractId = ctr.contract_id.toNumber()
-//   contract.version = ctr.version.toNumber()
-//   contract.twinId = ctr.twin_id.toNumber()
-//   contract.nodeId = parsedNodeContract.node_id.toNumber()
-//   contract.numberOfPublicIPs = parsedNodeContract.public_ips.toNumber()
-//   contract.deploymentData = parsedNodeContract.deployment_data.toString()
-//   contract.deploymentHash = parsedNodeContract.deployment_hash.toString()
+  const parsedNodeContract = ctr.contractType.value
 
-//   let state = ContractState.Created
-//   switch (ctr.state.toString()) {
-//     case 'Created': break
-//     case 'Deleted':
-//       state = ContractState.Deleted
-//       break
-//     case 'OutOfFunds':
-//       state = ContractState.OutOfFunds
-//       break
-//   }
-//   contract.state = state
-//   await store.save<NodeContract>(contract)
-// }
+  contract.contractID = ctr.contractId
+  contract.version = ctr.version
+  contract.twinID = ctr.twinId
+  contract.nodeID = parsedNodeContract.nodeId
+  contract.numberOfPublicIPs = parsedNodeContract.publicIps
+  contract.deploymentData = parsedNodeContract.deploymentData.toString()
+  contract.deploymentHash = parsedNodeContract.deploymentHash.toString()
 
-// async function updateNameContract(ctr: any, contract: NameContract, store: DatabaseManager) {
-//   const parsedNameContract = ctr.contract_type.asNameContract
+  let state = ContractState.OutOfFunds
+  switch (ctr.state.__kind) {
+    case 'Created': 
+      state = ContractState.Created
+      break
+    case 'Deleted':
+      state = ContractState.Deleted
+      break
+  }
+  contract.state = state
+  await store.save<NodeContract>(contract)
+}
 
-//   contract.contractId = ctr.contract_id.toNumber()
-//   contract.version = ctr.version.toNumber()
-//   contract.twinId = ctr.twin_id.toNumber()
-//   contract.name = hex2a(Buffer.from(contract.name.toString()).toString())
+async function updateNameContract(ctr: Contract, contract: NameContract, store: Store) {
+  if (ctr.contractType.__kind !== "NameContract") return
 
-//   let state = ContractState.Created
-//   switch (parsedNameContract.state.toString()) {
-//     case 'Created': break
-//     case 'Deleted':
-//       state = ContractState.Deleted
-//       break
-//     case 'OutOfFunds':
-//       state = ContractState.OutOfFunds
-//       break
-//   }
-//   contract.state = state
+  const parsedNameContract = ctr.contractType.value
 
-//   await store.save<NameContract>(contract)
-// }
+  contract.contractID = ctr.contractId
+  contract.version = ctr.version
+  contract.twinID = ctr.twinId
+  contract.name = parsedNameContract.name.toString()
 
-// export async function nodeContractCanceled({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const [id] = new SmartContractModule.NodeContractCanceledEvent(event).params
+  let state = ContractState.OutOfFunds
+  switch (ctr.state.__kind) {
+    case 'Created': 
+      state = ContractState.Created
+      break
+    case 'Deleted':
+      state = ContractState.Deleted
+      break
+  }
+  contract.state = state
+  await store.save<NameContract>(contract)
+}
 
-//   const savedContract = await store.get(NodeContract, { where: { contractId: id.toNumber() } })
+export async function nodeContractCanceled(ctx: EventHandlerContext) {
+  console.log('found node contract cancel event')
+  const cancelEvent = new SmartContractModuleNodeContractCanceledEvent(ctx).asV19
 
-//   if (!savedContract) return
+  const savedContract = await ctx.store.get(NodeContract, { where: { contractID: cancelEvent[0] } })
 
-//   const savedIps = await store.getMany(PublicIp, { where: { contractId: id.toNumber() } })
-//   await savedIps.forEach(async ip => {
-//     ip.contractId = 0
-//     await store.save<PublicIp>(ip)
-//   })
+  if (!savedContract) return
 
-//   savedContract.state = ContractState.Deleted
+  // const savedIps = await ctx.store.getMany(PublicIp, { where: { contractId: id.toNumber() } })
+  // await savedIps.forEach(async ip => {
+  //   ip.contractId = 0
+  //   await store.save<PublicIp>(ip)
+  // })
 
-//   console.log(`saving contract to delete state ${id}`)
+  savedContract.state = ContractState.Deleted
 
-//   await store.save<NodeContract>(savedContract)
-// }
+  console.log(`saving contract to delete state ${cancelEvent[0]}`)
 
-// export async function contractCanceled({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const [id] = new ContractCanceledEvent(event).params
+  await ctx.store.save<NodeContract>(savedContract)
+}
 
-//   const savedContract = await store.get(NodeContract, { where: { contractId: id.toNumber() } })
+export async function nameContractCanceled(ctx: EventHandlerContext) {
+  console.log('found name contract cancel event')
+  const id = new SmartContractModuleNameContractCanceledEvent(ctx).asV19
 
-//   if (!savedContract) return
+  const savedContract = await ctx.store.get(NameContract, { where: { contractID: id } })
 
-//   const savedIps = await store.getMany(PublicIp, { where: { contractId: id.toNumber() } })
-//   await savedIps.forEach(async ip => {
-//     ip.contractId = 0
-//     await store.save<PublicIp>(ip)
-//   })
+  if (!savedContract) return
 
-//   savedContract.state = ContractState.Deleted
+  savedContract.state = ContractState.Deleted
 
-//   console.log(`saving contract to delete state ${id}`)
+  await ctx.store.save<NameContract>(savedContract)
+}
 
-//   await store.save<NodeContract>(savedContract)
-// }
+export async function contractBilled(ctx: EventHandlerContext) {
+  const contract_billed_event = new SmartContractModuleContractBilledEvent(ctx).asV9
+  
+  const newContractBilledReport = new ContractBillReport()
 
-// export async function nameContractCanceled({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const [id] = new SmartContractModule.NameContractCanceledEvent(event).params
+  newContractBilledReport.id = ctx.event.id
+  newContractBilledReport.contractID = contract_billed_event.contractId
 
-//   const savedContract = await store.get(NameContract, { where: { contractId: id.toNumber() } })
+  let level = DiscountLevel.None
+  switch (contract_billed_event.discountLevel.__kind) {
+    case 'None': break
+    case 'Default':
+      level = DiscountLevel.Default
+      break
+    case 'Bronze':
+      level = DiscountLevel.Bronze
+      break
+    case 'Silver':
+      level = DiscountLevel.Silver
+      break
+    case 'Gold': level = DiscountLevel.Gold
+  }
+  newContractBilledReport.discountReceived = level
+  newContractBilledReport.amountBilled = contract_billed_event.amountBilled
+  newContractBilledReport.timestamp = contract_billed_event.timestamp
 
-//   if (!savedContract) return
+  await ctx.store.save<ContractBillReport>(newContractBilledReport)
+}
 
-//   savedContract.state = ContractState.Deleted
+export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
+  const usedResources = new SmartContractModuleUpdatedUsedResourcesEvent(ctx).asV49
+  
+  const contractUsedResources = new ContractUsedResources()
 
-//   await store.save<NameContract>(savedContract)
-// }
+  const savedContract = await ctx.store.get(NodeContract, { where: { contractID: usedResources.contractId } })
+  if (!savedContract) return
 
-// export async function nruConsumptionReportReceived({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const newConsumptionReport = new NruConsumption()
-//   const [consumptionReport] = new SmartContractModule.NruConsumptionReportReceivedEvent(event).params
+  contractUsedResources.cru = usedResources.used.cru
+  contractUsedResources.sru = usedResources.used.sru
+  contractUsedResources.hru = usedResources.used.hru
+  contractUsedResources.mru = usedResources.used.mru
 
-//   newConsumptionReport.contractId = consumptionReport.contract_id.toNumber()
-//   newConsumptionReport.timestamp = consumptionReport.timestamp.toNumber()
-//   newConsumptionReport.window = consumptionReport.window.toBn()
-//   newConsumptionReport.nru = consumptionReport.nru.toBn()
+  savedContract.resourcesUsed = contractUsedResources
 
-//   await store.save<NruConsumption>(newConsumptionReport)
-// }
-
-// export async function contractBilled({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const newContractBilledReport = new ContractBillReport()
-//   const [contract_billed_event] = new SmartContractModule.ContractBilledEvent(event).params
-
-//   newContractBilledReport.contractId = contract_billed_event.contract_id.toNumber()
-
-//   let level = DiscountLevel.None
-//   switch (contract_billed_event.discount_level.toString()) {
-//     case 'None': break
-//     case 'Default':
-//       level = DiscountLevel.Default
-//       break
-//     case 'Bronze':
-//       level = DiscountLevel.Bronze
-//       break
-//     case 'Silver':
-//       level = DiscountLevel.Silver
-//       break
-//     case 'Gold': level = DiscountLevel.Gold
-//   }
-//   newContractBilledReport.discountReceived = level
-//   newContractBilledReport.amountBilled = contract_billed_event.amount_billed.toBn()
-//   newContractBilledReport.timestamp = contract_billed_event.timestamp.toNumber()
-
-//   await store.save<ContractBillReport>(newContractBilledReport)
-// }
-
-// export async function contractUpdateUsedResources({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const contractUsedResources = new ContractUsedResources()
-//   const [usedResources] = new SmartContractModule.UpdatedUsedResourcesEvent(event).params
-
-//   const savedContract = await store.get(NodeContract, { where: { contractId: usedResources.contract_id.toNumber() } })
-//   if (!savedContract) return
-
-//   contractUsedResources.cru = usedResources.used.cru.toBn()
-//   contractUsedResources.sru = usedResources.used.sru.toBn()
-//   contractUsedResources.hru = usedResources.used.hru.toBn()
-//   contractUsedResources.mru = usedResources.used.mru.toBn()
-
-//   savedContract.resourcesUsed = contractUsedResources
-
-//   await store.save<NodeContract>(savedContract)
-// }
-
-// // Deprecated event types
-// import { createTypeUnsafe } from "@polkadot/types/create";
-// import { SubstrateEvent } from "@subsquid/hydra-common";
-// import { Codec } from "@polkadot/types/types";
-// import { typeRegistry } from "../chain/index";
-
-// import { u64 } from "@polkadot/types";
-
-// export class ContractCanceledEvent {
-//   public readonly expectedParamTypes = ["u64"];
-
-//   constructor(public readonly ctx: SubstrateEvent) { }
-
-//   get params(): [u64] {
-//     return [
-//       createTypeUnsafe<u64 & Codec>(typeRegistry, "u64", [
-//         this.ctx.params[0].value,
-//       ]),
-//     ];
-//   }
-
-//   validateParams(): boolean {
-//     if (this.expectedParamTypes.length !== this.ctx.params.length) {
-//       return false;
-//     }
-//     let valid = true;
-//     this.expectedParamTypes.forEach((type, i) => {
-//       if (type !== this.ctx.params[i].type) {
-//         valid = false;
-//       }
-//     });
-//     return valid;
-//   }
-// }
+  await ctx.store.save<NodeContract>(savedContract)
+}

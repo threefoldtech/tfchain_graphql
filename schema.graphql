@@ -183,10 +183,10 @@ type ContractUsedResources {
 }
 
 type ContractBillReport @entity {
-  contractID: Int!
+  contractID: BigInt!
   discountReceived: DiscountLevel!
   amountBilled: BigInt!
-  timestamp: Int!
+  timestamp: BigInt!
 }
 
 enum DiscountLevel {

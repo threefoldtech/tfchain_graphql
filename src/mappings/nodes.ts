@@ -103,7 +103,7 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
 
   if (!nodeEvent) return
 
-  const savedNode = await ctx.store.get(Node, { where: { nodeId: nodeEvent.id } })
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeEvent.id } })
   if (!savedNode) return
 
   savedNode.id = ctx.event.id
@@ -131,17 +131,17 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
 
   savedNode.location = newLocation
   
-  if (nodeEvent.publicConfig) {
-    const pubConfig = new PublicConfig()
-    pubConfig.ipv4 = nodeEvent.publicConfig.ipv4.toString()
-    pubConfig.ipv6 = nodeEvent.publicConfig.ipv6.toString()
-    pubConfig.gw4 = nodeEvent.publicConfig.gw4.toString()
-    pubConfig.gw6 = nodeEvent.publicConfig.gw6.toString()
-    pubConfig.domain = nodeEvent.publicConfig.domain.toString() || ''
+  // if (nodeEvent.publicConfig) {
+  //   const pubConfig = new PublicConfig()
+  //   pubConfig.ipv4 = nodeEvent.publicConfig.ipv4.toString()
+  //   pubConfig.ipv6 = nodeEvent.publicConfig.ipv6.toString()
+  //   pubConfig.gw4 = nodeEvent.publicConfig.gw4.toString()
+  //   pubConfig.gw6 = nodeEvent.publicConfig.gw6.toString()
+  //   pubConfig.domain = nodeEvent.publicConfig.domain.toString() || ''
 
-    await ctx.store.save<PublicConfig>(pubConfig)
-    savedNode.publicConfig = pubConfig
-  }
+  //   await ctx.store.save<PublicConfig>(pubConfig)
+  //   savedNode.publicConfig = pubConfig
+  // }
 
   if (node.isV27) {
     const nodeAsV27 = node.asV27

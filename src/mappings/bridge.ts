@@ -1,57 +1,46 @@
-// import { MintTransaction, BurnTransaction, RefundTransaction } from '../generated/model'
-// import { TFTBridgeModule } from '../chain'
-// import { hex2a } from './util'
+import * as ss58 from "@subsquid/ss58";
+import {
+  EventHandlerContext,
+} from "@subsquid/substrate-processor";
+import { MintTransaction, BurnTransaction, RefundTransaction } from "../model";
+import { TftBridgeModuleMintCompletedEvent, TftBridgeModuleBurnTransactionProcessedEvent, TftBridgeModuleRefundTransactionProcessedEvent } from "../types/events";
 
-// import {
-//   EventContext,
-//   StoreContext,
-// } from '@subsquid/hydra-common'
+export async function mintCompleted(ctx: EventHandlerContext) {
+  const mintCompletedEvent = new TftBridgeModuleMintCompletedEvent(ctx).asV9
 
-// export async function mintCompleted({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const [mintCompleted] = new TFTBridgeModule.MintCompletedEvent(event).params
+  const mintTransaction = new MintTransaction()
+  mintTransaction.id = ctx.event.id
+  const accountID = ss58.codec("substrate").encode(mintCompletedEvent.target);
+  mintTransaction.target = accountID
+  mintTransaction.amount = mintCompletedEvent.amount
+  mintTransaction.block = mintCompletedEvent.block
 
-//   const mintTransaction = new MintTransaction()
-//   mintTransaction.target = mintCompleted.target.toHuman()
-//   mintTransaction.amount = mintCompleted.amount.toBn()
-//   mintTransaction.block = mintCompleted.block.toNumber()
+  await ctx.store.save<MintTransaction>(mintTransaction)
+}
 
-//   await store.save<MintTransaction>(mintTransaction)
-// }
+export async function burnProcessed(ctx: EventHandlerContext) {
+  const burnProcessedEvent = new TftBridgeModuleBurnTransactionProcessedEvent(ctx).asV9
 
-// export async function burnProcessed({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const [burnProcessed] = new TFTBridgeModule.BurnTransactionProcessedEvent(event).params
+  const burnTransaction = new BurnTransaction()
+  burnTransaction.id = ctx.event.id
+  const accountID = ss58.codec("substrate").encode(burnProcessedEvent.target);
+  burnTransaction.target = accountID
+  burnTransaction.amount = burnProcessedEvent.amount
+  burnTransaction.block = burnProcessedEvent.block
 
-//   const burnTransaction = new BurnTransaction()
-//   burnTransaction.target = hex2a(Buffer.from(burnProcessed.target.toString()).toString())
-//   burnTransaction.amount = burnProcessed.amount.toBn()
-//   burnTransaction.block = burnProcessed.block.toNumber()
+  await ctx.store.save<BurnTransaction>(burnTransaction)
+}
 
-//   await store.save<BurnTransaction>(burnTransaction)
-// }
+export async function refundProcessed(ctx: EventHandlerContext) {
+  const refundProcessedEvent = new TftBridgeModuleRefundTransactionProcessedEvent(ctx).asV9
 
-// export async function refundProcessed({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const [refundProcessed] = new TFTBridgeModule.RefundTransactionProcessedEvent(event).params
+  const refundTransaction = new RefundTransaction()
+  refundTransaction.id = ctx.event.id
+  const accountID = ss58.codec("substrate").encode(refundProcessedEvent.target);
+  refundTransaction.target = accountID
+  refundTransaction.amount = refundProcessedEvent.amount
+  refundTransaction.block = refundProcessedEvent.block
+  refundTransaction.txHash = refundProcessedEvent.txHash.toString()
 
-//   const refundTransaction = new RefundTransaction()
-//   refundTransaction.target = hex2a(Buffer.from(refundProcessed.target.toString()).toString())
-//   refundTransaction.amount = refundProcessed.amount.toBn()
-//   refundTransaction.block = refundProcessed.block.toNumber()
-//   refundTransaction.txHash = hex2a(Buffer.from(refundProcessed.tx_hash.toString()).toString())
-
-//   await store.save<RefundTransaction>(refundTransaction)
-// }
+  await ctx.store.save<RefundTransaction>(refundTransaction)
+}
