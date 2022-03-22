@@ -1,92 +1,95 @@
-// import { Node, Location, PublicConfig, UptimeEvent, Interfaces, CertificationType } from '../generated/model'
-// import { TfgridModule } from '../chain'
-// import { hex2a } from './util'
+import * as ss58 from "@subsquid/ss58";
+import {
+  EventHandlerContext,
+  Store,
+} from "@subsquid/substrate-processor";
+import { Node, Location, PublicConfig, CertificationType, Interfaces } from "../model";
+import { TfgridModuleNodeStoredEvent } from "../types/events";
+import { hex2a } from "./util";
 
-// import {
-//   EventContext,
-//   StoreContext,
-// } from '@subsquid/hydra-common'
-
-// export async function nodeStored({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const [node]  = new TfgridModule.NodeStoredEvent(event).params
-//   const newNode = new Node()
-
-//   newNode.gridVersion = node.version.toNumber()
-//   newNode.farmId = node.farm_id.toNumber()
-//   newNode.nodeId = node.id.toNumber()
-
-//   newNode.sru = node.resources.sru.toBn()
-//   newNode.hru = node.resources.hru.toBn()
-//   newNode.mru = node.resources.mru.toBn()
-//   newNode.cru = node.resources.cru.toBn()
-
-//   newNode.country = hex2a(node.country.toString())
-//   newNode.city = hex2a(node.city.toString())
-
-//   newNode.created = node.created.toNumber()
-//   newNode.farmingPolicyId = node.farming_policy_id.toNumber()
-
-//   const newLocation = new Location()
-//   newLocation.latitude = hex2a(node.location.latitude.toString())
-//   newLocation.longitude = hex2a(node.location.longitude.toString())
-//   await store.save<Location>(newLocation)
-
-//   newNode.location = newLocation
+export async function nodeStored(ctx: EventHandlerContext) {
+  const node  = new TfgridModuleNodeStoredEvent(ctx)
+  const newNode = new Node()
   
-//   if (node.public_config.isSome) {
-//     const pubConfig = new PublicConfig()
-//     const parsedConfig = node.public_config.unwrapOrDefault()
-//     console.log(parsedConfig)
-//     pubConfig.ipv4 = hex2a(parsedConfig.ipv4.toString())
-//     pubConfig.ipv6 = hex2a(parsedConfig.ipv6.toString())
-//     pubConfig.gw4 = hex2a(parsedConfig.gw4.toString())
-//     pubConfig.gw6 = hex2a(parsedConfig.gw6.toString())
-//     pubConfig.domain = hex2a(parsedConfig.domain.toString()) || ''
+  console.log(`GOT NODE: ${node.asLatest.farmId}`)
 
-//     await store.save<PublicConfig>(pubConfig)
-//     newNode.publicConfig = pubConfig
-//   }
+  const nodeAsLatest = node.asV43
 
-//   if (node.certification_type) {
-//     const certificationTypeAsString = node.certification_type.toString()
-//     let certType = CertificationType.Diy
-//     switch (certificationTypeAsString) {
-//       case 'Diy': 
-//         certType = CertificationType.Diy
-//         break
-//       case 'Certified': 
-//         certType = CertificationType.Certified
-//         break
-//     }
-//     newNode.certificationType = certType
-//   } else {
-//     newNode.certificationType = CertificationType.Diy
-//   }
+  newNode.gridVersion = nodeAsLatest.version
+  newNode.farmID = nodeAsLatest.farmId
+  newNode.nodeID = nodeAsLatest.id
+  newNode.twinID = nodeAsLatest.twinId
 
-//   newNode.twinId = node.twin_id.toNumber()
+  newNode.sru = nodeAsLatest.resources.sru
+  newNode.hru = nodeAsLatest.resources.hru
+  newNode.mru = nodeAsLatest.resources.mru
+  newNode.cru = nodeAsLatest.resources.cru
 
-//   newNode.secure = node.secure ? true : false
-//   newNode.virtualized = node.virtualized ? true : false
-//   newNode.serialNumber = hex2a(node.serial_number.toString())
+  newNode.country = hex2a(nodeAsLatest.country.toString())
+  newNode.city = hex2a(nodeAsLatest.city.toString())
 
-//   await store.save<Node>(newNode)
+  newNode.created = Number(nodeAsLatest.created)
+  newNode.farmingPolicyId = nodeAsLatest.farmingPolicyId
 
-//   const interfacesPromisses = node.interfaces.map(intf => {
-//     const newInterface = new Interfaces()
+  const newLocation = new Location()
+  newLocation.latitude = hex2a(nodeAsLatest.location.latitude.toString())
+  newLocation.longitude = hex2a(nodeAsLatest.location.longitude.toString())
+  await ctx.store.save<Location>(newLocation)
 
-//     newInterface.name = hex2a(Buffer.from(intf.name.toString()).toString())
-//     newInterface.mac = hex2a(Buffer.from(intf.mac.toString()).toString())
-//     newInterface.node = newNode
-//     newInterface.ips = intf.ips.map(ip => hex2a(Buffer.from(ip.toString()).toString())).join(',')
-//     return store.save<Interfaces>(newInterface)
-//   })
-//   await Promise.all(interfacesPromisses)
-// }
+  newNode.location = newLocation
+  
+  if (nodeAsLatest.publicConfig) {
+    const pubConfig = new PublicConfig()
+
+    pubConfig.ipv4 = hex2a(nodeAsLatest.publicConfig.ipv4.toString())
+    pubConfig.ipv6 = hex2a(nodeAsLatest.publicConfig.ipv6.toString())
+    pubConfig.gw4 = hex2a(nodeAsLatest.publicConfig.gw4.toString())
+    pubConfig.gw6 = hex2a(nodeAsLatest.publicConfig.gw6.toString())
+    pubConfig.domain = hex2a(nodeAsLatest.publicConfig.domain.toString()) || ''
+
+    await ctx.store.save<PublicConfig>(pubConfig)
+    newNode.publicConfig = pubConfig
+  }
+
+  if (node.isV27) {
+    const nodeAsV27 = node.asV27
+    if (nodeAsV27.certificationType) {
+      const certificationTypeAsString = nodeAsV27.certificationType.toString()
+      let certType = CertificationType.Diy
+      switch (certificationTypeAsString) {
+        case 'Diy': 
+          certType = CertificationType.Diy
+        break
+        case 'Certified': 
+          certType = CertificationType.Certified
+        break
+    }
+      newNode.certificationType = certType
+    } else {
+      newNode.certificationType = CertificationType.Diy
+    }
+  }
+
+  if (node.isV27) {
+    const nodeAsV43 = node.asV43 
+    newNode.secure = nodeAsV43.secureBoot ? true : false
+    newNode.virtualized = nodeAsV43.virtualized ? true : false
+    newNode.serialNumber = hex2a(nodeAsV43.serialNumber.toString())
+  }
+
+  await ctx.store.save<Node>(newNode)
+
+  const interfacesPromisses = nodeAsLatest.interfaces.map(intf => {
+    const newInterface = new Interfaces()
+    newInterface.name = hex2a(Buffer.from(intf.name.toString()).toString())
+    newInterface.mac = hex2a(Buffer.from(intf.mac.toString()).toString())
+    newInterface.node = newNode
+    newInterface.ips = intf.ips.map(ip => hex2a(Buffer.from(ip.toString()).toString())).join(',')
+    return ctx.store.save<Interfaces>(newInterface)
+  })
+
+  await Promise.all(interfacesPromisses)
+}
 
 // // TODO
 

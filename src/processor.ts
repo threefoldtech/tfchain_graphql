@@ -1,11 +1,8 @@
 // export * from './entity'
 import { balancesTransfer } from './mappings/balances'
-// export * from './twins'
-// export * from './nodes'
-// export * from './farms'
-// export * from './contracts'
-// export * from './policies'
-// export * from './bridge'
+import { twinStored, twinDeleted, twinEntityStored, twinEntityRemoved } from './mappings/twins'
+import { nodeStored } from './mappings/nodes'
+
 import {
   SubstrateProcessor,
 } from "@subsquid/substrate-processor";
@@ -21,5 +18,12 @@ processor.setDataSource({
 });
 
 processor.addEventHandler('balances.Transfer', ctx => balancesTransfer(ctx));
+
+processor.addEventHandler('tfgridModule.TwinStored', ctx => twinStored(ctx));
+processor.addEventHandler('tfgridModule.TwinDeleted', ctx => twinDeleted(ctx));
+processor.addEventHandler('tfgridModule.TwinEntityStored', ctx => twinEntityStored(ctx));
+processor.addEventHandler('tfgridModule.TwinEntityDeleted', ctx => twinEntityRemoved(ctx));
+
+processor.addEventHandler('tfgridModule.NodeStored', ctx => nodeStored(ctx));
 
 processor.run();
