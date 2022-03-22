@@ -1,9 +1,9 @@
 import {
-    EventHandlerContext,
-  } from "@subsquid/substrate-processor";
-  import { Farm, CertificationType, PublicIp } from "../model";
-  import { TfgridModuleFarmStoredEvent, TfgridModuleFarmDeletedEvent, TfgridModuleFarmUpdatedEvent, TfgridModuleFarmPayoutV2AddressRegisteredEvent } from "../types/events";
-  
+  EventHandlerContext,
+} from "@subsquid/substrate-processor";
+import { Farm, CertificationType, PublicIp } from "../model";
+import { TfgridModuleFarmStoredEvent, TfgridModuleFarmDeletedEvent, TfgridModuleFarmUpdatedEvent, TfgridModuleFarmPayoutV2AddressRegisteredEvent } from "../types/events";
+
 export async function farmStored(ctx: EventHandlerContext) {
   const farmStoredEvent  = new TfgridModuleFarmStoredEvent(ctx).asV9
 

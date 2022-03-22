@@ -144,7 +144,7 @@ type City @entity {
 
 type NodeContract @entity {
   version: Int!
-  contractID: Int!
+  contractID: BigInt!
   twinID: Int!
   nodeID: Int!
   deploymentData: String!
@@ -156,7 +156,7 @@ type NodeContract @entity {
 
 type NameContract @entity {
   version: Int!
-  contractID: Int!
+  contractID: BigInt!
   twinID: Int!
   name: String!
   state: ContractState!

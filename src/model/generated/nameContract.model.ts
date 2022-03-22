@@ -1,4 +1,5 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_} from "typeorm"
+import * as marshal from "./marshal"
 import {ContractState} from "./_contractState"
 
 @Entity_()
@@ -13,8 +14,8 @@ export class NameContract {
   @Column_("integer", {nullable: false})
   version!: number
 
-  @Column_("integer", {nullable: false})
-  contractID!: number
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  contractID!: bigint
 
   @Column_("integer", {nullable: false})
   twinID!: number

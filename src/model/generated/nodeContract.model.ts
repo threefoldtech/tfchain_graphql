@@ -15,8 +15,8 @@ export class NodeContract {
   @Column_("integer", {nullable: false})
   version!: number
 
-  @Column_("integer", {nullable: false})
-  contractID!: number
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  contractID!: bigint
 
   @Column_("integer", {nullable: false})
   twinID!: number

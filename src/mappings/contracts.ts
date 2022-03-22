@@ -1,66 +1,67 @@
-// import { NruConsumption, NodeContract, NameContract, ContractState, DiscountLevel, ContractBillReport, PublicIp, ContractUsedResources } from '../generated/model'
-// import { SmartContractModule } from '../chain'
-// import { hex2a } from './util'
+import {
+  EventHandlerContext,
+} from "@subsquid/substrate-processor";
+import { ContractState, PublicIp, NameContract, NodeContract } from "../model";
+import { SmartContractModuleContractCreatedEvent } from "../types/events";
 
-// import {
-//   EventContext,
-//   StoreContext,
-//   DatabaseManager,
-// } from '@subsquid/hydra-common'
 
-// export async function contractCreated({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const [nodeContract] = new SmartContractModule.ContractCreatedEvent(event).params
+export async function contractCreated(ctx: EventHandlerContext) {
+  let contractCreatedEvent = new SmartContractModuleContractCreatedEvent(ctx)
 
-//   let state = ContractState.Created
-//   switch (nodeContract.state.toString()) {
-//     case 'Created': break
-//     case 'Deleted':
-//       state = ContractState.Deleted
-//       break
-//     case 'OutOfFunds':
-//       state = ContractState.OutOfFunds
-//       break
-//   }
+  if (!contractCreatedEvent.isV9) return
 
-//   let contract
-//   if (nodeContract.contract_type.isNameContract) {
-//     let newNameContract = new NameContract()
-//     contract = nodeContract.contract_type.asNameContract
-//     newNameContract.name = hex2a(Buffer.from(contract.name.toString()).toString())
-//     newNameContract.contractId = nodeContract.contract_id.toNumber()
-//     newNameContract.version = nodeContract.version.toNumber()
-//     newNameContract.twinId = nodeContract.twin_id.toNumber()
-//     newNameContract.state = state
-//     await store.save<NameContract>(newNameContract)
-//   }
-//   else if (nodeContract.contract_type.isNodeContract) {
-//     let newNodeContract = new NodeContract()
-//     contract = nodeContract.contract_type.asNodeContract
-//     newNodeContract.contractId = nodeContract.contract_id.toNumber()
-//     newNodeContract.version = nodeContract.version.toNumber()
-//     newNodeContract.twinId = nodeContract.twin_id.toNumber()
-//     newNodeContract.nodeId = contract.node_id.toNumber()
-//     newNodeContract.numberOfPublicIPs = contract.public_ips.toNumber()
-//     newNodeContract.deploymentData = contract.deployment_data.toString()
-//     newNodeContract.deploymentHash = contract.deployment_hash.toString()
-//     newNodeContract.state = state
-//     await store.save<NodeContract>(newNodeContract)
+  console.log(`got contract V9 event: ${contractCreatedEvent.asV9}`)
+  const contractCreatedEventV9 = contractCreatedEvent.asV9
 
-//     contract.public_ips_list.forEach(async ip => {
-//       const savedIp = await store.get(PublicIp, { where: { ip: hex2a(Buffer.from(ip.ip.toString()).toString()) } })
+  let state = ContractState.Created
+  switch (contractCreatedEventV9.state.toString()) {
+    case 'Created': break
+    case 'Deleted':
+      state = ContractState.Deleted
+      break
+    case 'OutOfFunds':
+      state = ContractState.OutOfFunds
+      break
+  }
 
-//       if (savedIp) {
-//         // savedIp.contractId = newNodeContract.contractId
-//         await store.save<PublicIp>(savedIp)
-//       }
-//     })
-//   }
-// }
+  let contract
+  if (contractCreatedEventV9.contractType.__kind === "NameContract") {
+    let newNameContract = new NameContract()
+    newNameContract.id = ctx.event.id
+    contract = contractCreatedEventV9.contractType.value
+    newNameContract.name = contract.name.toString()
+    newNameContract.contractID = contractCreatedEventV9.contractId
+    newNameContract.version = contractCreatedEventV9.version
+    newNameContract.twinID = contractCreatedEventV9.twinId
+    newNameContract.state = state
+    await ctx.store.save<NameContract>(newNameContract)
+  }
+  else if (contractCreatedEventV9.contractType.__kind === "NodeContract") {
+    let newNodeContract = new NodeContract()
+    newNodeContract.id = ctx.event.id
+
+    contract = contractCreatedEventV9.contractType.value
+
+    newNodeContract.contractID = contractCreatedEventV9.contractId
+    newNodeContract.version = contractCreatedEventV9.version
+    newNodeContract.twinID = contractCreatedEventV9.twinId
+    newNodeContract.nodeID = contract.nodeId
+    newNodeContract.numberOfPublicIPs = contract.publicIps
+    newNodeContract.deploymentData = contract.deploymentData.toString()
+    newNodeContract.deploymentHash = contract.deploymentHash.toString()
+    newNodeContract.state = state
+    await ctx.store.save<NodeContract>(newNodeContract)
+
+    contract.publicIpsList.forEach(async ip => {
+      const savedIp = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() } })
+
+      if (savedIp) {
+        // savedIp.contractId = newNodeContract.contractId
+        await ctx.store.save<PublicIp>(savedIp)
+      }
+    })
+  }
+}
 
 // export async function contractUpdated({
 //   store,

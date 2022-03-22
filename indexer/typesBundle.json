@@ -238,8 +238,7 @@
             "ContractData": {
               "_enum": {
                 "NodeContract": "NodeContract",
-                "NameContract": "NameContract",
-                "RentContract": "RentContract"
+                "NameContract": "NameContract"
               }
             },
             "NodeContract": {
@@ -251,9 +250,6 @@
             },
             "NameContract": {
               "name": "Vec<u8>"
-            },
-            "RentContract": {
-              "nodeId": "u32"
             },
             "ContractBillingInformation": {
               "previousNuReported": "u64",
