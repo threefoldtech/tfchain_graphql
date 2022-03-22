@@ -51,8 +51,8 @@ export class Node {
   @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new PublicConfig(undefined, obj)}, nullable: true})
   publicConfig!: PublicConfig | undefined | null
 
-  @Column_("integer", {nullable: true})
-  uptime!: number | undefined | null
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
+  uptime!: bigint | undefined | null
 
   @Column_("integer", {nullable: false})
   created!: number
@@ -63,8 +63,8 @@ export class Node {
   @OneToMany_(() => Interfaces, e => e.node)
   interfaces!: Interfaces[]
 
-  @Column_("varchar", {length: 9, nullable: false})
-  certificationType!: CertificationType
+  @Column_("varchar", {length: 9, nullable: true})
+  certificationType!: CertificationType | undefined | null
 
   @Column_("bool", {nullable: true})
   secure!: boolean | undefined | null

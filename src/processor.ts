@@ -1,7 +1,7 @@
 // export * from './entity'
 import { balancesTransfer } from './mappings/balances'
 import { twinStored, twinDeleted, twinEntityStored, twinEntityRemoved } from './mappings/twins'
-import { nodeStored } from './mappings/nodes'
+import { nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported, nodePublicConfigStored } from './mappings/nodes'
 
 import {
   SubstrateProcessor,
@@ -25,5 +25,9 @@ processor.addEventHandler('tfgridModule.TwinEntityStored', ctx => twinEntityStor
 processor.addEventHandler('tfgridModule.TwinEntityDeleted', ctx => twinEntityRemoved(ctx));
 
 processor.addEventHandler('tfgridModule.NodeStored', ctx => nodeStored(ctx));
+// processor.addEventHandler('tfgridModule.NodeUpdated', ctx => nodeUpdated(ctx));
+processor.addEventHandler('tfgridModule.NodeDeleted', ctx => nodeDeleted(ctx));
+processor.addEventHandler('tfgridModule.NodeUptimeReported', ctx => nodeUptimeReported(ctx));
+processor.addEventHandler('tfgridModule.NodePublicConfigStored', ctx => nodePublicConfigStored(ctx));
 
 processor.run();

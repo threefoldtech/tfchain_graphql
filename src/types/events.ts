@@ -679,7 +679,7 @@ export class TfgridModuleTwinStoredEvent {
   }
 
   get isV9(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.TwinStored') === '5b6f435dfe1514ae00c046d4634f4246d82542de8da2b6937732aec521f3408a'
+    return this.ctx._chain.getEventHash('tfgridModule.TwinStored') === '227edfd1a5fd83edb4bfcd22ba5f7ebe5ef8464b8a7b2ddebfe56997c4982276'
   }
 
   get asV9(): v9.Twin {

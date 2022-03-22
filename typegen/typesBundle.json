@@ -23,11 +23,11 @@
       "city": "Vec<u8>"
     },
     "Twin": {
-      "version": "u32",
       "id": "u32",
-      "account_id": "AccountId",
       "ip": "Vec<u8>",
-      "entities": "Vec<EntityProof>"
+      "version": "u32",
+      "entities": "Vec<EntityProof>",
+      "accountId": "AccountId"
     },
     "EntityProof": {
       "entity_id": "u32",

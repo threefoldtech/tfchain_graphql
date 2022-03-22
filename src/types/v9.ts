@@ -76,11 +76,11 @@ export interface PricingPolicy {
 }
 
 export interface Twin {
-  version: number
   id: number
-  accountId: Uint8Array
   ip: Uint8Array
+  version: number
   entities: EntityProof[]
+  accountId: Uint8Array
 }
 
 export interface BurnTransaction {

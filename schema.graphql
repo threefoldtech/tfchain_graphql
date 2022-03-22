@@ -74,11 +74,11 @@ type Node @entity {
   cru: BigInt
   mru: BigInt
   publicConfig: PublicConfig
-  uptime: Int
+  uptime: BigInt
   created: Int!
   farmingPolicyId: Int!
   interfaces: [Interfaces!] @derivedFrom(field: "node")
-  certificationType: CertificationType!
+  certificationType: CertificationType
   secure: Boolean
   virtualized: Boolean
   serialNumber: String
@@ -211,8 +211,8 @@ type FarmingPolicy @entity {
 
 type UptimeEvent @entity {
   nodeID: Int!
-  uptime: Int!
-  timestamp: Int!
+  uptime: BigInt!
+  timestamp: BigInt!
 }
 
 type MintTransaction @entity {

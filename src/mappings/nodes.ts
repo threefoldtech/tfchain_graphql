@@ -3,49 +3,47 @@ import {
   EventHandlerContext,
   Store,
 } from "@subsquid/substrate-processor";
-import { Node, Location, PublicConfig, CertificationType, Interfaces } from "../model";
-import { TfgridModuleNodeStoredEvent } from "../types/events";
+import { Node, Location, PublicConfig, CertificationType, Interfaces, UptimeEvent } from "../model";
+import { TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
 import { hex2a } from "./util";
 
 export async function nodeStored(ctx: EventHandlerContext) {
   const node  = new TfgridModuleNodeStoredEvent(ctx)
   const newNode = new Node()
-  
-  console.log(`GOT NODE: ${node.asLatest.farmId}`)
+  const nodeEvent = node.asV9
 
-  const nodeAsLatest = node.asV43
+  newNode.id = ctx.event.id
+  newNode.gridVersion = nodeEvent.version
+  newNode.farmID = nodeEvent.farmId
+  newNode.nodeID = nodeEvent.id
+  newNode.twinID = nodeEvent.twinId
 
-  newNode.gridVersion = nodeAsLatest.version
-  newNode.farmID = nodeAsLatest.farmId
-  newNode.nodeID = nodeAsLatest.id
-  newNode.twinID = nodeAsLatest.twinId
+  newNode.sru = nodeEvent.resources.sru
+  newNode.hru = nodeEvent.resources.hru
+  newNode.mru = nodeEvent.resources.mru
+  newNode.cru = nodeEvent.resources.cru
 
-  newNode.sru = nodeAsLatest.resources.sru
-  newNode.hru = nodeAsLatest.resources.hru
-  newNode.mru = nodeAsLatest.resources.mru
-  newNode.cru = nodeAsLatest.resources.cru
+  newNode.country = nodeEvent.country.toString()
+  newNode.city = nodeEvent.city.toString()
 
-  newNode.country = hex2a(nodeAsLatest.country.toString())
-  newNode.city = hex2a(nodeAsLatest.city.toString())
-
-  newNode.created = Number(nodeAsLatest.created)
-  newNode.farmingPolicyId = nodeAsLatest.farmingPolicyId
+  newNode.created = Number(nodeEvent.created)
+  newNode.farmingPolicyId = nodeEvent.farmingPolicyId
 
   const newLocation = new Location()
-  newLocation.latitude = hex2a(nodeAsLatest.location.latitude.toString())
-  newLocation.longitude = hex2a(nodeAsLatest.location.longitude.toString())
+  newLocation.id = ctx.event.id
+  newLocation.latitude = nodeEvent.location.latitude.toString()
+  newLocation.longitude = nodeEvent.location.longitude.toString()
   await ctx.store.save<Location>(newLocation)
 
   newNode.location = newLocation
   
-  if (nodeAsLatest.publicConfig) {
+  if (nodeEvent.publicConfig) {
     const pubConfig = new PublicConfig()
-
-    pubConfig.ipv4 = hex2a(nodeAsLatest.publicConfig.ipv4.toString())
-    pubConfig.ipv6 = hex2a(nodeAsLatest.publicConfig.ipv6.toString())
-    pubConfig.gw4 = hex2a(nodeAsLatest.publicConfig.gw4.toString())
-    pubConfig.gw6 = hex2a(nodeAsLatest.publicConfig.gw6.toString())
-    pubConfig.domain = hex2a(nodeAsLatest.publicConfig.domain.toString()) || ''
+    pubConfig.ipv4 = nodeEvent.publicConfig.ipv4.toString()
+    pubConfig.ipv6 = nodeEvent.publicConfig.ipv6.toString()
+    pubConfig.gw4 = nodeEvent.publicConfig.gw4.toString()
+    pubConfig.gw6 = nodeEvent.publicConfig.gw6.toString()
+    pubConfig.domain = nodeEvent.publicConfig.domain.toString() || ''
 
     await ctx.store.save<PublicConfig>(pubConfig)
     newNode.publicConfig = pubConfig
@@ -74,17 +72,18 @@ export async function nodeStored(ctx: EventHandlerContext) {
     const nodeAsV43 = node.asV43 
     newNode.secure = nodeAsV43.secureBoot ? true : false
     newNode.virtualized = nodeAsV43.virtualized ? true : false
-    newNode.serialNumber = hex2a(nodeAsV43.serialNumber.toString())
+    newNode.serialNumber = nodeAsV43.serialNumber.toString()
   }
 
   await ctx.store.save<Node>(newNode)
 
-  const interfacesPromisses = nodeAsLatest.interfaces.map(intf => {
+  const interfacesPromisses = nodeEvent.interfaces.map(intf => {
     const newInterface = new Interfaces()
-    newInterface.name = hex2a(Buffer.from(intf.name.toString()).toString())
-    newInterface.mac = hex2a(Buffer.from(intf.mac.toString()).toString())
+    newInterface.id = ctx.event.id
+    newInterface.name = intf.name.toString()
+    newInterface.mac = intf.mac.toString()
     newInterface.node = newNode
-    newInterface.ips = intf.ips.map(ip => hex2a(Buffer.from(ip.toString()).toString())).join(',')
+    newInterface.ips = intf.ips.map(ip => ip.toString()).join(',')
     return ctx.store.save<Interfaces>(newInterface)
   })
 
@@ -93,160 +92,160 @@ export async function nodeStored(ctx: EventHandlerContext) {
 
 // // TODO
 
-// export async function nodeUpdated({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const [node]  = new TfgridModule.NodeUpdatedEvent(event).params
+export async function nodeUpdated(ctx: EventHandlerContext) {
+  const node  = new TfgridModuleNodeUpdatedEvent(ctx)
 
-//   const savedNode = await store.get(Node, { where: { nodeId: node.id.toNumber() } })
-//   if (!savedNode) return
+  let nodeEvent
+  if (node.isV9) {
+    nodeEvent = node.asV9
+  } else if (node.isV27) {
+    nodeEvent = node.asV27
+  } else if (node.isV43) {
+    nodeEvent = node.asV43
+  }
 
-//   savedNode.gridVersion = node.version.toNumber()
-//   savedNode.farmId = node.farm_id.toNumber()
-//   savedNode.nodeId = node.id.toNumber()
+  if (!nodeEvent) return
 
-//   savedNode.sru = node.resources.sru.toBn()
-//   savedNode.hru = node.resources.hru.toBn()
-//   savedNode.mru = node.resources.mru.toBn()
-//   savedNode.cru = node.resources.cru.toBn()
+  const savedNode = await ctx.store.get(Node, { where: { nodeId: nodeEvent.id } })
+  if (!savedNode) return
 
-//   savedNode.country = hex2a(node.country.toString())
-//   savedNode.city = hex2a(node.city.toString())
+  savedNode.id = ctx.event.id
+  savedNode.gridVersion = nodeEvent.version
+  savedNode.farmID = nodeEvent.farmId
+  savedNode.nodeID = nodeEvent.id
+  savedNode.twinID = nodeEvent.twinId
 
-//   savedNode.created = node.created.toNumber()
-//   savedNode.farmingPolicyId = node.farming_policy_id.toNumber()
+  savedNode.sru = nodeEvent.resources.sru
+  savedNode.hru = nodeEvent.resources.hru
+  savedNode.mru = nodeEvent.resources.mru
+  savedNode.cru = nodeEvent.resources.cru
 
-//   const newLocation = new Location()
-//   newLocation.latitude = hex2a(node.location.latitude.toString())
-//   newLocation.longitude = hex2a(node.location.longitude.toString())
-//   await store.save<Location>(newLocation)
+  savedNode.country = nodeEvent.country.toString()
+  savedNode.city = nodeEvent.city.toString()
 
-//   savedNode.location = newLocation
+  savedNode.created = Number(nodeEvent.created)
+  savedNode.farmingPolicyId = nodeEvent.farmingPolicyId
+
+  const newLocation = new Location()
+  newLocation.id = ctx.event.id
+  newLocation.latitude = nodeEvent.location.latitude.toString()
+  newLocation.longitude = nodeEvent.location.longitude.toString()
+  await ctx.store.save<Location>(newLocation)
+
+  savedNode.location = newLocation
   
-//   if (node.public_config.isSome) {
-//     const pubConfig = new PublicConfig()
-//     const parsedConfig = node.public_config.unwrapOrDefault()
-//     pubConfig.ipv4 = hex2a(parsedConfig.ipv4.toString())
-//     pubConfig.ipv6 = hex2a(parsedConfig.ipv6.toString())
-//     pubConfig.gw4 = hex2a(parsedConfig.gw4.toString())
-//     pubConfig.gw6 = hex2a(parsedConfig.gw6.toString())
-//     pubConfig.domain = hex2a(parsedConfig.domain.toString()) || ''
+  if (nodeEvent.publicConfig) {
+    const pubConfig = new PublicConfig()
+    pubConfig.ipv4 = nodeEvent.publicConfig.ipv4.toString()
+    pubConfig.ipv6 = nodeEvent.publicConfig.ipv6.toString()
+    pubConfig.gw4 = nodeEvent.publicConfig.gw4.toString()
+    pubConfig.gw6 = nodeEvent.publicConfig.gw6.toString()
+    pubConfig.domain = nodeEvent.publicConfig.domain.toString() || ''
 
-//     savedNode.publicConfig = pubConfig
-//   }
+    await ctx.store.save<PublicConfig>(pubConfig)
+    savedNode.publicConfig = pubConfig
+  }
 
-//   if (node.certification_type) {
-//     const certificationTypeAsString = node.certification_type.toString()
-//     let certType = CertificationType.Diy
-//     switch (certificationTypeAsString) {
-//       case 'Diy': 
-//         certType = CertificationType.Diy
-//         break
-//       case 'Certified': 
-//         certType = CertificationType.Certified
-//         break
-//     }
-//     savedNode.certificationType = certType
-//   } else {
-//     savedNode.certificationType = CertificationType.Diy
-//   }
+  if (node.isV27) {
+    const nodeAsV27 = node.asV27
+    if (nodeAsV27.certificationType) {
+      const certificationTypeAsString = nodeAsV27.certificationType.toString()
+      let certType = CertificationType.Diy
+      switch (certificationTypeAsString) {
+        case 'Diy': 
+          certType = CertificationType.Diy
+        break
+        case 'Certified': 
+          certType = CertificationType.Certified
+        break
+    }
+      savedNode.certificationType = certType
+    } else {
+      savedNode.certificationType = CertificationType.Diy
+    }
+  }
 
-//   savedNode.twinId = node.twin_id.toNumber()
+  if (node.isV27) {
+    const nodeAsV43 = node.asV43 
+    savedNode.secure = nodeAsV43.secureBoot ? true : false
+    savedNode.virtualized = nodeAsV43.virtualized ? true : false
+    savedNode.serialNumber = nodeAsV43.serialNumber.toString()
+  }
 
-//   savedNode.secure = node.secure ? true : false
-//   savedNode.virtualized = node.virtualized ? true : false
-//   savedNode.serialNumber = hex2a(node.serial_number.toString())
+  await ctx.store.save<Node>(savedNode)
 
-//   await store.save<Node>(savedNode)
+  const interfacesPromisses = nodeEvent.interfaces.map(intf => {
+    let newInterface
 
-//   const interfacesPromisses = node.interfaces.map(intf => {
-//     let newInterface
-
-//     if (savedNode.interfaces) {
-//       // if an interface with same name exists
-//       const found = savedNode.interfaces.findIndex(interf => interf.name === hex2a(Buffer.from(intf.name.toString()).toString()))
-//       if (found > 0) {
-//         newInterface = savedNode.interfaces[found]    
-//       } else {
-//         newInterface = new Interfaces()
-//       }
-//     }
+    if (savedNode.interfaces) {
+      // if an interface with same name exists
+      const found = savedNode.interfaces.findIndex(interf => interf.name === intf.name.toString())
+      if (found > 0) {
+        newInterface = savedNode.interfaces[found]    
+      } else {
+        newInterface = new Interfaces()
+      }
+    }
     
-//     if (!newInterface) return
+    if (!newInterface) return
 
-//     newInterface.name = hex2a(Buffer.from(intf.name.toString()).toString())
-//     newInterface.mac = hex2a(Buffer.from(intf.mac.toString()).toString())
-//     newInterface.node = savedNode
-//     newInterface.ips = intf.ips.map(ip => hex2a(Buffer.from(ip.toString()).toString())).join(',')
+    newInterface.id = ctx.event.id
+    newInterface.name = intf.name.toString()
+    newInterface.mac = intf.mac.toString()
+    newInterface.node = savedNode
+    newInterface.ips = intf.ips.map(ip => ip.toString()).join(',')
     
-//     return store.save<Interfaces>(newInterface)
-//   })
-//   await Promise.all(interfacesPromisses)
-// }
+    return ctx.store.save<Interfaces>(newInterface)
+  })
+  await Promise.all(interfacesPromisses)
+}
 
-// export async function nodeDeleted({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const [nodeID] = new TfgridModule.NodeDeletedEvent(event).params
+export async function nodeDeleted(ctx: EventHandlerContext) {
+  const nodeID = new TfgridModuleNodeDeletedEvent(ctx).asV9
 
-//   const savedNode = await store.get(Node, { where: { nodeId: nodeID.toNumber() } })
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
 
-//   if (savedNode) {
-//     const interfaces = await store.getMany(Interfaces, { where: { node: savedNode }})
-//     for (let i of interfaces) {
-//       await store.remove(i)
-//     }
-//     await store.remove(savedNode)
-//   }
-// }
+  if (savedNode) {
+    // const interfaces = await ctx.store.getMany(Interfaces, { where: { node: savedNode }})
+    // for (let i of interfaces) {
+    //   await store.remove(i)
+    // }
+    await ctx.store.remove(savedNode)
+  }
+}
 
-// export async function nodeUptimeReported({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const [nodeID, now, uptime] = new TfgridModule.NodeUptimeReportedEvent(event).params
+export async function nodeUptimeReported(ctx: EventHandlerContext) {
+  const [nodeID, now, uptime] = new TfgridModuleNodeUptimeReportedEvent(ctx).asV9
 
-//   const newUptimeEvent = new UptimeEvent()
-//   newUptimeEvent.nodeId = nodeID.toNumber()
-//   newUptimeEvent.timestamp = now.toNumber()
-//   newUptimeEvent.uptime = uptime.toNumber()
-//   await store.save<UptimeEvent>(newUptimeEvent)
+  const newUptimeEvent = new UptimeEvent()
+  newUptimeEvent.id = ctx.event.id
+  newUptimeEvent.nodeID = nodeID
+  newUptimeEvent.timestamp = now
+  newUptimeEvent.uptime = uptime
+  await ctx.store.save<UptimeEvent>(newUptimeEvent)
 
-//   const savedNode = await store.get(Node, { where: { nodeId: nodeID.toNumber() } })
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
 
-//   if (savedNode) {
-//     savedNode.uptime = uptime.toNumber()
-//     await store.save<Node>(savedNode)
-//   }
-// }
+  if (savedNode) {
+    savedNode.uptime = uptime
+    await ctx.store.save<Node>(savedNode)
+  }
+}
 
-// export async function nodePublicConfigStored({
-//   store,
-//   event,
-//   block,
-//   extrinsic,
-// }: EventContext & StoreContext) {
-//   const [nodeID, config] = new TfgridModule.NodePublicConfigStoredEvent(event).params
+export async function nodePublicConfigStored(ctx: EventHandlerContext) {
+  const [nodeID, config] = new TfgridModuleNodePublicConfigStoredEvent(ctx).asV12
 
-//   const savedNode = await store.get(Node, { where: { nodeId: nodeID.toNumber() } })
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
 
-//   if (savedNode) {
-//     const pubConfig = new PublicConfig()
-//     pubConfig.ipv4 = hex2a(config.ipv4.toString())
-//     pubConfig.ipv6 = hex2a(config.ipv6.toString())
-//     pubConfig.gw4 = hex2a(config.gw4.toString())
-//     pubConfig.gw6 = hex2a(config.gw6.toString())
-//     pubConfig.domain = hex2a(config.domain.toString()) || ''
+  if (savedNode) {
+    const pubConfig = new PublicConfig()
+    pubConfig.ipv4 = config.ipv4.toString()
+    pubConfig.ipv6 = config.ipv6.toString()
+    pubConfig.gw4 = config.gw4.toString()
+    pubConfig.gw6 = config.gw6.toString()
+    pubConfig.domain = config.domain.toString() || ''
 
-//     savedNode.publicConfig = pubConfig
-//     await store.save<Node>(savedNode)
-//   }
-// }
+    savedNode.publicConfig = pubConfig
+    await ctx.store.save<Node>(savedNode)
+  }
+}

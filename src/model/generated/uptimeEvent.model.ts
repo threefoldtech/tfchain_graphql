@@ -1,4 +1,5 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_} from "typeorm"
+import * as marshal from "./marshal"
 
 @Entity_()
 export class UptimeEvent {
@@ -12,9 +13,9 @@ export class UptimeEvent {
   @Column_("integer", {nullable: false})
   nodeID!: number
 
-  @Column_("integer", {nullable: false})
-  uptime!: number
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  uptime!: bigint
 
-  @Column_("integer", {nullable: false})
-  timestamp!: number
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  timestamp!: bigint
 }

@@ -8,16 +8,22 @@ import { TfgridModuleTwinStoredEvent, TfgridModuleTwinDeletedEvent, TfgridModule
 import { hex2a } from "./util";
 
 export async function twinStored(ctx: EventHandlerContext) {
+  const twinEvent = new TfgridModuleTwinStoredEvent(ctx)
+  if (!twinEvent.isV9) {
+    return
+  }
+
   const twin = new TfgridModuleTwinStoredEvent(ctx).asV9
   const newTwin = new Twin()
+
+  newTwin.id = ctx.event.id
 
   newTwin.gridVersion = twin.version
   newTwin.twinID = twin.id
 
   const accountID = ss58.codec("substrate").encode(twin.accountId);
-
   newTwin.accountID = accountID
-  newTwin.ip = hex2a(Buffer.from(twin.ip.toString()).toString())
+  newTwin.ip = twin.ip.toString()
 
   await ctx.store.save<Twin>(newTwin)
 }
@@ -39,6 +45,7 @@ export async function twinEntityStored(ctx: EventHandlerContext) {
 
   if (savedTwin) {
     const entityProof = new EntityProof()
+    entityProof.id = ctx.event.id
     entityProof.entityID = twinEntityStoredEvents[1]
     entityProof.signature = Buffer.from(twinEntityStoredEvents[2]).toString()
     
