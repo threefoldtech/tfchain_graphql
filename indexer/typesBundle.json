@@ -228,13 +228,6 @@
               "foundationAccount": "AccountId",
               "certifiedSalesAccount": "AccountId"
             },
-            "Contract": {
-              "version": " u32",
-              "state": "ContractState",
-              "contractId": "u64",
-              "twinId": "u32",
-              "contractType": "ContractData"
-            },
             "ContractData": {
               "_enum": {
                 "NodeContract": "NodeContract",
@@ -256,21 +249,9 @@
               "lastUpdated": "u64",
               "amountUnbilled": "u64"
             },
-            "ContractState": {
-              "_enum": {
-                "Created": null,
-                "Deleted": "Cause"
-              }
-            },
             "ContractResources": {
               "contractId": "u64",
               "used": "Resources"
-            },
-            "Cause": {
-              "_enum": [
-                "CanceledByUser",
-                "OutOfFunds"
-              ]
             },
             "NruConsumption": {
               "contractId": "u64",
@@ -309,6 +290,55 @@
               "farmingPolicyId": "u32",
               "interfaces": "Vec<Interface>"
             }  
+          }
+        },
+        {
+          "minmax": [
+            9,
+            25
+          ],
+          "types": {
+            "Contract": {
+              "version": " u32",
+              "state": "ContractState",
+              "contractId": "u64",
+              "twinId": "u32",
+              "contractType": "ContractData"
+            },
+            "ContractState": {
+              "_enum": {
+                "Created": null,
+                "Deleted": null,
+                "OutOfFunds": null
+              }
+            }
+          }
+        },
+        {
+          "minmax": [
+            25,
+            null
+          ],
+          "types": {
+            "Contract": {
+              "version": " u32",
+              "state": "ContractState",
+              "contractId": "u64",
+              "twinId": "u32",
+              "contractType": "ContractData"
+            },
+            "ContractState": {
+              "_enum": {
+                "Created": null,
+                "Deleted": "Cause"
+              }
+            },
+            "Cause": {
+              "_enum": [
+                "CanceledByUser",
+                "OutOfFunds"
+              ]
+            }
           }
         },
         {
