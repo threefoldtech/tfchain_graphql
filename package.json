@@ -10,7 +10,7 @@
     "db:create-migration": "sqd db create-migration",
     "db:init": "node init-countries.js",
     "db:up": "docker-compose up -d db",
-    "process": "node db/init.js && node -r dotenv/config lib/processor.js",
+    "process": "node db/init.js && node init-countries.js && node -r dotenv/config lib/processor.js",
     "api": "squid-graphql-server",
     "codegen": "sqd codegen",
     "typegen": "squid-substrate-typegen typegen/typegen.json",
@@ -23,6 +23,7 @@
     "@subsquid/substrate-processor": "^0.6.0",
     "axios": "^0.26.1",
     "dotenv": "^16.0.0",
+    "lodash": "^4.17.21",
     "pg-format": "^1.0.4",
     "substrate-tfgrid-ts-types": "^0.4.0",
     "typeorm": "^0.2.45"

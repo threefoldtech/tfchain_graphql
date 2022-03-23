@@ -17,8 +17,8 @@ processor.setTypesBundle("typegen/typesBundle.json");
 processor.setBatchSize(500);
 
 processor.setDataSource({
-  archive: "http://localhost:4010/v1/graphql",
-  chain: "wss://tfchain.test.grid.tf",
+  archive: process.env.ARCHIVE_URL || 'http://localhost:4010/v1/graphql',
+  chain: process.env.WS_URL || 'ws://localhost:9944'
 });
 
 processor.addEventHandler('balances.Transfer', ctx => balancesTransfer(ctx));
