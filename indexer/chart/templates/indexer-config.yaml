@@ -86,27 +86,20 @@ data:
     \             \"ipu\": \"Policy\",\n              \"uniqueName\": \"Policy\",\n
     \             \"domainName\": \"Policy\",\n              \"foundationAccount\":
     \"AccountId\",\n              \"certifiedSalesAccount\": \"AccountId\"\n            },\n
-    \           \"Contract\": {\n              \"version\": \" u32\",\n              \"state\":
-    \"ContractState\",\n              \"contractId\": \"u64\",\n              \"twinId\":
-    \"u32\",\n              \"contractType\": \"ContractData\"\n            },\n            \"ContractData\":
-    {\n              \"_enum\": {\n                \"NodeContract\": \"NodeContract\",\n
-    \               \"NameContract\": \"NameContract\"\n              }\n            },\n
-    \           \"NodeContract\": {\n              \"nodeId\": \"u32\",\n              \"deploymentData\":
-    \"Vec<u8>\",\n              \"deploymentHash\": \"Vec<u8>\",\n              \"publicIps\":
-    \"u32\",\n              \"publicIpsList\": \"Vec<PublicIP>\"\n            },\n
-    \           \"NameContract\": {\n              \"name\": \"Vec<u8>\"\n            },\n
-    \           \"ContractBillingInformation\": {\n              \"previousNuReported\":
+    \           \"ContractData\": {\n              \"_enum\": {\n                \"NodeContract\":
+    \"NodeContract\",\n                \"NameContract\": \"NameContract\"\n              }\n
+    \           },\n            \"NodeContract\": {\n              \"nodeId\": \"u32\",\n
+    \             \"deploymentData\": \"Vec<u8>\",\n              \"deploymentHash\":
+    \"Vec<u8>\",\n              \"publicIps\": \"u32\",\n              \"publicIpsList\":
+    \"Vec<PublicIP>\"\n            },\n            \"NameContract\": {\n              \"name\":
+    \"Vec<u8>\"\n            },\n            \"ContractBillingInformation\": {\n              \"previousNuReported\":
     \"u64\",\n              \"lastUpdated\": \"u64\",\n              \"amountUnbilled\":
-    \"u64\"\n            },\n            \"ContractState\": {\n              \"_enum\":
-    {\n                \"Created\": null,\n                \"Deleted\": \"Cause\"\n
-    \             }\n            },\n            \"ContractResources\": {\n              \"contractId\":
-    \"u64\",\n              \"used\": \"Resources\"\n            },\n            \"Cause\":
-    {\n              \"_enum\": [\n                \"CanceledByUser\",\n                \"OutOfFunds\"\n
-    \             ]\n            },\n            \"NruConsumption\": {\n              \"contractId\":
-    \"u64\",\n              \"timestamp\": \"u64\",\n              \"window\": \"u64\",\n
-    \             \"nru\": \"u64\"\n            },\n            \"Consumption\": {\n
-    \             \"contractId\": \"u64\",\n              \"timestamp\": \"u64\",\n
-    \             \"cru\": \"u64\",\n              \"sru\": \"u64\",\n              \"hru\":
+    \"u64\"\n            },\n            \"ContractResources\": {\n              \"contractId\":
+    \"u64\",\n              \"used\": \"Resources\"\n            },\n            \"NruConsumption\":
+    {\n              \"contractId\": \"u64\",\n              \"timestamp\": \"u64\",\n
+    \             \"window\": \"u64\",\n              \"nru\": \"u64\"\n            },\n
+    \           \"Consumption\": {\n              \"contractId\": \"u64\",\n              \"timestamp\":
+    \"u64\",\n              \"cru\": \"u64\",\n              \"sru\": \"u64\",\n              \"hru\":
     \"u64\",\n              \"mru\": \"u64\",\n              \"nru\": \"u64\"\n            }\n
     \         }\n        },\n        {\n          \"minmax\": [\n            9,\n
     \           27\n          ],\n          \"types\": {\n            \"Node\": {\n
@@ -116,10 +109,24 @@ data:
     \             \"city\": \"Vec<u8>\",\n              \"publicConfig\": \"Option<PublicConfig>\",\n
     \             \"created\": \"u64\",\n              \"farmingPolicyId\": \"u32\",\n
     \             \"interfaces\": \"Vec<Interface>\"\n            }  \n          }\n
-    \       },\n        {\n          \"minmax\": [\n            27,\n            42\n
-    \         ],\n          \"types\": {\n            \"Node\": {\n              \"version\":
-    \"u32\",\n              \"id\": \"u32\",\n              \"farmId\": \"u32\",\n
-    \             \"twinId\": \"u32\",\n              \"resources\": \"Resources\",\n
+    \       },\n        {\n          \"minmax\": [\n            9,\n            25\n
+    \         ],\n          \"types\": {\n            \"Contract\": {\n              \"version\":
+    \" u32\",\n              \"state\": \"ContractState\",\n              \"contractId\":
+    \"u64\",\n              \"twinId\": \"u32\",\n              \"contractType\":
+    \"ContractData\"\n            },\n            \"ContractState\": {\n              \"_enum\":
+    {\n                \"Created\": null,\n                \"Deleted\": null,\n                \"OutOfFunds\":
+    null\n              }\n            }\n          }\n        },\n        {\n          \"minmax\":
+    [\n            25,\n            null\n          ],\n          \"types\": {\n            \"Contract\":
+    {\n              \"version\": \" u32\",\n              \"state\": \"ContractState\",\n
+    \             \"contractId\": \"u64\",\n              \"twinId\": \"u32\",\n              \"contractType\":
+    \"ContractData\"\n            },\n            \"ContractState\": {\n              \"_enum\":
+    {\n                \"Created\": null,\n                \"Deleted\": \"Cause\"\n
+    \             }\n            },\n            \"Cause\": {\n              \"_enum\":
+    [\n                \"CanceledByUser\",\n                \"OutOfFunds\"\n              ]\n
+    \           }\n          }\n        },\n        {\n          \"minmax\": [\n            27,\n
+    \           42\n          ],\n          \"types\": {\n            \"Node\": {\n
+    \             \"version\": \"u32\",\n              \"id\": \"u32\",\n              \"farmId\":
+    \"u32\",\n              \"twinId\": \"u32\",\n              \"resources\": \"Resources\",\n
     \             \"location\": \"Location\",\n              \"country\": \"Vec<u8>\",\n
     \             \"city\": \"Vec<u8>\",\n              \"publicConfig\": \"Option<PublicConfig>\",\n
     \             \"created\": \"u64\",\n              \"farmingPolicyId\": \"u32\",\n
