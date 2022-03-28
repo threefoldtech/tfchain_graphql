@@ -129,7 +129,7 @@ export interface DiscountLevel_Gold {
   __kind: 'Gold'
 }
 
-export type ContractState = ContractState_Created | ContractState_Deleted
+export type ContractState = ContractState_Created | ContractState_Deleted | ContractState_OutOfFunds
 
 export interface ContractState_Created {
   __kind: 'Created'
@@ -137,10 +137,13 @@ export interface ContractState_Created {
 
 export interface ContractState_Deleted {
   __kind: 'Deleted'
-  value: Cause
 }
 
-export type ContractData = ContractData_NodeContract | ContractData_NameContract | ContractData_RentContract
+export interface ContractState_OutOfFunds {
+  __kind: 'OutOfFunds'
+}
+
+export type ContractData = ContractData_NodeContract | ContractData_NameContract
 
 export interface ContractData_NodeContract {
   __kind: 'NodeContract'
@@ -150,11 +153,6 @@ export interface ContractData_NodeContract {
 export interface ContractData_NameContract {
   __kind: 'NameContract'
   value: NameContract
-}
-
-export interface ContractData_RentContract {
-  __kind: 'RentContract'
-  value: RentContract
 }
 
 export type CertificationType = CertificationType_Diy | CertificationType_Certified
@@ -214,16 +212,6 @@ export interface StellarSignature {
   stellarPubkey: Uint8Array
 }
 
-export type Cause = Cause_CanceledByUser | Cause_OutOfFunds
-
-export interface Cause_CanceledByUser {
-  __kind: 'CanceledByUser'
-}
-
-export interface Cause_OutOfFunds {
-  __kind: 'OutOfFunds'
-}
-
 export interface NodeContract {
   nodeId: number
   deploymentData: Uint8Array
@@ -234,10 +222,6 @@ export interface NodeContract {
 
 export interface NameContract {
   name: Uint8Array
-}
-
-export interface RentContract {
-  nodeId: number
 }
 
 export type Unit = Unit_Bytes | Unit_Kilobytes | Unit_Megabytes | Unit_Gigabytes | Unit_Terrabytes

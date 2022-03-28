@@ -9,33 +9,38 @@ import { Contract } from "../types/v9";
 export async function contractCreated(ctx: EventHandlerContext) {
   let contractCreatedEvent = new SmartContractModuleContractCreatedEvent(ctx)
 
-  if (!contractCreatedEvent.isV9) return
+  let contractEvent
+  if (contractCreatedEvent.isV9) {
+    contractEvent = contractCreatedEvent.asV9
+  } else if (contractCreatedEvent.isV25) {
+    contractEvent = contractCreatedEvent.asV25
+  }
 
-  const contractCreatedEventV9 = contractCreatedEvent.asV9
+  if (!contractEvent) return
 
   let state = ContractState.Created
 
   let contract
-  if (contractCreatedEventV9.contractType.__kind === "NameContract") {
+  if (contractEvent.contractType.__kind === "NameContract") {
     let newNameContract = new NameContract()
     newNameContract.id = ctx.event.id
-    contract = contractCreatedEventV9.contractType.value
+    contract = contractEvent.contractType.value
     newNameContract.name = contract.name.toString()
-    newNameContract.contractID = contractCreatedEventV9.contractId
-    newNameContract.version = contractCreatedEventV9.version
-    newNameContract.twinID = contractCreatedEventV9.twinId
+    newNameContract.contractID = contractEvent.contractId
+    newNameContract.version = contractEvent.version
+    newNameContract.twinID = contractEvent.twinId
     newNameContract.state = state
     await ctx.store.save<NameContract>(newNameContract)
   }
-  else if (contractCreatedEventV9.contractType.__kind === "NodeContract") {
+  else if (contractEvent.contractType.__kind === "NodeContract") {
     let newNodeContract = new NodeContract()
     newNodeContract.id = ctx.event.id
 
-    contract = contractCreatedEventV9.contractType.value
+    contract = contractEvent.contractType.value
 
-    newNodeContract.contractID = contractCreatedEventV9.contractId
-    newNodeContract.version = contractCreatedEventV9.version
-    newNodeContract.twinID = contractCreatedEventV9.twinId
+    newNodeContract.contractID = contractEvent.contractId
+    newNodeContract.version = contractEvent.version
+    newNodeContract.twinID = contractEvent.twinId
     newNodeContract.nodeID = contract.nodeId
     newNodeContract.numberOfPublicIPs = contract.publicIps
     newNodeContract.deploymentData = contract.deploymentData.toString()
@@ -55,16 +60,25 @@ export async function contractCreated(ctx: EventHandlerContext) {
 }
 
 export async function contractUpdated(ctx: EventHandlerContext) {
-  const contract = new SmartContractModuleContractUpdatedEvent(ctx).asV9
+  const contractUpdatedEvent = new SmartContractModuleContractUpdatedEvent(ctx)
 
-  const SavedNodeContract = await ctx.store.get(NodeContract, { where: { contractID: contract.contractId } })
-  if (SavedNodeContract) {
-    await updateNodeContract(contract, SavedNodeContract, ctx.store)
+  let contractEvent
+  if (contractUpdatedEvent.isV9) {
+    contractEvent = contractUpdatedEvent.asV9
+  } else if (contractUpdatedEvent.isV25) {
+    contractEvent = contractUpdatedEvent.asV25
   }
 
-  const SavedNameContract = await ctx.store.get(NameContract, { where: { contractID: contract.contractId } })
+  if (!contractEvent) return
+
+  const SavedNodeContract = await ctx.store.get(NodeContract, { where: { contractID: contractEvent.contractId } })
+  if (SavedNodeContract) {
+    await updateNodeContract(contractEvent, SavedNodeContract, ctx.store)
+  }
+
+  const SavedNameContract = await ctx.store.get(NameContract, { where: { contractID: contractEvent.contractId } })
   if (SavedNameContract) {
-    await updateNameContract(contract, SavedNameContract, ctx.store)
+    await updateNameContract(contractEvent, SavedNameContract, ctx.store)
   }
 }
 
@@ -118,7 +132,6 @@ async function updateNameContract(ctr: Contract, contract: NameContract, store: 
 }
 
 export async function nodeContractCanceled(ctx: EventHandlerContext) {
-  console.log('found node contract cancel event')
   const cancelEvent = new SmartContractModuleNodeContractCanceledEvent(ctx).asV19
 
   const savedContract = await ctx.store.get(NodeContract, { where: { contractID: cancelEvent[0] } })
@@ -133,13 +146,10 @@ export async function nodeContractCanceled(ctx: EventHandlerContext) {
 
   savedContract.state = ContractState.Deleted
 
-  console.log(`saving contract to delete state ${cancelEvent[0]}`)
-
   await ctx.store.save<NodeContract>(savedContract)
 }
 
 export async function nameContractCanceled(ctx: EventHandlerContext) {
-  console.log('found name contract cancel event')
   const id = new SmartContractModuleNameContractCanceledEvent(ctx).asV19
 
   const savedContract = await ctx.store.get(NameContract, { where: { contractID: id } })

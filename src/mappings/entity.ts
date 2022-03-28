@@ -1,3 +1,4 @@
+import * as ss58 from "@subsquid/ss58";
 import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
@@ -15,7 +16,9 @@ export async function entityStored(ctx: EventHandlerContext) {
   newEntity.name = entityStoredEvent.name.toString()
   newEntity.country = entityStoredEvent.country.toString()
   newEntity.city = entityStoredEvent.city.toString()
-  newEntity.accountID = entityStoredEvent.accountId.toString()
+
+  const accountID = ss58.codec("substrate").encode(entityStoredEvent.accountId);
+  newEntity.accountID = accountID
 
   await ctx.store.save<Entity>(newEntity)
 }
@@ -32,7 +35,9 @@ export async function entityUpdated(ctx: EventHandlerContext) {
     newEntity.name = entityUpdatedEvent.name.toString()
     newEntity.country = entityUpdatedEvent.country.toString()
     newEntity.city = entityUpdatedEvent.city.toString()
-    newEntity.accountID = entityUpdatedEvent.accountId.toString()
+
+    const accountID = ss58.codec("substrate").encode(entityUpdatedEvent.accountId);
+    newEntity.accountID = accountID
   
     await ctx.store.save<Entity>(savedEntity)
   }

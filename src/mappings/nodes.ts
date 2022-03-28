@@ -7,7 +7,17 @@ import { TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, 
 export async function nodeStored(ctx: EventHandlerContext) {
   const node  = new TfgridModuleNodeStoredEvent(ctx)
   const newNode = new Node()
-  const nodeEvent = node.asV9
+
+  let nodeEvent
+  if (node.isV9) {
+    nodeEvent = node.asV9
+  } else if (node.isV28) {
+    nodeEvent = node.asV28
+  } else if (node.isV43) {
+    nodeEvent = node.asV43
+  }
+
+  if (!nodeEvent) return
 
   newNode.id = ctx.event.id
   newNode.gridVersion = nodeEvent.version
@@ -45,9 +55,10 @@ export async function nodeStored(ctx: EventHandlerContext) {
     await ctx.store.save<PublicConfig>(pubConfig)
     newNode.publicConfig = pubConfig
   }
+  
 
-  if (node.isV27) {
-    const nodeAsV27 = node.asV27
+  if (node.isV28 || node.isV43) {
+    const nodeAsV27 = node.asV28 || node.asV43
     if (nodeAsV27.certificationType) {
       const certificationTypeAsString = nodeAsV27.certificationType.toString()
       let certType = CertificationType.Diy
@@ -65,7 +76,7 @@ export async function nodeStored(ctx: EventHandlerContext) {
     }
   }
 
-  if (node.isV27) {
+  if (node.isV43) {
     const nodeAsV43 = node.asV43 
     newNode.secure = nodeAsV43.secureBoot ? true : false
     newNode.virtualized = nodeAsV43.virtualized ? true : false
@@ -74,17 +85,17 @@ export async function nodeStored(ctx: EventHandlerContext) {
 
   await ctx.store.save<Node>(newNode)
 
-  const interfacesPromisses = nodeEvent.interfaces.map(intf => {
-    const newInterface = new Interfaces()
-    newInterface.id = ctx.event.id
-    newInterface.name = intf.name.toString()
-    newInterface.mac = intf.mac.toString()
-    newInterface.node = newNode
-    newInterface.ips = intf.ips.map(ip => ip.toString()).join(',')
-    return ctx.store.save<Interfaces>(newInterface)
-  })
+  // const interfacesPromisses = nodeEvent.interfaces.map(intf => {
+  //   const newInterface = new Interfaces()
+  //   newInterface.id = ctx.event.id
+  //   newInterface.name = intf.name.toString()
+  //   newInterface.mac = intf.mac.toString()
+  //   newInterface.node = newNode
+  //   newInterface.ips = intf.ips.map(ip => ip.toString()).join(',')
+  //   return ctx.store.save<Interfaces>(newInterface)
+  // })
 
-  await Promise.all(interfacesPromisses)
+  // await Promise.all(interfacesPromisses)
 }
 
 // // TODO
@@ -95,8 +106,8 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
   let nodeEvent
   if (node.isV9) {
     nodeEvent = node.asV9
-  } else if (node.isV27) {
-    nodeEvent = node.asV27
+  } else if (node.isV28) {
+    nodeEvent = node.asV28
   } else if (node.isV43) {
     nodeEvent = node.asV43
   }
@@ -143,8 +154,8 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
   //   savedNode.publicConfig = pubConfig
   // }
 
-  if (node.isV27) {
-    const nodeAsV27 = node.asV27
+  if (node.isV28 || node.isV43) {
+    const nodeAsV27 = node.asV28 || node.asV43
     if (nodeAsV27.certificationType) {
       const certificationTypeAsString = nodeAsV27.certificationType.toString()
       let certType = CertificationType.Diy
@@ -162,7 +173,7 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     }
   }
 
-  if (node.isV27) {
+  if (node.isV43) {
     const nodeAsV43 = node.asV43 
     savedNode.secure = nodeAsV43.secureBoot ? true : false
     savedNode.virtualized = nodeAsV43.virtualized ? true : false

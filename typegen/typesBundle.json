@@ -220,53 +220,30 @@
       "foundation_account": "AccountId",
       "certified_sales_account": "AccountId"
     },
-    "Contract": {
-      "version": " u32",
-      "state": "ContractState",
-      "contract_id": "u64",
-      "twin_id": "u32",
-      "contract_type": "ContractData"
-    },
-    "ContractData": {
-      "_enum": {
-        "NodeContract": "NodeContract",
-        "NameContract": "NameContract",
-        "RentContract": "RentContract"
-      }
-    },
-    "NodeContract": {
-      "node_id": "u32",
-      "deployment_data": "Vec<u8>",
-      "deployment_hash": "Vec<u8>",
-      "public_ips": "u32",
-      "public_ips_list": "Vec<PublicIP>"
-    },
-    "NameContract": {
-      "name": "Vec<u8>"
-    },
-    "RentContract": {
-      "node_id": "u32"
-    },
     "ContractBillingInformation": {
       "previous_nu_reported": "u64",
       "last_updated": "u64",
       "amount_unbilled": "u64"
     },
-    "ContractState": {
-      "_enum": {
-        "Created": null,
-        "Deleted": "Cause"
-      }
-    },
     "ContractResources": {
       "contract_id": "u64",
       "used": "Resources"
     },
-    "Cause": {
-      "_enum": [
-        "CanceledByUser",
-        "OutOfFunds"
-      ]
+    "ContractData": {
+      "_enum": {
+        "NodeContract": "NodeContract",
+        "NameContract": "NameContract"
+      }
+    },
+    "NodeContract": {
+      "nodeId": "u32",
+      "deploymentData": "Vec<u8>",
+      "deploymentHash": "Vec<u8>",
+      "publicIps": "u32",
+      "publicIpsList": "Vec<PublicIP>"
+    },
+    "NameContract": {
+      "name": "Vec<u8>"
     },
     "NruConsumption": {
       "contract_id": "u64",
@@ -309,6 +286,55 @@
     },
     {
       "minmax": [
+        9,
+        25
+      ],
+      "types": {
+        "Contract": {
+          "version": " u32",
+          "state": "ContractState",
+          "contractId": "u64",
+          "twinId": "u32",
+          "contractType": "ContractData"
+        },
+        "ContractState": {
+          "_enum": {
+            "Created": null,
+            "Deleted": null,
+            "OutOfFunds": null
+          }
+        }
+      }
+    },
+    {
+      "minmax": [
+        25,
+        null
+      ],
+      "types": {
+        "Contract": {
+          "version": " u32",
+          "state": "ContractState",
+          "contractId": "u64",
+          "twinId": "u32",
+          "contractType": "ContractData"
+        },
+        "ContractState": {
+          "_enum": {
+            "Created": null,
+            "Deleted": "Cause"
+          }
+        },
+        "Cause": {
+          "_enum": [
+            "CanceledByUser",
+            "OutOfFunds"
+          ]
+        }
+      }
+    },
+    {
+      "minmax": [
         12,
         null
       ],
@@ -324,7 +350,7 @@
     },
     {
       "minmax": [
-        27,
+        28,
         42
       ],
       "types": {
