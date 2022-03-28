@@ -123,7 +123,7 @@ data:
     {\n                \"Created\": null,\n                \"Deleted\": \"Cause\"\n
     \             }\n            },\n            \"Cause\": {\n              \"_enum\":
     [\n                \"CanceledByUser\",\n                \"OutOfFunds\"\n              ]\n
-    \           }\n          }\n        },\n        {\n          \"minmax\": [\n            27,\n
+    \           }\n          }\n        },\n        {\n          \"minmax\": [\n            28,\n
     \           42\n          ],\n          \"types\": {\n            \"Node\": {\n
     \             \"version\": \"u32\",\n              \"id\": \"u32\",\n              \"farmId\":
     \"u32\",\n              \"twinId\": \"u32\",\n              \"resources\": \"Resources\",\n
