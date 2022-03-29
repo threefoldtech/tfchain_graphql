@@ -69,11 +69,10 @@ type Node @entity {
   location: Location!
   country: String
   city: String
-  hru: BigInt
-  sru: BigInt
-  cru: BigInt
-  mru: BigInt
-  publicConfig: PublicConfig
+  publicConfig: PublicConfig @derivedFrom(field: "node")
+  resourcesTotal: NodeResourcesTotal @derivedFrom(field: "node")
+  resourcesUsed: NodeResourcesUsed @derivedFrom(field: "node")
+  resourcesFree: NodeResourcesFree @derivedFrom(field: "node")
   uptime: BigInt
   created: Int!
   farmingPolicyId: Int!
@@ -82,6 +81,30 @@ type Node @entity {
   secure: Boolean
   virtualized: Boolean
   serialNumber: String
+}
+
+type NodeResourcesTotal @entity {
+  node: Node! @unique
+  hru: BigInt!
+  sru: BigInt! 
+  cru: BigInt!
+  mru: BigInt!
+}
+
+type NodeResourcesUsed @entity {
+  node: Node! @unique
+  hru: BigInt!
+  sru: BigInt!
+  cru: BigInt!
+  mru: BigInt!
+}
+
+type NodeResourcesFree @entity {
+  node: Node! @unique
+  hru: BigInt!
+  sru: BigInt!
+  cru: BigInt!
+  mru: BigInt!
 }
 
 type Interfaces @entity {
@@ -96,7 +119,8 @@ enum CertificationType {
   Certified
 }
 
-type PublicConfig {
+type PublicConfig @entity {
+  node: Node! @unique
   ipv4: String
   ipv6: String
   gw4: String
@@ -151,7 +175,15 @@ type NodeContract @entity {
   deploymentHash: String!
   numberOfPublicIPs: Int!
   state: ContractState!
-  resourcesUsed: ContractUsedResources
+  resourcesUsed: ContractResources
+}
+
+type ContractResources @entity {
+  contract: NodeContract!
+  hru: BigInt!
+  sru: BigInt!
+  cru: BigInt!
+  mru: BigInt!
 }
 
 type NameContract @entity {
@@ -173,13 +205,6 @@ type NruConsumption @entity {
   timestamp: Int!
   window: BigInt
   nru: BigInt
-}
-
-type ContractUsedResources {
-  hru: BigInt
-  sru: BigInt
-  cru: BigInt
-  mru: BigInt
 }
 
 type ContractBillReport @entity {

@@ -1,7 +1,10 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToOne as OneToOne_, OneToMany as OneToMany_} from "typeorm"
 import * as marshal from "./marshal"
 import {Location} from "./location.model"
-import {PublicConfig} from "./_publicConfig"
+import {PublicConfig} from "./publicConfig.model"
+import {NodeResourcesTotal} from "./nodeResourcesTotal.model"
+import {NodeResourcesUsed} from "./nodeResourcesUsed.model"
+import {NodeResourcesFree} from "./nodeResourcesFree.model"
 import {Interfaces} from "./interfaces.model"
 import {CertificationType} from "./_certificationType"
 
@@ -36,20 +39,17 @@ export class Node {
   @Column_("text", {nullable: true})
   city!: string | undefined | null
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
-  hru!: bigint | undefined | null
-
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
-  sru!: bigint | undefined | null
-
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
-  cru!: bigint | undefined | null
-
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
-  mru!: bigint | undefined | null
-
-  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new PublicConfig(undefined, obj)}, nullable: true})
+  @OneToOne_(() => PublicConfig)
   publicConfig!: PublicConfig | undefined | null
+
+  @OneToOne_(() => NodeResourcesTotal)
+  resourcesTotal!: NodeResourcesTotal | undefined | null
+
+  @OneToOne_(() => NodeResourcesUsed)
+  resourcesUsed!: NodeResourcesUsed | undefined | null
+
+  @OneToOne_(() => NodeResourcesFree)
+  resourcesFree!: NodeResourcesFree | undefined | null
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
   uptime!: bigint | undefined | null

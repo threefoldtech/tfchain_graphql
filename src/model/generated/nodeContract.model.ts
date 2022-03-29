@@ -1,7 +1,7 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
 import * as marshal from "./marshal"
 import {ContractState} from "./_contractState"
-import {ContractUsedResources} from "./_contractUsedResources"
+import {ContractResources} from "./contractResources.model"
 
 @Entity_()
 export class NodeContract {
@@ -36,6 +36,7 @@ export class NodeContract {
   @Column_("varchar", {length: 10, nullable: false})
   state!: ContractState
 
-  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new ContractUsedResources(undefined, obj)}, nullable: true})
-  resourcesUsed!: ContractUsedResources | undefined | null
+  @Index_()
+  @ManyToOne_(() => ContractResources, {nullable: true})
+  resourcesUsed!: ContractResources | undefined | null
 }

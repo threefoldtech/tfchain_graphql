@@ -1,13 +1,12 @@
 import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
-import { Node, Location, PublicConfig, CertificationType, Interfaces, UptimeEvent } from "../model";
+import { Node, Location, PublicConfig, CertificationType, Interfaces, UptimeEvent, NodeResourcesUsed, NodeResourcesFree, NodeResourcesTotal } from "../model";
 import { TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
 
 export async function nodeStored(ctx: EventHandlerContext) {
   const node  = new TfgridModuleNodeStoredEvent(ctx)
-  const newNode = new Node()
-
+  
   let nodeEvent
   if (node.isV9) {
     nodeEvent = node.asV9
@@ -16,19 +15,15 @@ export async function nodeStored(ctx: EventHandlerContext) {
   } else if (node.isV43) {
     nodeEvent = node.asV43
   }
-
+  
   if (!nodeEvent) return
-
+  
+  const newNode = new Node()
   newNode.id = ctx.event.id
   newNode.gridVersion = nodeEvent.version
   newNode.farmID = nodeEvent.farmId
   newNode.nodeID = nodeEvent.id
   newNode.twinID = nodeEvent.twinId
-
-  newNode.sru = nodeEvent.resources.sru
-  newNode.hru = nodeEvent.resources.hru
-  newNode.mru = nodeEvent.resources.mru
-  newNode.cru = nodeEvent.resources.cru
 
   newNode.country = nodeEvent.country.toString()
   newNode.city = nodeEvent.city.toString()
@@ -43,19 +38,6 @@ export async function nodeStored(ctx: EventHandlerContext) {
   await ctx.store.save<Location>(newLocation)
 
   newNode.location = newLocation
-  
-  if (nodeEvent.publicConfig) {
-    const pubConfig = new PublicConfig()
-    pubConfig.ipv4 = nodeEvent.publicConfig.ipv4.toString()
-    pubConfig.ipv6 = nodeEvent.publicConfig.ipv6.toString()
-    pubConfig.gw4 = nodeEvent.publicConfig.gw4.toString()
-    pubConfig.gw6 = nodeEvent.publicConfig.gw6.toString()
-    pubConfig.domain = nodeEvent.publicConfig.domain.toString() || ''
-
-    await ctx.store.save<PublicConfig>(pubConfig)
-    newNode.publicConfig = pubConfig
-  }
-  
 
   if (node.isV28 || node.isV43) {
     const nodeAsV27 = node.asV28 || node.asV43
@@ -85,17 +67,59 @@ export async function nodeStored(ctx: EventHandlerContext) {
 
   await ctx.store.save<Node>(newNode)
 
-  // const interfacesPromisses = nodeEvent.interfaces.map(intf => {
-  //   const newInterface = new Interfaces()
-  //   newInterface.id = ctx.event.id
-  //   newInterface.name = intf.name.toString()
-  //   newInterface.mac = intf.mac.toString()
-  //   newInterface.node = newNode
-  //   newInterface.ips = intf.ips.map(ip => ip.toString()).join(',')
-  //   return ctx.store.save<Interfaces>(newInterface)
-  // })
+  const resourcesTotal = new NodeResourcesTotal()
+  resourcesTotal.node = newNode
+  resourcesTotal.id = ctx.event.id
+  resourcesTotal.sru = nodeEvent.resources.sru
+  resourcesTotal.hru = nodeEvent.resources.hru
+  resourcesTotal.mru = nodeEvent.resources.mru
+  resourcesTotal.cru = nodeEvent.resources.cru
 
-  // await Promise.all(interfacesPromisses)
+  const resourcesUsed = new NodeResourcesUsed()
+  resourcesUsed.node = newNode
+  resourcesUsed.id = ctx.event.id
+  resourcesUsed.sru = BigInt(0)
+  resourcesUsed.hru = BigInt(0)
+  resourcesUsed.mru = BigInt(0)
+  resourcesUsed.cru = BigInt(0)
+
+  const resourcesFree = new NodeResourcesFree()
+  resourcesFree.node = newNode
+  resourcesFree.id = ctx.event.id
+  resourcesFree.sru = BigInt(0)
+  resourcesFree.hru = BigInt(0)
+  resourcesFree.mru = BigInt(0)
+  resourcesFree.cru = BigInt(0)
+
+  await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
+  await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
+  await ctx.store.save<NodeResourcesFree>(resourcesFree)
+
+  if (nodeEvent.publicConfig) {
+    const pubConfig = new PublicConfig()
+    pubConfig.node = newNode
+    pubConfig.id = ctx.event.id
+    pubConfig.ipv4 = nodeEvent.publicConfig.ipv4.toString()
+    pubConfig.ipv6 = nodeEvent.publicConfig.ipv6.toString()
+    pubConfig.gw4 = nodeEvent.publicConfig.gw4.toString()
+    pubConfig.gw6 = nodeEvent.publicConfig.gw6.toString()
+    pubConfig.domain = nodeEvent.publicConfig.domain.toString() || ''
+
+    await ctx.store.save<PublicConfig>(pubConfig)
+    newNode.publicConfig = pubConfig
+  }
+
+  const interfacesPromisses = nodeEvent.interfaces.map(intf => {
+    const newInterface = new Interfaces()
+    newInterface.id = ctx.event.id
+    newInterface.node = newNode
+    newInterface.name = intf.name.toString()
+    newInterface.mac = intf.mac.toString()
+    newInterface.ips = intf.ips.map(ip => ip.toString()).join(',')
+    return ctx.store.save<Interfaces>(newInterface)
+  })
+
+  await Promise.all(interfacesPromisses)
 }
 
 export async function nodeUpdated(ctx: EventHandlerContext) {
@@ -121,10 +145,13 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
   savedNode.nodeID = nodeEvent.id
   savedNode.twinID = nodeEvent.twinId
 
-  savedNode.sru = nodeEvent.resources.sru
-  savedNode.hru = nodeEvent.resources.hru
-  savedNode.mru = nodeEvent.resources.mru
-  savedNode.cru = nodeEvent.resources.cru
+  if (savedNode.resourcesTotal) {
+    savedNode.resourcesTotal.sru = nodeEvent.resources.sru
+    savedNode.resourcesTotal.hru = nodeEvent.resources.hru
+    savedNode.resourcesTotal.mru = nodeEvent.resources.mru
+    savedNode.resourcesTotal.cru = nodeEvent.resources.cru
+    await ctx.store.save<NodeResourcesTotal>(savedNode.resourcesTotal)
+  }
 
   savedNode.country = nodeEvent.country.toString()
   savedNode.city = nodeEvent.city.toString()
@@ -198,9 +225,25 @@ export async function nodeDeleted(ctx: EventHandlerContext) {
   const nodeID = new TfgridModuleNodeDeletedEvent(ctx).asV9
 
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
-
   
   if (savedNode) {
+    const resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
+    if (resourcesTotal) {
+      await ctx.store.remove(resourcesTotal)
+    }
+    const resourcesFree = await ctx.store.get(NodeResourcesFree, { where: { node: savedNode } })
+    if (resourcesFree) {
+      await ctx.store.remove(resourcesFree)
+    }
+    const resourcesUsed = await ctx.store.get(NodeResourcesUsed, { where: { node: savedNode } })
+    if (resourcesUsed) {
+      await ctx.store.remove(resourcesUsed)
+    }
+    const pubConfig = await ctx.store.get(PublicConfig, { where: { node: savedNode } })
+    if (pubConfig) {
+      await ctx.store.remove(pubConfig)
+    }
+
     if (savedNode.interfaces) {
       const promises = savedNode.interfaces.map(int => {
         return ctx.store.remove(int)
@@ -234,15 +277,14 @@ export async function nodePublicConfigStored(ctx: EventHandlerContext) {
 
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
 
-  if (savedNode) {
-    const pubConfig = new PublicConfig()
-    pubConfig.ipv4 = config.ipv4.toString()
-    pubConfig.ipv6 = config.ipv6.toString()
-    pubConfig.gw4 = config.gw4.toString()
-    pubConfig.gw6 = config.gw6.toString()
-    pubConfig.domain = config.domain.toString() || ''
+  if (!savedNode) return
+  if (!savedNode.publicConfig) return
 
-    savedNode.publicConfig = pubConfig
-    await ctx.store.save<Node>(savedNode)
-  }
+  savedNode.publicConfig.ipv4 = config.ipv4.toString()
+  savedNode.publicConfig.ipv6 = config.ipv6.toString()
+  savedNode.publicConfig.gw4 = config.gw4.toString()
+  savedNode.publicConfig.gw6 = config.gw6.toString()
+  savedNode.publicConfig.domain = config.domain.toString() || ''
+
+  await ctx.store.save<Node>(savedNode)
 }
