@@ -201,10 +201,12 @@ export async function nodeDeleted(ctx: EventHandlerContext) {
 
   
   if (savedNode) {
-    const promises = savedNode.interfaces.map(int => {
-      return ctx.store.remove(int)
-    })
-    await Promise.all(promises)
+    if (savedNode.interfaces) {
+      const promises = savedNode.interfaces.map(int => {
+        return ctx.store.remove(int)
+      })
+      await Promise.all(promises)
+    }
     await ctx.store.remove(savedNode)
   }
 }

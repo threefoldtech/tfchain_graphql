@@ -52,7 +52,7 @@ export async function contractCreated(ctx: EventHandlerContext) {
       const savedIp = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() } })
 
       if (savedIp) {
-        savedIp.contractId = contractCreatedEventV9.contractId
+        savedIp.contractId = newNodeContract.contractID
         await ctx.store.save<PublicIp>(savedIp)
       }
     })
