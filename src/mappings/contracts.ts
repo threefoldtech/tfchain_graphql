@@ -52,7 +52,7 @@ export async function contractCreated(ctx: EventHandlerContext) {
       const savedIp = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() } })
 
       if (savedIp) {
-        // savedIp.contractId = newNodeContract.contractId
+        savedIp.contractId = contractCreatedEventV9.contractId
         await ctx.store.save<PublicIp>(savedIp)
       }
     })
@@ -138,7 +138,8 @@ export async function nodeContractCanceled(ctx: EventHandlerContext) {
 
   if (!savedContract) return
 
-  // const savedIps = await ctx.store.getMany(PublicIp, { where: { contractId: id.toNumber() } })
+  // savedContract.
+  // const savedIps = await ctx.store.get(PublicIp, { where: { contractID: cancelEvent[0] } })
   // await savedIps.forEach(async ip => {
   //   ip.contractId = 0
   //   await store.save<PublicIp>(ip)

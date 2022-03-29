@@ -98,8 +98,6 @@ export async function nodeStored(ctx: EventHandlerContext) {
   // await Promise.all(interfacesPromisses)
 }
 
-// // TODO
-
 export async function nodeUpdated(ctx: EventHandlerContext) {
   const node  = new TfgridModuleNodeUpdatedEvent(ctx)
 
@@ -141,18 +139,6 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
   await ctx.store.save<Location>(newLocation)
 
   savedNode.location = newLocation
-  
-  // if (nodeEvent.publicConfig) {
-  //   const pubConfig = new PublicConfig()
-  //   pubConfig.ipv4 = nodeEvent.publicConfig.ipv4.toString()
-  //   pubConfig.ipv6 = nodeEvent.publicConfig.ipv6.toString()
-  //   pubConfig.gw4 = nodeEvent.publicConfig.gw4.toString()
-  //   pubConfig.gw6 = nodeEvent.publicConfig.gw6.toString()
-  //   pubConfig.domain = nodeEvent.publicConfig.domain.toString() || ''
-
-  //   await ctx.store.save<PublicConfig>(pubConfig)
-  //   savedNode.publicConfig = pubConfig
-  // }
 
   if (node.isV28 || node.isV43) {
     const nodeAsV27 = node.asV28 || node.asV43
@@ -213,11 +199,12 @@ export async function nodeDeleted(ctx: EventHandlerContext) {
 
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
 
+  
   if (savedNode) {
-    // const interfaces = await ctx.store.getMany(Interfaces, { where: { node: savedNode }})
-    // for (let i of interfaces) {
-    //   await store.remove(i)
-    // }
+    const promises = savedNode.interfaces.map(int => {
+      return ctx.store.remove(int)
+    })
+    await Promise.all(promises)
     await ctx.store.remove(savedNode)
   }
 }
