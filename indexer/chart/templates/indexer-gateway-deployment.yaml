@@ -35,7 +35,7 @@ spec:
               value: "true"
             - name: HYDRA_INDEXER_STATUS_SERVICE
               value: {{ .Values.indexer_status_service_url }}
-          image: subsquid/hydra-indexer-gateway:4
+          image: subsquid/hydra-indexer-gateway:5
           name: indexer-gateway
           ports:
             - containerPort: 8080

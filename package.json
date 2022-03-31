@@ -6,22 +6,32 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "typegen": "hydra-typegen typegen manifest.yml",
-    "codegen": "hydra-cli codegen",
-    "db:create": "hydra-cli db:create",
-    "db:create-migration": "hydra-cli db:create-migration",
-    "db:migrate": "hydra-cli db:migrate",
-    "db:up": "docker-compose up -d db",
+    "build": "rm -rf lib && tsc",
+    "db:create-migration": "sqd db create-migration",
     "db:init": "node init-countries.js",
-    "processor:migrate": "hydra-processor migrate",
-    "processor:start": "hydra-processor run",
-    "query-node:start": "ts-node --type-check ./generated/server/index.ts"
+    "db:up": "docker-compose up -d db",
+    "process": "node db/init.js && node init-countries.js && node -r dotenv/config lib/processor.js",
+    "api": "squid-graphql-server",
+    "codegen": "sqd codegen",
+    "typegen": "squid-substrate-typegen typegen/typegen.json",
+    "lint": "npm run lint:prod -- --fix",
+    "lint:prod": "eslint . --ext .ts --ignore-path .gitignore --max-warnings 0"
   },
   "dependencies": {
-    "@subsquid/hydra-cli": "4.2.0-alpha.0",
-    "@subsquid/hydra-processor": "4.2.0-alpha.0",
-    "@subsquid/hydra-typegen": "4.2.0-alpha.0",
+    "@subsquid/graphql-server": "^0.1.5",
+    "@subsquid/ss58": "^0.0.4",
+    "@subsquid/substrate-processor": "^0.6.1",
+    "axios": "^0.26.1",
+    "dotenv": "^16.0.0",
+    "lodash": "^4.17.21",
+    "pg-format": "^1.0.4",
     "substrate-tfgrid-ts-types": "^0.4.0",
-    "tslib": "^2.0.0"
+    "typeorm": "^0.2.45"
+  },
+  "devDependencies": {
+    "@subsquid/cli": "^0.2.0",
+    "@subsquid/substrate-metadata-explorer": "^0.0.7",
+    "@subsquid/substrate-typegen": "^0.4.0",
+    "typescript": "^4.6.2"
   }
 }

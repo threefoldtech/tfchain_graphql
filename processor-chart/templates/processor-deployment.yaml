@@ -25,7 +25,7 @@ spec:
         - args:
             - sh
             - -c
-            - yarn && yarn processor:start
+            - npm && yarn run process
           env:
             - name: BATCH_SIZE
               valueFrom:
@@ -141,10 +141,15 @@ spec:
               configMapKeyRef:
                 key: GRAPHQL_SERVER_PORT
                 name: env
-          - name: INDEXER_ENDPOINT_URL
+          - name: ARCHIVE_URL
             valueFrom:
               configMapKeyRef:
-                key: INDEXER_ENDPOINT_URL
+                key: ARCHIVE_URL
+                name: env
+          - name: WS_URL
+            valueFrom:
+              configMapKeyRef:
+                key: WS_URL
                 name: env
           - name: PROJECT_NAME
             valueFrom:
@@ -162,13 +167,13 @@ spec:
           ports:
             - containerPort: 4000
           resources: {}
-      initContainers:
-      - name: init-processor
-        image: "{{ .Values.image.processor.repository }}:{{ .Values.image.processor.tag | default .Chart.AppVersion }}"
-        imagePullPolicy: {{ .Values.image.processor.pullPolicy }}
-        command: ['/bin/sh', '-c', 'yarn && yarn db:migrate && yarn processor:migrate && yarn db:init']
-        envFrom:
-          - configMapRef:
-              name: env
+      # initContainers:
+      # - name: init-processor
+      #   image: "{{ .Values.image.processor.repository }}:{{ .Values.image.processor.tag | default .Chart.AppVersion }}"
+      #   imagePullPolicy: {{ .Values.image.processor.pullPolicy }}
+      #   command: ['/bin/sh', '-c', 'yarn && yarn db:migrate && yarn processor:migrate && yarn db:init']
+      #   envFrom:
+      #     - configMapRef:
+      #         name: env
       restartPolicy: Always
 status: {}

@@ -81,6 +81,9 @@ db_host: processor-db
 # points to local indexer-gateway
 indexer_endpoint: http://indexer-gateway:4010/v1/graphql
 
+# ws_url: wss://tfchain.test.grid.tf
+ws_url: 
+
 volume:
   size: 5Gi
   existingpersistentVolumeClaim: ""

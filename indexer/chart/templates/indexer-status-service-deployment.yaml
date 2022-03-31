@@ -25,7 +25,7 @@ spec:
               value: "8081"
             - name: REDIS_URI
               value: redis://redis:6379/1
-          image: subsquid/hydra-indexer-status-service:4
+          image: subsquid/hydra-indexer-status-service:5
           name: indexer-status-service
           resources: {}
       restartPolicy: Always

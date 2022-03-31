@@ -40,19 +40,19 @@ spec:
               value: postgres
             - name: REDIS_URI
               value: "redis://redis:6379/1"
-            - name: TYPES_JSON
-              value: /home/hydra/types.json
+            - name: BUNDLE_TYPES
+              value: /configs/typesBundle.json
             - name: WORKERS_NUMBER
               value: "1"
             - name: WS_PROVIDER_ENDPOINT_URI
               value: {{ .Values.ws_endpoint }}
-          image: subsquid/hydra-indexer:4
+          image: subsquid/hydra-indexer:5
           name: indexer
           resources: {}
           volumeMounts:
-            - mountPath: /home/hydra/types.json
+            - mountPath: /configs/typesBundle.json
               name: indexer-config
-              subPath: types.json
+              subPath: typesBundle.json
       volumes:
         - name: indexer-config
           configMap:

@@ -11,10 +11,10 @@ services:
       POSTGRES_PASSWORD: postgres
 
   indexer:
-    image: subsquid/hydra-indexer:4
+    image: subsquid/hydra-indexer:5
     restart: unless-stopped
     environment:
-      - WORKERS_NUMBER=1
+      - WORKERS_NUMBER=5
       # don't change name
       - DB_NAME=indexer-db
       - DB_HOST=db
@@ -24,9 +24,9 @@ services:
       - REDIS_URI=redis://redis:6379/1
       - BLOCK_HEIGHT=${START_HEIGHT}
       - WS_PROVIDER_ENDPOINT_URI=${WS_ENDPOINT}
-      - TYPES_JSON=types.json
+      - BUNDLE_TYPES=/configs/typesBundle.json
     volumes:
-      - "./types.json:/hydra/packages/hydra-indexer/types.json"
+      - "./typesBundle.json:/configs/typesBundle.json"
     depends_on:
       - db
       - redis
@@ -34,7 +34,7 @@ services:
       sh -c "yarn db:bootstrap && yarn start:prod"
 
   indexer-gateway:
-    image: subsquid/hydra-indexer-gateway:4
+    image: subsquid/hydra-indexer-gateway:5
     restart: unless-stopped
     depends_on:
       - redis
@@ -54,7 +54,7 @@ services:
       - HYDRA_INDEXER_STATUS_SERVICE=http://indexer-status-service:8081/status
 
   indexer-status-service:
-    image: subsquid/hydra-indexer-status-service:4
+    image: subsquid/hydra-indexer-status-service:5
     restart: unless-stopped
     depends_on:
       - redis

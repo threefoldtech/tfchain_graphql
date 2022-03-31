@@ -58,7 +58,7 @@ type PublicIp @entity {
   farm: Farm!
   gateway: String!
   ip: String!
-  contract_id: Int!
+  contractId: BigInt!
 }
 
 type Node @entity {
@@ -69,19 +69,42 @@ type Node @entity {
   location: Location!
   country: String
   city: String
-  hru: BigInt
-  sru: BigInt
-  cru: BigInt
-  mru: BigInt
-  publicConfig: PublicConfig
-  uptime: Int
+  publicConfig: PublicConfig @derivedFrom(field: "node")
+  resourcesTotal: NodeResourcesTotal @derivedFrom(field: "node")
+  resourcesUsed: NodeResourcesUsed @derivedFrom(field: "node")
+  resourcesFree: NodeResourcesFree @derivedFrom(field: "node")
+  uptime: BigInt
   created: Int!
-  farming_policy_id: Int!
+  farmingPolicyId: Int!
   interfaces: [Interfaces!] @derivedFrom(field: "node")
-  certificationType: CertificationType!
+  certificationType: CertificationType
   secure: Boolean
   virtualized: Boolean
   serialNumber: String
+}
+
+type NodeResourcesTotal @entity {
+  node: Node! @unique
+  hru: BigInt!
+  sru: BigInt! 
+  cru: BigInt!
+  mru: BigInt!
+}
+
+type NodeResourcesUsed @entity {
+  node: Node! @unique
+  hru: BigInt!
+  sru: BigInt!
+  cru: BigInt!
+  mru: BigInt!
+}
+
+type NodeResourcesFree @entity {
+  node: Node! @unique
+  hru: BigInt!
+  sru: BigInt!
+  cru: BigInt!
+  mru: BigInt!
 }
 
 type Interfaces @entity {
@@ -96,7 +119,8 @@ enum CertificationType {
   Certified
 }
 
-type PublicConfig @jsonField {
+type PublicConfig @entity {
+  node: Node! @unique
   ipv4: String
   ipv6: String
   gw4: String
@@ -117,11 +141,11 @@ type PricingPolicy @entity {
   cu: Policy!
   nu: Policy!
   ipu: Policy!
-  foundation_account: String!
-  certified_sales_account: String!
+  foundationAccount: String!
+  certifiedSalesAccount: String!
 }
 
-type Policy @jsonField {
+type Policy {
   value: Int
   unit: String
 }
@@ -144,19 +168,27 @@ type City @entity {
 
 type NodeContract @entity {
   version: Int!
-  contractID: Int!
+  contractID: BigInt!
   twinID: Int!
   nodeID: Int!
-  deployment_data: String!
-  deployment_hash: String!
+  deploymentData: String!
+  deploymentHash: String!
   numberOfPublicIPs: Int!
   state: ContractState!
-  resourcesUsed: ContractUsedResources
+  resourcesUsed: ContractResources
+}
+
+type ContractResources @entity {
+  contract: NodeContract!
+  hru: BigInt!
+  sru: BigInt!
+  cru: BigInt!
+  mru: BigInt!
 }
 
 type NameContract @entity {
   version: Int!
-  contractID: Int!
+  contractID: BigInt!
   twinID: Int!
   name: String!
   state: ContractState!
@@ -175,18 +207,11 @@ type NruConsumption @entity {
   nru: BigInt
 }
 
-type ContractUsedResources @jsonField {
-  hru: BigInt
-  sru: BigInt
-  cru: BigInt
-  mru: BigInt
-}
-
 type ContractBillReport @entity {
-  contractID: Int!
-  discount_received: DiscountLevel!
-  amount_billed: BigInt!
-  timestamp: Int!
+  contractID: BigInt!
+  discountReceived: DiscountLevel!
+  amountBilled: BigInt!
+  timestamp: BigInt!
 }
 
 enum DiscountLevel {
@@ -205,20 +230,20 @@ type FarmingPolicy @entity {
   su: Int!
   nu: Int!
   ipv4: Int!
-  timestamp: Int!
-  certification_type: CertificationType!
+  timestamp: BigInt!
+  certificationType: CertificationType!
 }
 
 type UptimeEvent @entity {
   nodeID: Int!
-  uptime: Int!
-  timestamp: Int!
+  uptime: BigInt!
+  timestamp: BigInt!
 }
 
 type MintTransaction @entity {
   amount: BigInt!
   target: String!
-  block: Int! 
+  block: Int!
 }
 
 type BurnTransaction @entity {
