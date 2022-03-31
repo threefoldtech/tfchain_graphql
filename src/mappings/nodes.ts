@@ -6,7 +6,6 @@ import { TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, 
 
 export async function nodeStored(ctx: EventHandlerContext) {
   const node  = new TfgridModuleNodeStoredEvent(ctx)
-  
   let nodeEvent
   if (node.isV9) {
     nodeEvent = node.asV9
@@ -39,10 +38,10 @@ export async function nodeStored(ctx: EventHandlerContext) {
 
   newNode.location = newLocation
 
-  if (node.isV28 || node.isV43) {
-    const nodeAsV27 = node.asV28 || node.asV43
-    if (nodeAsV27.certificationType) {
-      const certificationTypeAsString = nodeAsV27.certificationType.toString()
+  if (node.isV28) {
+    const nodeAsV28 = node.asV28
+    if (nodeAsV28.certificationType) {
+      const certificationTypeAsString = nodeAsV28.certificationType.toString()
       let certType = CertificationType.Diy
       switch (certificationTypeAsString) {
         case 'Diy': 
@@ -63,6 +62,21 @@ export async function nodeStored(ctx: EventHandlerContext) {
     newNode.secure = nodeAsV43.secureBoot ? true : false
     newNode.virtualized = nodeAsV43.virtualized ? true : false
     newNode.serialNumber = nodeAsV43.serialNumber.toString()
+    if (nodeAsV43.certificationType) {
+      const certificationTypeAsString = nodeAsV43.certificationType.toString()
+      let certType = CertificationType.Diy
+      switch (certificationTypeAsString) {
+        case 'Diy': 
+          certType = CertificationType.Diy
+        break
+        case 'Certified': 
+          certType = CertificationType.Certified
+        break
+    }
+      newNode.certificationType = certType
+    } else {
+      newNode.certificationType = CertificationType.Diy
+    }
   }
 
   await ctx.store.save<Node>(newNode)
@@ -86,10 +100,10 @@ export async function nodeStored(ctx: EventHandlerContext) {
   const resourcesFree = new NodeResourcesFree()
   resourcesFree.node = newNode
   resourcesFree.id = ctx.event.id
-  resourcesFree.sru = BigInt(0)
-  resourcesFree.hru = BigInt(0)
-  resourcesFree.mru = BigInt(0)
-  resourcesFree.cru = BigInt(0)
+  resourcesFree.sru = nodeEvent.resources.sru
+  resourcesFree.hru = nodeEvent.resources.hru
+  resourcesFree.mru = nodeEvent.resources.mru
+  resourcesFree.cru = nodeEvent.resources.cru
 
   await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
   await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
@@ -109,17 +123,21 @@ export async function nodeStored(ctx: EventHandlerContext) {
     newNode.publicConfig = pubConfig
   }
 
-  const interfacesPromisses = nodeEvent.interfaces.map(intf => {
+  newNode.interfaces = []
+
+  const interfacesPromisses = nodeEvent.interfaces.map(async intf => {
     const newInterface = new Interfaces()
     newInterface.id = ctx.event.id
     newInterface.node = newNode
     newInterface.name = intf.name.toString()
     newInterface.mac = intf.mac.toString()
     newInterface.ips = intf.ips.map(ip => ip.toString()).join(',')
-    return ctx.store.save<Interfaces>(newInterface)
+    await ctx.store.save<Interfaces>(newInterface)
+    newNode.interfaces.push(newInterface)
   })
 
   await Promise.all(interfacesPromisses)
+  await ctx.store.save<Node>(newNode)
 }
 
 export async function nodeUpdated(ctx: EventHandlerContext) {
@@ -167,10 +185,10 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
 
   savedNode.location = newLocation
 
-  if (node.isV28 || node.isV43) {
-    const nodeAsV27 = node.asV28 || node.asV43
-    if (nodeAsV27.certificationType) {
-      const certificationTypeAsString = nodeAsV27.certificationType.toString()
+  if (node.isV28) {
+    const nodeAsV28 = node.asV28
+    if (nodeAsV28.certificationType) {
+      const certificationTypeAsString = nodeAsV28.certificationType.toString()
       let certType = CertificationType.Diy
       switch (certificationTypeAsString) {
         case 'Diy': 
@@ -191,11 +209,28 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     savedNode.secure = nodeAsV43.secureBoot ? true : false
     savedNode.virtualized = nodeAsV43.virtualized ? true : false
     savedNode.serialNumber = nodeAsV43.serialNumber.toString()
+    if (nodeAsV43.certificationType) {
+      const certificationTypeAsString = nodeAsV43.certificationType.toString()
+      let certType = CertificationType.Diy
+      switch (certificationTypeAsString) {
+        case 'Diy': 
+          certType = CertificationType.Diy
+        break
+        case 'Certified': 
+          certType = CertificationType.Certified
+        break
+    }
+      savedNode.certificationType = certType
+    } else {
+      savedNode.certificationType = CertificationType.Diy
+    }
   }
 
   await ctx.store.save<Node>(savedNode)
 
-  const interfacesPromisses = nodeEvent.interfaces.map(intf => {
+  savedNode.interfaces = []
+
+  const interfacesPromisses = nodeEvent.interfaces.map(async intf => {
     let newInterface
 
     if (savedNode.interfaces) {
@@ -216,9 +251,11 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     newInterface.node = savedNode
     newInterface.ips = intf.ips.map(ip => ip.toString()).join(',')
     
-    return ctx.store.save<Interfaces>(newInterface)
+    await ctx.store.save<Interfaces>(newInterface)
+    savedNode.interfaces.push(newInterface)
   })
   await Promise.all(interfacesPromisses)
+  await ctx.store.save<Node>(savedNode)
 }
 
 export async function nodeDeleted(ctx: EventHandlerContext) {
@@ -244,12 +281,22 @@ export async function nodeDeleted(ctx: EventHandlerContext) {
       await ctx.store.remove(pubConfig)
     }
 
-    if (savedNode.interfaces) {
-      const promises = savedNode.interfaces.map(int => {
-        return ctx.store.remove(int)
-      })
-      await Promise.all(promises)
-    }
+    const intfs = await ctx.store.find(Interfaces, { where: { node: savedNode }})
+    const promises = intfs.map(intf => {
+      return ctx.store.remove(intf)
+    })
+    await Promise.all(promises)
+    // console.log("-------------DELETING NODE-------------")
+    // console.log(savedNode.interfaces)
+
+    // if (savedNode.interfaces) {
+    //   console.log(savedNode.interfaces)
+    //   const promises = savedNode.interfaces.map(async int => {
+    //     const intf = await ctx.store.get(Interfaces, { where: { id: int.id }})
+    //     return ctx.store.remove(intf)
+    //   })
+    //   await Promise.all(promises)
+    // }
     await ctx.store.remove(savedNode)
   }
 }
