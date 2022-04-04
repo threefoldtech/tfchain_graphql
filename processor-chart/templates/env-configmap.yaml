@@ -11,7 +11,7 @@ data:
   DEBUG: index-builder:*
   GRAPHQL_SERVER_HOST: localhost
   GRAPHQL_SERVER_PORT: "4000"
-  ARCHIVE_URL: {{ .Values.indexer_endpoint }}
+  INDEXER_ENDPOINT_URL: {{ .Values.indexer_endpoint }}
   WS_URL: {{ .Values.ws_url }}
   PROJECT_NAME: tfgrid-graphql
   TYPEORM_LOGGING: error
