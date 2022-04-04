@@ -17,7 +17,7 @@ processor.setTypesBundle("typegen/typesBundle.json");
 processor.setBatchSize(500);
 
 processor.setDataSource({
-  archive: process.env.ARCHIVE_URL || 'http://localhost:4010/v1/graphql',
+  archive: process.env.INDEXER_ENDPOINT_URL || 'http://localhost:4010/v1/graphql',
   chain: process.env.WS_URL || 'ws://localhost:9944'
 });
 
