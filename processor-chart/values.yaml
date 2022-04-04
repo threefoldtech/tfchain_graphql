@@ -9,10 +9,6 @@ image:
     repository: tfchainprocessor
     pullPolicy: IfNotPresent
     tag: ""
-  querynode:
-    repository: tfchainquerynode
-    pullPolicy: IfNotPresent
-    tag: ""
 
 imagePullSecrets: []
 
