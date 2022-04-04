@@ -121,5 +121,7 @@ spec:
                 configMapKeyRef:
                   key: DB_USER
                   name: env
+            - name: DB_HOST
+              value: {{ .Values.db_host }}
       restartPolicy: Always
 status: {}
