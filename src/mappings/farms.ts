@@ -3,6 +3,7 @@ import {
 } from "@subsquid/substrate-processor";
 import { Farm, CertificationType, PublicIp } from "../model";
 import { TfgridModuleFarmStoredEvent, TfgridModuleFarmDeletedEvent, TfgridModuleFarmUpdatedEvent, TfgridModuleFarmPayoutV2AddressRegisteredEvent } from "../types/events";
+import * as ss58 from "@subsquid/ss58";
 
 export async function farmStored(ctx: EventHandlerContext) {
   const farmStoredEvent  = new TfgridModuleFarmStoredEvent(ctx).asV9
@@ -96,6 +97,12 @@ export async function farmPayoutV2AddressRegistered(ctx: EventHandlerContext) {
 
   if (savedFarm) {
     savedFarm.stellarAddress = stellarAddress.toString()
-    await ctx.store.save<Farm>(savedFarm)
+    try {
+      await ctx.store.save<Farm>(savedFarm)
+    } catch (error) {
+      const accountID = ss58.codec("substrate").encode(stellarAddress);
+      savedFarm.stellarAddress = accountID
+      await ctx.store.save<Farm>(savedFarm)
+    }
   }
 }
