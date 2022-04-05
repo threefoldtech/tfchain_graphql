@@ -193,7 +193,7 @@ export async function contractBilled(ctx: EventHandlerContext) {
 
 export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
   const usedResources = new SmartContractModuleUpdatedUsedResourcesEvent(ctx).asV49
-  
+
   const contractUsedResources = new ContractResources()
 
   const savedContract = await ctx.store.get(NodeContract, { where: { contractID: usedResources.contractId } })
@@ -204,6 +204,9 @@ export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
   contractUsedResources.sru = usedResources.used.sru
   contractUsedResources.hru = usedResources.used.hru
   contractUsedResources.mru = usedResources.used.mru
+  contractUsedResources.contract = savedContract
+
+  await ctx.store.save<ContractResources>(contractUsedResources)
 
   savedContract.resourcesUsed = contractUsedResources
 
@@ -212,21 +215,33 @@ export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
   const node = await ctx.store.get(Node, { where: { nodeID: savedContract.nodeID }})
   if (!node) return
 
+  const resourcesUsed = await ctx.store.get(NodeResourcesUsed, { where: { node: node }})
+  const resourcesFree = await ctx.store.get(NodeResourcesFree, { where: { node: node }})
+  const resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: node }})
+
   // update used
-  if (node.resourcesUsed) {
-    node.resourcesUsed.cru += usedResources.used.cru
-    node.resourcesUsed.sru += usedResources.used.sru
-    node.resourcesUsed.hru += usedResources.used.hru
-    node.resourcesUsed.mru += usedResources.used.mru 
+  if (resourcesUsed) {
+    resourcesUsed.cru += usedResources.used.cru
+    resourcesUsed.sru += usedResources.used.sru
+    resourcesUsed.hru += usedResources.used.hru
+    resourcesUsed.mru += usedResources.used.mru 
   }
 
   // update free
-  if (node.resourcesFree && node.resourcesUsed && node.resourcesTotal) {
-    node.resourcesFree.cru = node.resourcesTotal.cru - node.resourcesUsed.cru
-    node.resourcesFree.sru = node.resourcesTotal.sru - node.resourcesUsed.sru
-    node.resourcesFree.hru = node.resourcesTotal.hru - node.resourcesUsed.hru
-    node.resourcesFree.mru = node.resourcesTotal.mru - node.resourcesUsed.mru
+  if (resourcesFree && resourcesUsed && resourcesTotal) {
+    resourcesFree.cru = resourcesTotal.cru - resourcesUsed.cru
+    resourcesFree.sru = (BigInt(2) * resourcesTotal.sru) - resourcesUsed.sru
+    resourcesFree.hru = resourcesTotal.hru - resourcesUsed.hru
+    resourcesFree.mru = resourcesTotal.mru - resourcesUsed.mru
   }
 
-  await ctx.store.save<Node>(node)
+  if (resourcesUsed) {
+    await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
+  }
+  if (resourcesFree) {
+    await ctx.store.save<NodeResourcesFree>(resourcesFree)
+  }
+  if (resourcesTotal) {
+    await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
+  }
 }

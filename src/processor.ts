@@ -51,7 +51,7 @@ processor.addEventHandler('smartContractModule.ContractUpdated', ctx => contract
 processor.addEventHandler('smartContractModule.NodeContractCanceled', ctx => nodeContractCanceled(ctx));
 processor.addEventHandler('smartContractModule.NameContractCanceled', ctx => nameContractCanceled(ctx));
 processor.addEventHandler('smartContractModule.ContractBilled', ctx => contractBilled(ctx));
-processor.addEventHandler('smartContractModule.ContractUpdateUsedResources', ctx => contractUpdateUsedResources(ctx));
+processor.addEventHandler('smartContractModule.UpdatedUsedResources', ctx => contractUpdateUsedResources(ctx));
 
 processor.addEventHandler('tftBridgeModule.MintCompleted', ctx => mintCompleted(ctx));
 processor.addEventHandler('tfgridModule.BurnTransactionProcessed', ctx => burnProcessed(ctx));
