@@ -100,9 +100,7 @@ export async function farmPayoutV2AddressRegistered(ctx: EventHandlerContext) {
     try {
       await ctx.store.save<Farm>(savedFarm)
     } catch (error) {
-      const accountID = ss58.codec("substrate").encode(stellarAddress);
-      savedFarm.stellarAddress = accountID
-      await ctx.store.save<Farm>(savedFarm)
+      return
     }
   }
 }
