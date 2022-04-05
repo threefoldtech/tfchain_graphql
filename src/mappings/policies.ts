@@ -1,9 +1,10 @@
 import {
     EventHandlerContext,
   } from "@subsquid/substrate-processor";
-  import { PricingPolicy, FarmingPolicy, Policy, CertificationType } from "../model";
-  import { TfgridModulePricingPolicyStoredEvent, TfgridModuleFarmingPolicyStoredEvent } from "../types/events";
-  
+import { PricingPolicy, FarmingPolicy, Policy, CertificationType } from "../model";
+import { TfgridModulePricingPolicyStoredEvent, TfgridModuleFarmingPolicyStoredEvent } from "../types/events";
+import * as ss58 from "@subsquid/ss58";
+
 export async function pricingPolicyStored(ctx: EventHandlerContext) {
   let pricingPolicyEvent = new TfgridModulePricingPolicyStoredEvent(ctx).asV9
   
@@ -19,8 +20,11 @@ export async function pricingPolicyStored(ctx: EventHandlerContext) {
   pricingPolicy.pricingPolicyID = pricingPolicyEvent.id
   pricingPolicy.name = pricingPolicyEvent.name.toString()
 
-  pricingPolicy.foundationAccount = pricingPolicyEvent.foundationAccount.toString()
-  pricingPolicy.certifiedSalesAccount = pricingPolicyEvent.certifiedSalesAccount.toString()
+  const foundationAccount = ss58.codec("substrate").encode(pricingPolicyEvent.foundationAccount);
+  const certifiedSalesAccount = ss58.codec("substrate").encode(pricingPolicyEvent.certifiedSalesAccount);
+
+  pricingPolicy.foundationAccount = foundationAccount
+  pricingPolicy.certifiedSalesAccount = certifiedSalesAccount
 
   const suPolicy = new Policy()
   suPolicy.value = pricingPolicyEvent.su.value
