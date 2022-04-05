@@ -5,43 +5,58 @@ import {
   import { TfgridModulePricingPolicyStoredEvent, TfgridModuleFarmingPolicyStoredEvent } from "../types/events";
   
 export async function pricingPolicyStored(ctx: EventHandlerContext) {
-  let pricingPolicyEvent = new TfgridModulePricingPolicyStoredEvent(ctx).asV9
+  let pricingPolicyEvent = new TfgridModulePricingPolicyStoredEvent(ctx)
+
+  let pricingPolicyEventParsed
+
+  if (pricingPolicyEvent.isV9) {
+    pricingPolicyEventParsed = pricingPolicyEvent.asV9
+  } else if (pricingPolicyEvent.isV50) {
+    pricingPolicyEventParsed = pricingPolicyEvent.asV50
+  }
+
+  if (!pricingPolicyEventParsed) return
   
   let pricingPolicy = new PricingPolicy()
   pricingPolicy.id = ctx.event.id
 
-  const savedPolicy = await ctx.store.get(PricingPolicy, { where: { pricingPolicyID: pricingPolicyEvent.id }})
+  const savedPolicy = await ctx.store.get(PricingPolicy, { where: { pricingPolicyID: pricingPolicyEventParsed.id }})
   if (savedPolicy) {
     pricingPolicy = savedPolicy
   }
 
-  pricingPolicy.gridVersion = pricingPolicyEvent.version
-  pricingPolicy.pricingPolicyID = pricingPolicyEvent.id
-  pricingPolicy.name = pricingPolicyEvent.name.toString()
+  pricingPolicy.gridVersion = pricingPolicyEventParsed.version
+  pricingPolicy.pricingPolicyID = pricingPolicyEventParsed.id
+  pricingPolicy.name = pricingPolicyEventParsed.name.toString()
 
-  pricingPolicy.foundationAccount = pricingPolicyEvent.foundationAccount.toString()
-  pricingPolicy.certifiedSalesAccount = pricingPolicyEvent.certifiedSalesAccount.toString()
+  pricingPolicy.foundationAccount = pricingPolicyEventParsed.foundationAccount.toString()
+  pricingPolicy.certifiedSalesAccount = pricingPolicyEventParsed.certifiedSalesAccount.toString()
 
   const suPolicy = new Policy()
-  suPolicy.value = pricingPolicyEvent.su.value
-  suPolicy.unit = pricingPolicyEvent.su.unit.toString()
+  suPolicy.value = pricingPolicyEventParsed.su.value
+  suPolicy.unit = pricingPolicyEventParsed.su.unit.toString()
 
   const nuPolicy = new Policy()
-  nuPolicy.value = pricingPolicyEvent.nu.value
-  nuPolicy.unit = pricingPolicyEvent.nu.unit.toString()
+  nuPolicy.value = pricingPolicyEventParsed.nu.value
+  nuPolicy.unit = pricingPolicyEventParsed.nu.unit.toString()
 
   const cuPolicy = new Policy()
-  cuPolicy.value = pricingPolicyEvent.cu.value
-  cuPolicy.unit = pricingPolicyEvent.cu.unit.toString()
+  cuPolicy.value = pricingPolicyEventParsed.cu.value
+  cuPolicy.unit = pricingPolicyEventParsed.cu.unit.toString()
 
   const IpuPolicy = new Policy()
-  IpuPolicy.value = pricingPolicyEvent.ipu.value
-  IpuPolicy.unit = pricingPolicyEvent.ipu.unit.toString()
+  IpuPolicy.value = pricingPolicyEventParsed.ipu.value
+  IpuPolicy.unit = pricingPolicyEventParsed.ipu.unit.toString()
 
   pricingPolicy.su = suPolicy
   pricingPolicy.cu = cuPolicy
   pricingPolicy.nu = nuPolicy
   pricingPolicy.ipu = IpuPolicy
+
+  if (pricingPolicyEvent.isV50) {
+    let policyAsV50 = pricingPolicyEvent.asV50
+    pricingPolicy.dedicatedNodeDiscount = policyAsV50.discountForDedicatedNodes
+  }
 
   await ctx.store.save<PricingPolicy>(pricingPolicy)
 }

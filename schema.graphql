@@ -143,6 +143,7 @@ type PricingPolicy @entity {
   ipu: Policy!
   foundationAccount: String!
   certifiedSalesAccount: String!
+  dedicatedNodeDiscount: Int!
 }
 
 type Policy {
@@ -191,6 +192,14 @@ type NameContract @entity {
   contractID: BigInt!
   twinID: Int!
   name: String!
+  state: ContractState!
+}
+
+type RentContract @entity {
+  version: Int!
+  contractID: BigInt!
+  twinID: Int!
+  nodeID: Int!
   state: ContractState!
 }
 

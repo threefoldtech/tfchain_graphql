@@ -37,4 +37,7 @@ export class PricingPolicy {
 
   @Column_("text", {nullable: false})
   certifiedSalesAccount!: string
+
+  @Column_("integer", {nullable: false})
+  dedicatedNodeDiscount!: number
 }

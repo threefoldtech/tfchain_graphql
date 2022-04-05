@@ -389,6 +389,38 @@
               "serialNumber": "Vec<u8>"
             }
           }
+        },
+        {
+          "minmax": [
+            50,
+            null
+          ],
+          "types": {
+            "ContractData": {
+              "_enum": {
+                "NodeContract": "NodeContract",
+                "NameContract": "NameContract",
+                "RentContract": "RentContract"
+              }
+            },
+            "RentContract": {
+              "nodeId": "u32"
+            },
+            "PricingPolicy": {
+              "version": "u32",
+              "id": "u32",
+              "name": "Vec<u8>",
+              "su": "Policy",
+              "cu": "Policy",
+              "nu": "Policy",
+              "ipu": "Policy",
+              "uniqueName": "Policy",
+              "domainName": "Policy",
+              "foundationAccount": "AccountId",
+              "certifiedSalesAccount": "AccountId",
+              "discountForDedicatedNodes": "u8"
+            }
+          }
         }
       ]
     }

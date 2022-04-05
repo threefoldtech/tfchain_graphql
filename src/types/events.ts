@@ -5,6 +5,7 @@ import * as v25 from './v25'
 import * as v28 from './v28'
 import * as v43 from './v43'
 import * as v49 from './v49'
+import * as v50 from './v50'
 import * as v9 from './v9'
 
 export class BalancesTransferEvent {
@@ -86,14 +87,23 @@ export class SmartContractModuleContractCreatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV25
+  get isV50(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.ContractCreated') === '9236d6ceb4b18a4a48634488b1cde9b5b395eff965ccc88c9ce3c2425d27e50f'
   }
 
-  get asLatest(): v25.Contract {
+  get asV50(): v50.Contract {
+    assert(this.isV50)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
     deprecateLatest()
-    return this.asV25
+    return this.isV50
+  }
+
+  get asLatest(): v50.Contract {
+    deprecateLatest()
+    return this.asV50
   }
 }
 
@@ -606,14 +616,23 @@ export class TfgridModulePricingPolicyStoredEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV9
+  get isV50(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.PricingPolicyStored') === '0f67e7bfdb642a68114325df76a8dc56ea54b43ae993499e316274c95e8cf8af'
   }
 
-  get asLatest(): v9.PricingPolicy {
+  get asV50(): v50.PricingPolicy {
+    assert(this.isV50)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
     deprecateLatest()
-    return this.asV9
+    return this.isV50
+  }
+
+  get asLatest(): v50.PricingPolicy {
+    deprecateLatest()
+    return this.asV50
   }
 }
 
