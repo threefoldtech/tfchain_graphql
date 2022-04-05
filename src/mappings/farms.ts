@@ -96,8 +96,8 @@ export async function farmPayoutV2AddressRegistered(ctx: EventHandlerContext) {
   const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmID } })
 
   if (savedFarm) {
-    savedFarm.stellarAddress = stellarAddress.toString()
     try {
+      savedFarm.stellarAddress = stellarAddress.toString()
       await ctx.store.save<Farm>(savedFarm)
     } catch (error) {
       return
