@@ -21,9 +21,21 @@ async function main () {
         database: DB_NAME
     }
 
-    const countries = await getCountries()
+    let countries = []
+    try {
+        countries = await getCountries()
+    } catch (error) {
+        console.log('--- No Countries were found, a restart is suggested ---')
+        process.exit(0)
+    }
 
-    const cities = await getCities()
+    let cities = []
+    try {
+        cities = await getCities()
+    } catch (error) {
+        console.log('--- No Cities were found, a restart is suggested ---')
+        process.exit(0)
+    }
     
     const pool = new Pool(config)
     pool.on('error', (err, client) => {
