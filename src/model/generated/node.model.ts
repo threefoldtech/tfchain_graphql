@@ -74,4 +74,10 @@ export class Node {
 
   @Column_("text", {nullable: true})
   serialNumber!: string | undefined | null
+
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  createdAt!: bigint
+
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  updatedAt!: bigint
 }
