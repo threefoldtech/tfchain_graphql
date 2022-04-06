@@ -81,6 +81,8 @@ type Node @entity {
   secure: Boolean
   virtualized: Boolean
   serialNumber: String
+  createdAt: BigInt!
+  updatedAt: BigInt!
 }
 
 type NodeResourcesTotal @entity {

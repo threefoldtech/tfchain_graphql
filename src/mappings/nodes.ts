@@ -24,6 +24,9 @@ export async function nodeStored(ctx: EventHandlerContext) {
   newNode.nodeID = nodeEvent.id
   newNode.twinID = nodeEvent.twinId
 
+  newNode.createdAt = BigInt(ctx.event.blockTimestamp)
+  newNode.updatedAt = BigInt(ctx.event.blockTimestamp)
+
   newNode.country = nodeEvent.country.toString()
   newNode.city = nodeEvent.city.toString()
 
@@ -161,6 +164,7 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
   savedNode.farmID = nodeEvent.farmId
   savedNode.nodeID = nodeEvent.id
   savedNode.twinID = nodeEvent.twinId
+  savedNode.updatedAt = BigInt(ctx.event.blockTimestamp)
 
   if (savedNode.resourcesTotal) {
     savedNode.resourcesTotal.sru = nodeEvent.resources.sru
