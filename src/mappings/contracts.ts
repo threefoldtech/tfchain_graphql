@@ -214,7 +214,6 @@ export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
   const savedContract = await ctx.store.get(NodeContract, { where: { contractID: usedResources.contractId } })
   if (!savedContract) return
 
-  contractUsedResources.id = ctx.event.id
   contractUsedResources.cru = usedResources.used.cru
   contractUsedResources.sru = usedResources.used.sru
   contractUsedResources.hru = usedResources.used.hru
