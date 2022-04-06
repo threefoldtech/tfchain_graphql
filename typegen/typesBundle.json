@@ -259,6 +259,11 @@
       "hru": "u64",
       "mru": "u64",
       "nru": "u64"
+    },
+    "ContractLock": {
+      "amount_locked": "Balance",
+      "lock_updated": "u64",
+      "cycles": "u16"
     }
   },
   "versions": [
@@ -394,6 +399,38 @@
           "secure_boot": "bool",
           "virtualized": "bool",
           "serial_number": "Vec<u8>"
+        }
+      }
+    },
+    {
+      "minmax": [
+        50,
+        null
+      ],
+      "types": {
+        "ContractData": {
+          "_enum": {
+            "NodeContract": "NodeContract",
+            "NameContract": "NameContract",
+            "RentContract": "RentContract"
+          }
+        },
+        "RentContract": {
+          "nodeId": "u32"
+        },
+        "PricingPolicy": {
+          "version": "u32",
+          "id": "u32",
+          "name": "Vec<u8>",
+          "su": "Policy",
+          "cu": "Policy",
+          "nu": "Policy",
+          "ipu": "Policy",
+          "unique_name": "Policy",
+          "domain_name": "Policy",
+          "foundation_account": "AccountId",
+          "certified_sales_account": "AccountId",
+          "discount_for_dedicated_nodes": "u8"
         }
       }
     }

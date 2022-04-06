@@ -141,7 +141,18 @@ data:
     \             \"interfaces\": \"Vec<Interface>\",\n              \"certificationType\":
     \"CertificationType\",\n              \"secureBoot\": \"bool\",\n              \"virtualized\":
     \"bool\",\n              \"serialNumber\": \"Vec<u8>\"\n            }\n          }\n
-    \       }\n      ]\n    }\n  }\n}"
+    \       },\n        {\n          \"minmax\": [\n            50,\n            null\n
+    \         ],\n          \"types\": {\n            \"ContractData\": {\n              \"_enum\":
+    {\n                \"NodeContract\": \"NodeContract\",\n                \"NameContract\":
+    \"NameContract\",\n                \"RentContract\": \"RentContract\"\n              }\n
+    \           },\n            \"RentContract\": {\n              \"nodeId\": \"u32\"\n
+    \           },\n            \"PricingPolicy\": {\n              \"version\": \"u32\",\n
+    \             \"id\": \"u32\",\n              \"name\": \"Vec<u8>\",\n              \"su\":
+    \"Policy\",\n              \"cu\": \"Policy\",\n              \"nu\": \"Policy\",\n
+    \             \"ipu\": \"Policy\",\n              \"uniqueName\": \"Policy\",\n
+    \             \"domainName\": \"Policy\",\n              \"foundationAccount\":
+    \"AccountId\",\n              \"certifiedSalesAccount\": \"AccountId\",\n              \"discountForDedicatedNodes\":
+    \"u8\"\n            }\n          }\n        }\n      ]\n    }\n  }\n}"
 kind: ConfigMap
 metadata:
   creationTimestamp: null

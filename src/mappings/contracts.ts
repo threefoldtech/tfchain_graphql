@@ -2,7 +2,7 @@ import {
   EventHandlerContext,
   Store
 } from "@subsquid/substrate-processor";
-import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractResources, NodeResourcesFree, NodeResourcesUsed, NodeResourcesTotal, Node } from "../model";
+import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractResources, NodeResourcesFree, NodeResourcesUsed, NodeResourcesTotal, Node, RentContract } from "../model";
 import { SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent, SmartContractModuleNodeContractCanceledEvent, SmartContractModuleNameContractCanceledEvent, SmartContractModuleContractBilledEvent, SmartContractModuleUpdatedUsedResourcesEvent } from "../types/events";
 import { Contract } from "../types/v9";
 
@@ -14,6 +14,8 @@ export async function contractCreated(ctx: EventHandlerContext) {
     contractEvent = contractCreatedEvent.asV9
   } else if (contractCreatedEvent.isV25) {
     contractEvent = contractCreatedEvent.asV25
+  } else if (contractCreatedEvent.isV50) {
+    contractEvent = contractCreatedEvent.asV50
   }
 
   if (!contractEvent) return
@@ -56,6 +58,19 @@ export async function contractCreated(ctx: EventHandlerContext) {
         await ctx.store.save<PublicIp>(savedIp)
       }
     })
+  } else if (contractEvent.contractType.__kind === "RentContract") {
+    let newRentContract = new RentContract()
+    newRentContract.id = ctx.event.id
+
+    contract = contractEvent.contractType.value
+
+    newRentContract.contractID = contractEvent.contractId
+    newRentContract.version = contractEvent.version
+    newRentContract.twinID = contractEvent.twinId
+    newRentContract.nodeID = contract.nodeId
+    newRentContract.state = state
+
+    await ctx.store.save<RentContract>(newRentContract)
   }
 }
 
