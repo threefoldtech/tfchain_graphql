@@ -207,6 +207,20 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     }
   }
 
+  if (nodeEvent.publicConfig) {
+    const pubConfig = new PublicConfig()
+    pubConfig.node = savedNode
+    pubConfig.id = ctx.event.id
+    pubConfig.ipv4 = nodeEvent.publicConfig.ipv4.toString()
+    pubConfig.ipv6 = nodeEvent.publicConfig.ipv6.toString()
+    pubConfig.gw4 = nodeEvent.publicConfig.gw4.toString()
+    pubConfig.gw6 = nodeEvent.publicConfig.gw6.toString()
+    pubConfig.domain = nodeEvent.publicConfig.domain.toString() || ''
+
+    await ctx.store.save<PublicConfig>(pubConfig)
+    savedNode.publicConfig = pubConfig
+  }
+
   if (node.isV43) {
     const nodeAsV43 = node.asV43 
     savedNode.secure = nodeAsV43.secureBoot ? true : false
@@ -328,13 +342,21 @@ export async function nodePublicConfigStored(ctx: EventHandlerContext) {
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
 
   if (!savedNode) return
-  if (!savedNode.publicConfig) return
+  let publicConfig = new PublicConfig()
+  if (savedNode.publicConfig) {
+    publicConfig = savedNode.publicConfig
+  }
 
-  savedNode.publicConfig.ipv4 = config.ipv4.toString()
-  savedNode.publicConfig.ipv6 = config.ipv6.toString()
-  savedNode.publicConfig.gw4 = config.gw4.toString()
-  savedNode.publicConfig.gw6 = config.gw6.toString()
-  savedNode.publicConfig.domain = config.domain.toString() || ''
+  console.log('saving pub config')
+  publicConfig.id = ctx.event.id
+  publicConfig.ipv4 = config.ipv4.toString()
+  publicConfig.ipv6 = config.ipv6.toString()
+  publicConfig.gw4 = config.gw4.toString()
+  publicConfig.gw6 = config.gw6.toString()
+  publicConfig.domain = config.domain.toString() || ''
+  publicConfig.node = savedNode
+
+  await ctx.store.save<PublicConfig>(publicConfig)
 
   await ctx.store.save<Node>(savedNode)
 }
