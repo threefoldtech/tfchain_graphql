@@ -227,7 +227,7 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
 
   await ctx.store.save<Node>(savedNode)
 
-  savedNode.interfaces = []
+  // savedNode.interfaces = []
 
   const interfacesPromisses = nodeEvent.interfaces.map(async intf => {
     let newInterface
@@ -239,12 +239,12 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
         newInterface = savedNode.interfaces[found]    
       } else {
         newInterface = new Interfaces()
+        newInterface.id = ctx.event.id
       }
     }
     
     if (!newInterface) return
 
-    newInterface.id = ctx.event.id
     newInterface.name = intf.name.toString()
     newInterface.mac = intf.mac.toString()
     newInterface.node = savedNode
