@@ -157,7 +157,6 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeEvent.id } })
   if (!savedNode) return
 
-  savedNode.id = ctx.event.id
   savedNode.gridVersion = nodeEvent.version
   savedNode.farmID = nodeEvent.farmId
   savedNode.nodeID = nodeEvent.id
