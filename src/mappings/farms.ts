@@ -106,9 +106,9 @@ export async function farmUpdated(ctx: EventHandlerContext) {
 
   await ctx.store.save<Farm>(savedFarm)
   
-  if (farmUpdatedEvent.isV50) {
-    const event = farmUpdatedEvent.asV50
-    savedFarm.dedicatedFarm = event.dedicatedFarm
+  let farm = ctx.event.params[0].value as Farm
+  if (farm.dedicatedFarm) {
+    savedFarm.dedicatedFarm = farm.dedicatedFarm
     await ctx.store.save<Farm>(savedFarm)
   }  
 }
