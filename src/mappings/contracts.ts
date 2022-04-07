@@ -153,30 +153,16 @@ export async function nodeContractCanceled(ctx: EventHandlerContext) {
 
   if (!savedContract) return
 
-  // // savedContract.
-  // const savedIps = await ctx.store.get(PublicIp, { where: { contractID: cancelEvent[0] } })
-  // await savedIps.forEach(async ip => {
-    //   ip.contractId = 0
-    //   await store.save<PublicIp>(ip)
-    // })
-    
   savedContract.state = ContractState.Deleted
   await ctx.store.save<NodeContract>(savedContract)
   
   const savedNode = await ctx.store.get(Node, { where: { nodeID: savedContract.nodeID }})
   if (!savedNode) return
     
-  const savedFarm = await ctx.store.get(Farm, { where: { farmID: savedNode.farmID }})
-  if (!savedFarm) return
-
-  if (savedFarm.publicIPs) {
-    await savedFarm.publicIPs.forEach(async ip => {
-      if (ip.contractId === savedContract.contractID) {
-        console.log('found ip, resetting back to 0')
-        ip.contractId = BigInt(0)
-        await ctx.store.save<PublicIp>(ip)
-      }
-    })
+  const savedPublicIP = await ctx.store.get(PublicIp, { where: { contractId: savedContract.contractID }})
+  if (savedPublicIP) {
+    savedPublicIP.contractId = BigInt(0)
+    await ctx.store.save<PublicIp>(savedPublicIP)
   }
 
   const usedResources = await ctx.store.get(ContractResources, { where: { contract: savedContract }})

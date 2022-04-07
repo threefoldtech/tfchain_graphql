@@ -3,7 +3,6 @@ import {
 } from "@subsquid/substrate-processor";
 import { Farm, CertificationType, PublicIp } from "../model";
 import { TfgridModuleFarmStoredEvent, TfgridModuleFarmDeletedEvent, TfgridModuleFarmUpdatedEvent, TfgridModuleFarmPayoutV2AddressRegisteredEvent } from "../types/events";
-import * as ss58 from "@subsquid/ss58";
 
 export async function farmStored(ctx: EventHandlerContext) {
   const farmStoredEvent  = new TfgridModuleFarmStoredEvent(ctx).asV9
@@ -29,6 +28,7 @@ export async function farmStored(ctx: EventHandlerContext) {
   }
 
   newFarm.certificationType = certType
+  newFarm.publicIPs = []
 
   await ctx.store.save<Farm>(newFarm)
 
@@ -53,31 +53,34 @@ export async function farmUpdated(ctx: EventHandlerContext) {
   const farmUpdatedEvent  = new TfgridModuleFarmUpdatedEvent(ctx).asV9
   
   const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmUpdatedEvent.id } })
-  
-  if (savedFarm) {
-    savedFarm.gridVersion = farmUpdatedEvent.version
-    savedFarm.name = farmUpdatedEvent.name.toString()
-    savedFarm.twinID = farmUpdatedEvent.twinId
-    savedFarm.pricingPolicyID = farmUpdatedEvent.pricingPolicyId
+  if (!savedFarm) return
 
-    const ipPromises = farmUpdatedEvent.publicIps.map(async ip => {
-      const newIP = new PublicIp()
+  savedFarm.gridVersion = farmUpdatedEvent.version
+  savedFarm.name = farmUpdatedEvent.name.toString()
+  savedFarm.twinID = farmUpdatedEvent.twinId
+  savedFarm.pricingPolicyID = farmUpdatedEvent.pricingPolicyId
 
-      const savedIP = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() }})
-      // ip is already there in storage, don't save it again
-      if (savedIP) return
+  await farmUpdatedEvent.publicIps.forEach(async ip => {
+    const savedIP = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() }})
+    // ip is already there in storage, don't save it again
+    if (savedIP) return
+    
+    const newIP = new PublicIp()
+    newIP.id = ctx.event.id
+    newIP.ip = ip.ip.toString()
+    newIP.gateway = ip.gateway.toString()
+    newIP.contractId = ip.contractId
+    newIP.farm = savedFarm
   
-      newIP.id = ctx.event.id
-      newIP.ip = ip.ip.toString()
-      newIP.gateway = ip.gateway.toString()
-      newIP.contractId = ip.contractId
-      newIP.farm = savedFarm
-  
-      return await ctx.store.save<PublicIp>(newIP)
-    })
+    await ctx.store.save<PublicIp>(newIP)
+    if (!savedFarm.publicIPs) {
+      savedFarm.publicIPs = []
+    }
+    savedFarm.publicIPs.push(newIP)
+  })
 
-    await Promise.all(ipPromises)
-  }
+  await ctx.store.save<Farm>(savedFarm)
+  console.log(`saved farm, public ips: ${savedFarm.publicIPs}`)
 }
 
 export async function farmDeleted(ctx: EventHandlerContext) {
