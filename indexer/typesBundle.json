@@ -414,7 +414,7 @@
               "pricingPolicyId": "u32",
               "certificationType": "CertificationType",
               "publicIps": "Vec<PublicIP>",
-              "dedicated_farm": "bool"
+              "dedicatedFarm": "bool"
             }
           }
         },
