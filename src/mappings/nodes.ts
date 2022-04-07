@@ -332,6 +332,7 @@ export async function nodeUptimeReported(ctx: EventHandlerContext) {
 
   if (savedNode) {
     savedNode.uptime = uptime
+    savedNode.updatedAt = BigInt(ctx.event.blockTimestamp)
     await ctx.store.save<Node>(savedNode)
   }
 }
