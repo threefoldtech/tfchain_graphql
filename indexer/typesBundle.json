@@ -405,7 +405,15 @@
             },
             "RentContract": {
               "nodeId": "u32"
-            },
+            }
+          }
+        },
+        {
+          "minmax": [
+            51,
+            null
+          ],
+          "types": {
             "PricingPolicy": {
               "version": "u32",
               "id": "u32",
