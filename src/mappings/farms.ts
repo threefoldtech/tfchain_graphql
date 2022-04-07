@@ -5,18 +5,28 @@ import { Farm, CertificationType, PublicIp } from "../model";
 import { TfgridModuleFarmStoredEvent, TfgridModuleFarmDeletedEvent, TfgridModuleFarmUpdatedEvent, TfgridModuleFarmPayoutV2AddressRegisteredEvent } from "../types/events";
 
 export async function farmStored(ctx: EventHandlerContext) {
-  const farmStoredEvent  = new TfgridModuleFarmStoredEvent(ctx).asV9
+  const farmStoredEvent  = new TfgridModuleFarmStoredEvent(ctx)
+
+  let farmStoredEventParsed
+  if (farmStoredEvent.isV9) {
+    farmStoredEventParsed = farmStoredEvent.asV9
+  } else if (farmStoredEvent.isV50) {
+    farmStoredEventParsed = farmStoredEvent.asV50
+  }
+
+  if (!farmStoredEventParsed) return
 
   const newFarm = new Farm()
   
   newFarm.id = ctx.event.id
-  newFarm.gridVersion = farmStoredEvent.version
-  newFarm.farmID = farmStoredEvent.id
-  newFarm.name = farmStoredEvent.name.toString()
-  newFarm.twinID = farmStoredEvent.twinId
-  newFarm.pricingPolicyID = farmStoredEvent.pricingPolicyId
+  newFarm.gridVersion = farmStoredEventParsed.version
+  newFarm.farmID = farmStoredEventParsed.id
+  newFarm.name = farmStoredEventParsed.name.toString()
+  newFarm.twinID = farmStoredEventParsed.twinId
+  newFarm.pricingPolicyID = farmStoredEventParsed.pricingPolicyId
+  newFarm.dedicatedFarm = false
 
-  const certificationTypeAsString = farmStoredEvent.certificationType.toString()
+  const certificationTypeAsString = farmStoredEventParsed.certificationType.toString()
   let certType = CertificationType.Diy
   switch (certificationTypeAsString) {
     case 'Diy': 
@@ -32,7 +42,7 @@ export async function farmStored(ctx: EventHandlerContext) {
 
   await ctx.store.save<Farm>(newFarm)
 
-  const ipPromises = farmStoredEvent.publicIps.map(ip => {
+  const ipPromises = farmStoredEventParsed.publicIps.map(ip => {
     const newIP = new PublicIp()
 
     newIP.id = ctx.event.id
@@ -47,20 +57,35 @@ export async function farmStored(ctx: EventHandlerContext) {
   })
   await Promise.all(ipPromises)
   await ctx.store.save<Farm>(newFarm)
+
+  if (farmStoredEvent.isV50) {
+    const event = farmStoredEvent.asV50
+    newFarm.dedicatedFarm = event.dedicatedFarm
+    await ctx.store.save<Farm>(newFarm)
+  }
 }
 
 export async function farmUpdated(ctx: EventHandlerContext) {
-  const farmUpdatedEvent  = new TfgridModuleFarmUpdatedEvent(ctx).asV9
+  const farmUpdatedEvent  = new TfgridModuleFarmUpdatedEvent(ctx)
+
+  let farmUpdatedEventParsed
+  if (farmUpdatedEvent.isV9) {
+    farmUpdatedEventParsed = farmUpdatedEvent.asV9
+  } else if (farmUpdatedEvent.isV50) {
+    farmUpdatedEventParsed = farmUpdatedEvent.asV50
+  }
   
-  const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmUpdatedEvent.id } })
+  if (!farmUpdatedEventParsed) return
+
+  const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmUpdatedEventParsed.id } })
   if (!savedFarm) return
 
-  savedFarm.gridVersion = farmUpdatedEvent.version
-  savedFarm.name = farmUpdatedEvent.name.toString()
-  savedFarm.twinID = farmUpdatedEvent.twinId
-  savedFarm.pricingPolicyID = farmUpdatedEvent.pricingPolicyId
+  savedFarm.gridVersion = farmUpdatedEventParsed.version
+  savedFarm.name = farmUpdatedEventParsed.name.toString()
+  savedFarm.twinID = farmUpdatedEventParsed.twinId
+  savedFarm.pricingPolicyID = farmUpdatedEventParsed.pricingPolicyId
 
-  await farmUpdatedEvent.publicIps.forEach(async ip => {
+  await farmUpdatedEventParsed.publicIps.forEach(async ip => {
     const savedIP = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() }})
     // ip is already there in storage, don't save it again
     if (savedIP) return
@@ -80,7 +105,12 @@ export async function farmUpdated(ctx: EventHandlerContext) {
   })
 
   await ctx.store.save<Farm>(savedFarm)
-  console.log(`saved farm, public ips: ${savedFarm.publicIPs}`)
+  
+  if (farmUpdatedEvent.isV50) {
+    const event = farmUpdatedEvent.asV50
+    savedFarm.dedicatedFarm = event.dedicatedFarm
+    await ctx.store.save<Farm>(savedFarm)
+  }  
 }
 
 export async function farmDeleted(ctx: EventHandlerContext) {

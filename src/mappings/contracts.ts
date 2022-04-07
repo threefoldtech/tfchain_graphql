@@ -2,9 +2,10 @@ import {
   EventHandlerContext,
   Store
 } from "@subsquid/substrate-processor";
-import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractResources, NodeResourcesFree, NodeResourcesUsed, NodeResourcesTotal, Node, RentContract, Farm } from "../model";
-import { SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent, SmartContractModuleNodeContractCanceledEvent, SmartContractModuleNameContractCanceledEvent, SmartContractModuleContractBilledEvent, SmartContractModuleUpdatedUsedResourcesEvent } from "../types/events";
+import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractResources, NodeResourcesFree, NodeResourcesUsed, NodeResourcesTotal, Node, RentContract, Farm, NruConsumption } from "../model";
+import { SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent, SmartContractModuleNodeContractCanceledEvent, SmartContractModuleNameContractCanceledEvent, SmartContractModuleContractBilledEvent, SmartContractModuleUpdatedUsedResourcesEvent, SmartContractModuleNruConsumptionReportReceivedEvent } from "../types/events";
 import { Contract } from "../types/v9";
+import { Contract as ContractV50 } from "../types/v50";
 
 export async function contractCreated(ctx: EventHandlerContext) {
   let contractCreatedEvent = new SmartContractModuleContractCreatedEvent(ctx)
@@ -29,9 +30,10 @@ export async function contractCreated(ctx: EventHandlerContext) {
     contract = contractEvent.contractType.value
     newNameContract.name = contract.name.toString()
     newNameContract.contractID = contractEvent.contractId
-    newNameContract.version = contractEvent.version
+    newNameContract.gridVersion = contractEvent.version
     newNameContract.twinID = contractEvent.twinId
     newNameContract.state = state
+    newNameContract.createdAt = BigInt(ctx.event.blockTimestamp)
     await ctx.store.save<NameContract>(newNameContract)
   }
   else if (contractEvent.contractType.__kind === "NodeContract") {
@@ -41,13 +43,14 @@ export async function contractCreated(ctx: EventHandlerContext) {
     contract = contractEvent.contractType.value
 
     newNodeContract.contractID = contractEvent.contractId
-    newNodeContract.version = contractEvent.version
+    newNodeContract.gridVersion = contractEvent.version
     newNodeContract.twinID = contractEvent.twinId
     newNodeContract.nodeID = contract.nodeId
     newNodeContract.numberOfPublicIPs = contract.publicIps
     newNodeContract.deploymentData = contract.deploymentData.toString()
     newNodeContract.deploymentHash = contract.deploymentHash.toString()
     newNodeContract.state = state
+    newNodeContract.createdAt = BigInt(ctx.event.blockTimestamp)
     await ctx.store.save<NodeContract>(newNodeContract)
 
     contract.publicIpsList.forEach(async ip => {
@@ -65,10 +68,11 @@ export async function contractCreated(ctx: EventHandlerContext) {
     contract = contractEvent.contractType.value
 
     newRentContract.contractID = contractEvent.contractId
-    newRentContract.version = contractEvent.version
+    newRentContract.gridVersion = contractEvent.version
     newRentContract.twinID = contractEvent.twinId
     newRentContract.nodeID = contract.nodeId
     newRentContract.state = state
+    newRentContract.createdAt = BigInt(ctx.event.blockTimestamp)
 
     await ctx.store.save<RentContract>(newRentContract)
   }
@@ -82,6 +86,8 @@ export async function contractUpdated(ctx: EventHandlerContext) {
     contractEvent = contractUpdatedEvent.asV9
   } else if (contractUpdatedEvent.isV25) {
     contractEvent = contractUpdatedEvent.asV25
+  } else if (contractUpdatedEvent.isV50) {
+    contractEvent = contractUpdatedEvent.asV50
   }
 
   if (!contractEvent) return
@@ -97,13 +103,13 @@ export async function contractUpdated(ctx: EventHandlerContext) {
   }
 }
 
-async function updateNodeContract(ctr: Contract, contract: NodeContract, store: Store) {
+async function updateNodeContract(ctr: any, contract: NodeContract, store: Store) {
   if (ctr.contractType.__kind !== "NodeContract") return
 
   const parsedNodeContract = ctr.contractType.value
 
   contract.contractID = ctr.contractId
-  contract.version = ctr.version
+  contract.gridVersion = ctr.version
   contract.twinID = ctr.twinId
   contract.nodeID = parsedNodeContract.nodeId
   contract.numberOfPublicIPs = parsedNodeContract.publicIps
@@ -123,13 +129,13 @@ async function updateNodeContract(ctr: Contract, contract: NodeContract, store: 
   await store.save<NodeContract>(contract)
 }
 
-async function updateNameContract(ctr: Contract, contract: NameContract, store: Store) {
+async function updateNameContract(ctr: any, contract: NameContract, store: Store) {
   if (ctr.contractType.__kind !== "NameContract") return
 
   const parsedNameContract = ctr.contractType.value
 
   contract.contractID = ctr.contractId
-  contract.version = ctr.version
+  contract.gridVersion = ctr.version
   contract.twinID = ctr.twinId
   contract.name = parsedNameContract.name.toString()
 
@@ -290,4 +296,18 @@ export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
   if (resourcesTotal) {
     await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
   }
+}
+
+export async function nruConsumptionReportReceived(ctx: EventHandlerContext) {
+  const nruConsumptionReportEvent = new SmartContractModuleNruConsumptionReportReceivedEvent(ctx).asV49
+
+  const nruConsumption = new NruConsumption()
+
+  nruConsumption.id = ctx.event.id
+  nruConsumption.contractID = nruConsumptionReportEvent.contractId
+  nruConsumption.nru = nruConsumptionReportEvent.nru
+  nruConsumption.timestamp = nruConsumptionReportEvent.timestamp
+  nruConsumption.window = nruConsumptionReportEvent.window
+
+  await ctx.store.save<NruConsumption>(nruConsumption)
 }

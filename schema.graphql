@@ -52,6 +52,7 @@ type Farm @entity {
   certificationType: CertificationType!
   publicIPs: [PublicIp!] @derivedFrom(field: "farm")
   stellarAddress: String
+  dedicatedFarm: Boolean
 }
 
 type PublicIp @entity {
@@ -170,7 +171,7 @@ type City @entity {
 }
 
 type NodeContract @entity {
-  version: Int!
+  gridVersion: Int!
   contractID: BigInt!
   twinID: Int!
   nodeID: Int!
@@ -179,6 +180,7 @@ type NodeContract @entity {
   numberOfPublicIPs: Int!
   state: ContractState!
   resourcesUsed: ContractResources
+  createdAt: BigInt!
 }
 
 type ContractResources @entity {
@@ -190,19 +192,21 @@ type ContractResources @entity {
 }
 
 type NameContract @entity {
-  version: Int!
+  gridVersion: Int!
   contractID: BigInt!
   twinID: Int!
   name: String!
   state: ContractState!
+  createdAt: BigInt!
 }
 
 type RentContract @entity {
-  version: Int!
+  gridVersion: Int!
   contractID: BigInt!
   twinID: Int!
   nodeID: Int!
   state: ContractState!
+  createdAt: BigInt!
 }
 
 enum ContractState {
@@ -212,8 +216,8 @@ enum ContractState {
 }
 
 type NruConsumption @entity {
-  contractID: Int!
-  timestamp: Int!
+  contractID: BigInt!
+  timestamp: BigInt!
   window: BigInt
   nru: BigInt
 }

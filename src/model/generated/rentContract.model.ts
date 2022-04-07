@@ -12,7 +12,7 @@ export class RentContract {
   id!: string
 
   @Column_("integer", {nullable: false})
-  version!: number
+  gridVersion!: number
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   contractID!: bigint
@@ -25,4 +25,7 @@ export class RentContract {
 
   @Column_("varchar", {length: 10, nullable: false})
   state!: ContractState
+
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  createdAt!: bigint
 }

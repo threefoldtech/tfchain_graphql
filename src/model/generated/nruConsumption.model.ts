@@ -10,11 +10,11 @@ export class NruConsumption {
   @PrimaryColumn_()
   id!: string
 
-  @Column_("integer", {nullable: false})
-  contractID!: number
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  contractID!: bigint
 
-  @Column_("integer", {nullable: false})
-  timestamp!: number
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  timestamp!: bigint
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
   window!: bigint | undefined | null

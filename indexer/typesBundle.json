@@ -405,6 +405,16 @@
             },
             "RentContract": {
               "nodeId": "u32"
+            },
+            "Farm": {
+              "version": "u32",
+              "id": "u32",
+              "name": "Vec<u8>",
+              "twinId": "u32",
+              "pricingPolicyId": "u32",
+              "certificationType": "CertificationType",
+              "publicIps": "Vec<PublicIP>",
+              "dedicated_farm": "bool"
             }
           }
         },

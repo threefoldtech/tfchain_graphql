@@ -12,8 +12,8 @@ export async function pricingPolicyStored(ctx: EventHandlerContext) {
 
   if (pricingPolicyEvent.isV9) {
     pricingPolicyEventParsed = pricingPolicyEvent.asV9
-  } else if (pricingPolicyEvent.isV50) {
-    pricingPolicyEventParsed = pricingPolicyEvent.asV50
+  } else if (pricingPolicyEvent.isV51) {
+    pricingPolicyEventParsed = pricingPolicyEvent.asV51
   }
 
   if (!pricingPolicyEventParsed) return
@@ -29,6 +29,7 @@ export async function pricingPolicyStored(ctx: EventHandlerContext) {
   pricingPolicy.gridVersion = pricingPolicyEventParsed.version
   pricingPolicy.pricingPolicyID = pricingPolicyEventParsed.id
   pricingPolicy.name = pricingPolicyEventParsed.name.toString()
+  pricingPolicy.dedicatedNodeDiscount = 0
 
   const foundationAccount = ss58.codec("substrate").encode(pricingPolicyEventParsed.foundationAccount);
   const certifiedSalesAccount = ss58.codec("substrate").encode(pricingPolicyEventParsed.certifiedSalesAccount);
@@ -57,8 +58,8 @@ export async function pricingPolicyStored(ctx: EventHandlerContext) {
   pricingPolicy.nu = nuPolicy
   pricingPolicy.ipu = IpuPolicy
 
-  if (pricingPolicyEvent.isV50) {
-    let policyAsV50 = pricingPolicyEvent.asV50
+  if (pricingPolicyEvent.isV51) {
+    let policyAsV50 = pricingPolicyEvent.asV51
     pricingPolicy.dedicatedNodeDiscount = policyAsV50.discountForDedicatedNodes
   }
 

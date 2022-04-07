@@ -347,7 +347,6 @@ export async function nodePublicConfigStored(ctx: EventHandlerContext) {
     publicConfig = savedNode.publicConfig
   }
 
-  console.log('saving pub config')
   publicConfig.id = ctx.event.id
   publicConfig.ipv4 = config.ipv4.toString()
   publicConfig.ipv6 = config.ipv6.toString()

@@ -34,4 +34,7 @@ export class Farm {
 
   @Column_("text", {nullable: true})
   stellarAddress!: string | undefined | null
+
+  @Column_("bool", {nullable: true})
+  dedicatedFarm!: boolean | undefined | null
 }

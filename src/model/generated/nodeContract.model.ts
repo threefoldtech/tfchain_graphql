@@ -13,7 +13,7 @@ export class NodeContract {
   id!: string
 
   @Column_("integer", {nullable: false})
-  version!: number
+  gridVersion!: number
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   contractID!: bigint
@@ -39,4 +39,7 @@ export class NodeContract {
   @Index_()
   @ManyToOne_(() => ContractResources, {nullable: true})
   resourcesUsed!: ContractResources | undefined | null
+
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  createdAt!: bigint
 }

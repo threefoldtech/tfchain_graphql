@@ -146,8 +146,12 @@ data:
     {\n                \"NodeContract\": \"NodeContract\",\n                \"NameContract\":
     \"NameContract\",\n                \"RentContract\": \"RentContract\"\n              }\n
     \           },\n            \"RentContract\": {\n              \"nodeId\": \"u32\"\n
-    \           }\n          }\n        },\n        {\n          \"minmax\": [\n            51,\n
-    \           null\n          ],\n          \"types\": {\n            \"PricingPolicy\":
+    \           },\n            \"Farm\": {\n              \"version\": \"u32\",\n
+    \             \"id\": \"u32\",\n              \"name\": \"Vec<u8>\",\n              \"twinId\":
+    \"u32\",\n              \"pricingPolicyId\": \"u32\",\n              \"certificationType\":
+    \"CertificationType\",\n              \"publicIps\": \"Vec<PublicIP>\",\n              \"dedicated_farm\":
+    \"bool\"\n            }\n          }\n        },\n        {\n          \"minmax\":
+    [\n            51,\n            null\n          ],\n          \"types\": {\n            \"PricingPolicy\":
     {\n              \"version\": \"u32\",\n              \"id\": \"u32\",\n              \"name\":
     \"Vec<u8>\",\n              \"su\": \"Policy\",\n              \"cu\": \"Policy\",\n
     \             \"nu\": \"Policy\",\n              \"ipu\": \"Policy\",\n              \"uniqueName\":
