@@ -46,7 +46,7 @@ export async function entityUpdated(ctx: EventHandlerContext) {
 export async function entityDeleted(ctx: EventHandlerContext) {
   const entityDeletedEvent = new TfgridModuleEntityDeletedEvent(ctx).asV9
 
-  const savedEntity = await ctx.store.get(Entity, { where: { entityId: entityDeletedEvent } })
+  const savedEntity = await ctx.store.get(Entity, { where: { entityID: entityDeletedEvent } })
 
   if (savedEntity) {
     ctx.store.remove(savedEntity)
