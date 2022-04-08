@@ -182,6 +182,7 @@ export async function nodeContractCanceled(ctx: EventHandlerContext) {
     resourcesUsed.sru -= usedResources.sru
     resourcesUsed.hru -= usedResources.hru
     resourcesUsed.mru -= usedResources.mru 
+    await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
   }
 
   // update free
@@ -190,12 +191,6 @@ export async function nodeContractCanceled(ctx: EventHandlerContext) {
     resourcesFree.sru = (BigInt(2) * resourcesTotal.sru) - resourcesUsed.sru
     resourcesFree.hru = resourcesTotal.hru - resourcesUsed.hru
     resourcesFree.mru = resourcesTotal.mru - resourcesUsed.mru
-  }
-
-  if (resourcesUsed) {
-    await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
-  }
-  if (resourcesFree) {
     await ctx.store.save<NodeResourcesFree>(resourcesFree)
   }
 }
@@ -276,10 +271,6 @@ export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
   
   const node = await ctx.store.get(Node, { where: { nodeID: savedContract.nodeID }})
   if (!node) return
-
-  if (savedContract.contractID === BigInt(23)) {
-    console.log('updating contract id 23 resources')
-  }
 
   const resourcesUsed = await ctx.store.get(NodeResourcesUsed, { where: { node: node }})
   const resourcesFree = await ctx.store.get(NodeResourcesFree, { where: { node: node }})

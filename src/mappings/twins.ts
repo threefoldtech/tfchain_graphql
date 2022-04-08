@@ -3,7 +3,7 @@ import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
 import { Twin, EntityProof } from "../model";
-import { TfgridModuleTwinStoredEvent, TfgridModuleTwinDeletedEvent, TfgridModuleTwinEntityStoredEvent, TfgridModuleTwinEntityRemovedEvent } from "../types/events";
+import { TfgridModuleTwinStoredEvent, TfgridModuleTwinDeletedEvent, TfgridModuleTwinEntityStoredEvent, TfgridModuleTwinEntityRemovedEvent, TfgridModuleTwinUpdatedEvent } from "../types/events";
 
 export async function twinStored(ctx: EventHandlerContext) {
   const twinEvent = new TfgridModuleTwinStoredEvent(ctx)
@@ -24,6 +24,18 @@ export async function twinStored(ctx: EventHandlerContext) {
   newTwin.ip = twin.ip.toString()
 
   await ctx.store.save<Twin>(newTwin)
+}
+
+export async function twinUpdated(ctx: EventHandlerContext) {
+  const twinEvent = new TfgridModuleTwinUpdatedEvent(ctx).asV9
+
+  const savedTwin = await ctx.store.get(Twin, { where: { twinID: twinEvent.id } })
+  if (!savedTwin) return
+
+  savedTwin.gridVersion = twinEvent.version
+  savedTwin.ip = twinEvent.ip.toString()
+
+  await ctx.store.save<Twin>(savedTwin)
 }
 
 export async function twinDeleted(ctx: EventHandlerContext) {

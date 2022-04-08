@@ -1,5 +1,5 @@
 import { balancesTransfer } from './mappings/balances'
-import { twinStored, twinDeleted, twinEntityStored, twinEntityRemoved } from './mappings/twins'
+import { twinStored, twinDeleted, twinEntityStored, twinEntityRemoved, twinUpdated } from './mappings/twins'
 import { nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported, nodePublicConfigStored } from './mappings/nodes'
 import { farmingPolicyStored, pricingPolicyStored } from './mappings/policies';
 import { farmDeleted, farmPayoutV2AddressRegistered, farmStored, farmUpdated } from './mappings/farms';
@@ -25,6 +25,7 @@ processor.setDataSource({
 processor.addEventHandler('balances.Transfer', ctx => balancesTransfer(ctx));
 
 processor.addEventHandler('tfgridModule.TwinStored', ctx => twinStored(ctx));
+processor.addEventHandler('tfgridModule.TwinUpdated', ctx => twinUpdated(ctx));
 processor.addEventHandler('tfgridModule.TwinDeleted', ctx => twinDeleted(ctx));
 processor.addEventHandler('tfgridModule.TwinEntityStored', ctx => twinEntityStored(ctx));
 processor.addEventHandler('tfgridModule.TwinEntityDeleted', ctx => twinEntityRemoved(ctx));

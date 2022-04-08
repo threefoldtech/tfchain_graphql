@@ -863,3 +863,28 @@ export class SmartContractModuleRentContractCanceledEvent {
     return this.asV50
   }
 }
+
+export class TfgridModuleTwinUpdatedEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'tfgridModule.TwinUpdated')
+  }
+
+  get isV9(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.TwinUpdated') === '227edfd1a5fd83edb4bfcd22ba5f7ebe5ef8464b8a7b2ddebfe56997c4982276'
+  }
+
+  get asV9(): v9.Twin {
+    assert(this.isV9)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV9
+  }
+
+  get asLatest(): v9.Twin {
+    deprecateLatest()
+    return this.asV9
+  }
+}
