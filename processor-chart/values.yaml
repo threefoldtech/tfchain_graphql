@@ -39,6 +39,10 @@ service:
   type: ClusterIP
   port: 80
 
+promService:
+  type: ClusterIP
+  port: 23100
+
 global:
   ingress:
     certresolver: le
