@@ -166,17 +166,28 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
   savedNode.twinID = nodeEvent.twinId
   savedNode.updatedAt = BigInt(ctx.event.blockTimestamp)
 
+  // Recalculate total / free resoures when a node get's updated
   let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
-  if (!resourcesTotal) {
-    resourcesTotal = new NodeResourcesTotal()
-    resourcesTotal.id = ctx.event.id
-    resourcesTotal.node = savedNode
+  if (resourcesTotal) {
+    resourcesTotal.sru = nodeEvent.resources.sru
+    resourcesTotal.hru = nodeEvent.resources.hru
+    resourcesTotal.mru = nodeEvent.resources.mru
+    resourcesTotal.cru = nodeEvent.resources.cru
+    await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
+  
+    // recalculate free resources
+    let resourcesFree = await ctx.store.get(NodeResourcesFree, { where: { node: savedNode } })
+    if (resourcesFree) {
+      let resourcesUsed = await ctx.store.get(NodeResourcesUsed, { where: { node: savedNode } })
+      if (resourcesUsed) {
+        resourcesFree.sru = resourcesTotal.sru - resourcesUsed.sru
+        resourcesFree.hru = resourcesTotal.hru - resourcesUsed.hru
+        resourcesFree.mru = resourcesTotal.mru - resourcesUsed.mru
+        resourcesFree.cru = resourcesTotal.cru - resourcesUsed.cru
+        await ctx.store.save<NodeResourcesFree>(resourcesFree)
+      }
+    }
   }
-  resourcesTotal.sru = nodeEvent.resources.sru
-  resourcesTotal.hru = nodeEvent.resources.hru
-  resourcesTotal.mru = nodeEvent.resources.mru
-  resourcesTotal.cru = nodeEvent.resources.cru
-  await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
 
   savedNode.country = nodeEvent.country.toString()
   savedNode.city = nodeEvent.city.toString()

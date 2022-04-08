@@ -15,6 +15,7 @@
     "tfgridModule.NodeDeleted",
     "tfgridModule.NodeUptimeReported",
     "tfgridModule.TwinStored",
+    "tfgridModule.TwinUpdated",
     "tfgridModule.TwinDeleted",
     "tfgridModule.TwinEntityStored",
     "tfgridModule.TwinEntityRemoved",

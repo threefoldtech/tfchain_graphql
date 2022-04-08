@@ -1,5 +1,5 @@
 apiVersion: v2
 name: tfchain-processor
 description: A chart for the tfchain graphql processor and query node
-version: 1.0.3
-appVersion: "2.1.1"
+version: 1.0.4
+appVersion: "2.1.2"

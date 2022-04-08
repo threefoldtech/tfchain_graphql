@@ -28,6 +28,7 @@
       "smartContractModule.ContractUpdated",
       "smartContractModule.NodeContractCanceled",
       "smartContractModule.NameContractCanceled",
+      "smartContractModule.RentContractCanceled",
       "smartContractModule.ContractBilled",
       "smartContractModule.UpdatedUsedResources",
       "tftBridgeModule.MintCompleted",

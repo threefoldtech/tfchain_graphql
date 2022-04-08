@@ -11,5 +11,8 @@ spec:
     - port: {{ .Values.service.port }}
       name: http
       targetPort: 4000
+    - port: {{ .Values.promService.port }}
+      name: http-prom
+      targetPort: 44233
   selector:
     {{- include "processor.selectorLabels" . | nindent 4 }}
