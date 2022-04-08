@@ -14,7 +14,8 @@ import {
 const processor = new SubstrateProcessor("substrate_threefold");
 
 processor.setTypesBundle("typegen/typesBundle.json");
-processor.setBatchSize(500);
+processor.setBatchSize(2000);
+processor.setPrometheusPort(44233)
 
 processor.setDataSource({
   archive: process.env.INDEXER_ENDPOINT_URL || 'http://localhost:4010/v1/graphql',

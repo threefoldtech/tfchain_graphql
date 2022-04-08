@@ -166,27 +166,28 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
   savedNode.twinID = nodeEvent.twinId
   savedNode.updatedAt = BigInt(ctx.event.blockTimestamp)
 
-  if (savedNode.resourcesTotal) {
-    savedNode.resourcesTotal.sru = nodeEvent.resources.sru
-    savedNode.resourcesTotal.hru = nodeEvent.resources.hru
-    savedNode.resourcesTotal.mru = nodeEvent.resources.mru
-    savedNode.resourcesTotal.cru = nodeEvent.resources.cru
-    await ctx.store.save<NodeResourcesTotal>(savedNode.resourcesTotal)
+  let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
+  if (!resourcesTotal) {
+    resourcesTotal = new NodeResourcesTotal()
+    resourcesTotal.id = ctx.event.id
+    resourcesTotal.node = savedNode
   }
+  resourcesTotal.sru = nodeEvent.resources.sru
+  resourcesTotal.hru = nodeEvent.resources.hru
+  resourcesTotal.mru = nodeEvent.resources.mru
+  resourcesTotal.cru = nodeEvent.resources.cru
+  await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
 
   savedNode.country = nodeEvent.country.toString()
   savedNode.city = nodeEvent.city.toString()
 
-  savedNode.created = Number(nodeEvent.created)
-  savedNode.farmingPolicyId = nodeEvent.farmingPolicyId
+  if (savedNode.location) {
+    savedNode.location.latitude = nodeEvent.location.latitude.toString()
+    savedNode.location.longitude = nodeEvent.location.longitude.toString()
+    await ctx.store.save<Location>(savedNode.location)
+  }
 
-  const newLocation = new Location()
-  newLocation.id = ctx.event.id
-  newLocation.latitude = nodeEvent.location.latitude.toString()
-  newLocation.longitude = nodeEvent.location.longitude.toString()
-  await ctx.store.save<Location>(newLocation)
-
-  savedNode.location = newLocation
+  await ctx.store.save<Node>(savedNode)
 
   if (node.isV28) {
     const nodeAsV28 = node.asV28
@@ -205,20 +206,6 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     } else {
       savedNode.certificationType = CertificationType.Diy
     }
-  }
-
-  if (nodeEvent.publicConfig) {
-    const pubConfig = new PublicConfig()
-    pubConfig.node = savedNode
-    pubConfig.id = ctx.event.id
-    pubConfig.ipv4 = nodeEvent.publicConfig.ipv4.toString()
-    pubConfig.ipv6 = nodeEvent.publicConfig.ipv6.toString()
-    pubConfig.gw4 = nodeEvent.publicConfig.gw4.toString()
-    pubConfig.gw6 = nodeEvent.publicConfig.gw6.toString()
-    pubConfig.domain = nodeEvent.publicConfig.domain.toString() || ''
-
-    await ctx.store.save<PublicConfig>(pubConfig)
-    savedNode.publicConfig = pubConfig
   }
 
   if (node.isV43) {
@@ -258,6 +245,7 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
       } else {
         newInterface = new Interfaces()
         newInterface.id = ctx.event.id
+        newInterface.node = savedNode
       }
     }
     
@@ -265,7 +253,6 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
 
     newInterface.name = intf.name.toString()
     newInterface.mac = intf.mac.toString()
-    newInterface.node = savedNode
     newInterface.ips = intf.ips.map(ip => ip.toString()).join(',')
     
     await ctx.store.save<Interfaces>(newInterface)
@@ -341,22 +328,21 @@ export async function nodePublicConfigStored(ctx: EventHandlerContext) {
   const [nodeID, config] = new TfgridModuleNodePublicConfigStoredEvent(ctx).asV12
 
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
-
   if (!savedNode) return
-  let publicConfig = new PublicConfig()
-  if (savedNode.publicConfig) {
-    publicConfig = savedNode.publicConfig
+
+  let publicConfig = await ctx.store.get(PublicConfig, { where: { node: savedNode }})
+
+  if (!publicConfig) {
+    publicConfig = new PublicConfig()
+    publicConfig.id = ctx.event.id
+    publicConfig.node = savedNode
   }
 
-  publicConfig.id = ctx.event.id
   publicConfig.ipv4 = config.ipv4.toString()
   publicConfig.ipv6 = config.ipv6.toString()
   publicConfig.gw4 = config.gw4.toString()
   publicConfig.gw6 = config.gw6.toString()
   publicConfig.domain = config.domain.toString() || ''
-  publicConfig.node = savedNode
 
   await ctx.store.save<PublicConfig>(publicConfig)
-
-  await ctx.store.save<Node>(savedNode)
 }
