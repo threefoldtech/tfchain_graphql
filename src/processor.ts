@@ -4,7 +4,7 @@ import { nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported, nodePublicCon
 import { farmingPolicyStored, pricingPolicyStored } from './mappings/policies';
 import { farmDeleted, farmPayoutV2AddressRegistered, farmStored, farmUpdated } from './mappings/farms';
 import { entityDeleted, entityStored, entityUpdated } from './mappings/entity';
-import { contractBilled, contractCreated, contractUpdated, contractUpdateUsedResources, nameContractCanceled, nodeContractCanceled, nruConsumptionReportReceived } from './mappings/contracts';
+import { contractBilled, contractCreated, contractUpdated, contractUpdateUsedResources, nameContractCanceled, nodeContractCanceled, nruConsumptionReportReceived, rentContractCanceled } from './mappings/contracts';
 import { burnProcessed, mintCompleted, refundProcessed } from './mappings/bridge';
 
 import {
@@ -51,6 +51,7 @@ processor.addEventHandler('smartContractModule.ContractCreated', ctx => contract
 processor.addEventHandler('smartContractModule.ContractUpdated', ctx => contractUpdated(ctx));
 processor.addEventHandler('smartContractModule.NodeContractCanceled', ctx => nodeContractCanceled(ctx));
 processor.addEventHandler('smartContractModule.NameContractCanceled', ctx => nameContractCanceled(ctx));
+processor.addEventHandler('smartContractModule.RentContractCanceled', ctx => rentContractCanceled(ctx));
 processor.addEventHandler('smartContractModule.ContractBilled', ctx => contractBilled(ctx));
 processor.addEventHandler('smartContractModule.UpdatedUsedResources', ctx => contractUpdateUsedResources(ctx));
 processor.addEventHandler('smartContractModule.NruConsumptionReportReceived', ctx => nruConsumptionReportReceived(ctx))

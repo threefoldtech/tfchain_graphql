@@ -3,7 +3,7 @@ import {
   Store
 } from "@subsquid/substrate-processor";
 import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractResources, NodeResourcesFree, NodeResourcesUsed, NodeResourcesTotal, Node, RentContract, Farm, NruConsumption } from "../model";
-import { SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent, SmartContractModuleNodeContractCanceledEvent, SmartContractModuleNameContractCanceledEvent, SmartContractModuleContractBilledEvent, SmartContractModuleUpdatedUsedResourcesEvent, SmartContractModuleNruConsumptionReportReceivedEvent } from "../types/events";
+import { SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent, SmartContractModuleNodeContractCanceledEvent, SmartContractModuleNameContractCanceledEvent, SmartContractModuleContractBilledEvent, SmartContractModuleUpdatedUsedResourcesEvent, SmartContractModuleNruConsumptionReportReceivedEvent, SmartContractModuleRentContractCanceledEvent } from "../types/events";
 
 export async function contractCreated(ctx: EventHandlerContext) {
   let contractCreatedEvent = new SmartContractModuleContractCreatedEvent(ctx)
@@ -212,6 +212,18 @@ export async function nameContractCanceled(ctx: EventHandlerContext) {
   await ctx.store.save<NameContract>(savedContract)
 }
 
+export async function rentContractCanceled(ctx: EventHandlerContext) {
+  const id = new SmartContractModuleRentContractCanceledEvent(ctx).asV50
+
+  const savedContract = await ctx.store.get(RentContract, { where: { contractID: id } })
+
+  if (!savedContract) return
+
+  savedContract.state = ContractState.Deleted
+
+  await ctx.store.save<RentContract>(savedContract)
+}
+
 export async function contractBilled(ctx: EventHandlerContext) {
   const contract_billed_event = new SmartContractModuleContractBilledEvent(ctx).asV9
   
@@ -265,6 +277,10 @@ export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
   const node = await ctx.store.get(Node, { where: { nodeID: savedContract.nodeID }})
   if (!node) return
 
+  if (savedContract.contractID === BigInt(23)) {
+    console.log('updating contract id 23 resources')
+  }
+
   const resourcesUsed = await ctx.store.get(NodeResourcesUsed, { where: { node: node }})
   const resourcesFree = await ctx.store.get(NodeResourcesFree, { where: { node: node }})
   const resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: node }})
@@ -274,7 +290,8 @@ export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
     resourcesUsed.cru += usedResources.used.cru
     resourcesUsed.sru += usedResources.used.sru
     resourcesUsed.hru += usedResources.used.hru
-    resourcesUsed.mru += usedResources.used.mru 
+    resourcesUsed.mru += usedResources.used.mru
+    await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
   }
 
   // update free
@@ -283,16 +300,7 @@ export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
     resourcesFree.sru = (BigInt(2) * resourcesTotal.sru) - resourcesUsed.sru
     resourcesFree.hru = resourcesTotal.hru - resourcesUsed.hru
     resourcesFree.mru = resourcesTotal.mru - resourcesUsed.mru
-  }
-
-  if (resourcesUsed) {
-    await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
-  }
-  if (resourcesFree) {
     await ctx.store.save<NodeResourcesFree>(resourcesFree)
-  }
-  if (resourcesTotal) {
-    await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
   }
 }
 
