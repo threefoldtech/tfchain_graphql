@@ -72,8 +72,6 @@ type Node @entity {
   city: String
   publicConfig: PublicConfig @derivedFrom(field: "node")
   resourcesTotal: NodeResourcesTotal @derivedFrom(field: "node")
-  resourcesUsed: NodeResourcesUsed @derivedFrom(field: "node")
-  resourcesFree: NodeResourcesFree @derivedFrom(field: "node")
   uptime: BigInt
   created: Int!
   farmingPolicyId: Int!
@@ -90,22 +88,6 @@ type NodeResourcesTotal @entity {
   node: Node! @unique
   hru: BigInt!
   sru: BigInt! 
-  cru: BigInt!
-  mru: BigInt!
-}
-
-type NodeResourcesUsed @entity {
-  node: Node! @unique
-  hru: BigInt!
-  sru: BigInt!
-  cru: BigInt!
-  mru: BigInt!
-}
-
-type NodeResourcesFree @entity {
-  node: Node! @unique
-  hru: BigInt!
-  sru: BigInt!
   cru: BigInt!
   mru: BigInt!
 }

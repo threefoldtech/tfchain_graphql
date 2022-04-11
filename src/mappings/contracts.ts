@@ -2,7 +2,7 @@ import {
   EventHandlerContext,
   Store
 } from "@subsquid/substrate-processor";
-import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractResources, NodeResourcesFree, NodeResourcesUsed, NodeResourcesTotal, Node, RentContract, Farm, NruConsumption } from "../model";
+import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractResources, NodeResourcesTotal, Node, RentContract, Farm, NruConsumption } from "../model";
 import { SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent, SmartContractModuleNodeContractCanceledEvent, SmartContractModuleNameContractCanceledEvent, SmartContractModuleContractBilledEvent, SmartContractModuleUpdatedUsedResourcesEvent, SmartContractModuleNruConsumptionReportReceivedEvent, SmartContractModuleRentContractCanceledEvent } from "../types/events";
 
 export async function contractCreated(ctx: EventHandlerContext) {
@@ -168,31 +168,6 @@ export async function nodeContractCanceled(ctx: EventHandlerContext) {
     savedPublicIP.contractId = BigInt(0)
     await ctx.store.save<PublicIp>(savedPublicIP)
   }
-
-  const usedResources = await ctx.store.get(ContractResources, { where: { contract: savedContract }})
-  if (!usedResources) return
-
-  const resourcesUsed = await ctx.store.get(NodeResourcesUsed, { where: { node: savedNode }})
-  const resourcesFree = await ctx.store.get(NodeResourcesFree, { where: { node: savedNode }})
-  const resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode }})
-
-  // update used
-  if (resourcesUsed) {
-    resourcesUsed.cru -= usedResources.cru
-    resourcesUsed.sru -= usedResources.sru
-    resourcesUsed.hru -= usedResources.hru
-    resourcesUsed.mru -= usedResources.mru 
-    await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
-  }
-
-  // update free
-  if (resourcesFree && resourcesUsed && resourcesTotal) {
-    resourcesFree.cru = resourcesTotal.cru - resourcesUsed.cru
-    resourcesFree.sru = (BigInt(2) * resourcesTotal.sru) - resourcesUsed.sru
-    resourcesFree.hru = resourcesTotal.hru - resourcesUsed.hru
-    resourcesFree.mru = resourcesTotal.mru - resourcesUsed.mru
-    await ctx.store.save<NodeResourcesFree>(resourcesFree)
-  }
 }
 
 export async function nameContractCanceled(ctx: EventHandlerContext) {
@@ -268,31 +243,6 @@ export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
   savedContract.resourcesUsed = contractUsedResources
 
   await ctx.store.save<NodeContract>(savedContract)
-  
-  const node = await ctx.store.get(Node, { where: { nodeID: savedContract.nodeID }})
-  if (!node) return
-
-  const resourcesUsed = await ctx.store.get(NodeResourcesUsed, { where: { node: node }})
-  const resourcesFree = await ctx.store.get(NodeResourcesFree, { where: { node: node }})
-  const resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: node }})
-
-  // update used
-  if (resourcesUsed) {
-    resourcesUsed.cru += usedResources.used.cru
-    resourcesUsed.sru += usedResources.used.sru
-    resourcesUsed.hru += usedResources.used.hru
-    resourcesUsed.mru += usedResources.used.mru
-    await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
-  }
-
-  // update free
-  if (resourcesFree && resourcesUsed && resourcesTotal) {
-    resourcesFree.cru = resourcesTotal.cru - resourcesUsed.cru
-    resourcesFree.sru = (BigInt(2) * resourcesTotal.sru) - resourcesUsed.sru
-    resourcesFree.hru = resourcesTotal.hru - resourcesUsed.hru
-    resourcesFree.mru = resourcesTotal.mru - resourcesUsed.mru
-    await ctx.store.save<NodeResourcesFree>(resourcesFree)
-  }
 }
 
 export async function nruConsumptionReportReceived(ctx: EventHandlerContext) {

@@ -1,7 +1,7 @@
 import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
-import { Node, Location, PublicConfig, CertificationType, Interfaces, UptimeEvent, NodeResourcesUsed, NodeResourcesFree, NodeResourcesTotal } from "../model";
+import { Node, Location, PublicConfig, CertificationType, Interfaces, UptimeEvent, NodeResourcesTotal } from "../model";
 import { TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
 
 export async function nodeStored(ctx: EventHandlerContext) {
@@ -92,25 +92,7 @@ export async function nodeStored(ctx: EventHandlerContext) {
   resourcesTotal.mru = nodeEvent.resources.mru
   resourcesTotal.cru = nodeEvent.resources.cru
 
-  const resourcesUsed = new NodeResourcesUsed()
-  resourcesUsed.node = newNode
-  resourcesUsed.id = ctx.event.id
-  resourcesUsed.sru = BigInt(0)
-  resourcesUsed.hru = BigInt(0)
-  resourcesUsed.mru = BigInt(0)
-  resourcesUsed.cru = BigInt(0)
-
-  const resourcesFree = new NodeResourcesFree()
-  resourcesFree.node = newNode
-  resourcesFree.id = ctx.event.id
-  resourcesFree.sru = nodeEvent.resources.sru
-  resourcesFree.hru = nodeEvent.resources.hru
-  resourcesFree.mru = nodeEvent.resources.mru
-  resourcesFree.cru = nodeEvent.resources.cru
-
   await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
-  await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
-  await ctx.store.save<NodeResourcesFree>(resourcesFree)
 
   if (nodeEvent.publicConfig) {
     const pubConfig = new PublicConfig()
@@ -174,19 +156,6 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     resourcesTotal.mru = nodeEvent.resources.mru
     resourcesTotal.cru = nodeEvent.resources.cru
     await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
-  
-    // recalculate free resources
-    let resourcesFree = await ctx.store.get(NodeResourcesFree, { where: { node: savedNode } })
-    if (resourcesFree) {
-      let resourcesUsed = await ctx.store.get(NodeResourcesUsed, { where: { node: savedNode } })
-      if (resourcesUsed) {
-        resourcesFree.sru = resourcesTotal.sru - resourcesUsed.sru
-        resourcesFree.hru = resourcesTotal.hru - resourcesUsed.hru
-        resourcesFree.mru = resourcesTotal.mru - resourcesUsed.mru
-        resourcesFree.cru = resourcesTotal.cru - resourcesUsed.cru
-        await ctx.store.save<NodeResourcesFree>(resourcesFree)
-      }
-    }
   }
 
   savedNode.country = nodeEvent.country.toString()
@@ -282,14 +251,6 @@ export async function nodeDeleted(ctx: EventHandlerContext) {
     const resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
     if (resourcesTotal) {
       await ctx.store.remove(resourcesTotal)
-    }
-    const resourcesFree = await ctx.store.get(NodeResourcesFree, { where: { node: savedNode } })
-    if (resourcesFree) {
-      await ctx.store.remove(resourcesFree)
-    }
-    const resourcesUsed = await ctx.store.get(NodeResourcesUsed, { where: { node: savedNode } })
-    if (resourcesUsed) {
-      await ctx.store.remove(resourcesUsed)
     }
     const pubConfig = await ctx.store.get(PublicConfig, { where: { node: savedNode } })
     if (pubConfig) {

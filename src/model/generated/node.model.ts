@@ -3,8 +3,6 @@ import * as marshal from "./marshal"
 import {Location} from "./location.model"
 import {PublicConfig} from "./publicConfig.model"
 import {NodeResourcesTotal} from "./nodeResourcesTotal.model"
-import {NodeResourcesUsed} from "./nodeResourcesUsed.model"
-import {NodeResourcesFree} from "./nodeResourcesFree.model"
 import {Interfaces} from "./interfaces.model"
 import {CertificationType} from "./_certificationType"
 
@@ -44,12 +42,6 @@ export class Node {
 
   @OneToOne_(() => NodeResourcesTotal)
   resourcesTotal!: NodeResourcesTotal | undefined | null
-
-  @OneToOne_(() => NodeResourcesUsed)
-  resourcesUsed!: NodeResourcesUsed | undefined | null
-
-  @OneToOne_(() => NodeResourcesFree)
-  resourcesFree!: NodeResourcesFree | undefined | null
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
   uptime!: bigint | undefined | null
