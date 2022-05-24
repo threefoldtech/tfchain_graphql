@@ -66,7 +66,7 @@ export async function nodeStored(ctx: EventHandlerContext) {
     newNode.virtualized = nodeAsV43.virtualized ? true : false
     newNode.serialNumber = nodeAsV43.serialNumber.toString()
     if (nodeAsV43.certificationType) {
-      const certificationTypeAsString = nodeAsV43.certificationType.toString()
+      const certificationTypeAsString = nodeAsV43.certificationType.__kind.toString()
       let certType = CertificationType.Diy
       switch (certificationTypeAsString) {
         case 'Diy': 
@@ -172,7 +172,7 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
   if (node.isV28) {
     const nodeAsV28 = node.asV28
     if (nodeAsV28.certificationType) {
-      const certificationTypeAsString = nodeAsV28.certificationType.toString()
+      const certificationTypeAsString = nodeAsV28.certificationType.__kind.toString()
       let certType = CertificationType.Diy
       switch (certificationTypeAsString) {
         case 'Diy': 
@@ -194,7 +194,7 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     savedNode.virtualized = nodeAsV43.virtualized ? true : false
     savedNode.serialNumber = nodeAsV43.serialNumber.toString()
     if (nodeAsV43.certificationType) {
-      const certificationTypeAsString = nodeAsV43.certificationType.toString()
+      const certificationTypeAsString = nodeAsV43.certificationType.__kind.toString()
       let certType = CertificationType.Diy
       switch (certificationTypeAsString) {
         case 'Diy': 
