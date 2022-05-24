@@ -1,7 +1,7 @@
 {
   "name": "graphql_tfgrid",
   "private": "true",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "GraphQL server and Substrate indexer. Generated with ♥ by Hydra-CLI",
   "author": "",
   "license": "ISC",
