@@ -228,21 +228,32 @@ export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
 
   const contractUsedResources = new ContractResources()
 
+  
   const savedContract = await ctx.store.get(NodeContract, { where: { contractID: usedResources.contractId } })
   if (!savedContract) return
 
-  contractUsedResources.id = ctx.event.id
-  contractUsedResources.cru = usedResources.used.cru
-  contractUsedResources.sru = usedResources.used.sru
-  contractUsedResources.hru = usedResources.used.hru
-  contractUsedResources.mru = usedResources.used.mru
-  contractUsedResources.contract = savedContract
+  const savedContractResources = await ctx.store.get(ContractResources, { where: { contract: savedContract }})
+  if (savedContractResources) {
+    contractUsedResources.cru = usedResources.used.cru
+    contractUsedResources.sru = usedResources.used.sru
+    contractUsedResources.hru = usedResources.used.hru
+    contractUsedResources.mru = usedResources.used.mru
+    await ctx.store.save<ContractResources>(savedContractResources)
 
-  await ctx.store.save<ContractResources>(contractUsedResources)
-
-  savedContract.resourcesUsed = contractUsedResources
-
-  await ctx.store.save<NodeContract>(savedContract)
+    savedContract.resourcesUsed = savedContractResources
+    await ctx.store.save<NodeContract>(savedContract)
+  } else {
+    contractUsedResources.id = ctx.event.id
+    contractUsedResources.cru = usedResources.used.cru
+    contractUsedResources.sru = usedResources.used.sru
+    contractUsedResources.hru = usedResources.used.hru
+    contractUsedResources.mru = usedResources.used.mru
+    contractUsedResources.contract = savedContract
+    await ctx.store.save<ContractResources>(contractUsedResources)
+  
+    savedContract.resourcesUsed = contractUsedResources
+    await ctx.store.save<NodeContract>(savedContract)
+  }
 }
 
 export async function nruConsumptionReportReceived(ctx: EventHandlerContext) {
