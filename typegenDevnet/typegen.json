@@ -31,6 +31,8 @@
       "smartContractModule.RentContractCanceled",
       "smartContractModule.ContractBilled",
       "smartContractModule.UpdatedUsedResources",
+      "smartContractModule.ContractGracePeriodStarted",
+      "smartContractModule.ContractGracePeriodEnded",
       "tftBridgeModule.MintCompleted",
       "tftBridgeModule.BurnTransactionProcessed",
       "tftBridgeModule.RefundTransactionProcessed"

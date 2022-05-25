@@ -439,6 +439,22 @@
               "discountForDedicatedNodes": "u8"
             }
           }
+        },
+        {
+          "minmax": [
+            59,
+            null
+          ],
+          "types": {
+            "ContractState": {
+              "_enum": {
+                "Created": null,
+                "Deleted": null,
+                "OutOfFunds": null,
+                "GracePeriod": "u64"
+              }
+            }
+          }
         }
       ]
     }

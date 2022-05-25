@@ -23,7 +23,7 @@ export class RentContract {
   @Column_("integer", {nullable: false})
   nodeID!: number
 
-  @Column_("varchar", {length: 10, nullable: false})
+  @Column_("varchar", {length: 11, nullable: false})
   state!: ContractState
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})

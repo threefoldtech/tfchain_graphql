@@ -194,7 +194,8 @@ type RentContract @entity {
 enum ContractState {
   Created,
   Deleted,
-  OutOfFunds
+  OutOfFunds,
+  GracePeriod
 }
 
 type NruConsumption @entity {
