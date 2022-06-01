@@ -33,7 +33,7 @@ export class NodeContract {
   @Column_("integer", {nullable: false})
   numberOfPublicIPs!: number
 
-  @Column_("varchar", {length: 10, nullable: false})
+  @Column_("varchar", {length: 11, nullable: false})
   state!: ContractState
 
   @Index_()

@@ -157,7 +157,12 @@ data:
     \             \"nu\": \"Policy\",\n              \"ipu\": \"Policy\",\n              \"uniqueName\":
     \"Policy\",\n              \"domainName\": \"Policy\",\n              \"foundationAccount\":
     \"AccountId\",\n              \"certifiedSalesAccount\": \"AccountId\",\n              \"discountForDedicatedNodes\":
-    \"u8\"\n            }\n          }\n        }\n      ]\n    }\n  }\n}"
+    \"u8\"\n            }\n          }\n        },\n        {\n          \"minmax\":
+    [\n            59,\n            null\n          ],\n          \"types\": {\n            \"ContractState\":
+    {\n              \"_enum\": {\n                \"Created\": null,\n                \"Deleted\":
+    null,\n                \"OutOfFunds\": null,\n                \"GracePeriod\":
+    \"u64\"\n              }\n            }\n          }\n        }\n      ]\n    }\n
+    \ }\n}"
 kind: ConfigMap
 metadata:
   creationTimestamp: null

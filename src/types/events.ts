@@ -8,6 +8,7 @@ import * as v43 from './v43'
 import * as v49 from './v49'
 import * as v50 from './v50'
 import * as v51 from './v51'
+import * as v59 from './v59'
 
 export class BalancesTransferEvent {
   constructor(private ctx: EventContext) {
@@ -97,14 +98,23 @@ export class SmartContractModuleContractCreatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV50
+  get isV59(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.ContractCreated') === '5446945d28da7c765303d310f9ca55fc9bb46e7b5f281ac184521f913c430ee0'
   }
 
-  get asLatest(): v50.Contract {
+  get asV59(): v59.Contract {
+    assert(this.isV59)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
     deprecateLatest()
-    return this.asV50
+    return this.isV59
+  }
+
+  get asLatest(): v59.Contract {
+    deprecateLatest()
+    return this.asV59
   }
 }
 
@@ -140,14 +150,73 @@ export class SmartContractModuleContractUpdatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV50
+  get isV59(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.ContractUpdated') === '5446945d28da7c765303d310f9ca55fc9bb46e7b5f281ac184521f913c430ee0'
   }
 
-  get asLatest(): v50.Contract {
+  get asV59(): v59.Contract {
+    assert(this.isV59)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
     deprecateLatest()
-    return this.asV50
+    return this.isV59
+  }
+
+  get asLatest(): v59.Contract {
+    deprecateLatest()
+    return this.asV59
+  }
+}
+
+export class SmartContractModuleContractGracePeriodEndedEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'smartContractModule.ContractGracePeriodEnded')
+  }
+
+  get isV59(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.ContractGracePeriodEnded') === 'da3d413ec5a77ddce8b8c12c9cdd58340716a71ab4effe398cbaf249a16d0542'
+  }
+
+  get asV59(): [bigint, number, number] {
+    assert(this.isV59)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV59
+  }
+
+  get asLatest(): [bigint, number, number] {
+    deprecateLatest()
+    return this.asV59
+  }
+}
+
+export class SmartContractModuleContractGracePeriodStartedEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'smartContractModule.ContractGracePeriodStarted')
+  }
+
+  get isV59(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.ContractGracePeriodStarted') === 'e6ffbb3cdd02a660fb04c1fb606cae70e4a388774028c58e59a98d56f3654371'
+  }
+
+  get asV59(): [bigint, number, number, bigint] {
+    assert(this.isV59)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV59
+  }
+
+  get asLatest(): [bigint, number, number, bigint] {
+    deprecateLatest()
+    return this.asV59
   }
 }
 
