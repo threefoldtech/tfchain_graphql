@@ -88,20 +88,25 @@ export async function farmUpdated(ctx: EventHandlerContext) {
   await farmUpdatedEventParsed.publicIps.forEach(async ip => {
     const savedIP = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() }})
     // ip is already there in storage, don't save it again
-    if (savedIP) return
+    if (savedIP) {
+      savedIP.ip = ip.ip.toString()
+      savedIP.contractId = ip.contractId
+      savedIP.gateway = ip.gateway.toString()
+      await ctx.store.save<PublicIp>(savedIP)
+    } else {
+      const newIP = new PublicIp()
+      newIP.id = ctx.event.id
+      newIP.ip = ip.ip.toString()
+      newIP.gateway = ip.gateway.toString()
+      newIP.contractId = ip.contractId
+      newIP.farm = savedFarm
     
-    const newIP = new PublicIp()
-    newIP.id = ctx.event.id
-    newIP.ip = ip.ip.toString()
-    newIP.gateway = ip.gateway.toString()
-    newIP.contractId = ip.contractId
-    newIP.farm = savedFarm
-  
-    await ctx.store.save<PublicIp>(newIP)
-    if (!savedFarm.publicIPs) {
-      savedFarm.publicIPs = []
+      await ctx.store.save<PublicIp>(newIP)
+      if (!savedFarm.publicIPs) {
+        savedFarm.publicIPs = []
+      }
+      savedFarm.publicIPs.push(newIP)
     }
-    savedFarm.publicIPs.push(newIP)
   })
 
   await ctx.store.save<Farm>(savedFarm)
