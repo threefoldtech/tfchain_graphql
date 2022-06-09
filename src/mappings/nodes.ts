@@ -46,7 +46,7 @@ export async function nodeStored(ctx: EventHandlerContext) {
   if (node.isV28) {
     const nodeAsV28 = node.asV28
     if (nodeAsV28.certificationType) {
-      const certificationTypeAsString = nodeAsV28.certificationType.toString()
+      const certificationTypeAsString = nodeAsV28.certificationType.__kind.toString()
       let certType = NodeCertification.Diy
       switch (certificationTypeAsString) {
         case 'Diy': 

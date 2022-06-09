@@ -90,7 +90,7 @@ export async function farmingPolicyStored(ctx: EventHandlerContext) {
   newFarmingPolicy.immutable = farmingPolicyStoredEvent.immutable
   newFarmingPolicy.default = farmingPolicyStoredEvent.default
 
-  const certificationTypeAsString = farmingPolicyStoredEvent.nodeCertification.toString()
+  const certificationTypeAsString = farmingPolicyStoredEvent.nodeCertification.__kind.toString()
   let nodeCertType = NodeCertification.Diy
   switch (certificationTypeAsString) {
     case 'Diy': 
@@ -102,7 +102,7 @@ export async function farmingPolicyStored(ctx: EventHandlerContext) {
   }
   newFarmingPolicy.nodeCertification = nodeCertType
 
-  const farmCertificationTypeAsString = farmingPolicyStoredEvent.farmCertification.toString()
+  const farmCertificationTypeAsString = farmingPolicyStoredEvent.farmCertification.__kind.toString()
   let farmCertType = FarmCertification.NotCertified
   switch (farmCertificationTypeAsString) {
     case 'NotCertified': 
@@ -142,7 +142,7 @@ export async function farmingPolicyUpdated(ctx: EventHandlerContext) {
   savedPolicy.immutable = farmingPolicyUpdatedEvent.immutable
   savedPolicy.default = farmingPolicyUpdatedEvent.default
 
-  const certificationTypeAsString = farmingPolicyUpdatedEvent.nodeCertification.toString()
+  const certificationTypeAsString = farmingPolicyUpdatedEvent.nodeCertification.__kind.toString()
   let nodeCertType = NodeCertification.Diy
   switch (certificationTypeAsString) {
     case 'Diy': 
@@ -154,7 +154,7 @@ export async function farmingPolicyUpdated(ctx: EventHandlerContext) {
   }
   savedPolicy.nodeCertification = nodeCertType
 
-  const farmCertificationTypeAsString = farmingPolicyUpdatedEvent.farmCertification.toString()
+  const farmCertificationTypeAsString = farmingPolicyUpdatedEvent.farmCertification.__kind.toString()
   let farmCertType = FarmCertification.NotCertified
   switch (farmCertificationTypeAsString) {
     case 'NotCertified': 
