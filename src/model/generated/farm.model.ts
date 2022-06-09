@@ -26,8 +26,8 @@ export class Farm {
   @Column_("integer", {nullable: false})
   pricingPolicyID!: number
 
-  @Column_("varchar", {length: 12, nullable: false})
-  certification!: FarmCertification
+  @Column_("varchar", {length: 12, nullable: true})
+  certification!: FarmCertification | undefined | null
 
   @OneToMany_(() => PublicIp, e => e.farm)
   publicIPs!: PublicIp[]
