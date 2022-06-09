@@ -75,4 +75,7 @@ export class Node {
 
   @Column_("bool", {nullable: true})
   dedicated!: boolean | undefined | null
+
+  @Column_("integer", {nullable: false})
+  connectionPrice!: number
 }

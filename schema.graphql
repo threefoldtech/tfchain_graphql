@@ -82,6 +82,7 @@ type Node @entity {
   createdAt: BigInt!
   updatedAt: BigInt!
   dedicated: Boolean
+  connectionPrice: Int!
 }
 
 type NodeResourcesTotal @entity {

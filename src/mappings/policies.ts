@@ -69,7 +69,7 @@ export async function pricingPolicyStored(ctx: EventHandlerContext) {
 export async function farmingPolicyStored(ctx: EventHandlerContext) {
   const farmingPolicyEvent = new TfgridModuleFarmingPolicyStoredEvent(ctx)
 
-  if (!farmingPolicyEvent.isV62) {
+  if (!farmingPolicyEvent.isV63) {
     return
   }
 
@@ -120,7 +120,7 @@ export async function farmingPolicyStored(ctx: EventHandlerContext) {
 export async function farmingPolicyUpdated(ctx: EventHandlerContext) {
   const farmingPolicyEvent = new TfgridModuleFarmingPolicyUpdatedEvent(ctx)
 
-  if (!farmingPolicyEvent.isV62) {
+  if (!farmingPolicyEvent.isV63) {
     return
   }
 
