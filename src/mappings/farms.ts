@@ -12,6 +12,8 @@ export async function farmStored(ctx: EventHandlerContext) {
     farmStoredEventParsed = farmStoredEvent.asV9
   } else if (farmStoredEvent.isV50) {
     farmStoredEventParsed = farmStoredEvent.asV50
+  } else if (farmStoredEvent.isV62) {
+    farmStoredEventParsed = farmStoredEvent.asV62
   }
 
   if (!farmStoredEventParsed) return
@@ -25,7 +27,11 @@ export async function farmStored(ctx: EventHandlerContext) {
   newFarm.twinID = farmStoredEventParsed.twinId
   newFarm.pricingPolicyID = farmStoredEventParsed.pricingPolicyId
 
-  newFarm.certification = FarmCertification.NotCertified
+  console.log("HELLLLOOOOO")
+  if (farmStoredEvent.isV62) {
+    newFarm.certification = FarmCertification.NotCertified
+  }
+
   newFarm.publicIPs = []
 
   await ctx.store.save<Farm>(newFarm)
@@ -55,6 +61,8 @@ export async function farmUpdated(ctx: EventHandlerContext) {
     farmUpdatedEventParsed = farmUpdatedEvent.asV9
   } else if (farmUpdatedEvent.isV50) {
     farmUpdatedEventParsed = farmUpdatedEvent.asV50
+  } else if (farmUpdatedEvent.isV62) {
+    farmUpdatedEventParsed = farmUpdatedEvent.asV62
   }
   
   if (!farmUpdatedEventParsed) return
