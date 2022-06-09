@@ -13,7 +13,7 @@ export async function farmStored(ctx: EventHandlerContext) {
   } else if (farmStoredEvent.isV50) {
     farmStoredEventParsed = farmStoredEvent.asV50
   } else if (farmStoredEvent.isV62) {
-    farmStoredEventParsed = farmStoredEvent.asV62
+    farmStoredEventParsed = farmStoredEvent.asV63
   }
 
   if (!farmStoredEventParsed) return
@@ -27,7 +27,6 @@ export async function farmStored(ctx: EventHandlerContext) {
   newFarm.twinID = farmStoredEventParsed.twinId
   newFarm.pricingPolicyID = farmStoredEventParsed.pricingPolicyId
 
-  console.log("HELLLLOOOOO")
   if (farmStoredEvent.isV62) {
     newFarm.certification = FarmCertification.NotCertified
   }
@@ -62,7 +61,7 @@ export async function farmUpdated(ctx: EventHandlerContext) {
   } else if (farmUpdatedEvent.isV50) {
     farmUpdatedEventParsed = farmUpdatedEvent.asV50
   } else if (farmUpdatedEvent.isV62) {
-    farmUpdatedEventParsed = farmUpdatedEvent.asV62
+    farmUpdatedEventParsed = farmUpdatedEvent.asV63
   }
   
   if (!farmUpdatedEventParsed) return
@@ -129,7 +128,7 @@ export async function farmPayoutV2AddressRegistered(ctx: EventHandlerContext) {
 }
 
 export async function farmCertificationSet(ctx: EventHandlerContext) {
-  const [farmID, certification] = new TfgridModuleFarmCertificationSetEvent(ctx).asV62
+  const [farmID, certification] = new TfgridModuleFarmCertificationSetEvent(ctx).asV63
 
   const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmID } })
 

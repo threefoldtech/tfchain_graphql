@@ -83,7 +83,7 @@ export async function nodeStored(ctx: EventHandlerContext) {
   }
 
   if (node.isV62) {
-    const nodeAsV62 = node.asV62 
+    const nodeAsV62 = node.asV63 
     newNode.secure = nodeAsV62.secureBoot ? true : false
     newNode.virtualized = nodeAsV62.virtualized ? true : false
     newNode.serialNumber = nodeAsV62.serialNumber.toString()
@@ -233,7 +233,7 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
   }
 
   if (node.isV62) {
-    const nodeAsV62 = node.asV62 
+    const nodeAsV62 = node.asV63 
     savedNode.secure = nodeAsV62.secureBoot ? true : false
     savedNode.virtualized = nodeAsV62.virtualized ? true : false
     savedNode.serialNumber = nodeAsV62.serialNumber.toString()
@@ -365,7 +365,7 @@ export async function nodePublicConfigStored(ctx: EventHandlerContext) {
 }
 
 export async function nodeMarkedAsDedicated(ctx: EventHandlerContext) {
-  const [nodeID, dedicated] = new TfgridModuleNodeMarkedAsDedicatedEvent(ctx).asV62
+  const [nodeID, dedicated] = new TfgridModuleNodeMarkedAsDedicatedEvent(ctx).asV63
 
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
   if (!savedNode) return
@@ -375,7 +375,7 @@ export async function nodeMarkedAsDedicated(ctx: EventHandlerContext) {
 }
 
 export async function nodeCertificationSet(ctx: EventHandlerContext) {
-  const [nodeID, certification] = new TfgridModuleNodeCertificationSetEvent(ctx).asV62
+  const [nodeID, certification] = new TfgridModuleNodeCertificationSetEvent(ctx).asV63
 
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
   if (!savedNode) return

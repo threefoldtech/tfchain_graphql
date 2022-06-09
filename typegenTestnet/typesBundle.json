@@ -418,15 +418,19 @@
         "RentContract": {
           "nodeId": "u32"
         },
-        "Farm": {
+        "PricingPolicy": {
           "version": "u32",
           "id": "u32",
           "name": "Vec<u8>",
-          "twin_id": "u32",
-          "pricing_policy_id": "u32",
-          "certification_type": "CertificationType",
-          "public_ips": "Vec<PublicIP>",
-          "dedicated_farm": "bool"
+          "su": "Policy",
+          "cu": "Policy",
+          "nu": "Policy",
+          "ipu": "Policy",
+          "unique_name": "Policy",
+          "domain_name": "Policy",
+          "foundation_account": "AccountId",
+          "certified_sales_account": "AccountId",
+          "discount_for_dedicated_nodes": "u8"
         }
       }
     },
@@ -470,7 +474,7 @@
     },
     {
       "minmax": [
-        63,
+        62,
         null
       ],
       "types": {

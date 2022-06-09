@@ -73,7 +73,7 @@ export async function farmingPolicyStored(ctx: EventHandlerContext) {
     return
   }
 
-  const farmingPolicyStoredEvent = farmingPolicyEvent.asV62
+  const farmingPolicyStoredEvent = farmingPolicyEvent.asV63
 
   const newFarmingPolicy = new FarmingPolicy()
   newFarmingPolicy.id = ctx.event.id
@@ -124,7 +124,7 @@ export async function farmingPolicyUpdated(ctx: EventHandlerContext) {
     return
   }
 
-  const farmingPolicyUpdatedEvent = farmingPolicyEvent.asV62
+  const farmingPolicyUpdatedEvent = farmingPolicyEvent.asV63
 
   const savedPolicy = await ctx.store.get(FarmingPolicy, { where: { farmingPolicyID: farmingPolicyUpdatedEvent.id } })
   if (!savedPolicy) return

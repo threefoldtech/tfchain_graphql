@@ -17,29 +17,29 @@ export class FarmingPolicy {
   @Column_("integer", {nullable: false})
   farmingPolicyID!: number
 
-  @Column_("text", {nullable: false})
-  name!: string
+  @Column_("text", {nullable: true})
+  name!: string | undefined | null
 
-  @Column_("integer", {nullable: false})
-  cu!: number
+  @Column_("integer", {nullable: true})
+  cu!: number | undefined | null
 
-  @Column_("integer", {nullable: false})
-  su!: number
+  @Column_("integer", {nullable: true})
+  su!: number | undefined | null
 
-  @Column_("integer", {nullable: false})
-  nu!: number
+  @Column_("integer", {nullable: true})
+  nu!: number | undefined | null
 
-  @Column_("integer", {nullable: false})
-  ipv4!: number
+  @Column_("integer", {nullable: true})
+  ipv4!: number | undefined | null
 
-  @Column_("integer", {nullable: false})
-  minimalUptime!: number
+  @Column_("integer", {nullable: true})
+  minimalUptime!: number | undefined | null
 
-  @Column_("integer", {nullable: false})
-  policyCreated!: number
+  @Column_("integer", {nullable: true})
+  policyCreated!: number | undefined | null
 
-  @Column_("integer", {nullable: false})
-  policyEnd!: number
+  @Column_("integer", {nullable: true})
+  policyEnd!: number | undefined | null
 
   @Column_("bool", {nullable: true})
   immutable!: boolean | undefined | null
@@ -47,9 +47,9 @@ export class FarmingPolicy {
   @Column_("bool", {nullable: true})
   default!: boolean | undefined | null
 
-  @Column_("varchar", {length: 9, nullable: false})
-  nodeCertification!: NodeCertification
+  @Column_("varchar", {length: 9, nullable: true})
+  nodeCertification!: NodeCertification | undefined | null
 
-  @Column_("varchar", {length: 12, nullable: false})
-  farmCertification!: FarmCertification
+  @Column_("varchar", {length: 12, nullable: true})
+  farmCertification!: FarmCertification | undefined | null
 }

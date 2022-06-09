@@ -228,18 +228,18 @@ enum DiscountLevel {
 type FarmingPolicy @entity {
   gridVersion: Int!
   farmingPolicyID: Int!
-  name: String!
-  cu: Int!
-  su: Int!
-  nu: Int!
-  ipv4: Int!
-  minimalUptime: Int!
-  policyCreated: Int!
-  policyEnd: Int!
+  name: String
+  cu: Int
+  su: Int
+  nu: Int
+  ipv4: Int
+  minimalUptime: Int
+  policyCreated: Int
+  policyEnd: Int
   immutable: Boolean
   default: Boolean
-  nodeCertification: NodeCertification!
-  farmCertification: FarmCertification!
+  nodeCertification: NodeCertification
+  farmCertification: FarmCertification
 }
 
 type UptimeEvent @entity {
