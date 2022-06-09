@@ -1,8 +1,8 @@
 import {
     EventHandlerContext,
   } from "@subsquid/substrate-processor";
-import { PricingPolicy, FarmingPolicy, Policy, CertificationType } from "../model";
-import { TfgridModulePricingPolicyStoredEvent, TfgridModuleFarmingPolicyStoredEvent } from "../types/events";
+import { PricingPolicy, FarmingPolicy, Policy, FarmCertification, NodeCertification, Farm } from "../model";
+import { TfgridModulePricingPolicyStoredEvent, TfgridModuleFarmingPolicyStoredEvent, TfgridModuleFarmingPolicyUpdatedEvent, TfgridModuleFarmingPolicySetEvent, TfgridModuleFarmCertificationSetEvent } from "../types/events";
 import * as ss58 from "@subsquid/ss58";
 
 export async function pricingPolicyStored(ctx: EventHandlerContext) {
@@ -67,32 +67,104 @@ export async function pricingPolicyStored(ctx: EventHandlerContext) {
 }
 
 export async function farmingPolicyStored(ctx: EventHandlerContext) {
-  const farmingPolicyEvent = new TfgridModuleFarmingPolicyStoredEvent(ctx).asV9
+  const farmingPolicyEvent = new TfgridModuleFarmingPolicyStoredEvent(ctx)
+
+  if (!farmingPolicyEvent.isV62) {
+    return
+  }
+
+  const farmingPolicyStoredEvent = farmingPolicyEvent.asV62
 
   const newFarmingPolicy = new FarmingPolicy()
   newFarmingPolicy.id = ctx.event.id
-  newFarmingPolicy.gridVersion = farmingPolicyEvent.version
-  newFarmingPolicy.farmingPolicyID = farmingPolicyEvent.id
-  newFarmingPolicy.name = farmingPolicyEvent.name.toString()
+  newFarmingPolicy.gridVersion = farmingPolicyStoredEvent.version
+  newFarmingPolicy.farmingPolicyID = farmingPolicyStoredEvent.id
+  newFarmingPolicy.name = farmingPolicyStoredEvent.name.toString()
 
-  newFarmingPolicy.cu = farmingPolicyEvent.cu
-  newFarmingPolicy.su = farmingPolicyEvent.su
-  newFarmingPolicy.nu = farmingPolicyEvent.nu
-  newFarmingPolicy.ipv4 = farmingPolicyEvent.ipv4
-  newFarmingPolicy.timestamp = farmingPolicyEvent.timestamp
+  newFarmingPolicy.cu = farmingPolicyStoredEvent.cu
+  newFarmingPolicy.su = farmingPolicyStoredEvent.su
+  newFarmingPolicy.nu = farmingPolicyStoredEvent.nu
+  newFarmingPolicy.ipv4 = farmingPolicyStoredEvent.ipv4
+  newFarmingPolicy.policyCreated = farmingPolicyStoredEvent.policyCreated
+  newFarmingPolicy.policyEnd = farmingPolicyStoredEvent.policyEnd
+  newFarmingPolicy.immutable = farmingPolicyStoredEvent.immutable
+  newFarmingPolicy.default = farmingPolicyStoredEvent.default
 
-  const certificationTypeAsString = farmingPolicyEvent.certificationType.toString()
-  let certType = CertificationType.Diy
+  const certificationTypeAsString = farmingPolicyStoredEvent.nodeCertification.toString()
+  let nodeCertType = NodeCertification.Diy
   switch (certificationTypeAsString) {
     case 'Diy': 
-      certType = CertificationType.Diy
+      nodeCertType = NodeCertification.Diy
       break
     case 'Certified': 
-      certType = CertificationType.Certified
+      nodeCertType = NodeCertification.Certified
       break
   }
+  newFarmingPolicy.nodeCertification = nodeCertType
 
-  newFarmingPolicy.certificationType = certType
+  const farmCertificationTypeAsString = farmingPolicyStoredEvent.farmCertification.toString()
+  let farmCertType = FarmCertification.NotCertified
+  switch (farmCertificationTypeAsString) {
+    case 'NotCertified': 
+      farmCertType = FarmCertification.NotCertified
+      break
+    case 'Gold': 
+      farmCertType = FarmCertification.Gold
+      break
+  }
+  newFarmingPolicy.farmCertification = farmCertType
 
   await ctx.store.save<FarmingPolicy>(newFarmingPolicy)
+}
+
+export async function farmingPolicyUpdated(ctx: EventHandlerContext) {
+  const farmingPolicyEvent = new TfgridModuleFarmingPolicyUpdatedEvent(ctx)
+
+  if (!farmingPolicyEvent.isV62) {
+    return
+  }
+
+  const farmingPolicyUpdatedEvent = farmingPolicyEvent.asV62
+
+  const savedPolicy = await ctx.store.get(FarmingPolicy, { where: { farmingPolicyID: farmingPolicyUpdatedEvent.id } })
+  if (!savedPolicy) return
+
+  savedPolicy.gridVersion = farmingPolicyUpdatedEvent.version
+  savedPolicy.farmingPolicyID = farmingPolicyUpdatedEvent.id
+  savedPolicy.name = farmingPolicyUpdatedEvent.name.toString()
+
+  savedPolicy.cu = farmingPolicyUpdatedEvent.cu
+  savedPolicy.su = farmingPolicyUpdatedEvent.su
+  savedPolicy.nu = farmingPolicyUpdatedEvent.nu
+  savedPolicy.ipv4 = farmingPolicyUpdatedEvent.ipv4
+  savedPolicy.policyCreated = farmingPolicyUpdatedEvent.policyCreated
+  savedPolicy.policyEnd = farmingPolicyUpdatedEvent.policyEnd
+  savedPolicy.immutable = farmingPolicyUpdatedEvent.immutable
+  savedPolicy.default = farmingPolicyUpdatedEvent.default
+
+  const certificationTypeAsString = farmingPolicyUpdatedEvent.nodeCertification.toString()
+  let nodeCertType = NodeCertification.Diy
+  switch (certificationTypeAsString) {
+    case 'Diy': 
+      nodeCertType = NodeCertification.Diy
+      break
+    case 'Certified': 
+      nodeCertType = NodeCertification.Certified
+      break
+  }
+  savedPolicy.nodeCertification = nodeCertType
+
+  const farmCertificationTypeAsString = farmingPolicyUpdatedEvent.farmCertification.toString()
+  let farmCertType = FarmCertification.NotCertified
+  switch (farmCertificationTypeAsString) {
+    case 'NotCertified': 
+      farmCertType = FarmCertification.NotCertified
+      break
+    case 'Gold': 
+      farmCertType = FarmCertification.Gold
+      break
+  }
+  savedPolicy.farmCertification = farmCertType
+
+  await ctx.store.save<FarmingPolicy>(savedPolicy)
 }

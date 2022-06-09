@@ -1,5 +1,5 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToMany as OneToMany_} from "typeorm"
-import {CertificationType} from "./_certificationType"
+import {FarmCertification} from "./_farmCertification"
 import {PublicIp} from "./publicIp.model"
 
 @Entity_()
@@ -26,15 +26,12 @@ export class Farm {
   @Column_("integer", {nullable: false})
   pricingPolicyID!: number
 
-  @Column_("varchar", {length: 9, nullable: false})
-  certificationType!: CertificationType
+  @Column_("varchar", {length: 12, nullable: false})
+  certification!: FarmCertification
 
   @OneToMany_(() => PublicIp, e => e.farm)
   publicIPs!: PublicIp[]
 
   @Column_("text", {nullable: true})
   stellarAddress!: string | undefined | null
-
-  @Column_("bool", {nullable: true})
-  dedicatedFarm!: boolean | undefined | null
 }

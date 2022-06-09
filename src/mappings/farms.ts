@@ -1,8 +1,8 @@
 import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
-import { Farm, CertificationType, PublicIp } from "../model";
-import { TfgridModuleFarmStoredEvent, TfgridModuleFarmDeletedEvent, TfgridModuleFarmUpdatedEvent, TfgridModuleFarmPayoutV2AddressRegisteredEvent } from "../types/events";
+import { Farm, FarmCertification, PublicIp } from "../model";
+import { TfgridModuleFarmStoredEvent, TfgridModuleFarmDeletedEvent, TfgridModuleFarmUpdatedEvent, TfgridModuleFarmPayoutV2AddressRegisteredEvent, TfgridModuleFarmCertificationSetEvent } from "../types/events";
 
 export async function farmStored(ctx: EventHandlerContext) {
   const farmStoredEvent  = new TfgridModuleFarmStoredEvent(ctx)
@@ -24,20 +24,8 @@ export async function farmStored(ctx: EventHandlerContext) {
   newFarm.name = farmStoredEventParsed.name.toString()
   newFarm.twinID = farmStoredEventParsed.twinId
   newFarm.pricingPolicyID = farmStoredEventParsed.pricingPolicyId
-  newFarm.dedicatedFarm = false
 
-  const certificationTypeAsString = farmStoredEventParsed.certificationType.toString()
-  let certType = CertificationType.Diy
-  switch (certificationTypeAsString) {
-    case 'Diy': 
-      certType = CertificationType.Diy
-      break
-    case 'Certified': 
-      certType = CertificationType.Certified
-      break
-  }
-
-  newFarm.certificationType = certType
+  newFarm.certification = FarmCertification.NotCertified
   newFarm.publicIPs = []
 
   await ctx.store.save<Farm>(newFarm)
@@ -57,12 +45,6 @@ export async function farmStored(ctx: EventHandlerContext) {
   })
   await Promise.all(ipPromises)
   await ctx.store.save<Farm>(newFarm)
-
-  if (farmStoredEvent.isV50) {
-    const event = farmStoredEvent.asV50
-    newFarm.dedicatedFarm = event.dedicatedFarm
-    await ctx.store.save<Farm>(newFarm)
-  }
 }
 
 export async function farmUpdated(ctx: EventHandlerContext) {
@@ -110,12 +92,6 @@ export async function farmUpdated(ctx: EventHandlerContext) {
   })
 
   await ctx.store.save<Farm>(savedFarm)
-  
-  let farm = ctx.event.params[0].value as Farm
-  if (farm.dedicatedFarm) {
-    savedFarm.dedicatedFarm = farm.dedicatedFarm
-    await ctx.store.save<Farm>(savedFarm)
-  }  
 }
 
 export async function farmDeleted(ctx: EventHandlerContext) {
@@ -142,4 +118,27 @@ export async function farmPayoutV2AddressRegistered(ctx: EventHandlerContext) {
     savedFarm.stellarAddress = address
     await ctx.store.save<Farm>(savedFarm)
   }
+}
+
+export async function farmCertificationSet(ctx: EventHandlerContext) {
+  const [farmID, certification] = new TfgridModuleFarmCertificationSetEvent(ctx).asV62
+
+  const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmID } })
+
+  if (!savedFarm) {
+    return
+  }
+
+  let certType = FarmCertification.NotCertified
+  switch (certification.__kind.toString()) {
+    case 'NotCertified': 
+      certType = FarmCertification.NotCertified
+    break
+    case 'Gold': 
+      certType = FarmCertification.Gold
+    break
+  }
+
+  savedFarm.certification = certType
+  await ctx.store.save<Farm>(savedFarm)
 }
