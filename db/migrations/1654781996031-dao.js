@@ -1,5 +1,5 @@
-module.exports = class dao1654781085723 {
-  name = 'dao1654781085723'
+module.exports = class dao1654781996031 {
+  name = 'dao1654781996031'
 
   async up(db) {
     await db.query(`ALTER TABLE "farm" DROP COLUMN "certification_type"`)
@@ -10,6 +10,7 @@ module.exports = class dao1654781085723 {
     await db.query(`ALTER TABLE "farm" ADD "certification" character varying(12)`)
     await db.query(`ALTER TABLE "node" ADD "certification" character varying(9)`)
     await db.query(`ALTER TABLE "node" ADD "dedicated" boolean`)
+    await db.query(`ALTER TABLE "node" ADD "connection_price" integer NOT NULL`)
     await db.query(`ALTER TABLE "farming_policy" ADD "minimal_uptime" integer`)
     await db.query(`ALTER TABLE "farming_policy" ADD "policy_created" integer`)
     await db.query(`ALTER TABLE "farming_policy" ADD "policy_end" integer`)
@@ -33,6 +34,7 @@ module.exports = class dao1654781085723 {
     await db.query(`ALTER TABLE "farm" DROP COLUMN "certification"`)
     await db.query(`ALTER TABLE "node" DROP COLUMN "certification"`)
     await db.query(`ALTER TABLE "node" DROP COLUMN "dedicated"`)
+    await db.query(`ALTER TABLE "node" DROP COLUMN "connection_price"`)
     await db.query(`ALTER TABLE "farming_policy" DROP COLUMN "minimal_uptime"`)
     await db.query(`ALTER TABLE "farming_policy" DROP COLUMN "policy_created"`)
     await db.query(`ALTER TABLE "farming_policy" DROP COLUMN "policy_end"`)
