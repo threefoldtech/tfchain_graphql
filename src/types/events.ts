@@ -1129,13 +1129,13 @@ export class TfgridModuleNodeCertificationSetEvent {
   }
 }
 
-export class TfgridModuleNodeMarkedAsDedicatedEvent {
+export class SmartContractModuleNodeMarkedAsDedicatedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.NodeMarkedAsDedicated')
+    assert(this.ctx.event.name === 'smartContractModule.NodeMarkedAsDedicated')
   }
 
   get isV63(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.NodeMarkedAsDedicated') === 'f267e1fa04f32dd15473e3a6d2514ae684bd7ba5516d192ba70e4d49211868aa'
+    return this.ctx._chain.getEventHash('smartContractModule.NodeMarkedAsDedicated') === 'f267e1fa04f32dd15473e3a6d2514ae684bd7ba5516d192ba70e4d49211868aa'
   }
 
   get asV63(): [number, boolean] {

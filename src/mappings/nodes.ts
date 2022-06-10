@@ -2,7 +2,7 @@ import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
 import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal } from "../model";
-import { TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodeMarkedAsDedicatedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
+import { SmartContractModuleNodeMarkedAsDedicatedEvent, TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
 
 export async function nodeStored(ctx: EventHandlerContext) {
   const node  = new TfgridModuleNodeStoredEvent(ctx)
@@ -370,7 +370,7 @@ export async function nodePublicConfigStored(ctx: EventHandlerContext) {
 }
 
 export async function nodeMarkedAsDedicated(ctx: EventHandlerContext) {
-  const [nodeID, dedicated] = new TfgridModuleNodeMarkedAsDedicatedEvent(ctx).asV63
+  const [nodeID, dedicated] = new SmartContractModuleNodeMarkedAsDedicatedEvent(ctx).asV63
 
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
   if (!savedNode) return

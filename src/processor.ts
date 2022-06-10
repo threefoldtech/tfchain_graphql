@@ -35,7 +35,6 @@ processor.addEventHandler('tfgridModule.NodeUptimeReported', ctx => nodeUptimeRe
 processor.addEventHandler('tfgridModule.NodeDeleted', ctx => nodeDeleted(ctx));
 processor.addEventHandler('tfgridModule.NodePublicConfigStored', ctx => nodePublicConfigStored(ctx));
 processor.addEventHandler('tfgridModule.NodeUpdated', ctx => nodeUpdated(ctx));
-processor.addEventHandler('tfgridModule.NodeMarkedAsDedicated', ctx => nodeMarkedAsDedicated(ctx));
 processor.addEventHandler('tfgridModule.NodeCertificationSet', ctx => nodeCertificationSet(ctx));
 
 processor.addEventHandler('tfgridModule.PricingPolicyStored', ctx => pricingPolicyStored(ctx));
@@ -62,6 +61,7 @@ processor.addEventHandler('smartContractModule.UpdatedUsedResources', ctx => con
 processor.addEventHandler('smartContractModule.NruConsumptionReportReceived', ctx => nruConsumptionReportReceived(ctx))
 processor.addEventHandler('smartContractModule.ContractGracePeriodStarted', ctx => contractGracePeriodStarted(ctx))
 processor.addEventHandler('smartContractModule.ContractGracePeriodEnded', ctx => contractGracePeriodEnded(ctx))
+processor.addEventHandler('smartContractModule.NodeMarkedAsDedicated', ctx => nodeMarkedAsDedicated(ctx));
 
 processor.addEventHandler('tftBridgeModule.MintCompleted', ctx => mintCompleted(ctx));
 processor.addEventHandler('tfgridModule.BurnTransactionProcessed', ctx => burnProcessed(ctx));
