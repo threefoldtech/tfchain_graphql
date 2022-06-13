@@ -1,5 +1,5 @@
-module.exports = class ddao1655110017248 {
-  name = 'ddao1655110017248'
+module.exports = class dao1655130809835 {
+  name = 'dao1655130809835'
 
   async up(db) {
     await db.query(`ALTER TABLE "farm" RENAME COLUMN "certification_type" TO "certification"`)
@@ -7,7 +7,7 @@ module.exports = class ddao1655110017248 {
     await db.query(`ALTER TABLE "farming_policy" DROP COLUMN "timestamp"`)
     await db.query(`ALTER TABLE "farming_policy" DROP COLUMN "certification_type"`)
     await db.query(`ALTER TABLE "node" ADD "certification" character varying(9)`)
-    await db.query(`ALTER TABLE "node" ADD "connection_price" integer NOT NULL`)
+    await db.query(`ALTER TABLE "node" ADD "connection_price" integer`)
     await db.query(`ALTER TABLE "farming_policy" ADD "minimal_uptime" integer`)
     await db.query(`ALTER TABLE "farming_policy" ADD "policy_created" integer`)
     await db.query(`ALTER TABLE "farming_policy" ADD "policy_end" integer`)
