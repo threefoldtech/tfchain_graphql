@@ -73,9 +73,6 @@ export class Node {
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   updatedAt!: bigint
 
-  @Column_("bool", {nullable: true})
-  dedicated!: boolean | undefined | null
-
   @Column_("integer", {nullable: false})
   connectionPrice!: number
 }
