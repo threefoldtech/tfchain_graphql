@@ -82,7 +82,7 @@ type Node @entity {
   serialNumber: String
   createdAt: BigInt!
   updatedAt: BigInt!
-  connectionPrice: Int!
+  connectionPrice: Int
 }
 
 type NodeResourcesTotal @entity {

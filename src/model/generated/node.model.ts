@@ -73,6 +73,6 @@ export class Node {
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   updatedAt!: bigint
 
-  @Column_("integer", {nullable: false})
-  connectionPrice!: number
+  @Column_("integer", {nullable: true})
+  connectionPrice!: number | undefined | null
 }
