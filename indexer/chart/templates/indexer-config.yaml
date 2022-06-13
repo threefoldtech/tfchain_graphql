@@ -193,7 +193,7 @@ data:
     \"NodeCertification\",\n              \"farmCertification\": \"FarmCertification\"\n
     \           },\n            \"DaoProposal\": {\n              \"index\": \"u32\",\n
     \             \"description\": \"Vec<u8>\",\n              \"link\": \"Vec<u8>\"\n
-    \           },\n            \"Votes\": {\n              \"index\": \"u32\",\n
+    \           },\n            \"DaoVotes\": {\n              \"index\": \"u32\",\n
     \             \"threshold\": \"u32\",\n              \"ayes\": \"Vec<VoteWeight>\",\n
     \             \"nayes\": \"Vec<VoteWeight>\",\n              \"end\": \"BlockNumber\",\n
     \             \"vetos\": \"Vec<AccountId>\"\n            },\n            \"VoteWeight\":

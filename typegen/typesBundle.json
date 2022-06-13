@@ -549,7 +549,7 @@
           "description": "Vec<u8>",
           "link": "Vec<u8>"
         },
-        "Votes": {
+        "DaoVotes": {
           "index": "u32",
           "threshold": "u32",
           "ayes": "Vec<VoteWeight>",
