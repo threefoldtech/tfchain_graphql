@@ -470,6 +470,7 @@
               "pricingPolicyId": "u32",
               "certification": "FarmCertification",
               "publicIps": "Vec<PublicIP>",
+              "dedicatedFarm:": "bool",
               "farmingPolicyLimits": "Option<FarmingPolicyLimit>"
             },
             "FarmingPolicyLimit": {
@@ -497,7 +498,6 @@
               "secureBoot": "bool",
               "virtualized": "bool",
               "serialNumber": "Vec<u8>",
-              "dedicated": "bool",
               "connectionPrice": "u32"
             },
             "NodeCertification": {

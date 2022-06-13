@@ -166,23 +166,23 @@ data:
     {\n            \"Farm\": {\n              \"version\": \"u32\",\n              \"id\":
     \"u32\",\n              \"name\": \"Vec<u8>\",\n              \"twinId\": \"u32\",\n
     \             \"pricingPolicyId\": \"u32\",\n              \"certification\":
-    \"FarmCertification\",\n              \"publicIps\": \"Vec<PublicIP>\",\n              \"farmingPolicyLimits\":
-    \"Option<FarmingPolicyLimit>\"\n            },\n            \"FarmingPolicyLimit\":
-    {\n              \"farmingPolicyId\": \"u32\",\n              \"cu\": \"Option<u64>\",\n
-    \             \"su\": \"Option<u64>\",\n              \"end\": \"Option<u64>\",\n
-    \             \"nodeCount\": \"Option<u32>\",\n              \"nodeCertification\":
-    \"bool\"\n            },\n            \"Node\": {\n              \"version\":
-    \"u32\",\n              \"id\": \"u32\",\n              \"farmId\": \"u32\",\n
-    \             \"twinId\": \"u32\",\n              \"resources\": \"Resources\",\n
+    \"FarmCertification\",\n              \"publicIps\": \"Vec<PublicIP>\",\n              \"dedicatedFarm:\":
+    \"bool\",\n              \"farmingPolicyLimits\": \"Option<FarmingPolicyLimit>\"\n
+    \           },\n            \"FarmingPolicyLimit\": {\n              \"farmingPolicyId\":
+    \"u32\",\n              \"cu\": \"Option<u64>\",\n              \"su\": \"Option<u64>\",\n
+    \             \"end\": \"Option<u64>\",\n              \"nodeCount\": \"Option<u32>\",\n
+    \             \"nodeCertification\": \"bool\"\n            },\n            \"Node\":
+    {\n              \"version\": \"u32\",\n              \"id\": \"u32\",\n              \"farmId\":
+    \"u32\",\n              \"twinId\": \"u32\",\n              \"resources\": \"Resources\",\n
     \             \"location\": \"Location\",\n              \"country\": \"Vec<u8>\",\n
     \             \"city\": \"Vec<u8>\",\n              \"publicConfig\": \"Option<PublicConfig>\",\n
     \             \"created\": \"u64\",\n              \"farmingPolicyId\": \"u32\",\n
     \             \"interfaces\": \"Vec<Interface>\",\n              \"certification\":
     \"NodeCertification\",\n              \"secureBoot\": \"bool\",\n              \"virtualized\":
-    \"bool\",\n              \"serialNumber\": \"Vec<u8>\",\n              \"dedicated\":
-    \"bool\",\n              \"connectionPrice\": \"u32\"\n            },\n            \"NodeCertification\":
-    {\n              \"_enum\": [\n                \"Diy\",\n                \"Certified\"\n
-    \             ]\n            },\n            \"FarmCertification\": {\n              \"_enum\":
+    \"bool\",\n              \"serialNumber\": \"Vec<u8>\",\n              \"connectionPrice\":
+    \"u32\"\n            },\n            \"NodeCertification\": {\n              \"_enum\":
+    [\n                \"Diy\",\n                \"Certified\"\n              ]\n
+    \           },\n            \"FarmCertification\": {\n              \"_enum\":
     [\n                \"NotCertified\",\n                \"Gold\"\n              ]\n
     \           },\n            \"FarmingPolicy\": {\n              \"version\": \"u32\",\n
     \             \"id\": \"u32\",\n              \"name\": \"Vec<u8>\",\n              \"cu\":

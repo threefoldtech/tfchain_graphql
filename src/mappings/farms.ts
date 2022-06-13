@@ -26,6 +26,7 @@ export async function farmStored(ctx: EventHandlerContext) {
   newFarm.name = farmStoredEventParsed.name.toString()
   newFarm.twinID = farmStoredEventParsed.twinId
   newFarm.pricingPolicyID = farmStoredEventParsed.pricingPolicyId
+  newFarm.dedicatedFarm = false
 
   if (farmStoredEvent.isV63) {
     newFarm.certification = FarmCertification.NotCertified
@@ -99,6 +100,12 @@ export async function farmUpdated(ctx: EventHandlerContext) {
   })
 
   await ctx.store.save<Farm>(savedFarm)
+
+  let farm = ctx.event.params[0].value as Farm
+  if (farm.dedicatedFarm) {
+    savedFarm.dedicatedFarm = farm.dedicatedFarm
+    await ctx.store.save<Farm>(savedFarm)
+  }  
 }
 
 export async function farmDeleted(ctx: EventHandlerContext) {

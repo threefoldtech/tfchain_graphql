@@ -369,15 +369,15 @@ export async function nodePublicConfigStored(ctx: EventHandlerContext) {
   await ctx.store.save<PublicConfig>(publicConfig)
 }
 
-export async function nodeMarkedAsDedicated(ctx: EventHandlerContext) {
-  const [nodeID, dedicated] = new SmartContractModuleNodeMarkedAsDedicatedEvent(ctx).asV63
+// export async function nodeMarkedAsDedicated(ctx: EventHandlerContext) {
+//   const [nodeID, dedicated] = new SmartContractModuleNodeMarkedAsDedicatedEvent(ctx).asV63
 
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
-  if (!savedNode) return
+//   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
+//   if (!savedNode) return
 
-  savedNode.dedicated = dedicated
-  await ctx.store.save<Node>(savedNode)
-}
+//   savedNode.dedicated = dedicated
+//   await ctx.store.save<Node>(savedNode)
+// }
 
 export async function nodeCertificationSet(ctx: EventHandlerContext) {
   const [nodeID, certification] = new TfgridModuleNodeCertificationSetEvent(ctx).asV63
