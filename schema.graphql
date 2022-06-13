@@ -49,7 +49,7 @@ type Farm @entity {
   name: String!
   twinID: Int!
   pricingPolicyID: Int!
-  certificationType: CertificationType!
+  certification: FarmCertification
   publicIPs: [PublicIp!] @derivedFrom(field: "farm")
   stellarAddress: String
   dedicatedFarm: Boolean
@@ -76,12 +76,13 @@ type Node @entity {
   created: Int!
   farmingPolicyId: Int!
   interfaces: [Interfaces!] @derivedFrom(field: "node")
-  certificationType: CertificationType
+  certification: NodeCertification
   secure: Boolean
   virtualized: Boolean
   serialNumber: String
   createdAt: BigInt!
   updatedAt: BigInt!
+  connectionPrice: Int!
 }
 
 type NodeResourcesTotal @entity {
@@ -99,7 +100,12 @@ type Interfaces @entity {
   ips: String!
 }
 
-enum CertificationType {
+enum FarmCertification {
+  NotCertified
+  Gold
+}
+
+enum NodeCertification {
   Diy
   Certified
 }
@@ -223,13 +229,18 @@ enum DiscountLevel {
 type FarmingPolicy @entity {
   gridVersion: Int!
   farmingPolicyID: Int!
-  name: String!
-  cu: Int!
-  su: Int!
-  nu: Int!
-  ipv4: Int!
-  timestamp: BigInt!
-  certificationType: CertificationType!
+  name: String
+  cu: Int
+  su: Int
+  nu: Int
+  ipv4: Int
+  minimalUptime: Int
+  policyCreated: Int
+  policyEnd: Int
+  immutable: Boolean
+  default: Boolean
+  nodeCertification: NodeCertification
+  farmCertification: FarmCertification
 }
 
 type UptimeEvent @entity {

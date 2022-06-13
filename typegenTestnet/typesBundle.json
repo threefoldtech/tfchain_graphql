@@ -474,7 +474,7 @@
     },
     {
       "minmax": [
-        63,
+        62,
         null
       ],
       "types": {
@@ -486,7 +486,6 @@
           "pricing_policy_id": "u32",
           "certification": "FarmCertification",
           "public_ips": "Vec<PublicIP>",
-          "dedicated_farm": "bool",
           "farming_policy_limits": "Option<FarmingPolicyLimit>"
         },
         "FarmingPolicyLimit": {
@@ -514,6 +513,7 @@
           "secure_boot": "bool",
           "virtualized": "bool",
           "serial_number": "Vec<u8>",
+          "dedicated": "bool",
           "connection_price": "u32"
         },
         "NodeCertification": {

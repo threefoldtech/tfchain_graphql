@@ -161,8 +161,44 @@ data:
     [\n            59,\n            null\n          ],\n          \"types\": {\n            \"ContractState\":
     {\n              \"_enum\": {\n                \"Created\": null,\n                \"Deleted\":
     null,\n                \"OutOfFunds\": null,\n                \"GracePeriod\":
-    \"u64\"\n              }\n            }\n          }\n        }\n      ]\n    }\n
-    \ }\n}"
+    \"u64\"\n              }\n            }\n          }\n        },\n        {\n
+    \         \"minmax\": [\n            63,\n            null\n          ],\n          \"types\":
+    {\n            \"Farm\": {\n              \"version\": \"u32\",\n              \"id\":
+    \"u32\",\n              \"name\": \"Vec<u8>\",\n              \"twinId\": \"u32\",\n
+    \             \"pricingPolicyId\": \"u32\",\n              \"certification\":
+    \"FarmCertification\",\n              \"publicIps\": \"Vec<PublicIP>\",\n              \"dedicatedFarm:\":
+    \"bool\",\n              \"farmingPolicyLimits\": \"Option<FarmingPolicyLimit>\"\n
+    \           },\n            \"FarmingPolicyLimit\": {\n              \"farmingPolicyId\":
+    \"u32\",\n              \"cu\": \"Option<u64>\",\n              \"su\": \"Option<u64>\",\n
+    \             \"end\": \"Option<u64>\",\n              \"nodeCount\": \"Option<u32>\",\n
+    \             \"nodeCertification\": \"bool\"\n            },\n            \"Node\":
+    {\n              \"version\": \"u32\",\n              \"id\": \"u32\",\n              \"farmId\":
+    \"u32\",\n              \"twinId\": \"u32\",\n              \"resources\": \"Resources\",\n
+    \             \"location\": \"Location\",\n              \"country\": \"Vec<u8>\",\n
+    \             \"city\": \"Vec<u8>\",\n              \"publicConfig\": \"Option<PublicConfig>\",\n
+    \             \"created\": \"u64\",\n              \"farmingPolicyId\": \"u32\",\n
+    \             \"interfaces\": \"Vec<Interface>\",\n              \"certification\":
+    \"NodeCertification\",\n              \"secureBoot\": \"bool\",\n              \"virtualized\":
+    \"bool\",\n              \"serialNumber\": \"Vec<u8>\",\n              \"connectionPrice\":
+    \"u32\"\n            },\n            \"NodeCertification\": {\n              \"_enum\":
+    [\n                \"Diy\",\n                \"Certified\"\n              ]\n
+    \           },\n            \"FarmCertification\": {\n              \"_enum\":
+    [\n                \"NotCertified\",\n                \"Gold\"\n              ]\n
+    \           },\n            \"FarmingPolicy\": {\n              \"version\": \"u32\",\n
+    \             \"id\": \"u32\",\n              \"name\": \"Vec<u8>\",\n              \"cu\":
+    \"u32\",\n              \"su\": \"u32\",\n              \"nu\": \"u32\",\n              \"ipv4\":
+    \"u32\",\n              \"minimalUptime\": \"u16\",\n              \"policyCreated\":
+    \"BlockNumber\",\n              \"policyEnd\": \"BlockNumber\",\n              \"immutable\":
+    \"bool\",\n              \"default\": \"bool\",\n              \"nodeCertification\":
+    \"NodeCertification\",\n              \"farmCertification\": \"FarmCertification\"\n
+    \           },\n            \"DaoProposal\": {\n              \"index\": \"u32\",\n
+    \             \"description\": \"Vec<u8>\",\n              \"link\": \"Vec<u8>\"\n
+    \           },\n            \"Votes\": {\n              \"index\": \"u32\",\n
+    \             \"threshold\": \"u32\",\n              \"ayes\": \"Vec<VoteWeight>\",\n
+    \             \"nayes\": \"Vec<VoteWeight>\",\n              \"end\": \"BlockNumber\",\n
+    \             \"vetos\": \"Vec<AccountId>\"\n            },\n            \"VoteWeight\":
+    {\n              \"farmId\": \"u32\",\n              \"weight\": \"u64\"\n            }\n
+    \         }\n        }\n      ]\n    }\n  }\n}"
 kind: ConfigMap
 metadata:
   creationTimestamp: null

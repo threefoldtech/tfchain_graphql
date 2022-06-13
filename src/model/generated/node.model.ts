@@ -4,7 +4,7 @@ import {Location} from "./location.model"
 import {PublicConfig} from "./publicConfig.model"
 import {NodeResourcesTotal} from "./nodeResourcesTotal.model"
 import {Interfaces} from "./interfaces.model"
-import {CertificationType} from "./_certificationType"
+import {NodeCertification} from "./_nodeCertification"
 
 @Entity_()
 export class Node {
@@ -56,7 +56,7 @@ export class Node {
   interfaces!: Interfaces[]
 
   @Column_("varchar", {length: 9, nullable: true})
-  certificationType!: CertificationType | undefined | null
+  certification!: NodeCertification | undefined | null
 
   @Column_("bool", {nullable: true})
   secure!: boolean | undefined | null
@@ -72,4 +72,7 @@ export class Node {
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   updatedAt!: bigint
+
+  @Column_("integer", {nullable: false})
+  connectionPrice!: number
 }

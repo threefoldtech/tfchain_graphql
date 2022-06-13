@@ -1,8 +1,8 @@
 import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
-import { Node, Location, PublicConfig, CertificationType, Interfaces, UptimeEvent, NodeResourcesTotal } from "../model";
-import { TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
+import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal } from "../model";
+import { SmartContractModuleNodeMarkedAsDedicatedEvent, TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
 
 export async function nodeStored(ctx: EventHandlerContext) {
   const node  = new TfgridModuleNodeStoredEvent(ctx)
@@ -13,6 +13,8 @@ export async function nodeStored(ctx: EventHandlerContext) {
     nodeEvent = node.asV28
   } else if (node.isV43) {
     nodeEvent = node.asV43
+  } else if (node.isV63) {
+    nodeEvent = node.asV63
   }
   
   if (!nodeEvent) return
@@ -44,19 +46,19 @@ export async function nodeStored(ctx: EventHandlerContext) {
   if (node.isV28) {
     const nodeAsV28 = node.asV28
     if (nodeAsV28.certificationType) {
-      const certificationTypeAsString = nodeAsV28.certificationType.toString()
-      let certType = CertificationType.Diy
+      const certificationTypeAsString = nodeAsV28.certificationType.__kind.toString()
+      let certType = NodeCertification.Diy
       switch (certificationTypeAsString) {
         case 'Diy': 
-          certType = CertificationType.Diy
+          certType = NodeCertification.Diy
         break
         case 'Certified': 
-          certType = CertificationType.Certified
+          certType = NodeCertification.Certified
         break
     }
-      newNode.certificationType = certType
+      newNode.certification = certType
     } else {
-      newNode.certificationType = CertificationType.Diy
+      newNode.certification = NodeCertification.Diy
     }
   }
 
@@ -67,18 +69,41 @@ export async function nodeStored(ctx: EventHandlerContext) {
     newNode.serialNumber = nodeAsV43.serialNumber.toString()
     if (nodeAsV43.certificationType) {
       const certificationTypeAsString = nodeAsV43.certificationType.__kind.toString()
-      let certType = CertificationType.Diy
+      let certType = NodeCertification.Diy
       switch (certificationTypeAsString) {
         case 'Diy': 
-          certType = CertificationType.Diy
+          certType = NodeCertification.Diy
         break
         case 'Certified': 
-          certType = CertificationType.Certified
+          certType = NodeCertification.Certified
         break
     }
-      newNode.certificationType = certType
+      newNode.certification = certType
     } else {
-      newNode.certificationType = CertificationType.Diy
+      newNode.certification = NodeCertification.Diy
+    }
+  }
+
+  if (node.isV63) {
+    const nodeAsV63 = node.asV63
+    newNode.secure = nodeAsV63.secureBoot ? true : false
+    newNode.virtualized = nodeAsV63.virtualized ? true : false
+    newNode.serialNumber = nodeAsV63.serialNumber.toString()
+    newNode.connectionPrice = nodeAsV63.connectionPrice
+    if (nodeAsV63.certification) {
+      const certificationTypeAsString = nodeAsV63.certification.__kind.toString()
+      let certType = NodeCertification.Diy
+      switch (certificationTypeAsString) {
+        case 'Diy': 
+          certType = NodeCertification.Diy
+        break
+        case 'Certified': 
+          certType = NodeCertification.Certified
+        break
+    }
+      newNode.certification = certType
+    } else {
+      newNode.certification = NodeCertification.Diy
     }
   }
 
@@ -135,6 +160,8 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     nodeEvent = node.asV28
   } else if (node.isV43) {
     nodeEvent = node.asV43
+  } else if (node.isV63) {
+    nodeEvent = node.asV63
   }
 
   if (!nodeEvent) return
@@ -173,18 +200,18 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     const nodeAsV28 = node.asV28
     if (nodeAsV28.certificationType) {
       const certificationTypeAsString = nodeAsV28.certificationType.__kind.toString()
-      let certType = CertificationType.Diy
+      let certType = NodeCertification.Diy
       switch (certificationTypeAsString) {
         case 'Diy': 
-          certType = CertificationType.Diy
+          certType = NodeCertification.Diy
         break
         case 'Certified': 
-          certType = CertificationType.Certified
+          certType = NodeCertification.Certified
         break
     }
-      savedNode.certificationType = certType
+      savedNode.certification = certType
     } else {
-      savedNode.certificationType = CertificationType.Diy
+      savedNode.certification = NodeCertification.Diy
     }
   }
 
@@ -195,20 +222,43 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     savedNode.serialNumber = nodeAsV43.serialNumber.toString()
     if (nodeAsV43.certificationType) {
       const certificationTypeAsString = nodeAsV43.certificationType.__kind.toString()
-      let certType = CertificationType.Diy
+      let certType = NodeCertification.Diy
       switch (certificationTypeAsString) {
         case 'Diy': 
-          certType = CertificationType.Diy
+          certType = NodeCertification.Diy
         break
         case 'Certified': 
-          certType = CertificationType.Certified
+          certType = NodeCertification.Certified
         break
     }
-      savedNode.certificationType = certType
+      savedNode.certification = certType
     } else {
-      savedNode.certificationType = CertificationType.Diy
+      savedNode.certification = NodeCertification.Diy
     }
   }
+
+  if (node.isV63) {
+    const nodeAsV63 = node.asV63 
+    savedNode.secure = nodeAsV63.secureBoot ? true : false
+    savedNode.virtualized = nodeAsV63.virtualized ? true : false
+    savedNode.serialNumber = nodeAsV63.serialNumber.toString()
+    if (nodeAsV63.certification) {
+      const certificationTypeAsString = nodeAsV63.certification.__kind.toString()
+      let certType = NodeCertification.Diy
+      switch (certificationTypeAsString) {
+        case 'Diy': 
+          certType = NodeCertification.Diy
+        break
+        case 'Certified': 
+          certType = NodeCertification.Certified
+        break
+      }
+      savedNode.certification = certType
+    } else {
+      savedNode.certification = NodeCertification.Diy
+    }
+  }
+
 
   await ctx.store.save<Node>(savedNode)
 
@@ -317,4 +367,35 @@ export async function nodePublicConfigStored(ctx: EventHandlerContext) {
   publicConfig.domain = config.domain.toString() || ''
 
   await ctx.store.save<PublicConfig>(publicConfig)
+}
+
+// export async function nodeMarkedAsDedicated(ctx: EventHandlerContext) {
+//   const [nodeID, dedicated] = new SmartContractModuleNodeMarkedAsDedicatedEvent(ctx).asV63
+
+//   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
+//   if (!savedNode) return
+
+//   savedNode.dedicated = dedicated
+//   await ctx.store.save<Node>(savedNode)
+// }
+
+export async function nodeCertificationSet(ctx: EventHandlerContext) {
+  const [nodeID, certification] = new TfgridModuleNodeCertificationSetEvent(ctx).asV63
+
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
+  if (!savedNode) return
+
+  let certType = NodeCertification.Diy
+  switch (certification.__kind.toString()) {
+    case 'Diy': 
+      certType = NodeCertification.Diy
+    break
+    case 'Certified': 
+      certType = NodeCertification.Certified
+    break
+  }
+
+  savedNode.certification = certType
+
+  await ctx.store.save<Node>(savedNode)
 }
