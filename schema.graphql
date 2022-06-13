@@ -52,6 +52,7 @@ type Farm @entity {
   certification: FarmCertification
   publicIPs: [PublicIp!] @derivedFrom(field: "farm")
   stellarAddress: String
+  dedicatedFarm: Boolean
 }
 
 type PublicIp @entity {
@@ -81,7 +82,6 @@ type Node @entity {
   serialNumber: String
   createdAt: BigInt!
   updatedAt: BigInt!
-  dedicated: Boolean
   connectionPrice: Int!
 }
 
