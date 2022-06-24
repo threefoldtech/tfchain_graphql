@@ -11,6 +11,8 @@ import * as v51 from './v51'
 import * as v59 from './v59'
 import * as v62 from './v63'
 
+export type AccountId32 = Uint8Array
+
 export class BalancesTransferEvent {
   constructor(private ctx: EventContext) {
     assert(this.ctx.event.name === 'balances.Transfer')
@@ -31,14 +33,29 @@ export class BalancesTransferEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV9
+  /**
+   * Transfer succeeded.
+   */
+   get isV101(): boolean {
+    return this.ctx._chain.getEventHash('balances.Transfer') === '0ffdf35c495114c2d42a8bf6c241483fd5334ca0198662e14480ad040f1e3a66'
   }
 
-  get asLatest(): [Uint8Array, Uint8Array, bigint] {
+  /**
+   * Transfer succeeded.
+   */
+  get asV101(): {from: AccountId32, to: AccountId32, amount: bigint} {
+    assert(this.isV101)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
     deprecateLatest()
-    return this.asV9
+    return this.isV101
+  }
+
+  get asLatest(): {from: AccountId32, to: AccountId32, amount: bigint} {
+    deprecateLatest()
+    return this.asV101
   }
 }
 
@@ -108,14 +125,23 @@ export class SmartContractModuleContractCreatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
+  get isV101(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.ContractCreated') === '1a46e93bb259ee0953495d2ee65d31503cd4736d74c87f1fabc89ea4773bc73c'
+  }
+
+  get asV101(): v59.Contract {
+    assert(this.isV101)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV59
+    return this.isV101
   }
 
   get asLatest(): v59.Contract {
     deprecateLatest()
-    return this.asV59
+    return this.asV101
   }
 }
 
@@ -160,14 +186,23 @@ export class SmartContractModuleContractUpdatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
+  get isV101(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.ContractUpdated') === '1a46e93bb259ee0953495d2ee65d31503cd4736d74c87f1fabc89ea4773bc73c'
+  }
+
+  get asV101(): v59.Contract {
+    assert(this.isV101)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV59
+    return this.isV101
   }
 
   get asLatest(): v59.Contract {
     deprecateLatest()
-    return this.asV59
+    return this.asV101
   }
 }
 
@@ -478,14 +513,23 @@ export class TfgridModuleFarmStoredEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
+  get isV101(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.FarmStored') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
+  }
+
+  get asV101(): v62.Farm {
+    assert(this.isV101)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV63
+    return this.isV101
   }
 
   get asLatest(): v62.Farm {
     deprecateLatest()
-    return this.asV63
+    return this.asV101
   }
 }
 
@@ -521,14 +565,23 @@ export class TfgridModuleFarmUpdatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
+  get isV101(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.FarmUpdated') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
+  }
+
+  get asV101(): v62.Farm {
+    assert(this.isV101)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV63
+    return this.isV101
   }
 
   get asLatest(): v62.Farm {
     deprecateLatest()
-    return this.asV63
+    return this.asV101
   }
 }
 
@@ -682,14 +735,23 @@ export class TfgridModuleNodeStoredEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
+  get isV101(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.NodeStored') === '8c3fa509fc5a961d1224b0b04af3d8a581aa9f74c7430ec3aaabf187866587fa'
+  }
+
+  get asV101(): v62.Node {
+    assert(this.isV101)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV63
+    return this.isV101
   }
 
   get asLatest(): v62.Node {
     deprecateLatest()
-    return this.asV63
+    return this.asV101
   }
 }
 
@@ -734,14 +796,23 @@ export class TfgridModuleNodeUpdatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
+  get isV101(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.NodeUpdated') === '8c3fa509fc5a961d1224b0b04af3d8a581aa9f74c7430ec3aaabf187866587fa'
+  }
+
+  get asV101(): v62.Node {
+    assert(this.isV101)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV63
+    return this.isV101
   }
 
   get asLatest(): v62.Node {
     deprecateLatest()
-    return this.asV63
+    return this.asV101
   }
 }
 
@@ -793,14 +864,23 @@ export class TfgridModulePricingPolicyStoredEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
+  get isV101(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.PricingPolicyStored') === '088c108804351450f3ff89c4217a7450b4d211e3f833d8ab4746d27624010cc0'
+  }
+
+  get asV101(): v51.PricingPolicy {
+    assert(this.isV101)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV51
+    return this.isV101
   }
 
   get asLatest(): v51.PricingPolicy {
     deprecateLatest()
-    return this.asV51
+    return this.asV101
   }
 }
 
@@ -893,14 +973,23 @@ export class TfgridModuleTwinStoredEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
+  get isV101(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.TwinStored') === '5b6f435dfe1514ae00c046d4634f4246d82542de8da2b6937732aec521f3408a'
+  }
+
+  get asV101(): v9.Twin {
+    assert(this.isV101)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV9
+    return this.isV101
   }
 
   get asLatest(): v9.Twin {
     deprecateLatest()
-    return this.asV9
+    return this.asV101
   }
 }
 
@@ -918,14 +1007,23 @@ export class TftBridgeModuleBurnTransactionProcessedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
+  get isV101(): boolean {
+    return this.ctx._chain.getEventHash('tftBridgeModule.BurnTransactionProcessed') === '554a047c1ffa468c18106c4c9c346a7b03d75e25de542329ef60cf60d44206c9'
+  }
+
+  get asV101(): v9.BurnTransaction {
+    assert(this.isV101)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV9
+    return this.isV101
   }
 
   get asLatest(): v9.BurnTransaction {
     deprecateLatest()
-    return this.asV9
+    return this.asV101
   }
 }
 
@@ -968,14 +1066,23 @@ export class TftBridgeModuleRefundTransactionProcessedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
+  get isV101(): boolean {
+    return this.ctx._chain.getEventHash('tftBridgeModule.RefundTransactionProcessed') === 'b8b1f1dc54430185acf4dfda7337f6b320da504654d541cc5260613d3ec89062'
+  }
+
+  get asV101(): v9.RefundTransaction {
+    assert(this.isV101)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV9
+    return this.isV101
   }
 
   get asLatest(): v9.RefundTransaction {
     deprecateLatest()
-    return this.asV9
+    return this.asV101
   }
 }
 
@@ -1018,14 +1125,23 @@ export class TfgridModuleTwinUpdatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
+  get isV101(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.TwinUpdated') === '5b6f435dfe1514ae00c046d4634f4246d82542de8da2b6937732aec521f3408a'
+  }
+
+  get asV101(): v9.Twin {
+    assert(this.isV101)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV9
+    return this.isV101
   }
 
   get asLatest(): v9.Twin {
     deprecateLatest()
-    return this.asV9
+    return this.asV101
   }
 }
 

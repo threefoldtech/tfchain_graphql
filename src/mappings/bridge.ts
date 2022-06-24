@@ -19,28 +19,46 @@ export async function mintCompleted(ctx: EventHandlerContext) {
 }
 
 export async function burnProcessed(ctx: EventHandlerContext) {
-  const burnProcessedEvent = new TftBridgeModuleBurnTransactionProcessedEvent(ctx).asV9
+  const burnProcessedEvent = new TftBridgeModuleBurnTransactionProcessedEvent(ctx)
+
+  let burn
+  if (burnProcessedEvent.isV9) {
+    burn = burnProcessedEvent.asV9
+  } else if (burnProcessedEvent.asV101) {
+    burn = burnProcessedEvent.asV101
+  } else {
+    return
+  }
 
   const burnTransaction = new BurnTransaction()
   burnTransaction.id = ctx.event.id
-  const accountID = ss58.codec("substrate").encode(burnProcessedEvent.target);
+  const accountID = ss58.codec("substrate").encode(burn.target);
   burnTransaction.target = accountID
-  burnTransaction.amount = burnProcessedEvent.amount
-  burnTransaction.block = burnProcessedEvent.block
+  burnTransaction.amount = burn.amount
+  burnTransaction.block = burn.block
 
   await ctx.store.save<BurnTransaction>(burnTransaction)
 }
 
 export async function refundProcessed(ctx: EventHandlerContext) {
-  const refundProcessedEvent = new TftBridgeModuleRefundTransactionProcessedEvent(ctx).asV9
+  const refundProcessedEvent = new TftBridgeModuleRefundTransactionProcessedEvent(ctx)
+
+  let refund
+  if (refundProcessedEvent.isV9) {
+    refund = refundProcessedEvent.asV9
+  } else if (refundProcessedEvent.asV101) {
+    refund = refundProcessedEvent.asV101
+  } else {
+    return
+  }
 
   const refundTransaction = new RefundTransaction()
   refundTransaction.id = ctx.event.id
-  const accountID = ss58.codec("substrate").encode(refundProcessedEvent.target);
+  const accountID = ss58.codec("substrate").encode(refund.target);
   refundTransaction.target = accountID
-  refundTransaction.amount = refundProcessedEvent.amount
-  refundTransaction.block = refundProcessedEvent.block
-  refundTransaction.txHash = refundProcessedEvent.txHash.toString()
+  refundTransaction.amount = refund.amount
+  refundTransaction.block = refund.block
+  refundTransaction.txHash = refund.txHash.toString()
 
   await ctx.store.save<RefundTransaction>(refundTransaction)
 }

@@ -7,11 +7,17 @@ import { TfgridModuleTwinStoredEvent, TfgridModuleTwinDeletedEvent, TfgridModule
 
 export async function twinStored(ctx: EventHandlerContext) {
   const twinEvent = new TfgridModuleTwinStoredEvent(ctx)
-  if (!twinEvent.isV9) {
+  
+  let twin
+  if (twinEvent.isV9) {
+    twin = twinEvent.asV9
+  } else if (twinEvent.isV101) {
+    twin = twinEvent.asV101
+  } else {
     return
   }
 
-  const twin = new TfgridModuleTwinStoredEvent(ctx).asV9
+  // const twin = new TfgridModuleTwinStoredEvent(ctx).asV9
   const newTwin = new Twin()
 
   newTwin.id = ctx.event.id
@@ -27,13 +33,22 @@ export async function twinStored(ctx: EventHandlerContext) {
 }
 
 export async function twinUpdated(ctx: EventHandlerContext) {
-  const twinEvent = new TfgridModuleTwinUpdatedEvent(ctx).asV9
+  const twinEvent = new TfgridModuleTwinStoredEvent(ctx)
 
-  const savedTwin = await ctx.store.get(Twin, { where: { twinID: twinEvent.id } })
+  let twin
+  if (twinEvent.isV9) {
+    twin = twinEvent.asV9
+  } else if (twinEvent.isV101) {
+    twin = twinEvent.asV101
+  } else {
+    return
+  }
+
+  const savedTwin = await ctx.store.get(Twin, { where: { twinID: twin.id } })
   if (!savedTwin) return
 
-  savedTwin.gridVersion = twinEvent.version
-  savedTwin.ip = twinEvent.ip.toString()
+  savedTwin.gridVersion = twin.version
+  savedTwin.ip = twin.ip.toString()
 
   await ctx.store.save<Twin>(savedTwin)
 }

@@ -17,6 +17,8 @@ export async function contractCreated(ctx: EventHandlerContext) {
     contractEvent = contractCreatedEvent.asV50
   } else if (contractCreatedEvent.isV59) {
     contractEvent = contractCreatedEvent.asV59
+  } else if (contractCreatedEvent.isV101) {
+    contractEvent = contractCreatedEvent.asV101
   }
 
   if (!contractEvent) return
@@ -90,6 +92,8 @@ export async function contractUpdated(ctx: EventHandlerContext) {
     contractEvent = contractUpdatedEvent.asV50
   } else if (contractUpdatedEvent.isV59) {
     contractEvent = contractUpdatedEvent.asV59
+  } else if (contractUpdatedEvent.isV101) {
+    contractEvent = contractUpdatedEvent.asV101
   }
 
   if (!contractEvent) return
