@@ -9,7 +9,21 @@ import { BalancesTransferEvent } from "../types/events";
 export async function balancesTransfer(ctx: EventHandlerContext): Promise<void> {
   const store: Store = ctx.store
 
-  const [from, to, amount] = new BalancesTransferEvent(ctx).asV9;
+  const transferEvent = new BalancesTransferEvent(ctx)
+
+  let from, to, amount
+  let transfer
+  if (transferEvent.isV9) {
+    transfer = transferEvent.asV9
+    from = transfer[0]
+    to = transfer[1]
+    amount = transfer[2]
+  } else if (transferEvent.isV101) {
+    transfer = transferEvent.asV101
+    from = transfer.from
+    to = transfer.to
+    amount = transfer.amount
+  } else { return }
 
   const fromEncoded = ss58.codec("substrate").encode(from);
   const toEncoded = ss58.codec("substrate").encode(to);

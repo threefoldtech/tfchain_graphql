@@ -14,6 +14,8 @@ export async function pricingPolicyStored(ctx: EventHandlerContext) {
     pricingPolicyEventParsed = pricingPolicyEvent.asV9
   } else if (pricingPolicyEvent.isV51) {
     pricingPolicyEventParsed = pricingPolicyEvent.asV51
+  } else if (pricingPolicyEvent.isV101) {
+    pricingPolicyEventParsed = pricingPolicyEvent.asV101
   }
 
   if (!pricingPolicyEventParsed) return

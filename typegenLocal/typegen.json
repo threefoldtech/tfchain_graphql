@@ -28,7 +28,6 @@
       "tfgridModule.FarmingPolicyUpdated",
       "tfgridModule.FarmingPolicySet",
       "tfgridModule.FarmCertificationSet",
-      "smartContractModule.NodeMarkedAsDedicated",
       "smartContractModule.NruConsumptionReportReceived",
       "smartContractModule.ContractCreated",
       "smartContractModule.ContractUpdated",

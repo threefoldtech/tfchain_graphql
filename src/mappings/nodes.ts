@@ -15,6 +15,8 @@ export async function nodeStored(ctx: EventHandlerContext) {
     nodeEvent = node.asV43
   } else if (node.isV63) {
     nodeEvent = node.asV63
+  } else if (node.isV101) {
+    nodeEvent = node.asV101
   }
   
   if (!nodeEvent) return
@@ -84,14 +86,21 @@ export async function nodeStored(ctx: EventHandlerContext) {
     }
   }
 
-  if (node.isV63) {
-    const nodeAsV63 = node.asV63
-    newNode.secure = nodeAsV63.secureBoot ? true : false
-    newNode.virtualized = nodeAsV63.virtualized ? true : false
-    newNode.serialNumber = nodeAsV63.serialNumber.toString()
-    newNode.connectionPrice = nodeAsV63.connectionPrice
-    if (nodeAsV63.certification) {
-      const certificationTypeAsString = nodeAsV63.certification.__kind.toString()
+  if (node.isV101 || node.isV63) {
+    let nodeEvent
+    if (node.isV101) {
+      nodeEvent = node.asV101
+    } else if (node.isV63) {
+      nodeEvent = node.asV63
+    } else {
+      return
+    }
+    newNode.secure = nodeEvent.secureBoot ? true : false
+    newNode.virtualized = nodeEvent.virtualized ? true : false
+    newNode.serialNumber = nodeEvent.serialNumber.toString()
+    newNode.connectionPrice = nodeEvent.connectionPrice
+    if (nodeEvent.certification) {
+      const certificationTypeAsString = nodeEvent.certification.__kind.toString()
       let certType = NodeCertification.Diy
       switch (certificationTypeAsString) {
         case 'Diy': 
@@ -162,6 +171,8 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     nodeEvent = node.asV43
   } else if (node.isV63) {
     nodeEvent = node.asV63
+  } else if (node.isV101) {
+    nodeEvent = node.asV101
   }
 
   if (!nodeEvent) return
@@ -237,13 +248,20 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     }
   }
 
-  if (node.isV63) {
-    const nodeAsV63 = node.asV63 
-    savedNode.secure = nodeAsV63.secureBoot ? true : false
-    savedNode.virtualized = nodeAsV63.virtualized ? true : false
-    savedNode.serialNumber = nodeAsV63.serialNumber.toString()
-    if (nodeAsV63.certification) {
-      const certificationTypeAsString = nodeAsV63.certification.__kind.toString()
+  if (node.isV101 || node.isV63) {
+    let nodeEvent
+    if (node.isV101) {
+      nodeEvent = node.asV101
+    } else if (node.isV63) {
+      nodeEvent = node.asV63
+    } else {
+      return
+    }
+    savedNode.secure = nodeEvent.secureBoot ? true : false
+    savedNode.virtualized = nodeEvent.virtualized ? true : false
+    savedNode.serialNumber = nodeEvent.serialNumber.toString()
+    if (nodeEvent.certification) {
+      const certificationTypeAsString = nodeEvent.certification.__kind.toString()
       let certType = NodeCertification.Diy
       switch (certificationTypeAsString) {
         case 'Diy': 
