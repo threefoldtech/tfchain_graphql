@@ -33,7 +33,7 @@ export async function twinStored(ctx: EventHandlerContext) {
 }
 
 export async function twinUpdated(ctx: EventHandlerContext) {
-  const twinEvent = new TfgridModuleTwinStoredEvent(ctx)
+  const twinEvent = new TfgridModuleTwinUpdatedEvent(ctx)
 
   let twin
   if (twinEvent.isV9) {
