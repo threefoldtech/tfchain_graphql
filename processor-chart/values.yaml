@@ -82,7 +82,9 @@ db_host: processor-db
 indexer_endpoint: http://indexer-gateway:4010/v1/graphql
 
 # ws_url: wss://tfchain.test.grid.tf
-ws_url: 
+ws_url:
+
+start_height: 0
 
 volume:
   size: 5Gi

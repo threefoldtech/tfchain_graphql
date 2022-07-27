@@ -1,15 +1,13 @@
 import assert from 'assert'
 import {EventContext, Result, deprecateLatest} from './support'
-import * as v9 from './v9'
 import * as v12 from './v12'
 import * as v25 from './v25'
 import * as v28 from './v28'
 import * as v43 from './v43'
 import * as v49 from './v49'
 import * as v50 from './v50'
-import * as v51 from './v51'
-import * as v59 from './v59'
-import * as v62 from './v63'
+import * as v68 from './v68'
+import * as v9 from './v9'
 
 export class BalancesTransferEvent {
   constructor(private ctx: EventContext) {
@@ -99,23 +97,23 @@ export class SmartContractModuleContractCreatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isV59(): boolean {
+  get isV68(): boolean {
     return this.ctx._chain.getEventHash('smartContractModule.ContractCreated') === '5446945d28da7c765303d310f9ca55fc9bb46e7b5f281ac184521f913c430ee0'
   }
 
-  get asV59(): v59.Contract {
-    assert(this.isV59)
+  get asV68(): v68.Contract {
+    assert(this.isV68)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV59
+    return this.isV68
   }
 
-  get asLatest(): v59.Contract {
+  get asLatest(): v68.Contract {
     deprecateLatest()
-    return this.asV59
+    return this.asV68
   }
 }
 
@@ -151,73 +149,23 @@ export class SmartContractModuleContractUpdatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isV59(): boolean {
+  get isV68(): boolean {
     return this.ctx._chain.getEventHash('smartContractModule.ContractUpdated') === '5446945d28da7c765303d310f9ca55fc9bb46e7b5f281ac184521f913c430ee0'
   }
 
-  get asV59(): v59.Contract {
-    assert(this.isV59)
+  get asV68(): v68.Contract {
+    assert(this.isV68)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV59
+    return this.isV68
   }
 
-  get asLatest(): v59.Contract {
+  get asLatest(): v68.Contract {
     deprecateLatest()
-    return this.asV59
-  }
-}
-
-export class SmartContractModuleContractGracePeriodEndedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.ContractGracePeriodEnded')
-  }
-
-  get isV59(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ContractGracePeriodEnded') === 'da3d413ec5a77ddce8b8c12c9cdd58340716a71ab4effe398cbaf249a16d0542'
-  }
-
-  get asV59(): [bigint, number, number] {
-    assert(this.isV59)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV59
-  }
-
-  get asLatest(): [bigint, number, number] {
-    deprecateLatest()
-    return this.asV59
-  }
-}
-
-export class SmartContractModuleContractGracePeriodStartedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.ContractGracePeriodStarted')
-  }
-
-  get isV59(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ContractGracePeriodStarted') === 'e6ffbb3cdd02a660fb04c1fb606cae70e4a388774028c58e59a98d56f3654371'
-  }
-
-  get asV59(): [bigint, number, number, bigint] {
-    assert(this.isV59)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV59
-  }
-
-  get asLatest(): [bigint, number, number, bigint] {
-    deprecateLatest()
-    return this.asV59
+    return this.asV68
   }
 }
 
@@ -460,32 +408,23 @@ export class TfgridModuleFarmStoredEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isV50(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmStored') === 'ec24dee4036a557d103cfa67fbde8a7758d4f82f2dc82e80a56b839aecd93ebb'
-  }
-
-  get asV50(): v50.Farm {
-    assert(this.isV50)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isV63(): boolean {
+  get isV68(): boolean {
     return this.ctx._chain.getEventHash('tfgridModule.FarmStored') === 'ca41d591947edffabc4e5a891ad112debc48b2e676350f6208a4cb6eb13f4627'
   }
 
-  get asV63(): v62.Farm {
-    assert(this.isV63)
+  get asV68(): v68.Farm {
+    assert(this.isV68)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV63
+    return this.isV68
   }
 
-  get asLatest(): v62.Farm {
+  get asLatest(): v68.Farm {
     deprecateLatest()
-    return this.asV63
+    return this.asV68
   }
 }
 
@@ -503,32 +442,23 @@ export class TfgridModuleFarmUpdatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isV50(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmUpdated') === 'ec24dee4036a557d103cfa67fbde8a7758d4f82f2dc82e80a56b839aecd93ebb'
-  }
-
-  get asV50(): v50.Farm {
-    assert(this.isV50)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isV63(): boolean {
+  get isV68(): boolean {
     return this.ctx._chain.getEventHash('tfgridModule.FarmUpdated') === 'ca41d591947edffabc4e5a891ad112debc48b2e676350f6208a4cb6eb13f4627'
   }
 
-  get asV63(): v62.Farm {
-    assert(this.isV63)
+  get asV68(): v68.Farm {
+    assert(this.isV68)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV63
+    return this.isV68
   }
 
-  get asLatest(): v62.Farm {
+  get asLatest(): v68.Farm {
     deprecateLatest()
-    return this.asV63
+    return this.asV68
   }
 }
 
@@ -546,48 +476,23 @@ export class TfgridModuleFarmingPolicyStoredEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isV63(): boolean {
+  get isV68(): boolean {
     return this.ctx._chain.getEventHash('tfgridModule.FarmingPolicyStored') === 'e45f1ccb50e73b0f9a65c63399730f27041aa3b5c8347272bbbe01c3b66f5712'
   }
 
-  get asV63(): v62.FarmingPolicy {
-    assert(this.isV63)
+  get asV68(): v68.FarmingPolicy {
+    assert(this.isV68)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV63
+    return this.isV68
   }
 
-  get asLatest(): v62.FarmingPolicy {
+  get asLatest(): v68.FarmingPolicy {
     deprecateLatest()
-    return this.asV63
-  }
-}
-
-export class TfgridModuleFarmingPolicyUpdatedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.FarmingPolicyUpdated')
-  }
-
-  get isV63(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmingPolicyUpdated') === 'e45f1ccb50e73b0f9a65c63399730f27041aa3b5c8347272bbbe01c3b66f5712'
-  }
-
-  get asV63(): v62.FarmingPolicy {
-    assert(this.isV63)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV63
-  }
-
-  get asLatest(): v62.FarmingPolicy {
-    deprecateLatest()
-    return this.asV63
+    return this.asV68
   }
 }
 
@@ -673,32 +578,23 @@ export class TfgridModuleNodeStoredEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isV63(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.NodeStored') === 'e1f5e9dacc89d5440a8c0eca179818231f2f3c7795140ef18ed503dc0dad337c'
-  }
-
-  get asV63(): v62.Node {
-    assert(this.isV63)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
   get isV68(): boolean {
     return this.ctx._chain.getEventHash('tfgridModule.NodeStored') === '8c3fa509fc5a961d1224b0b04af3d8a581aa9f74c7430ec3aaabf187866587fa'
   }
 
-  get asV68(): v62.Node {
+  get asV68(): v68.Node {
     assert(this.isV68)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV63
+    return this.isV68
   }
 
-  get asLatest(): v62.Node {
+  get asLatest(): v68.Node {
     deprecateLatest()
-    return this.asV63
+    return this.asV68
   }
 }
 
@@ -734,32 +630,23 @@ export class TfgridModuleNodeUpdatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isV63(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.NodeUpdated') === 'e1f5e9dacc89d5440a8c0eca179818231f2f3c7795140ef18ed503dc0dad337c'
-  }
-
-  get asV63(): v62.Node {
-    assert(this.isV63)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
   get isV68(): boolean {
     return this.ctx._chain.getEventHash('tfgridModule.NodeUpdated') === '8c3fa509fc5a961d1224b0b04af3d8a581aa9f74c7430ec3aaabf187866587fa'
   }
 
-  get asV68(): v62.Node {
+  get asV68(): v68.Node {
     assert(this.isV68)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV63
+    return this.isV68
   }
 
-  get asLatest(): v62.Node {
+  get asLatest(): v68.Node {
     deprecateLatest()
-    return this.asV63
+    return this.asV68
   }
 }
 
@@ -802,23 +689,23 @@ export class TfgridModulePricingPolicyStoredEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isV51(): boolean {
+  get isV50(): boolean {
     return this.ctx._chain.getEventHash('tfgridModule.PricingPolicyStored') === '0f67e7bfdb642a68114325df76a8dc56ea54b43ae993499e316274c95e8cf8af'
   }
 
-  get asV51(): v51.PricingPolicy {
-    assert(this.isV51)
+  get asV50(): v50.PricingPolicy {
+    assert(this.isV50)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV51
+    return this.isV50
   }
 
-  get asLatest(): v51.PricingPolicy {
+  get asLatest(): v50.PricingPolicy {
     deprecateLatest()
-    return this.asV51
+    return this.asV50
   }
 }
 
@@ -922,6 +809,31 @@ export class TfgridModuleTwinStoredEvent {
   }
 }
 
+export class TfgridModuleTwinUpdatedEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'tfgridModule.TwinUpdated')
+  }
+
+  get isV9(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.TwinUpdated') === '227edfd1a5fd83edb4bfcd22ba5f7ebe5ef8464b8a7b2ddebfe56997c4982276'
+  }
+
+  get asV9(): v9.Twin {
+    assert(this.isV9)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV9
+  }
+
+  get asLatest(): v9.Twin {
+    deprecateLatest()
+    return this.asV9
+  }
+}
+
 export class TftBridgeModuleBurnTransactionProcessedEvent {
   constructor(private ctx: EventContext) {
     assert(this.ctx.event.name === 'tftBridgeModule.BurnTransactionProcessed')
@@ -994,180 +906,5 @@ export class TftBridgeModuleRefundTransactionProcessedEvent {
   get asLatest(): v9.RefundTransaction {
     deprecateLatest()
     return this.asV9
-  }
-}
-
-export class SmartContractModuleRentContractCanceledEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.RentContractCanceled')
-  }
-
-  get isV50(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.RentContractCanceled') === '0e1caef0df80727d2768bc480792261a4e7615b57b3e8182c7f664f06c96a08e'
-  }
-
-  get asV50(): bigint {
-    assert(this.isV50)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV50
-  }
-
-  get asLatest(): bigint {
-    deprecateLatest()
-    return this.asV50
-  }
-}
-
-export class TfgridModuleTwinUpdatedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.TwinUpdated')
-  }
-
-  get isV9(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.TwinUpdated') === '227edfd1a5fd83edb4bfcd22ba5f7ebe5ef8464b8a7b2ddebfe56997c4982276'
-  }
-
-  get asV9(): v9.Twin {
-    assert(this.isV9)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV9
-  }
-
-  get asLatest(): v9.Twin {
-    deprecateLatest()
-    return this.asV9
-  }
-}
-
-export class TfgridModuleConnectionPriceSetEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.ConnectionPriceSet')
-  }
-
-  get isV63(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.ConnectionPriceSet') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
-  }
-
-  get asV63(): number {
-    assert(this.isV63)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV63
-  }
-
-  get asLatest(): number {
-    deprecateLatest()
-    return this.asV63
-  }
-}
-
-export class TfgridModuleFarmCertificationSetEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.FarmCertificationSet')
-  }
-
-  get isV63(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmCertificationSet') === 'ffe62c890927616bc9d5af190bd4a3b2c69e29097ebc6ea5ee6a2e1e87ceb759'
-  }
-
-  get asV63(): [number, v62.FarmCertification] {
-    assert(this.isV63)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV63
-  }
-
-  get asLatest(): [number, v62.FarmCertification] {
-    deprecateLatest()
-    return this.asV63
-  }
-}
-
-export class TfgridModuleFarmingPolicySetEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.FarmingPolicySet')
-  }
-
-  get isV63(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmingPolicySet') === 'd64e52200384d2b2a6378823d0e0b9eba44abc0a9fc1b82114ef18b71937324c'
-  }
-
-  get asV63(): [number, (v62.FarmingPolicyLimit | undefined)] {
-    assert(this.isV63)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV63
-  }
-
-  get asLatest(): [number, (v62.FarmingPolicyLimit | undefined)] {
-    deprecateLatest()
-    return this.asV63
-  }
-}
-
-export class TfgridModuleNodeCertificationSetEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.NodeCertificationSet')
-  }
-
-  get isV63(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.NodeCertificationSet') === 'd4945d9aee3a9679b5626ad868873cd15d01a6eafb319306d7528643c7ab38d2'
-  }
-
-  get asV63(): [number, v62.NodeCertification] {
-    assert(this.isV63)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV63
-  }
-
-  get asLatest(): [number, v62.NodeCertification] {
-    deprecateLatest()
-    return this.asV63
-  }
-}
-
-export class SmartContractModuleNodeMarkedAsDedicatedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.NodeMarkedAsDedicated')
-  }
-
-  get isV63(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.NodeMarkedAsDedicated') === 'f267e1fa04f32dd15473e3a6d2514ae684bd7ba5516d192ba70e4d49211868aa'
-  }
-
-  get asV63(): [number, boolean] {
-    assert(this.isV63)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV63
-  }
-
-  get asLatest(): [number, boolean] {
-    deprecateLatest()
-    return this.asV63
   }
 }

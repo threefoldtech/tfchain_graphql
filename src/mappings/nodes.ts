@@ -3,9 +3,10 @@ import {
 } from "@subsquid/substrate-processor";
 import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal } from "../model";
 import { SmartContractModuleNodeMarkedAsDedicatedEvent, TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
-
+import { Node as NodeLatest } from '../types/v63'
 export async function nodeStored(ctx: EventHandlerContext) {
-  const node  = new TfgridModuleNodeStoredEvent(ctx)
+  const node = new TfgridModuleNodeStoredEvent(ctx)
+
   let nodeEvent
   if (node.isV9) {
     nodeEvent = node.asV9
@@ -15,6 +16,8 @@ export async function nodeStored(ctx: EventHandlerContext) {
     nodeEvent = node.asV43
   } else if (node.isV63) {
     nodeEvent = node.asV63
+  } else if (node.isV68) {
+    nodeEvent = node.asV68
   }
   
   if (!nodeEvent) return
@@ -150,6 +153,10 @@ export async function nodeStored(ctx: EventHandlerContext) {
   await ctx.store.save<Node>(newNode)
 }
 
+function getAsLatest(ctx: EventHandlerContext): NodeLatest {
+  return ctx._chain.decodeEvent(ctx.event)
+}
+
 export async function nodeUpdated(ctx: EventHandlerContext) {
   const node  = new TfgridModuleNodeUpdatedEvent(ctx)
 
@@ -162,6 +169,8 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     nodeEvent = node.asV43
   } else if (node.isV63) {
     nodeEvent = node.asV63
+  } else if (node.isV68) {
+    nodeEvent = node.asV68
   }
 
   if (!nodeEvent) return
