@@ -17,6 +17,4 @@ data:
   PROJECT_NAME: tfgrid-graphql
   TYPEORM_LOGGING: error
 metadata:
-  labels:
-    io.kompose.service: processor-env
-  name: env
+  name: processor-env
