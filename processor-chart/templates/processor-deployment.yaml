@@ -35,71 +35,71 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   key: BATCH_SIZE
-                  name: env
+                  name: processor-env
             - name: BLOCK_WINDOW
               valueFrom:
                 configMapKeyRef:
                   key: BLOCK_WINDOW
-                  name: env
+                  name: processor-env
             - name: DB_HOST
               value: {{ .Values.db_host }}
             - name: DB_NAME
               valueFrom:
                 configMapKeyRef:
                   key: DB_NAME
-                  name: env
+                  name: processor-env
             - name: DB_PASS
               valueFrom:
                 configMapKeyRef:
                   key: DB_PASS
-                  name: env
+                  name: processor-env
             - name: DB_PORT
               valueFrom:
                 configMapKeyRef:
                   key: DB_PORT
-                  name: env
+                  name: processor-env
             - name: DB_USER
               valueFrom:
                 configMapKeyRef:
                   key: DB_USER
-                  name: env
+                  name: processor-env
             - name: DEBUG
               valueFrom:
                 configMapKeyRef:
                   key: DEBUG
-                  name: env
+                  name: processor-env
             - name: GRAPHQL_SERVER_HOST
               valueFrom:
                 configMapKeyRef:
                   key: GRAPHQL_SERVER_HOST
-                  name: env
+                  name: processor-env
             - name: GRAPHQL_SERVER_PORT
               valueFrom:
                 configMapKeyRef:
                   key: GRAPHQL_SERVER_PORT
-                  name: env
+                  name: processor-env
             - name: INDEXER_ENDPOINT_URL
               valueFrom:
                 configMapKeyRef:
                   key: INDEXER_ENDPOINT_URL
-                  name: env
+                  name: processor-env
             - name: WS_URL
               valueFrom:
                 configMapKeyRef:
                   key: WS_URL
-                  name: env
+                  name: processor-env
             - name: START_HEIGHT
               valueFrom:
                 configMapKeyRef:
                   key: START_HEIGHT
-                  name: env
+                  name: processor-env
             - name: POLL_INTERVAL_MS
               value: "300"
             - name: PROJECT_NAME
               valueFrom:
                 configMapKeyRef:
                   key: PROJECT_NAME
-                  name: env
+                  name: processor-env
         - args:
           - sh
           - -c
@@ -115,17 +115,17 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   key: DB_NAME
-                  name: env
+                  name: processor-env
             - name: DB_PASS
               valueFrom:
                 configMapKeyRef:
                   key: DB_PASS
-                  name: env
+                  name: processor-env
             - name: DB_USER
               valueFrom:
                 configMapKeyRef:
                   key: DB_USER
-                  name: env
+                  name: processor-env
             - name: DB_HOST
               value: {{ .Values.db_host }}
       restartPolicy: Always
