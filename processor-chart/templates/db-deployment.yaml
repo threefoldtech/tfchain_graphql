@@ -22,17 +22,17 @@ spec:
             valueFrom:
                 configMapKeyRef:
                   key: DB_NAME
-                  name: env
+                  name: processor-env
           - name: POSTGRES_PASSWORD
             valueFrom:
                 configMapKeyRef:
                   key: DB_PASS
-                  name: env
+                  name: processor-env
           - name: POSTGRES_USER
             valueFrom:
                 configMapKeyRef:
                   key: DB_USER
-                  name: env
+                  name: processor-env
         image: postgres:12
         name: processor-db
         ports:
