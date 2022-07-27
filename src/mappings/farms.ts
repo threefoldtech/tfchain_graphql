@@ -15,7 +15,11 @@ export async function farmStored(ctx: EventHandlerContext) {
   } else if (farmStoredEvent.isV63) {
     farmStoredEventParsed = farmStoredEvent.asV63
   } else if (farmStoredEvent.isV101) {
-    farmStoredEventParsed = farmStoredEvent.asV101
+    try {
+      farmStoredEventParsed = farmStoredEvent.asV101
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   if (!farmStoredEventParsed) return
@@ -66,7 +70,11 @@ export async function farmUpdated(ctx: EventHandlerContext) {
   } else if (farmUpdatedEvent.isV63) {
     farmUpdatedEventParsed = farmUpdatedEvent.asV63
   } else if (farmUpdatedEvent.isV101) {
-    farmUpdatedEventParsed = farmUpdatedEvent.asV101
+    try {
+      farmUpdatedEventParsed = farmUpdatedEvent.asV101
+    } catch (error) {
+      console.log(error)
+    }
   }
   
   if (!farmUpdatedEventParsed) return

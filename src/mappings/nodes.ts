@@ -1,7 +1,7 @@
 import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
-import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal } from "../model";
+import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal, NodeResourcesUsed, NodeResourcesFree } from "../model";
 import { SmartContractModuleNodeMarkedAsDedicatedEvent, TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
 
 export async function nodeStored(ctx: EventHandlerContext) {
@@ -125,8 +125,26 @@ export async function nodeStored(ctx: EventHandlerContext) {
   resourcesTotal.hru = nodeEvent.resources.hru
   resourcesTotal.mru = nodeEvent.resources.mru
   resourcesTotal.cru = nodeEvent.resources.cru
-
   await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
+
+
+  const resourcesUsed = new NodeResourcesUsed()
+  resourcesUsed.node = newNode
+  resourcesUsed.id = ctx.event.id
+  resourcesUsed.sru = BigInt(0)
+  resourcesUsed.hru = BigInt(0)
+  resourcesUsed.mru = BigInt(0)
+  resourcesUsed.cru = BigInt(0)
+  await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
+
+  const resourcesFree = new NodeResourcesFree()
+  resourcesFree.node = newNode
+  resourcesFree.id = ctx.event.id
+  resourcesFree.sru = BigInt(0)
+  resourcesFree.hru = BigInt(0)
+  resourcesFree.mru = BigInt(0)
+  resourcesFree.cru = BigInt(0)
+  await ctx.store.save<NodeResourcesFree>(resourcesFree)
 
   if (nodeEvent.publicConfig) {
     const pubConfig = new PublicConfig()

@@ -72,6 +72,8 @@ type Node @entity {
   city: String
   publicConfig: PublicConfig @derivedFrom(field: "node")
   resourcesTotal: NodeResourcesTotal @derivedFrom(field: "node")
+  resourcesUsed: NodeResourcesUsed @derivedFrom(field: "node")
+  resourcesFree: NodeResourcesFree @derivedFrom(field: "node")
   uptime: BigInt
   created: Int!
   farmingPolicyId: Int!
@@ -88,7 +90,23 @@ type Node @entity {
 type NodeResourcesTotal @entity {
   node: Node! @unique
   hru: BigInt!
-  sru: BigInt! 
+  sru: BigInt!
+  cru: BigInt!
+  mru: BigInt!
+}
+
+type NodeResourcesUsed @entity {
+  node: Node! @unique
+  hru: BigInt!
+  sru: BigInt!
+  cru: BigInt!
+  mru: BigInt!
+}
+
+type NodeResourcesFree @entity {
+  node: Node! @unique
+  hru: BigInt!
+  sru: BigInt!
   cru: BigInt!
   mru: BigInt!
 }
@@ -198,9 +216,9 @@ type RentContract @entity {
 }
 
 enum ContractState {
-  Created,
-  Deleted,
-  OutOfFunds,
+  Created
+  Deleted
+  OutOfFunds
   GracePeriod
 }
 
@@ -219,10 +237,10 @@ type ContractBillReport @entity {
 }
 
 enum DiscountLevel {
-  None,
-  Default,
-  Bronze,
-  Silver,
+  None
+  Default
+  Bronze
+  Silver
   Gold
 }
 
