@@ -140,10 +140,10 @@ export async function nodeStored(ctx: EventHandlerContext) {
   const resourcesFree = new NodeResourcesFree()
   resourcesFree.node = newNode
   resourcesFree.id = ctx.event.id
-  resourcesFree.sru = BigInt(0)
-  resourcesFree.hru = BigInt(0)
-  resourcesFree.mru = BigInt(0)
-  resourcesFree.cru = BigInt(0)
+  resourcesFree.sru = nodeEvent.resources.sru
+  resourcesFree.hru = nodeEvent.resources.hru
+  resourcesFree.mru = nodeEvent.resources.mru
+  resourcesFree.cru = nodeEvent.resources.cru
   await ctx.store.save<NodeResourcesFree>(resourcesFree)
 
   if (nodeEvent.publicConfig) {

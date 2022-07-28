@@ -173,6 +173,7 @@ export async function nodeContractCanceled(ctx: EventHandlerContext) {
 
   const savedContractResources = await ctx.store.get(ContractResources, { where: { contract: savedContract }})
   if (savedContractResources) {
+    // console.log('got contract cancel event, removing resource from node now...')
     removeNodeResources(ctx, savedNode.nodeID, savedContractResources)
   }
     
@@ -283,6 +284,8 @@ export async function addNodeResources(ctx: EventHandlerContext, nodeID: number,
   // Recalculate total / free resoures when a node get's updated
   let resourcesUsed = await ctx.store.get(NodeResourcesUsed, { where: { node: savedNode } })
   if (resourcesUsed) {
+    // console.log(`recalculating resources used for node ${nodeID}`)
+    // console.log(`resources used sru ${resourcesUsed.sru}, new resources sru to add ${resources.sru}`)
     resourcesUsed.sru += resources.sru
     resourcesUsed.hru += resources.hru
     resourcesUsed.mru += resources.mru
@@ -302,10 +305,20 @@ export async function removeNodeResources(ctx: EventHandlerContext, nodeID: numb
   // Recalculate total / free resoures when a node get's updated
   let resourcesUsed = await ctx.store.get(NodeResourcesUsed, { where: { node: savedNode } })
   if (resourcesUsed) {
-    resourcesUsed.sru -= resources.sru
-    resourcesUsed.hru -= resources.hru
-    resourcesUsed.mru -= resources.mru
-    resourcesUsed.cru -= resources.cru
+    // console.log(`recalculating resources used for node ${nodeID}`)
+    // console.log(`resources used sru ${resourcesUsed.sru}, new resources sru to subtract ${resources.sru}`)
+    if (resourcesUsed.sru > 0 && resourcesUsed.sru >= resources.sru) {
+      resourcesUsed.sru -= resources.sru
+    }
+    if (resourcesUsed.hru > 0 && resourcesUsed.hru >= resources.hru) {
+      resourcesUsed.hru -= resources.hru
+    }
+    if (resourcesUsed.mru > 0 && resourcesUsed.mru >= resources.mru) {
+      resourcesUsed.mru -= resources.mru
+    }
+    if (resourcesUsed.cru > 0 && resourcesUsed.cru >= resources.cru) {
+      resourcesUsed.cru -= resources.cru
+    }
     // console.log(`updated node resources: ${resourcesUsed}`)
     await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
   }
