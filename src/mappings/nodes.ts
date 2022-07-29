@@ -4,6 +4,8 @@ import {
 import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal, NodeResourcesUsed, NodeResourcesFree } from "../model";
 import { SmartContractModuleNodeMarkedAsDedicatedEvent, TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
 
+const GB = 1024 * 1024 * 1024
+
 export async function nodeStored(ctx: EventHandlerContext) {
   const node  = new TfgridModuleNodeStoredEvent(ctx)
   let nodeEvent
@@ -131,18 +133,18 @@ export async function nodeStored(ctx: EventHandlerContext) {
   const resourcesUsed = new NodeResourcesUsed()
   resourcesUsed.node = newNode
   resourcesUsed.id = ctx.event.id
-  resourcesUsed.sru = BigInt(0)
+  resourcesUsed.sru = BigInt(100*GB)
   resourcesUsed.hru = BigInt(0)
-  resourcesUsed.mru = BigInt(0)
+  resourcesUsed.mru = BigInt(2*GB)
   resourcesUsed.cru = BigInt(0)
   await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
 
   const resourcesFree = new NodeResourcesFree()
   resourcesFree.node = newNode
   resourcesFree.id = ctx.event.id
-  resourcesFree.sru = nodeEvent.resources.sru
+  resourcesFree.sru = nodeEvent.resources.sru - BigInt(100*GB)
   resourcesFree.hru = nodeEvent.resources.hru
-  resourcesFree.mru = nodeEvent.resources.mru
+  resourcesFree.mru = nodeEvent.resources.mru - BigInt(2*GB)
   resourcesFree.cru = nodeEvent.resources.cru
   await ctx.store.save<NodeResourcesFree>(resourcesFree)
 

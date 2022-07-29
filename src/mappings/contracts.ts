@@ -240,27 +240,26 @@ export async function contractBilled(ctx: EventHandlerContext) {
 export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
   const usedResources = new SmartContractModuleUpdatedUsedResourcesEvent(ctx).asV49
 
-  const contractUsedResources = new ContractResources()
-
   const savedContract = await ctx.store.get(NodeContract, { where: { contractID: usedResources.contractId } })
   if (!savedContract) return
 
   const savedContractResources = await ctx.store.get(ContractResources, { where: { contract: savedContract }})
   if (savedContractResources) {
     await removeNodeResources(ctx, savedContract.nodeID, savedContractResources)
-
-    contractUsedResources.cru = usedResources.used.cru
-    contractUsedResources.sru = usedResources.used.sru
-    contractUsedResources.hru = usedResources.used.hru
-    contractUsedResources.mru = usedResources.used.mru
+    
+    savedContractResources.cru = usedResources.used.cru
+    savedContractResources.sru = usedResources.used.sru
+    savedContractResources.hru = usedResources.used.hru
+    savedContractResources.mru = usedResources.used.mru
     await ctx.store.save<ContractResources>(savedContractResources)
 
     savedContract.resourcesUsed = savedContractResources
     await ctx.store.save<NodeContract>(savedContract)
-
+    
     await addNodeResources(ctx, savedContract.nodeID, savedContractResources)
     await updateNodeFreeResources(ctx, savedContract.nodeID)
   } else {
+    const contractUsedResources = new ContractResources()
     contractUsedResources.id = ctx.event.id
     contractUsedResources.cru = usedResources.used.cru
     contractUsedResources.sru = usedResources.used.sru
@@ -281,17 +280,14 @@ export async function addNodeResources(ctx: EventHandlerContext, nodeID: number,
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
   if (!savedNode) return
 
-  // Recalculate total / free resoures when a node get's updated
   let resourcesUsed = await ctx.store.get(NodeResourcesUsed, { where: { node: savedNode } })
   if (resourcesUsed) {
-    // console.log(`recalculating resources used for node ${nodeID}`)
-    // console.log(`resources used sru ${resourcesUsed.sru}, new resources sru to add ${resources.sru}`)
     resourcesUsed.sru += resources.sru
     resourcesUsed.hru += resources.hru
     resourcesUsed.mru += resources.mru
+    // console.log(`adding ${resources.cru} to used cru: ${resourcesUsed.cru} for node ${nodeID}`)
     resourcesUsed.cru += resources.cru
     await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
-    // console.log(`updated node resources: ${resourcesUsed}`)
     await ctx.store.save<Node>(savedNode)
   } else {
     console.log('no resources used')
@@ -302,11 +298,8 @@ export async function removeNodeResources(ctx: EventHandlerContext, nodeID: numb
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
   if (!savedNode) return
 
-  // Recalculate total / free resoures when a node get's updated
   let resourcesUsed = await ctx.store.get(NodeResourcesUsed, { where: { node: savedNode } })
   if (resourcesUsed) {
-    // console.log(`recalculating resources used for node ${nodeID}`)
-    // console.log(`resources used sru ${resourcesUsed.sru}, new resources sru to subtract ${resources.sru}`)
     if (resourcesUsed.sru > 0 && resourcesUsed.sru >= resources.sru) {
       resourcesUsed.sru -= resources.sru
     }
@@ -319,8 +312,8 @@ export async function removeNodeResources(ctx: EventHandlerContext, nodeID: numb
     if (resourcesUsed.cru > 0 && resourcesUsed.cru >= resources.cru) {
       resourcesUsed.cru -= resources.cru
     }
-    // console.log(`updated node resources: ${resourcesUsed}`)
     await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
+    await ctx.store.save<Node>(savedNode)
   }
 }
 
@@ -329,17 +322,16 @@ export async function updateNodeFreeResources(ctx: EventHandlerContext, nodeID: 
   if (!savedNode) return
 
   let resourcesUsed = await ctx.store.get(NodeResourcesUsed, { where: { node: savedNode } })
-  if (resourcesUsed) {
-    let resourcesFree = await ctx.store.get(NodeResourcesFree, { where: { node: savedNode } })
-    let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
+  let resourcesFree = await ctx.store.get(NodeResourcesFree, { where: { node: savedNode } })
+  let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
 
-    if (resourcesFree && resourcesTotal) {
-      resourcesFree.sru =  resourcesTotal.sru - resourcesUsed.sru
-      resourcesFree.hru = resourcesTotal.hru - resourcesUsed.hru
-      resourcesFree.mru = resourcesTotal.mru - resourcesUsed.mru
-      resourcesFree.cru = resourcesTotal.cru - resourcesUsed.cru
-    }
-    await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
+  if (resourcesUsed && resourcesFree && resourcesTotal) {
+    resourcesFree.sru =  resourcesTotal.sru - resourcesUsed.sru
+    resourcesFree.hru = resourcesTotal.hru - resourcesUsed.hru
+    resourcesFree.mru = resourcesTotal.mru - resourcesUsed.mru
+    resourcesFree.cru = resourcesTotal.cru - resourcesUsed.cru
+    await ctx.store.save<NodeResourcesFree>(resourcesFree)
+    await ctx.store.save<Node>(savedNode)
   }
 }
 
