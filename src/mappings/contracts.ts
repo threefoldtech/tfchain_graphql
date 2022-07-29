@@ -171,16 +171,22 @@ export async function nodeContractCanceled(ctx: EventHandlerContext) {
   const savedNode = await ctx.store.get(Node, { where: { nodeID: savedContract.nodeID }})
   if (!savedNode) return
 
-  const savedContractResources = await ctx.store.get(ContractResources, { where: { contract: savedContract }})
-  if (savedContractResources) {
-    // console.log('got contract cancel event, removing resource from node now...')
-    removeNodeResources(ctx, savedNode.nodeID, savedContractResources)
-  }
-    
   const savedPublicIP = await ctx.store.get(PublicIp, { where: { contractId: savedContract.contractID }})
   if (savedPublicIP) {
     savedPublicIP.contractId = BigInt(0)
     await ctx.store.save<PublicIp>(savedPublicIP)
+  }
+  // await ctx.store.remove<NodeContract>(savedContract)
+  // await ctx.store.delete<NodeContract>(NodeContract, savedContract.contractID)
+  const savedContractResources = await ctx.store.get(ContractResources, { where: { contract: savedContract }})
+  if (savedContractResources) {
+    await removeNodeResources(ctx, savedNode.nodeID, savedContractResources)
+    await updateNodeFreeResources(ctx, savedContract.nodeID)
+
+    savedContract.resourcesUsed = null
+    await ctx.store.save<NodeContract>(savedContract)
+    // await ctx.store.delete<ContractResources>(ContractResources, savedContractResources.contract)
+    await ctx.store.remove<ContractResources>(savedContractResources)
   }
 }
 
@@ -245,6 +251,12 @@ export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
 
   const savedContractResources = await ctx.store.get(ContractResources, { where: { contract: savedContract }})
   if (savedContractResources) {
+
+    if (savedContractResources === usedResources.used) {
+      console.log('should not update resources here')
+      return
+    }
+
     await removeNodeResources(ctx, savedContract.nodeID, savedContractResources)
     
     savedContractResources.cru = usedResources.used.cru
@@ -288,7 +300,6 @@ export async function addNodeResources(ctx: EventHandlerContext, nodeID: number,
     // console.log(`adding ${resources.cru} to used cru: ${resourcesUsed.cru} for node ${nodeID}`)
     resourcesUsed.cru += resources.cru
     await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
-    await ctx.store.save<Node>(savedNode)
   } else {
     console.log('no resources used')
   }
@@ -300,20 +311,11 @@ export async function removeNodeResources(ctx: EventHandlerContext, nodeID: numb
 
   let resourcesUsed = await ctx.store.get(NodeResourcesUsed, { where: { node: savedNode } })
   if (resourcesUsed) {
-    if (resourcesUsed.sru > 0 && resourcesUsed.sru >= resources.sru) {
-      resourcesUsed.sru -= resources.sru
-    }
-    if (resourcesUsed.hru > 0 && resourcesUsed.hru >= resources.hru) {
-      resourcesUsed.hru -= resources.hru
-    }
-    if (resourcesUsed.mru > 0 && resourcesUsed.mru >= resources.mru) {
-      resourcesUsed.mru -= resources.mru
-    }
-    if (resourcesUsed.cru > 0 && resourcesUsed.cru >= resources.cru) {
-      resourcesUsed.cru -= resources.cru
-    }
+    resourcesUsed.sru -= resources.sru
+    resourcesUsed.hru -= resources.hru
+    resourcesUsed.mru -= resources.mru
+    resourcesUsed.cru -= resources.cru
     await ctx.store.save<NodeResourcesUsed>(resourcesUsed)
-    await ctx.store.save<Node>(savedNode)
   }
 }
 
@@ -324,6 +326,8 @@ export async function updateNodeFreeResources(ctx: EventHandlerContext, nodeID: 
   let resourcesUsed = await ctx.store.get(NodeResourcesUsed, { where: { node: savedNode } })
   let resourcesFree = await ctx.store.get(NodeResourcesFree, { where: { node: savedNode } })
   let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
+
+  // ctx.store.find(ContractResources, { where: { contract}})
 
   if (resourcesUsed && resourcesFree && resourcesTotal) {
     resourcesFree.sru =  resourcesTotal.sru - resourcesUsed.sru

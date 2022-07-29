@@ -26,7 +26,6 @@
     "lodash": "^4.17.21",
     "pg-format": "^1.0.4",
     "substrate-tfgrid-ts-types": "^0.4.0",
-    "type-graphql": "^1.1.1",
     "typeorm": "^0.2.45"
   },
   "devDependencies": {
