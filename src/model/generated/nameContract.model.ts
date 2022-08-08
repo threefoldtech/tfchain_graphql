@@ -28,4 +28,7 @@ export class NameContract {
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   createdAt!: bigint
+
+  @Column_("integer", {nullable: true})
+  solutionProviderID!: number | undefined | null
 }
