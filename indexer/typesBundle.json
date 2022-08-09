@@ -485,7 +485,7 @@
           }
         },
         {
-          "minmax": [104, null],
+          "minmax": [105, null],
           "types": {
             "Contract": {
               "version": " u32",

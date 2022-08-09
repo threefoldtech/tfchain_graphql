@@ -201,15 +201,14 @@ type RentContract @entity {
 }
 
 type SolutionProvider @entity {
-  solutionProviderID: Int!
+  solutionProviderID: BigInt!
   description: String!
   link: String!
   approved: Boolean!
-  providers: [Provider!] @derivedFrom(field: "solutionProvider")
+  providers: [Provider]
 }
 
-type Provider @entity {
-  solutionProvider: SolutionProvider!
+type Provider {
   who: String!
   take: Int!
 }

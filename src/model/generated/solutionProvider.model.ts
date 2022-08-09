@@ -1,5 +1,6 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToMany as OneToMany_} from "typeorm"
-import {Provider} from "./provider.model"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_} from "typeorm"
+import * as marshal from "./marshal"
+import {Provider} from "./_provider"
 
 @Entity_()
 export class SolutionProvider {
@@ -10,8 +11,8 @@ export class SolutionProvider {
   @PrimaryColumn_()
   id!: string
 
-  @Column_("integer", {nullable: false})
-  solutionProviderID!: number
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  solutionProviderID!: bigint
 
   @Column_("text", {nullable: false})
   description!: string
@@ -22,6 +23,6 @@ export class SolutionProvider {
   @Column_("bool", {nullable: false})
   approved!: boolean
 
-  @OneToMany_(() => Provider, e => e.solutionProvider)
-  providers!: Provider[]
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val == null ? undefined : val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => val == null ? undefined : new Provider(undefined, val))}, nullable: true})
+  providers!: (Provider | undefined | null)[] | undefined | null
 }

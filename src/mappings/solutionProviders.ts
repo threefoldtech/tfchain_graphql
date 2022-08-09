@@ -1,9 +1,10 @@
+import * as ss58 from "@subsquid/ss58"
 import {
   EventHandlerContext,
   Store
-} from "@subsquid/substrate-processor";
-import { Provider, SolutionProvider } from "../model";
-import { SmartContractModuleSolutionProviderApprovedEvent, SmartContractModuleSolutionProviderCreatedEvent } from "../types/events";
+} from "@subsquid/substrate-processor"
+import { Provider, SolutionProvider } from "../model"
+import { SmartContractModuleSolutionProviderApprovedEvent, SmartContractModuleSolutionProviderCreatedEvent } from "../types/events"
 
 export async function solutionProviderCreated(ctx: EventHandlerContext) {
   let providerCreatedEvent = new SmartContractModuleSolutionProviderCreatedEvent(ctx).asV105
@@ -11,23 +12,20 @@ export async function solutionProviderCreated(ctx: EventHandlerContext) {
   let provider = new SolutionProvider()
 
   provider.id = ctx.event.id
-  provider.solutionProviderID = Number(providerCreatedEvent.solutionProviderId)
+  provider.solutionProviderID = providerCreatedEvent.solutionProviderId
   provider.description = providerCreatedEvent.description.toString()
   provider.link = providerCreatedEvent.link.toString()
   provider.approved = false
+  provider.providers = []
 
   await ctx.store.save<SolutionProvider>(provider)
 
   provider.providers = providerCreatedEvent.providers.map(p => {
     let prov = new Provider()
-    prov.id = ctx.event.id
-    prov.solutionProvider = provider
     prov.take = p.take
-    prov.who = p.who.toString()
+    prov.who = ss58.codec("substrate").encode(p.who)
     return prov
   })
-
-  provider.providers
 
   await ctx.store.save<SolutionProvider>(provider)
 }
