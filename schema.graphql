@@ -88,7 +88,7 @@ type Node @entity {
 type NodeResourcesTotal @entity {
   node: Node! @unique
   hru: BigInt!
-  sru: BigInt! 
+  sru: BigInt!
   cru: BigInt!
   mru: BigInt!
 }
@@ -169,6 +169,7 @@ type NodeContract @entity {
   state: ContractState!
   resourcesUsed: ContractResources
   createdAt: BigInt!
+  solutionProviderID: Int
 }
 
 type ContractResources @entity {
@@ -186,6 +187,7 @@ type NameContract @entity {
   name: String!
   state: ContractState!
   createdAt: BigInt!
+  solutionProviderID: Int
 }
 
 type RentContract @entity {
@@ -195,12 +197,26 @@ type RentContract @entity {
   nodeID: Int!
   state: ContractState!
   createdAt: BigInt!
+  solutionProviderID: Int
+}
+
+type SolutionProvider @entity {
+  solutionProviderID: BigInt!
+  description: String!
+  link: String!
+  approved: Boolean!
+  providers: [Provider]
+}
+
+type Provider {
+  who: String!
+  take: Int!
 }
 
 enum ContractState {
-  Created,
-  Deleted,
-  OutOfFunds,
+  Created
+  Deleted
+  OutOfFunds
   GracePeriod
 }
 
@@ -219,10 +235,10 @@ type ContractBillReport @entity {
 }
 
 enum DiscountLevel {
-  None,
-  Default,
-  Bronze,
-  Silver,
+  None
+  Default
+  Bronze
+  Silver
   Gold
 }
 
