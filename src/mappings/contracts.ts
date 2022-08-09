@@ -19,6 +19,8 @@ export async function contractCreated(ctx: EventHandlerContext) {
     contractEvent = contractCreatedEvent.asV59
   } else if (contractCreatedEvent.isV101) {
     contractEvent = contractCreatedEvent.asV101
+  } else if (contractCreatedEvent.isV105) {
+    contractEvent = contractCreatedEvent.asV105
   }
 
   if (!contractEvent) return
@@ -36,6 +38,10 @@ export async function contractCreated(ctx: EventHandlerContext) {
     newNameContract.twinID = contractEvent.twinId
     newNameContract.state = state
     newNameContract.createdAt = BigInt(ctx.event.blockTimestamp)
+    if (contractCreatedEvent.isV105) {
+      contractEvent = contractCreatedEvent.asV105
+      newNameContract.solutionProviderID = Number(contractEvent.solutionProviderId)
+    }
     await ctx.store.save<NameContract>(newNameContract)
   }
   else if (contractEvent.contractType.__kind === "NodeContract") {
@@ -53,6 +59,10 @@ export async function contractCreated(ctx: EventHandlerContext) {
     newNodeContract.deploymentHash = contract.deploymentHash.toString()
     newNodeContract.state = state
     newNodeContract.createdAt = BigInt(ctx.event.blockTimestamp)
+    if (contractCreatedEvent.isV105) {
+      contractEvent = contractCreatedEvent.asV105
+      newNodeContract.solutionProviderID = Number(contractEvent.solutionProviderId)
+    }
     await ctx.store.save<NodeContract>(newNodeContract)
 
     contract.publicIpsList.forEach(async ip => {
@@ -75,7 +85,10 @@ export async function contractCreated(ctx: EventHandlerContext) {
     newRentContract.nodeID = contract.nodeId
     newRentContract.state = state
     newRentContract.createdAt = BigInt(ctx.event.blockTimestamp)
-
+    if (contractCreatedEvent.isV105) {
+      contractEvent = contractCreatedEvent.asV105
+      newRentContract.solutionProviderID = Number(contractEvent.solutionProviderId)
+    }
     await ctx.store.save<RentContract>(newRentContract)
   }
 }
