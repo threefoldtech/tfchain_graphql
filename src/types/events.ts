@@ -1,5 +1,5 @@
 import assert from 'assert'
-import {EventContext, Result, deprecateLatest} from './support'
+import { EventContext, Result, deprecateLatest } from './support'
 import * as v9 from './v9'
 import * as v12 from './v12'
 import * as v25 from './v25'
@@ -10,6 +10,7 @@ import * as v50 from './v50'
 import * as v51 from './v51'
 import * as v59 from './v59'
 import * as v62 from './v63'
+import * as v68 from './v68'
 
 export class BalancesTransferEvent {
   constructor(private ctx: EventContext) {
@@ -478,14 +479,23 @@ export class TfgridModuleFarmStoredEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV63
+  get isV68(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.FarmStored') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
   }
 
-  get asLatest(): v62.Farm {
+  get asV68(): v68.Farm {
+    assert(this.isV68)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
     deprecateLatest()
-    return this.asV63
+    return this.isV68
+  }
+
+  get asLatest(): v68.Farm {
+    deprecateLatest()
+    return this.asV68
   }
 }
 
@@ -521,14 +531,23 @@ export class TfgridModuleFarmUpdatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV63
+  get isV68(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.FarmStored') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
   }
 
-  get asLatest(): v62.Farm {
+  get asV68(): v68.Farm {
+    assert(this.isV68)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
     deprecateLatest()
-    return this.asV63
+    return this.isV68
+  }
+
+  get asLatest(): v68.Farm {
+    deprecateLatest()
+    return this.asV68
   }
 }
 

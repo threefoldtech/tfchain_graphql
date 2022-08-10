@@ -409,7 +409,7 @@ export class TfgridModuleFarmStoredEvent {
   }
 
   get isV68(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmStored') === 'ca41d591947edffabc4e5a891ad112debc48b2e676350f6208a4cb6eb13f4627'
+    return this.ctx._chain.getEventHash('tfgridModule.FarmStored') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
   }
 
   get asV68(): v68.Farm {
@@ -443,7 +443,7 @@ export class TfgridModuleFarmUpdatedEvent {
   }
 
   get isV68(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmUpdated') === 'ca41d591947edffabc4e5a891ad112debc48b2e676350f6208a4cb6eb13f4627'
+    return this.ctx._chain.getEventHash('tfgridModule.FarmUpdated') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
   }
 
   get asV68(): v68.Farm {

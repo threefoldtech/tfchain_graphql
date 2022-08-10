@@ -3,9 +3,10 @@ import {
 } from "@subsquid/substrate-processor";
 import { Farm, FarmCertification, PublicIp } from "../model";
 import { TfgridModuleFarmStoredEvent, TfgridModuleFarmDeletedEvent, TfgridModuleFarmUpdatedEvent, TfgridModuleFarmPayoutV2AddressRegisteredEvent, TfgridModuleFarmCertificationSetEvent } from "../types/events";
+import * as v68 from '../types/v68'
 
 export async function farmStored(ctx: EventHandlerContext) {
-  const farmStoredEvent  = new TfgridModuleFarmStoredEvent(ctx)
+  const farmStoredEvent = new TfgridModuleFarmStoredEvent(ctx)
 
   let farmStoredEventParsed
   if (farmStoredEvent.isV9) {
@@ -14,12 +15,19 @@ export async function farmStored(ctx: EventHandlerContext) {
     farmStoredEventParsed = farmStoredEvent.asV50
   } else if (farmStoredEvent.isV63) {
     farmStoredEventParsed = farmStoredEvent.asV63
+  } else if (farmStoredEvent.isV68) {
+    let eventValue = ctx.event.params[0].value as v68.Farm
+    eventValue.dedicatedFarm = false
+    farmStoredEventParsed = farmStoredEvent.asV68
   }
 
-  if (!farmStoredEventParsed) return
+  if (!farmStoredEventParsed) {
+    console.log(`cannot parse farm stored event, eventhash: ${ctx._chain.getEventHash('tfgridModule.FarmStored')}`)
+    return
+  }
 
   const newFarm = new Farm()
-  
+
   newFarm.id = ctx.event.id
   newFarm.gridVersion = farmStoredEventParsed.version
   newFarm.farmID = farmStoredEventParsed.id
@@ -54,7 +62,7 @@ export async function farmStored(ctx: EventHandlerContext) {
 }
 
 export async function farmUpdated(ctx: EventHandlerContext) {
-  const farmUpdatedEvent  = new TfgridModuleFarmUpdatedEvent(ctx)
+  const farmUpdatedEvent = new TfgridModuleFarmUpdatedEvent(ctx)
 
   let farmUpdatedEventParsed
   if (farmUpdatedEvent.isV9) {
@@ -63,8 +71,12 @@ export async function farmUpdated(ctx: EventHandlerContext) {
     farmUpdatedEventParsed = farmUpdatedEvent.asV50
   } else if (farmUpdatedEvent.isV63) {
     farmUpdatedEventParsed = farmUpdatedEvent.asV63
+  } else if (farmUpdatedEvent.isV68) {
+    let eventValue = ctx.event.params[0].value as v68.Farm
+    eventValue.dedicatedFarm = false
+    farmUpdatedEventParsed = farmUpdatedEvent.asV68
   }
-  
+
   if (!farmUpdatedEventParsed) return
 
   const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmUpdatedEventParsed.id } })
@@ -76,7 +88,7 @@ export async function farmUpdated(ctx: EventHandlerContext) {
   savedFarm.pricingPolicyID = farmUpdatedEventParsed.pricingPolicyId
 
   await farmUpdatedEventParsed.publicIps.forEach(async ip => {
-    const savedIP = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() }})
+    const savedIP = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() } })
     // ip is already there in storage, don't save it again
     if (savedIP) {
       savedIP.ip = ip.ip.toString()
@@ -90,7 +102,7 @@ export async function farmUpdated(ctx: EventHandlerContext) {
       newIP.gateway = ip.gateway.toString()
       newIP.contractId = ip.contractId
       newIP.farm = savedFarm
-    
+
       await ctx.store.save<PublicIp>(newIP)
       if (!savedFarm.publicIPs) {
         savedFarm.publicIPs = []
@@ -105,7 +117,7 @@ export async function farmUpdated(ctx: EventHandlerContext) {
   if (farm.dedicatedFarm) {
     savedFarm.dedicatedFarm = farm.dedicatedFarm
     await ctx.store.save<Farm>(savedFarm)
-  }  
+  }
 }
 
 export async function farmDeleted(ctx: EventHandlerContext) {
@@ -128,7 +140,7 @@ export async function farmPayoutV2AddressRegistered(ctx: EventHandlerContext) {
     if (!stellarAddress.includes(0)) {
       address = stellarAddress.toString()
     }
- 
+
     savedFarm.stellarAddress = address
     await ctx.store.save<Farm>(savedFarm)
   }
@@ -145,12 +157,12 @@ export async function farmCertificationSet(ctx: EventHandlerContext) {
 
   let certType = FarmCertification.NotCertified
   switch (certification.__kind.toString()) {
-    case 'NotCertified': 
+    case 'NotCertified':
       certType = FarmCertification.NotCertified
-    break
-    case 'Gold': 
+      break
+    case 'Gold':
       certType = FarmCertification.Gold
-    break
+      break
   }
 
   savedFarm.certification = certType

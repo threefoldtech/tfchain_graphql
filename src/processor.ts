@@ -17,8 +17,7 @@ processor.setTypesBundle("typegen/typesBundle.json");
 processor.setBatchSize(500);
 processor.setPrometheusPort(44233)
 
-const start = process.env.START_HEIGHT === '' ? parseInt(process.env.START_HEIGHT) : 0
-processor.setBlockRange({ from: start })
+processor.setBlockRange({ from: 4247891 })
 
 processor.setDataSource({
   archive: process.env.INDEXER_ENDPOINT_URL || 'http://localhost:4010/v1/graphql',
