@@ -56,6 +56,9 @@ export async function contractCreated(ctx: EventHandlerContext) {
     await ctx.store.save<NodeContract>(newNodeContract)
 
     contract.publicIpsList.forEach(async ip => {
+      if (ip.ip.toString().indexOf('\x00') >= 0) {
+        return
+      }
       const savedIp = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() } })
 
       if (savedIp) {
@@ -124,7 +127,7 @@ async function updateNodeContract(ctr: any, contract: NodeContract, store: Store
 
   let state = ContractState.OutOfFunds
   switch (ctr.state.__kind) {
-    case 'Created': 
+    case 'Created':
       state = ContractState.Created
       break
     case 'Deleted':
@@ -147,7 +150,7 @@ async function updateNameContract(ctr: any, contract: NameContract, store: Store
 
   let state = ContractState.OutOfFunds
   switch (ctr.state.__kind) {
-    case 'Created': 
+    case 'Created':
       state = ContractState.Created
       break
     case 'Deleted':
@@ -167,11 +170,11 @@ export async function nodeContractCanceled(ctx: EventHandlerContext) {
 
   savedContract.state = ContractState.Deleted
   await ctx.store.save<NodeContract>(savedContract)
-  
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: savedContract.nodeID }})
+
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: savedContract.nodeID } })
   if (!savedNode) return
-    
-  const savedPublicIP = await ctx.store.get(PublicIp, { where: { contractId: savedContract.contractID }})
+
+  const savedPublicIP = await ctx.store.get(PublicIp, { where: { contractId: savedContract.contractID } })
   if (savedPublicIP) {
     savedPublicIP.contractId = BigInt(0)
     await ctx.store.save<PublicIp>(savedPublicIP)
@@ -204,7 +207,7 @@ export async function rentContractCanceled(ctx: EventHandlerContext) {
 
 export async function contractBilled(ctx: EventHandlerContext) {
   const contract_billed_event = new SmartContractModuleContractBilledEvent(ctx).asV9
-  
+
   const newContractBilledReport = new ContractBillReport()
 
   newContractBilledReport.id = ctx.event.id
@@ -239,7 +242,7 @@ export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
   const savedContract = await ctx.store.get(NodeContract, { where: { contractID: usedResources.contractId } })
   if (!savedContract) return
 
-  const savedContractResources = await ctx.store.get(ContractResources, { where: { contract: savedContract }})
+  const savedContractResources = await ctx.store.get(ContractResources, { where: { contract: savedContract } })
   if (savedContractResources) {
     contractUsedResources.cru = usedResources.used.cru
     contractUsedResources.sru = usedResources.used.sru
@@ -257,7 +260,7 @@ export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
     contractUsedResources.mru = usedResources.used.mru
     contractUsedResources.contract = savedContract
     await ctx.store.save<ContractResources>(contractUsedResources)
-  
+
     savedContract.resourcesUsed = contractUsedResources
     await ctx.store.save<NodeContract>(savedContract)
   }
@@ -279,10 +282,10 @@ export async function nruConsumptionReportReceived(ctx: EventHandlerContext) {
 
 export async function contractGracePeriodStarted(ctx: EventHandlerContext) {
   const contractGracePeriodStartedEvent = new SmartContractModuleContractGracePeriodStartedEvent(ctx).asV59
-  
+
   let savedContract
   savedContract = await ctx.store.get(NodeContract, { where: { contractID: contractGracePeriodStartedEvent[0] } })
-  
+
   if (!savedContract) {
     savedContract = await ctx.store.get(RentContract, { where: { contractID: contractGracePeriodStartedEvent[0] } })
     if (!savedContract) {
@@ -305,10 +308,10 @@ export async function contractGracePeriodStarted(ctx: EventHandlerContext) {
 
 export async function contractGracePeriodEnded(ctx: EventHandlerContext) {
   const contractGracePeriodEnded = new SmartContractModuleContractGracePeriodEndedEvent(ctx).asV59
-  
+
   let savedContract
   savedContract = await ctx.store.get(NodeContract, { where: { contractID: contractGracePeriodEnded[0] } })
-  
+
   if (!savedContract) {
     savedContract = await ctx.store.get(RentContract, { where: { contractID: contractGracePeriodEnded[0] } })
     if (!savedContract) {
