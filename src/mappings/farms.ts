@@ -7,6 +7,8 @@ import { TfgridModuleFarmStoredEvent, TfgridModuleFarmDeletedEvent, TfgridModule
 export async function farmStored(ctx: EventHandlerContext) {
   const farmStoredEvent = new TfgridModuleFarmStoredEvent(ctx)
 
+  console.log('saving farm')
+
   let farmStoredEventParsed
   if (farmStoredEvent.isV9) {
     farmStoredEventParsed = farmStoredEvent.asV9
@@ -66,6 +68,8 @@ export async function farmStored(ctx: EventHandlerContext) {
 
 export async function farmUpdated(ctx: EventHandlerContext) {
   const farmUpdatedEvent = new TfgridModuleFarmUpdatedEvent(ctx)
+
+  console.log('updating farm')
 
   let farmUpdatedEventParsed
   if (farmUpdatedEvent.isV9) {

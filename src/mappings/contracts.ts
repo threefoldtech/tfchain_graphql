@@ -39,6 +39,7 @@ export async function contractCreated(ctx: EventHandlerContext) {
     await ctx.store.save<NameContract>(newNameContract)
   }
   else if (contractEvent.contractType.__kind === "NodeContract") {
+    console.log('saving node contract')
     let newNodeContract = new NodeContract()
     newNodeContract.id = ctx.event.id
 
