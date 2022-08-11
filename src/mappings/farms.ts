@@ -93,6 +93,9 @@ export async function farmUpdated(ctx: EventHandlerContext) {
   savedFarm.pricingPolicyID = farmUpdatedEventParsed.pricingPolicyId
 
   await farmUpdatedEventParsed.publicIps.forEach(async ip => {
+    if (ip.ip.toString().indexOf('\x00') >= 0) {
+      return
+    }
     const savedIP = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() } })
     // ip is already there in storage, don't save it again
     if (savedIP) {
