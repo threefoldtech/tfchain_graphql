@@ -175,9 +175,18 @@ async function updateNameContract(ctr: any, contract: NameContract, store: Store
 }
 
 export async function nodeContractCanceled(ctx: EventHandlerContext) {
-  const cancelEvent = new SmartContractModuleNodeContractCanceledEvent(ctx).asV19
+  let cancel = new SmartContractModuleNodeContractCanceledEvent(ctx)
 
-  const savedContract = await ctx.store.get(NodeContract, { where: { contractID: cancelEvent[0] } })
+  let contractID = BigInt(0)
+  if (cancel.isV19) {
+    contractID = cancel.asV19[0]
+  } else if (cancel.isV105) {
+    contractID = cancel.asV105.contractId
+  }
+
+  if (contractID === BigInt(0)) return
+
+  const savedContract = await ctx.store.get(NodeContract, { where: { contractID } })
 
   if (!savedContract) return
 
@@ -195,9 +204,18 @@ export async function nodeContractCanceled(ctx: EventHandlerContext) {
 }
 
 export async function nameContractCanceled(ctx: EventHandlerContext) {
-  const id = new SmartContractModuleNameContractCanceledEvent(ctx).asV19
+  const cancel = new SmartContractModuleNameContractCanceledEvent(ctx)
 
-  const savedContract = await ctx.store.get(NameContract, { where: { contractID: id } })
+  let contractID = BigInt(0)
+  if (cancel.isV19) {
+    contractID = cancel.asV19
+  } else if (cancel.isV105) {
+    contractID = cancel.asV105.contractId
+  }
+
+  if (contractID === BigInt(0)) return
+
+  const savedContract = await ctx.store.get(NameContract, { where: { contractID } })
 
   if (!savedContract) return
 
@@ -207,9 +225,18 @@ export async function nameContractCanceled(ctx: EventHandlerContext) {
 }
 
 export async function rentContractCanceled(ctx: EventHandlerContext) {
-  const id = new SmartContractModuleRentContractCanceledEvent(ctx).asV50
+  const cancel = new SmartContractModuleRentContractCanceledEvent(ctx)
 
-  const savedContract = await ctx.store.get(RentContract, { where: { contractID: id } })
+  let contractID = BigInt(0)
+  if (cancel.isV50) {
+    contractID = cancel.asV50
+  } else if (cancel.isV105) {
+    contractID = cancel.asV105.contractId
+  }
+
+  if (contractID === BigInt(0)) return
+
+  const savedContract = await ctx.store.get(RentContract, { where: { contractID } })
 
   if (!savedContract) return
 

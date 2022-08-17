@@ -467,6 +467,113 @@
           }
         }
       }
+    },
+    {
+      "minmax": [
+        63,
+        null
+      ],
+      "types": {
+        "Farm": {
+          "version": "u32",
+          "id": "u32",
+          "name": "Vec<u8>",
+          "twin_id": "u32",
+          "pricing_policy_id": "u32",
+          "certification": "FarmCertification",
+          "public_ips": "Vec<PublicIP>",
+          "farming_policy_limits": "Option<FarmingPolicyLimit>"
+        },
+        "FarmingPolicyLimit": {
+          "farming_policy_id": "u32",
+          "cu": "Option<u64>",
+          "su": "Option<u64>",
+          "end": "Option<u64>",
+          "node_count": "Option<u32>",
+          "node_certification": "bool"
+        },
+        "Node": {
+          "version": "u32",
+          "id": "u32",
+          "farm_id": "u32",
+          "twin_id": "u32",
+          "resources": "Resources",
+          "location": "Location",
+          "country": "Vec<u8>",
+          "city": "Vec<u8>",
+          "public_config": "Option<PublicConfig>",
+          "created": "u64",
+          "farming_policy_id": "u32",
+          "interfaces": "Vec<Interface>",
+          "certification": "NodeCertification",
+          "secure_boot": "bool",
+          "virtualized": "bool",
+          "serial_number": "Vec<u8>",
+          "dedicated": "bool",
+          "connection_price": "u32"
+        },
+        "NodeCertification": {
+          "_enum": [
+            "Diy",
+            "Certified"
+          ]
+        },
+        "FarmCertification": {
+          "_enum": [
+            "NotCertified",
+            "Gold"
+          ]
+        },
+        "FarmingPolicy": {
+          "version": "u32",
+          "id": "u32",
+          "name": "Vec<u8>",
+          "cu": "u32",
+          "su": "u32",
+          "nu": "u32",
+          "ipv4": "u32",
+          "minimal_uptime": "u16",
+          "policy_created": "BlockNumber",
+          "policy_end": "BlockNumber",
+          "immutable": "bool",
+          "default": "bool",
+          "node_certification": "NodeCertification",
+          "farm_certification": "FarmCertification"
+        },
+        "DaoProposal": {
+          "index": "u32",
+          "description": "Vec<u8>",
+          "link": "Vec<u8>"
+        },
+        "DaoVotes": {
+          "index": "u32",
+          "threshold": "u32",
+          "ayes": "Vec<VoteWeight>",
+          "nayes": "Vec<VoteWeight>",
+          "end": "BlockNumber",
+          "vetos": "Vec<AccountId>"
+        },
+        "VoteWeight": {
+          "farm_id": "u32",
+          "weight": "u64"
+        }
+      }
+    },
+    {
+      "minmax": [
+        105,
+        null
+      ],
+      "types": {
+        "Contract": {
+          "version": " u32",
+          "state": "ContractState",
+          "contractId": "u64",
+          "twinId": "u32",
+          "contractType": "ContractData",
+          "solutionProviderID": "Option<U64>"
+        }
+      }
     }
   ]
 }
