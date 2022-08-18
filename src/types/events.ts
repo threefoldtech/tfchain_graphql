@@ -1,5 +1,5 @@
 import assert from 'assert'
-import {EventContext, Result, deprecateLatest} from './support'
+import { EventContext, Result, deprecateLatest } from './support'
 import * as v9 from './v9'
 import * as v12 from './v12'
 import * as v25 from './v25'
@@ -37,14 +37,14 @@ export class BalancesTransferEvent {
   /**
    * Transfer succeeded.
    */
-   get isV101(): boolean {
+  get isV101(): boolean {
     return this.ctx._chain.getEventHash('balances.Transfer') === '0ffdf35c495114c2d42a8bf6c241483fd5334ca0198662e14480ad040f1e3a66'
   }
 
   /**
    * Transfer succeeded.
    */
-  get asV101(): {from: AccountId32, to: AccountId32, amount: bigint} {
+  get asV101(): { from: AccountId32, to: AccountId32, amount: bigint } {
     assert(this.isV101)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
@@ -54,7 +54,7 @@ export class BalancesTransferEvent {
     return this.isV101
   }
 
-  get asLatest(): {from: AccountId32, to: AccountId32, amount: bigint} {
+  get asLatest(): { from: AccountId32, to: AccountId32, amount: bigint } {
     deprecateLatest()
     return this.asV101
   }
@@ -261,7 +261,7 @@ export class SmartContractModuleContractGracePeriodEndedEvent {
   /**
    * A Contract grace period was ended
    */
-  get asV105(): {contractId: bigint, nodeId: number, twinId: number} {
+  get asV105(): { contractId: bigint, nodeId: number, twinId: number } {
     assert(this.isV105)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
@@ -271,7 +271,7 @@ export class SmartContractModuleContractGracePeriodEndedEvent {
     return this.isV105
   }
 
-  get asLatest(): {contractId: bigint, nodeId: number, twinId: number} {
+  get asLatest(): { contractId: bigint, nodeId: number, twinId: number } {
     deprecateLatest()
     return this.asV105
   }
@@ -301,7 +301,7 @@ export class SmartContractModuleContractGracePeriodStartedEvent {
   /**
    * A Contract grace period is triggered
    */
-  get asV105(): {contractId: bigint, nodeId: number, twinId: number, blockNumber: bigint} {
+  get asV105(): { contractId: bigint, nodeId: number, twinId: number, blockNumber: bigint } {
     assert(this.isV105)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
@@ -311,7 +311,7 @@ export class SmartContractModuleContractGracePeriodStartedEvent {
     return this.isV105
   }
 
-  get asLatest(): {contractId: bigint, nodeId: number, twinId: number, blockNumber: bigint} {
+  get asLatest(): { contractId: bigint, nodeId: number, twinId: number, blockNumber: bigint } {
     deprecateLatest()
     return this.asV105
   }
@@ -341,7 +341,7 @@ export class SmartContractModuleNameContractCanceledEvent {
   /**
    * A Name contract is canceled
    */
-  get asV105(): {contractId: bigint} {
+  get asV105(): { contractId: bigint } {
     assert(this.isV105)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
@@ -351,7 +351,7 @@ export class SmartContractModuleNameContractCanceledEvent {
     return this.isV105
   }
 
-  get asLatest(): {contractId: bigint} {
+  get asLatest(): { contractId: bigint } {
     deprecateLatest()
     return this.asV105
   }
@@ -381,7 +381,7 @@ export class SmartContractModuleNodeContractCanceledEvent {
   /**
    * A Node contract is canceled
    */
-  get asV105(): {contractId: bigint, nodeId: number, twinId: number} {
+  get asV105(): { contractId: bigint, nodeId: number, twinId: number } {
     assert(this.isV105)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
@@ -391,7 +391,7 @@ export class SmartContractModuleNodeContractCanceledEvent {
     return this.isV105
   }
 
-  get asLatest(): {contractId: bigint, nodeId: number, twinId: number} {
+  get asLatest(): { contractId: bigint, nodeId: number, twinId: number } {
     deprecateLatest()
     return this.asV105
   }
@@ -824,14 +824,23 @@ export class TfgridModuleNodePublicConfigStoredEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV12
+  get isV105(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.NodePublicConfigStored') === '3280822d064c517c372255a87e0f164783d75d41adc342fe0475179b687a0ad8'
   }
 
-  get asLatest(): [number, v12.PublicConfig] {
+  get asV105(): [number, (v105.PublicConfig | undefined)] {
+    assert(this.isV105)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
     deprecateLatest()
-    return this.asV12
+    return this.isV105
+  }
+
+  get asLatest(): [number, (v105.PublicConfig | undefined)] {
+    deprecateLatest()
+    return this.asV105
   }
 }
 
@@ -1251,7 +1260,7 @@ export class SmartContractModuleRentContractCanceledEvent {
   /**
    * a Rent contract is canceled
    */
-  get asV105(): {contractId: bigint} {
+  get asV105(): { contractId: bigint } {
     assert(this.isV105)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
@@ -1261,7 +1270,7 @@ export class SmartContractModuleRentContractCanceledEvent {
     return this.isV105
   }
 
-  get asLatest(): {contractId: bigint} {
+  get asLatest(): { contractId: bigint } {
     deprecateLatest()
     return this.asV105
   }
