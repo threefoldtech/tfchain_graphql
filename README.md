@@ -20,46 +20,10 @@ The substrate events are processed in a multi-step pipeline:
 ## Bootstrap
 
 ```sh
-npm ci
-
-# Start postgres instance
-docker-compose up db # add optional -d flag to detach from terminal
-
-# Apply pending migrations
-npm run db:migrate
-
-# Apply migrations related to processor's state keeping tables
-npm run processor:migrate
-
-# Now you can start processing chain data
-npm run processor:start
-
-# The above command will block
-# Open separate terminal and launch graphql server to query the processed data
-npm run query-node:start
-```
-
-## If you want start from scratch
-
-```sh
-# Delete database migrations and other generated files
-rm -r db generated types
-
-# Write down your schema.graphql
-
-# Analyze schema.graphql and generate model/server files
-npm run codegen
-
-# If necessary, create the database
-npm run db:create
-
-# Analyze database state and create migration to match generated models
-npm run db:create-migration
-
-# Review typegen section of manifest.yml
-
-# Generate type definitions for substrate events and extrinsics
-npm run typegen
+yarn
+yarn build
+yarn db:up
+yarn process
 ```
 
 ## Configuration

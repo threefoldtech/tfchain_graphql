@@ -16,18 +16,6 @@ First start database
 
 ```
 yarn db:up
-yarn db:migrate
-yarn db:init
-```
-
-Migrate processor:
-
-```
-yarn processor:migrate
-```
-
-Start everything:
-
-```
-docker-compose up -d
+yarn build
+yarn process
 ```
