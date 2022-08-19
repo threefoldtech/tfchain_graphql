@@ -27,6 +27,8 @@ services:
       - DB_HOST=db
       - POLL_INTERVAL_MS=300
       - TYPEORM_LOGGING=error
+    ports:
+      - 44233:44233
     command: [ "yarn", "process" ]
 
   query-node:
