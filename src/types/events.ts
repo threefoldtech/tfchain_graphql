@@ -139,7 +139,7 @@ export class SmartContractModuleContractCreatedEvent {
    * A contract got created
    */
   get isV105(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ContractCreated') === 'b6467aebc506d4fee91ee567bd849a9e7253a3b2df28a94bc62351040747eb15'
+    return this.ctx._chain.getEventHash('smartContractModule.ContractCreated') === 'bc600595215d0331e91aaeff45059fe6383f3362d537b936e491fe1154d3a842'
   }
 
   /**
@@ -215,7 +215,7 @@ export class SmartContractModuleContractUpdatedEvent {
    * A contract was updated
    */
   get isV105(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ContractUpdated') === 'b6467aebc506d4fee91ee567bd849a9e7253a3b2df28a94bc62351040747eb15'
+    return this.ctx._chain.getEventHash('smartContractModule.ContractUpdated') === 'bc600595215d0331e91aaeff45059fe6383f3362d537b936e491fe1154d3a842'
   }
 
   /**
