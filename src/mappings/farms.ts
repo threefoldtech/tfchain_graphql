@@ -3,10 +3,12 @@ import {
 } from "@subsquid/substrate-processor";
 import { Farm, FarmCertification, PublicIp } from "../model";
 import { TfgridModuleFarmStoredEvent, TfgridModuleFarmDeletedEvent, TfgridModuleFarmUpdatedEvent, TfgridModuleFarmPayoutV2AddressRegisteredEvent, TfgridModuleFarmCertificationSetEvent } from "../types/events";
+import * as v63 from '../types/v63'
 
 export async function farmStored(ctx: EventHandlerContext) {
   const farmStoredEvent = new TfgridModuleFarmStoredEvent(ctx)
 
+  console.log(ctx._chain.getEventHash('tfgridModule.FarmStored'))
   let farmStoredEventParsed
   if (farmStoredEvent.isV9) {
     farmStoredEventParsed = farmStoredEvent.asV9
@@ -15,6 +17,8 @@ export async function farmStored(ctx: EventHandlerContext) {
   } else if (farmStoredEvent.isV63) {
     farmStoredEventParsed = farmStoredEvent.asV63
   } else if (farmStoredEvent.isV101) {
+    let eventValue = ctx.event.params[0].value as v63.Farm
+    eventValue.dedicatedFarm = false
     farmStoredEventParsed = farmStoredEvent.asV101
   }
 
@@ -75,6 +79,8 @@ export async function farmUpdated(ctx: EventHandlerContext) {
   } else if (farmUpdatedEvent.isV63) {
     farmUpdatedEventParsed = farmUpdatedEvent.asV63
   } else if (farmUpdatedEvent.isV101) {
+    let eventValue = ctx.event.params[0].value as v63.Farm
+    eventValue.dedicatedFarm = false
     farmUpdatedEventParsed = farmUpdatedEvent.asV101
   }
 
