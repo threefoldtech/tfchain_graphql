@@ -40,7 +40,7 @@ export async function contractCreated(ctx: EventHandlerContext) {
     newNameContract.createdAt = BigInt(ctx.event.blockTimestamp)
     if (contractCreatedEvent.isV105) {
       contractEvent = contractCreatedEvent.asV105
-      newNameContract.solutionProviderID = Number(contractEvent.solutionProviderId)
+      newNameContract.solutionProviderID = Number(contractEvent.solutionProviderId) || 0
     }
     await ctx.store.save<NameContract>(newNameContract)
   }
@@ -55,14 +55,26 @@ export async function contractCreated(ctx: EventHandlerContext) {
     newNodeContract.twinID = contractEvent.twinId
     newNodeContract.nodeID = contract.nodeId
     newNodeContract.numberOfPublicIPs = contract.publicIps
-    newNodeContract.deploymentData = contract.deploymentData.toString()
-    newNodeContract.deploymentHash = contract.deploymentHash.toString()
+
+    if (contract.deploymentData.toString().indexOf('\x00') >= 0) {
+      newNodeContract.deploymentData = ""
+    } else {
+      newNodeContract.deploymentData = contract.deploymentData.toString()
+    }
+    if (contract.deploymentHash.toString().indexOf('\x00')  >= 0) {
+      newNodeContract.deploymentHash = ""
+    } else {
+      newNodeContract.deploymentHash = contract.deploymentHash.toString()
+    }
+
+    // newNodeContract.deploymentHash = contract.deploymentHash.toString()
     newNodeContract.state = state
     newNodeContract.createdAt = BigInt(ctx.event.blockTimestamp)
     if (contractCreatedEvent.isV105) {
       contractEvent = contractCreatedEvent.asV105
-      newNodeContract.solutionProviderID = Number(contractEvent.solutionProviderId)
+      newNodeContract.solutionProviderID = Number(contractEvent.solutionProviderId) || 0
     }
+
     await ctx.store.save<NodeContract>(newNodeContract)
 
     contract.publicIpsList.forEach(async ip => {
@@ -90,7 +102,7 @@ export async function contractCreated(ctx: EventHandlerContext) {
     newRentContract.createdAt = BigInt(ctx.event.blockTimestamp)
     if (contractCreatedEvent.isV105) {
       contractEvent = contractCreatedEvent.asV105
-      newRentContract.solutionProviderID = Number(contractEvent.solutionProviderId)
+      newRentContract.solutionProviderID = Number(contractEvent.solutionProviderId) || 0
     }
     await ctx.store.save<RentContract>(newRentContract)
   }
@@ -135,8 +147,17 @@ async function updateNodeContract(ctr: any, contract: NodeContract, store: Store
   contract.twinID = ctr.twinId
   contract.nodeID = parsedNodeContract.nodeId
   contract.numberOfPublicIPs = parsedNodeContract.publicIps
-  contract.deploymentData = parsedNodeContract.deploymentData.toString()
-  contract.deploymentHash = parsedNodeContract.deploymentHash.toString()
+
+  if (contract.deploymentData.toString().indexOf('\x00') >= 0) {
+    contract.deploymentData = ""
+  } else {
+    contract.deploymentData = contract.deploymentData.toString()
+  }
+  if (contract.deploymentHash.toString().indexOf('\x00')  >= 0) {
+    contract.deploymentHash = ""
+  } else {
+    contract.deploymentHash = contract.deploymentHash.toString()
+  }
 
   let state = ContractState.OutOfFunds
   switch (ctr.state.__kind) {

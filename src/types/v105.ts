@@ -67,8 +67,8 @@ export interface Cause_OutOfFunds {
 
 export interface NodeContract {
   nodeId: number
+  deploymentHash: H256
   deploymentData: Uint8Array
-  deploymentHash: Uint8Array
   publicIps: number
   publicIpsList: PublicIP[]
 }
