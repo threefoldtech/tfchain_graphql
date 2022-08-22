@@ -612,7 +612,7 @@ export class TfgridModuleFarmStoredEvent {
   }
 
   get isV63(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmStored') === 'ca41d591947edffabc4e5a891ad112debc48b2e676350f6208a4cb6eb13f4627'
+    return this.ctx._chain.getEventHash('tfgridModule.FarmStored') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
   }
 
   get asV63(): v63.Farm {
@@ -620,23 +620,14 @@ export class TfgridModuleFarmStoredEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isV101(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmStored') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
-  }
-
-  get asV101(): v101.Farm {
-    assert(this.isV101)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV101
+    return this.isV63
   }
 
-  get asLatest(): v101.Farm {
+  get asLatest(): v63.Farm {
     deprecateLatest()
-    return this.asV101
+    return this.asV63
   }
 }
 
@@ -664,7 +655,7 @@ export class TfgridModuleFarmUpdatedEvent {
   }
 
   get isV63(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmUpdated') === 'ca41d591947edffabc4e5a891ad112debc48b2e676350f6208a4cb6eb13f4627'
+    return this.ctx._chain.getEventHash('tfgridModule.FarmUpdated') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
   }
 
   get asV63(): v63.Farm {
@@ -672,23 +663,14 @@ export class TfgridModuleFarmUpdatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isV101(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmUpdated') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
-  }
-
-  get asV101(): v101.Farm {
-    assert(this.isV101)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV101
+    return this.isV63
   }
 
-  get asLatest(): v101.Farm {
+  get asLatest(): v63.Farm {
     deprecateLatest()
-    return this.asV101
+    return this.asV63
   }
 }
 

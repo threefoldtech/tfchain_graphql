@@ -8,6 +8,7 @@ export interface Farm {
   pricingPolicyId: number
   certification: FarmCertification
   publicIps: PublicIP[]
+  dedicatedFarm: boolean
   farmingPolicyLimits: (FarmingPolicyLimit | undefined)
 }
 

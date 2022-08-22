@@ -10,18 +10,6 @@ export interface Contract {
   contractType: ContractData
 }
 
-export interface Farm {
-  version: number
-  id: number
-  name: Uint8Array
-  twinId: number
-  pricingPolicyId: number
-  certification: FarmCertification
-  publicIps: PublicIP[]
-  dedicatedFarm: boolean
-  farmingPolicyLimits: (FarmingPolicyLimit | undefined)
-}
-
 export interface Node {
   version: number
   id: number
@@ -113,31 +101,6 @@ export interface ContractData_NameContract {
 export interface ContractData_RentContract {
   __kind: 'RentContract'
   value: RentContract
-}
-
-export type FarmCertification = FarmCertification_NotCertified | FarmCertification_Gold
-
-export interface FarmCertification_NotCertified {
-  __kind: 'NotCertified'
-}
-
-export interface FarmCertification_Gold {
-  __kind: 'Gold'
-}
-
-export interface PublicIP {
-  ip: Uint8Array
-  gateway: Uint8Array
-  contractId: bigint
-}
-
-export interface FarmingPolicyLimit {
-  farmingPolicyId: number
-  cu: (bigint | undefined)
-  su: (bigint | undefined)
-  end: (bigint | undefined)
-  nodeCount: (number | undefined)
-  nodeCertification: boolean
 }
 
 export interface Resources {
@@ -237,4 +200,10 @@ export interface Unit_Gigabytes {
 
 export interface Unit_Terrabytes {
   __kind: 'Terrabytes'
+}
+
+export interface PublicIP {
+  ip: Uint8Array
+  gateway: Uint8Array
+  contractId: bigint
 }
