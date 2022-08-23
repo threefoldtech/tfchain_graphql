@@ -11,15 +11,16 @@ import { solutionProviderCreated, solutionProviderApproved } from './mappings/so
 import {
   SubstrateProcessor,
 } from "@subsquid/substrate-processor";
+import { FullTypeormDatabase as Database } from '@subsquid/typeorm-store'
 
-const processor = new SubstrateProcessor("substrate_threefold");
+const processor = new SubstrateProcessor(new Database());
 
 processor.setTypesBundle("typegen/typesBundle.json");
 processor.setBatchSize(500);
 processor.setPrometheusPort(44233)
 
 processor.setDataSource({
-  archive: process.env.INDEXER_ENDPOINT_URL || 'http://localhost:4010/v1/graphql',
+  archive: process.env.INDEXER_ENDPOINT_URL || 'http://localhost:8888/v1/graphql',
   chain: process.env.WS_URL || 'ws://localhost:9944'
 });
 

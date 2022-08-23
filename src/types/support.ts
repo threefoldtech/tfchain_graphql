@@ -10,7 +10,7 @@ export type Result<T, E> = {
 
 interface Event {
     name: string
-    params: {value: unknown}[]
+    params: { value: unknown }[]
 }
 
 
@@ -28,7 +28,7 @@ export interface EventContext {
 
 interface Call {
     name: string
-    args: {value: unknown}[]
+    args: { value: unknown }[]
 }
 
 
@@ -57,6 +57,7 @@ export interface StorageContext {
     _chain: {
         getStorageItemTypeHash(prefix: string, name: string): string | undefined
         getStorage(blockHash: string, prefix: string, name: string, ...args: any[]): Promise<any>
+        queryStorage(blockHash: string, prefix: string, name: string, ...args: any[]): Promise<any[]>
     }
     block: {
         hash: string
