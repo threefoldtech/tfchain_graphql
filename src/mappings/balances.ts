@@ -1,10 +1,12 @@
 import * as ss58 from "@subsquid/ss58";
 import { Transfer } from "../model";
 import { BalancesTransferEvent } from "../types/events";
-import { EventContext } from '../types/context'
-import { Store, TypeormDatabase } from '@subsquid/typeorm-store'
+import { Store } from '@subsquid/typeorm-store'
+import {
+  EventHandlerContext,
+} from "@subsquid/substrate-processor";
 
-export async function balancesTransfer(ctx: EventContext): Promise<void> {
+export async function balancesTransfer(ctx: EventHandlerContext<Store, { event: { args: any; } }>): Promise<void> {
   const transferEvent = new BalancesTransferEvent(ctx)
 
   let from, to, amount
@@ -26,11 +28,10 @@ export async function balancesTransfer(ctx: EventContext): Promise<void> {
 
   // save as a transfer as well
   const t = new Transfer()
-  // t.id = ctx.event.
+  t.id = ctx.event.id
   t.to = toEncoded
   t.from = fromEncoded
   t.amount = amount
   t.timestamp = BigInt(0)
   await ctx.store.save(t)
-
 }

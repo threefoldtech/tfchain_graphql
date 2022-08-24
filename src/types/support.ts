@@ -10,7 +10,7 @@ export type Result<T, E> = {
 
 interface Event {
     name: string
-    params: { value: unknown }[]
+    params: {value: unknown}[]
 }
 
 
@@ -28,7 +28,7 @@ export interface EventContext {
 
 interface Call {
     name: string
-    args: { value: unknown }[]
+    args: {value: unknown}[]
 }
 
 
