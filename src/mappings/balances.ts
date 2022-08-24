@@ -6,7 +6,7 @@ import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
 
-export async function balancesTransfer(ctx: EventHandlerContext<Store, { event: { args: any; } }>): Promise<void> {
+export async function balancesTransfer(ctx: EventHandlerContext<Store>): Promise<void> {
   const transferEvent = new BalancesTransferEvent(ctx)
 
   let from, to, amount
