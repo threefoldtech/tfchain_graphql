@@ -1,8 +1,9 @@
+import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal } from "../model";
+import { TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
+import { Equal } from 'typeorm';
 import {
   EventHandlerContext,
-} from "@subsquid/substrate-processor";
-import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal } from "../model";
-import { SmartContractModuleNodeMarkedAsDedicatedEvent, TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
+} from "../types/context";
 
 export async function nodeStored(ctx: EventHandlerContext) {
   const node = new TfgridModuleNodeStoredEvent(ctx)
@@ -28,8 +29,8 @@ export async function nodeStored(ctx: EventHandlerContext) {
   newNode.nodeID = nodeEvent.id
   newNode.twinID = nodeEvent.twinId
 
-  newNode.createdAt = BigInt(ctx.event.blockTimestamp)
-  newNode.updatedAt = BigInt(ctx.event.blockTimestamp)
+  newNode.createdAt = BigInt(ctx.block.timestamp)
+  newNode.updatedAt = BigInt(ctx.block.timestamp)
 
   newNode.country = nodeEvent.country.toString()
   newNode.city = nodeEvent.city.toString()
@@ -44,6 +45,8 @@ export async function nodeStored(ctx: EventHandlerContext) {
   await ctx.store.save<Location>(newLocation)
 
   newNode.location = newLocation
+
+  await ctx.store.save<Node>(newNode)
 
   if (node.isV28) {
     const nodeAsV28 = node.asV28
@@ -177,17 +180,18 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
 
   if (!nodeEvent) return
 
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeEvent.id } })
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeEvent.id } , relations: { location: true }})
+
   if (!savedNode) return
 
   savedNode.gridVersion = nodeEvent.version
   savedNode.farmID = nodeEvent.farmId
   savedNode.nodeID = nodeEvent.id
   savedNode.twinID = nodeEvent.twinId
-  savedNode.updatedAt = BigInt(ctx.event.blockTimestamp)
+  savedNode.updatedAt = BigInt(ctx.block.timestamp)
 
   // Recalculate total / free resoures when a node get's updated
-  let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
+  let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: Equal(savedNode) }, relations: { node: true } })
   if (resourcesTotal) {
     resourcesTotal.sru = nodeEvent.resources.sru
     resourcesTotal.hru = nodeEvent.resources.hru
@@ -311,42 +315,34 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
 }
 
 export async function nodeDeleted(ctx: EventHandlerContext) {
-  const nodeID = new TfgridModuleNodeDeletedEvent(ctx).asV9
+  const nodeID = new TfgridModuleNodeDeletedEvent(ctx).asV49
 
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
 
   if (savedNode) {
-    const resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
+    const resourcesTotal = await ctx.store.find(NodeResourcesTotal, { where: { node: Equal(savedNode) }, relations: { node: true } })
     if (resourcesTotal) {
-      await ctx.store.remove(resourcesTotal)
+      const p = resourcesTotal.map(r => ctx.store.remove(r))
+      await Promise.all(p)
     }
-    const pubConfig = await ctx.store.get(PublicConfig, { where: { node: savedNode } })
+
+    const pubConfig = await ctx.store.get(PublicConfig, { where: { node: Equal(savedNode) }, relations: { node: true } })
     if (pubConfig) {
       await ctx.store.remove(pubConfig)
     }
 
-    const intfs = await ctx.store.find(Interfaces, { where: { node: savedNode } })
+    const intfs = await ctx.store.find(Interfaces, { where: { node: Equal(savedNode) }, relations: { node: true } })
     const promises = intfs.map(intf => {
       return ctx.store.remove(intf)
     })
     await Promise.all(promises)
-    // console.log("-------------DELETING NODE-------------")
-    // console.log(savedNode.interfaces)
 
-    // if (savedNode.interfaces) {
-    //   console.log(savedNode.interfaces)
-    //   const promises = savedNode.interfaces.map(async int => {
-    //     const intf = await ctx.store.get(Interfaces, { where: { id: int.id }})
-    //     return ctx.store.remove(intf)
-    //   })
-    //   await Promise.all(promises)
-    // }
     await ctx.store.remove(savedNode)
   }
 }
 
 export async function nodeUptimeReported(ctx: EventHandlerContext) {
-  const [nodeID, now, uptime] = new TfgridModuleNodeUptimeReportedEvent(ctx).asV9
+  const [nodeID, now, uptime] = new TfgridModuleNodeUptimeReportedEvent(ctx).asV49
 
   const newUptimeEvent = new UptimeEvent()
   newUptimeEvent.id = ctx.event.id
@@ -355,11 +351,11 @@ export async function nodeUptimeReported(ctx: EventHandlerContext) {
   newUptimeEvent.uptime = uptime
   await ctx.store.save<UptimeEvent>(newUptimeEvent)
 
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } , relations: { location: true }})
 
   if (savedNode) {
     savedNode.uptime = uptime
-    savedNode.updatedAt = BigInt(ctx.event.blockTimestamp)
+    savedNode.updatedAt = BigInt(ctx.block.timestamp)
     await ctx.store.save<Node>(savedNode)
   }
 }
@@ -368,14 +364,14 @@ export async function nodePublicConfigStored(ctx: EventHandlerContext) {
   const storedEvent = new TfgridModuleNodePublicConfigStoredEvent(ctx)
 
   let nodeID, config
-  if (storedEvent.isV12) {
-    nodeID = storedEvent.asV12[0]
-    config = storedEvent.asV12[1]
+  if (storedEvent.isV49) {
+    nodeID = storedEvent.asV49[0]
+    config = storedEvent.asV49[1]
 
     const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
     if (!savedNode) return
 
-    let publicConfig = await ctx.store.get(PublicConfig, { where: { node: savedNode } })
+    let publicConfig = await ctx.store.get(PublicConfig, { where: { node: Equal(savedNode) }, relations: { node: true } })
 
     if (!publicConfig) {
       publicConfig = new PublicConfig()
@@ -398,7 +394,7 @@ export async function nodePublicConfigStored(ctx: EventHandlerContext) {
     const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
     if (!savedNode) return
 
-    let publicConfig = await ctx.store.get(PublicConfig, { where: { node: savedNode } })
+    let publicConfig = await ctx.store.get(PublicConfig, { where: { node: Equal(savedNode) }, relations: { node: true } })
 
     if (!publicConfig) {
       publicConfig = new PublicConfig()

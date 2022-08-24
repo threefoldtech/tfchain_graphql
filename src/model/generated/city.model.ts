@@ -9,10 +9,10 @@ export class City {
   @PrimaryColumn_()
   id!: string
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   cityID!: number
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   countryID!: number
 
   @Column_("text", {nullable: false})

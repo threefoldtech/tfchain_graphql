@@ -11,10 +11,10 @@ export class PricingPolicy {
   @PrimaryColumn_()
   id!: string
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   gridVersion!: number
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   pricingPolicyID!: number
 
   @Column_("text", {nullable: false})
@@ -38,6 +38,6 @@ export class PricingPolicy {
   @Column_("text", {nullable: false})
   certifiedSalesAccount!: string
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   dedicatedNodeDiscount!: number
 }

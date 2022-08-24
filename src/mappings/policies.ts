@@ -1,17 +1,18 @@
-import {
-    EventHandlerContext,
-  } from "@subsquid/substrate-processor";
 import { PricingPolicy, FarmingPolicy, Policy, FarmCertification, NodeCertification, Farm } from "../model";
 import { TfgridModulePricingPolicyStoredEvent, TfgridModuleFarmingPolicyStoredEvent, TfgridModuleFarmingPolicyUpdatedEvent, TfgridModuleFarmingPolicySetEvent, TfgridModuleFarmCertificationSetEvent } from "../types/events";
 import * as ss58 from "@subsquid/ss58";
+import { Store } from '@subsquid/typeorm-store'
+import {
+  EventHandlerContext,
+} from "../types/context";
 
 export async function pricingPolicyStored(ctx: EventHandlerContext) {
   let pricingPolicyEvent = new TfgridModulePricingPolicyStoredEvent(ctx)
 
   let pricingPolicyEventParsed
 
-  if (pricingPolicyEvent.isV9) {
-    pricingPolicyEventParsed = pricingPolicyEvent.asV9
+  if (pricingPolicyEvent.isV49) {
+    pricingPolicyEventParsed = pricingPolicyEvent.asV49
   } else if (pricingPolicyEvent.isV51) {
     pricingPolicyEventParsed = pricingPolicyEvent.asV51
   } else if (pricingPolicyEvent.isV101) {

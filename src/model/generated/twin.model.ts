@@ -9,10 +9,10 @@ export class Twin {
   @PrimaryColumn_()
   id!: string
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   gridVersion!: number
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   twinID!: number
 
   @Column_("text", {nullable: false})

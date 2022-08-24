@@ -107,30 +107,6 @@ export interface Twin {
   accountId: Uint8Array
 }
 
-export interface BurnTransaction {
-  block: number
-  amount: bigint
-  target: Uint8Array
-  signatures: StellarSignature[]
-  sequenceNumber: bigint
-}
-
-export interface MintTransaction {
-  amount: bigint
-  target: Uint8Array
-  block: number
-  votes: number
-}
-
-export interface RefundTransaction {
-  block: number
-  amount: bigint
-  target: Uint8Array
-  txHash: Uint8Array
-  signatures: StellarSignature[]
-  sequenceNumber: bigint
-}
-
 export type DiscountLevel = DiscountLevel_None | DiscountLevel_Default | DiscountLevel_Bronze | DiscountLevel_Silver | DiscountLevel_Gold
 
 export interface DiscountLevel_None {
@@ -218,11 +194,6 @@ export interface Policy {
 export interface EntityProof {
   entityId: number
   signature: Uint8Array
-}
-
-export interface StellarSignature {
-  signature: Uint8Array
-  stellarPubkey: Uint8Array
 }
 
 export type Cause = Cause_CanceledByUser | Cause_OutOfFunds

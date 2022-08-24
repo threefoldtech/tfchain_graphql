@@ -16,6 +16,6 @@ export class MintTransaction {
   @Column_("text", {nullable: false})
   target!: string
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   block!: number
 }

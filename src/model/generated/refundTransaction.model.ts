@@ -10,7 +10,7 @@ export class RefundTransaction {
   @PrimaryColumn_()
   id!: string
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   block!: number
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})

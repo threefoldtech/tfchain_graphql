@@ -1,10 +1,9 @@
 import * as ss58 from "@subsquid/ss58"
-import {
-  EventHandlerContext,
-  Store
-} from "@subsquid/substrate-processor"
 import { Provider, SolutionProvider } from "../model"
 import { SmartContractModuleSolutionProviderApprovedEvent, SmartContractModuleSolutionProviderCreatedEvent } from "../types/events"
+import {
+  EventHandlerContext,
+} from "../types/context";
 
 export async function solutionProviderCreated(ctx: EventHandlerContext) {
   let providerCreatedEvent = new SmartContractModuleSolutionProviderCreatedEvent(ctx).asV105

@@ -15,16 +15,16 @@ export class Node {
   @PrimaryColumn_()
   id!: string
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   gridVersion!: number
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   nodeID!: number
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   farmID!: number
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   twinID!: number
 
   @Index_()
@@ -46,10 +46,10 @@ export class Node {
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
   uptime!: bigint | undefined | null
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   created!: number
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   farmingPolicyId!: number
 
   @OneToMany_(() => Interfaces, e => e.node)
@@ -73,6 +73,6 @@ export class Node {
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   updatedAt!: bigint
 
-  @Column_("integer", {nullable: true})
+  @Column_("int4", {nullable: true})
   connectionPrice!: number | undefined | null
 }

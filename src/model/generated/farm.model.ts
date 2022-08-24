@@ -11,19 +11,19 @@ export class Farm {
   @PrimaryColumn_()
   id!: string
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   gridVersion!: number
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   farmID!: number
 
   @Column_("text", {nullable: false})
   name!: string
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   twinID!: number
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   pricingPolicyID!: number
 
   @Column_("varchar", {length: 12, nullable: true})

@@ -10,7 +10,7 @@ export class EntityProof {
   @PrimaryColumn_()
   id!: string
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   entityID!: number
 
   @Column_("text", {nullable: false})

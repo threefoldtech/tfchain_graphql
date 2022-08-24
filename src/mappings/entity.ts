@@ -1,12 +1,13 @@
 import * as ss58 from "@subsquid/ss58";
-import {
-  EventHandlerContext,
-} from "@subsquid/substrate-processor";
 import { Entity } from "../model";
 import { TfgridModuleEntityStoredEvent, TfgridModuleEntityUpdatedEvent, TfgridModuleEntityDeletedEvent } from "../types/events";
+import { Store } from '@subsquid/typeorm-store'
+import {
+  EventHandlerContext,
+} from "../types/context";
 
 export async function entityStored(ctx: EventHandlerContext) {
-  const entityStoredEvent = new TfgridModuleEntityStoredEvent(ctx).asV9
+  const entityStoredEvent = new TfgridModuleEntityStoredEvent(ctx).asV49
   
   const newEntity = new Entity()
 
@@ -24,7 +25,7 @@ export async function entityStored(ctx: EventHandlerContext) {
 }
 
 export async function entityUpdated(ctx: EventHandlerContext) {
-  const entityUpdatedEvent = new TfgridModuleEntityUpdatedEvent(ctx).asV9
+  const entityUpdatedEvent = new TfgridModuleEntityUpdatedEvent(ctx).asV49
   const newEntity = new Entity()
 
   const savedEntity = await ctx.store.get(Entity, { where: { entityID: entityUpdatedEvent.id } })
@@ -44,7 +45,7 @@ export async function entityUpdated(ctx: EventHandlerContext) {
 }
 
 export async function entityDeleted(ctx: EventHandlerContext) {
-  const entityDeletedEvent = new TfgridModuleEntityDeletedEvent(ctx).asV9
+  const entityDeletedEvent = new TfgridModuleEntityDeletedEvent(ctx).asV49
 
   const savedEntity = await ctx.store.get(Entity, { where: { entityID: entityDeletedEvent } })
 

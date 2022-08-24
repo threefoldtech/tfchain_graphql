@@ -4,15 +4,15 @@ import { BalancesTransferEvent } from "../types/events";
 import { Store } from '@subsquid/typeorm-store'
 import {
   EventHandlerContext,
-} from "@subsquid/substrate-processor";
+} from "../types/context";
 
-export async function balancesTransfer(ctx: EventHandlerContext<Store>): Promise<void> {
+export async function balancesTransfer(ctx: EventHandlerContext): Promise<void> {
   const transferEvent = new BalancesTransferEvent(ctx)
 
   let from, to, amount
   let transfer
-  if (transferEvent.isV9) {
-    transfer = transferEvent.asV9
+  if (transferEvent.isV49) {
+    transfer = transferEvent.asV49
     from = transfer[0]
     to = transfer[1]
     amount = transfer[2]
