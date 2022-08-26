@@ -2,7 +2,7 @@ import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
 import { Farm, FarmCertification, PublicIp } from "../model";
-import { TfgridModuleFarmStoredEvent, TfgridModuleFarmDeletedEvent, TfgridModuleFarmUpdatedEvent, TfgridModuleFarmPayoutV2AddressRegisteredEvent, TfgridModuleFarmCertificationSetEvent } from "../types/events";
+import { TfgridModuleFarmStoredEvent, TfgridModuleFarmDeletedEvent, TfgridModuleFarmUpdatedEvent, TfgridModuleFarmPayoutV2AddressRegisteredEvent, TfgridModuleFarmCertificationSetEvent, TfgridModuleFarmingPolicySetEvent } from "../types/events";
 import * as v63 from '../types/v63'
 
 export async function farmStored(ctx: EventHandlerContext) {
@@ -68,6 +68,8 @@ export async function farmStored(ctx: EventHandlerContext) {
 export async function farmUpdated(ctx: EventHandlerContext) {
   const farmUpdatedEvent = new TfgridModuleFarmUpdatedEvent(ctx)
 
+  let certification = FarmCertification.NotCertified
+
   let farmUpdatedEventParsed
   if (farmUpdatedEvent.isV9) {
     farmUpdatedEventParsed = farmUpdatedEvent.asV9
@@ -75,10 +77,20 @@ export async function farmUpdated(ctx: EventHandlerContext) {
     farmUpdatedEventParsed = farmUpdatedEvent.asV50
   } else if (farmUpdatedEvent.isV63) {
     farmUpdatedEventParsed = farmUpdatedEvent.asV63
+    switch(farmUpdatedEvent.asV101.certification.__kind) {
+      case "Gold": {
+        certification = FarmCertification.Gold
+      }
+    }
   } else if (farmUpdatedEvent.isV101) {
     let eventValue = ctx.event.params[0].value as v63.Farm
     eventValue.dedicatedFarm = false
     farmUpdatedEventParsed = farmUpdatedEvent.asV101
+    switch(farmUpdatedEvent.asV101.certification.__kind) {
+      case "Gold": {
+        certification = FarmCertification.Gold
+      }
+    }
   }
 
   if (!farmUpdatedEventParsed) return
@@ -90,6 +102,7 @@ export async function farmUpdated(ctx: EventHandlerContext) {
   savedFarm.name = farmUpdatedEventParsed.name.toString()
   savedFarm.twinID = farmUpdatedEventParsed.twinId
   savedFarm.pricingPolicyID = farmUpdatedEventParsed.pricingPolicyId
+  savedFarm.certification = certification
 
   await farmUpdatedEventParsed.publicIps.forEach(async ip => {
     if (ip.ip.toString().indexOf('\x00') >= 0) {

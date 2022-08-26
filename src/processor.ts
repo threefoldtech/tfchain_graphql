@@ -47,6 +47,7 @@ processor.addEventHandler('tfgridModule.FarmUpdated', ctx => farmUpdated(ctx));
 processor.addEventHandler('tfgridModule.FarmDeleted', ctx => farmDeleted(ctx));
 processor.addEventHandler('tfgridModule.FarmPayoutV2AddressRegistered', ctx => farmPayoutV2AddressRegistered(ctx));
 processor.addEventHandler('tfgridModule.FarmCertificationSet', ctx => farmCertificationSet(ctx));
+processor.addEventHandler('tfgridModule.FarmingPolicySet', ctx => farmCertificationSet(ctx));
 
 processor.addEventHandler('tfgridModule.EntityStored', ctx => entityStored(ctx));
 processor.addEventHandler('tfgridModule.EntityUpdated', ctx => entityUpdated(ctx));

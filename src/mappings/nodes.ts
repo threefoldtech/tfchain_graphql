@@ -36,6 +36,7 @@ export async function nodeStored(ctx: EventHandlerContext) {
 
   newNode.created = Number(nodeEvent.created)
   newNode.farmingPolicyId = nodeEvent.farmingPolicyId
+  newNode.certification = NodeCertification.Diy
 
   const newLocation = new Location()
   newLocation.id = ctx.event.id
@@ -45,45 +46,11 @@ export async function nodeStored(ctx: EventHandlerContext) {
 
   newNode.location = newLocation
 
-  if (node.isV28) {
-    const nodeAsV28 = node.asV28
-    if (nodeAsV28.certificationType) {
-      const certificationTypeAsString = nodeAsV28.certificationType.__kind.toString()
-      let certType = NodeCertification.Diy
-      switch (certificationTypeAsString) {
-        case 'Diy':
-          certType = NodeCertification.Diy
-          break
-        case 'Certified':
-          certType = NodeCertification.Certified
-          break
-      }
-      newNode.certification = certType
-    } else {
-      newNode.certification = NodeCertification.Diy
-    }
-  }
-
   if (node.isV43) {
     const nodeAsV43 = node.asV43
     newNode.secure = nodeAsV43.secureBoot ? true : false
     newNode.virtualized = nodeAsV43.virtualized ? true : false
     newNode.serialNumber = nodeAsV43.serialNumber.toString()
-    if (nodeAsV43.certificationType) {
-      const certificationTypeAsString = nodeAsV43.certificationType.__kind.toString()
-      let certType = NodeCertification.Diy
-      switch (certificationTypeAsString) {
-        case 'Diy':
-          certType = NodeCertification.Diy
-          break
-        case 'Certified':
-          certType = NodeCertification.Certified
-          break
-      }
-      newNode.certification = certType
-    } else {
-      newNode.certification = NodeCertification.Diy
-    }
   }
 
   if (node.isV101 || node.isV63) {
@@ -99,21 +66,6 @@ export async function nodeStored(ctx: EventHandlerContext) {
     newNode.virtualized = nodeEvent.virtualized ? true : false
     newNode.serialNumber = nodeEvent.serialNumber.toString()
     newNode.connectionPrice = nodeEvent.connectionPrice
-    if (nodeEvent.certification) {
-      const certificationTypeAsString = nodeEvent.certification.__kind.toString()
-      let certType = NodeCertification.Diy
-      switch (certificationTypeAsString) {
-        case 'Diy':
-          certType = NodeCertification.Diy
-          break
-        case 'Certified':
-          certType = NodeCertification.Certified
-          break
-      }
-      newNode.certification = certType
-    } else {
-      newNode.certification = NodeCertification.Diy
-    }
   }
 
   await ctx.store.save<Node>(newNode)
