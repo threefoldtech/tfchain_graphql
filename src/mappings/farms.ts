@@ -33,10 +33,7 @@ export async function farmStored(ctx: EventHandlerContext) {
   newFarm.twinID = farmStoredEventParsed.twinId
   newFarm.pricingPolicyID = farmStoredEventParsed.pricingPolicyId
   newFarm.dedicatedFarm = false
-
-  if (farmStoredEvent.isV63 || farmStoredEvent.isV101) {
-    newFarm.certification = FarmCertification.NotCertified
-  }
+  newFarm.certification = FarmCertification.NotCertified
 
   newFarm.publicIPs = []
 
