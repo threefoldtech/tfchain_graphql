@@ -8,7 +8,6 @@ import * as v63 from '../types/v63'
 export async function farmStored(ctx: EventHandlerContext) {
   const farmStoredEvent = new TfgridModuleFarmStoredEvent(ctx)
 
-  console.log(ctx._chain.getEventHash('tfgridModule.FarmStored'))
   let farmStoredEventParsed
   if (farmStoredEvent.isV9) {
     farmStoredEventParsed = farmStoredEvent.asV9

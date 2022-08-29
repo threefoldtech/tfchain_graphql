@@ -6,6 +6,7 @@ import { SmartContractModuleNodeMarkedAsDedicatedEvent, TfgridModuleNodeCertific
 
 export async function nodeStored(ctx: EventHandlerContext) {
   const node = new TfgridModuleNodeStoredEvent(ctx)
+
   let nodeEvent
   if (node.isV9) {
     nodeEvent = node.asV9
@@ -17,9 +18,13 @@ export async function nodeStored(ctx: EventHandlerContext) {
     nodeEvent = node.asV63
   } else if (node.isV101) {
     nodeEvent = node.asV101
+  } else if (node.isV105) {
+    nodeEvent = node.asV105
   }
 
-  if (!nodeEvent) return
+  if (!nodeEvent) {
+    return
+  }
 
   const newNode = new Node()
   newNode.id = ctx.event.id
@@ -46,6 +51,15 @@ export async function nodeStored(ctx: EventHandlerContext) {
 
   newNode.location = newLocation
 
+  const pubConfig = getNodePublicConfig(node)
+  const newPubConfig = new PublicConfig()
+  newPubConfig.id = ctx.event.id
+  newPubConfig.ipv4 = pubConfig?.ip4
+  newPubConfig.gw4 = pubConfig?.gw4
+  newPubConfig.ipv6 = pubConfig?.ip6
+  newPubConfig.gw6 = pubConfig?.gw6
+  newPubConfig.node = newNode
+
   if (node.isV43) {
     const nodeAsV43 = node.asV43
     newNode.secure = nodeAsV43.secureBoot ? true : false
@@ -53,12 +67,14 @@ export async function nodeStored(ctx: EventHandlerContext) {
     newNode.serialNumber = nodeAsV43.serialNumber.toString()
   }
 
-  if (node.isV101 || node.isV63) {
+  if (node.isV105 || node.isV101 || node.isV63) {
     let nodeEvent
     if (node.isV101) {
       nodeEvent = node.asV101
     } else if (node.isV63) {
       nodeEvent = node.asV63
+    } else if (node.isV105) {
+      nodeEvent = node.asV105
     } else {
       return
     }
@@ -79,20 +95,6 @@ export async function nodeStored(ctx: EventHandlerContext) {
   resourcesTotal.cru = nodeEvent.resources.cru
 
   await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
-
-  if (nodeEvent.publicConfig) {
-    const pubConfig = new PublicConfig()
-    pubConfig.node = newNode
-    pubConfig.id = ctx.event.id
-    pubConfig.ipv4 = nodeEvent.publicConfig.ipv4.toString()
-    pubConfig.ipv6 = nodeEvent.publicConfig.ipv6.toString()
-    pubConfig.gw4 = nodeEvent.publicConfig.gw4.toString()
-    pubConfig.gw6 = nodeEvent.publicConfig.gw6.toString()
-    pubConfig.domain = nodeEvent.publicConfig.domain.toString() || ''
-
-    await ctx.store.save<PublicConfig>(pubConfig)
-    newNode.publicConfig = pubConfig
-  }
 
   newNode.interfaces = []
 
@@ -125,6 +127,8 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     nodeEvent = node.asV63
   } else if (node.isV101) {
     nodeEvent = node.asV101
+  } else if (node.isV105) {
+    nodeEvent = node.asV105
   }
 
   if (!nodeEvent) return
@@ -200,12 +204,14 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     }
   }
 
-  if (node.isV101 || node.isV63) {
+  if (node.isV105 || node.isV101 || node.isV63) {
     let nodeEvent
     if (node.isV101) {
       nodeEvent = node.asV101
     } else if (node.isV63) {
       nodeEvent = node.asV63
+    }else if (node.isV105) {
+      nodeEvent = node.asV105
     } else {
       return
     }
@@ -282,17 +288,7 @@ export async function nodeDeleted(ctx: EventHandlerContext) {
       return ctx.store.remove(intf)
     })
     await Promise.all(promises)
-    // console.log("-------------DELETING NODE-------------")
-    // console.log(savedNode.interfaces)
 
-    // if (savedNode.interfaces) {
-    //   console.log(savedNode.interfaces)
-    //   const promises = savedNode.interfaces.map(async int => {
-    //     const intf = await ctx.store.get(Interfaces, { where: { id: int.id }})
-    //     return ctx.store.remove(intf)
-    //   })
-    //   await Promise.all(promises)
-    // }
     await ctx.store.remove(savedNode)
   }
 }
@@ -368,16 +364,6 @@ export async function nodePublicConfigStored(ctx: EventHandlerContext) {
   }
 }
 
-// export async function nodeMarkedAsDedicated(ctx: EventHandlerContext) {
-//   const [nodeID, dedicated] = new SmartContractModuleNodeMarkedAsDedicatedEvent(ctx).asV63
-
-//   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
-//   if (!savedNode) return
-
-//   savedNode.dedicated = dedicated
-//   await ctx.store.save<Node>(savedNode)
-// }
-
 export async function nodeCertificationSet(ctx: EventHandlerContext) {
   const [nodeID, certification] = new TfgridModuleNodeCertificationSetEvent(ctx).asV63
 
@@ -397,4 +383,92 @@ export async function nodeCertificationSet(ctx: EventHandlerContext) {
   savedNode.certification = certType
 
   await ctx.store.save<Node>(savedNode)
+}
+
+
+interface NodePublicConfig {
+  ip4: string
+  gw4: string
+  ip6: string
+  gw6: string
+  domain: string
+}
+
+function getNodePublicConfig(node: TfgridModuleNodeStoredEvent): NodePublicConfig | null | undefined {
+  let nodeEvent
+  if (node.isV9) {
+    nodeEvent = node.asV9
+    if (nodeEvent.publicConfig) {
+      return {
+        ip4: nodeEvent.publicConfig?.ipv4.toString(),
+        gw4: nodeEvent.publicConfig?.gw4.toString(),
+        ip6: nodeEvent.publicConfig?.ipv6.toString(),
+        gw6: nodeEvent.publicConfig?.gw6.toString(),
+        domain: nodeEvent.publicConfig?.domain.toString()
+      }
+    }
+  } else if (node.isV28) {
+    nodeEvent = node.asV28
+    if (nodeEvent.publicConfig) {
+      return {
+        ip4: nodeEvent.publicConfig?.ipv4.toString(),
+        gw4: nodeEvent.publicConfig?.gw4.toString(),
+        ip6: nodeEvent.publicConfig?.ipv6.toString(),
+        gw6: nodeEvent.publicConfig?.gw6.toString(),
+        domain: nodeEvent.publicConfig?.domain.toString()
+      }
+    }
+  } else if (node.isV43) {
+    nodeEvent = node.asV43
+    if (nodeEvent.publicConfig) {
+      return {
+        ip4: nodeEvent.publicConfig?.ipv4.toString(),
+        gw4: nodeEvent.publicConfig?.gw4.toString(),
+        ip6: nodeEvent.publicConfig?.ipv6.toString(),
+        gw6: nodeEvent.publicConfig?.gw6.toString(),
+        domain: nodeEvent.publicConfig?.domain.toString()
+      }
+    }
+  } else if (node.isV63) {
+    nodeEvent = node.asV63
+    if (nodeEvent.publicConfig) {
+      return {
+        ip4: nodeEvent.publicConfig?.ipv4.toString(),
+        gw4: nodeEvent.publicConfig?.gw4.toString(),
+        ip6: nodeEvent.publicConfig?.ipv6.toString(),
+        gw6: nodeEvent.publicConfig?.gw6.toString(),
+        domain: nodeEvent.publicConfig?.domain.toString()
+      }
+    }
+  } else if (node.isV101) {
+    nodeEvent = node.asV101
+    if (nodeEvent.publicConfig) {
+      return {
+        ip4: nodeEvent.publicConfig?.ipv4.toString(),
+        gw4: nodeEvent.publicConfig?.gw4.toString(),
+        ip6: nodeEvent.publicConfig?.ipv6.toString(),
+        gw6: nodeEvent.publicConfig?.gw6.toString(),
+        domain: nodeEvent.publicConfig?.domain.toString()
+      }
+    }
+  } else if (node.isV105) {
+    nodeEvent = node.asV105
+    if (nodeEvent.publicConfig) {
+      let domain = ''
+      if (nodeEvent.publicConfig.domain) {
+        domain = nodeEvent.publicConfig.domain.toString()
+      }
+      return {
+        ip4: nodeEvent.publicConfig?.ip4.ip.toString(),
+        gw4: nodeEvent.publicConfig?.ip4.gw.toString(),
+        ip6: nodeEvent.publicConfig?.ip6?.ip.toString() || '',
+        gw6: nodeEvent.publicConfig?.ip6?.gw.toString() || '',
+        domain
+      }
+    }
+  } else {
+    return null
+  }
+
+  return null
 }
