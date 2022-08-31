@@ -275,51 +275,53 @@ export async function nruConsumptionReportReceived(ctx: EventHandlerContext) {
 
 export async function contractGracePeriodStarted(ctx: EventHandlerContext) {
   const contractGracePeriodStartedEvent = new SmartContractModuleContractGracePeriodStartedEvent(ctx).asV59
-  
-  let savedContract
-  savedContract = await ctx.store.get(NodeContract, { where: { contractID: contractGracePeriodStartedEvent[0] } })
-  
-  if (!savedContract) {
-    savedContract = await ctx.store.get(RentContract, { where: { contractID: contractGracePeriodStartedEvent[0] } })
-    if (!savedContract) {
-      savedContract = await ctx.store.get(NameContract, { where: { contractID: contractGracePeriodStartedEvent[0] } })
-      if (!savedContract) return
-      else {
-        savedContract.state = ContractState.GracePeriod
-        await ctx.store.save<NameContract>(savedContract)
-      }
-    } else {
-      savedContract.state = ContractState.GracePeriod
-      await ctx.store.save<RentContract>(savedContract)
-    }
-  } else {
-    savedContract.state = ContractState.GracePeriod
-    await ctx.store.save<NodeContract>(savedContract)
+  const contractID = contractGracePeriodStartedEvent[0]
+
+  const savedNodeContract = await ctx.store.get(NodeContract, { where: { contractID } })
+  if (savedNodeContract) {
+    savedNodeContract.state = ContractState.GracePeriod
+    await ctx.store.save<NodeContract>(savedNodeContract)
+    return
+  }
+
+  const savedRentContract = await ctx.store.get(RentContract, { where: { contractID } })
+  if (savedRentContract) {
+    savedRentContract.state = ContractState.GracePeriod
+    await ctx.store.save<RentContract>(savedRentContract)
+    return
+  }
+
+  const savedNameContract = await ctx.store.get(NameContract, { where: { contractID } })
+  if (savedNameContract) {
+    savedNameContract.state = ContractState.GracePeriod
+    await ctx.store.save<NameContract>(savedNameContract)
+    return
   }
 }
 
 
 export async function contractGracePeriodEnded(ctx: EventHandlerContext) {
   const contractGracePeriodEnded = new SmartContractModuleContractGracePeriodEndedEvent(ctx).asV59
-  
-  let savedContract
-  savedContract = await ctx.store.get(NodeContract, { where: { contractID: contractGracePeriodEnded[0] } })
-  
-  if (!savedContract) {
-    savedContract = await ctx.store.get(RentContract, { where: { contractID: contractGracePeriodEnded[0] } })
-    if (!savedContract) {
-      savedContract = await ctx.store.get(NameContract, { where: { contractID: contractGracePeriodEnded[0] } })
-      if (!savedContract) return
-      else {
-        savedContract.state = ContractState.GracePeriod
-        await ctx.store.save<NameContract>(savedContract)
-      }
-    } else {
-      savedContract.state = ContractState.GracePeriod
-      await ctx.store.save<RentContract>(savedContract)
-    }
-  } else {
-    savedContract.state = ContractState.GracePeriod
-    await ctx.store.save<NodeContract>(savedContract)
+  const contractID = contractGracePeriodEnded[0]
+
+  const savedNodeContract = await ctx.store.get(NodeContract, { where: { contractID } })
+  if (savedNodeContract) {
+    savedNodeContract.state = ContractState.Created
+    await ctx.store.save<NodeContract>(savedNodeContract)
+    return
+  }
+
+  const savedRentContract = await ctx.store.get(RentContract, { where: { contractID } })
+  if (savedRentContract) {
+    savedRentContract.state = ContractState.Created
+    await ctx.store.save<RentContract>(savedRentContract)
+    return
+  }
+
+  const savedNameContract = await ctx.store.get(NameContract, { where: { contractID } })
+  if (savedNameContract) {
+    savedNameContract.state = ContractState.Created
+    await ctx.store.save<NameContract>(savedNameContract)
+    return
   }
 }
