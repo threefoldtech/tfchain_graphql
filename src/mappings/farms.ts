@@ -103,6 +103,9 @@ export async function farmUpdated(ctx: EventHandlerContext) {
   savedFarm.pricingPolicyID = farmUpdatedEventParsed.pricingPolicyId
   savedFarm.certification = certification
 
+  let eventPublicIPs = farmUpdatedEventParsed.publicIps
+  const farmIPS: PublicIp[] = []
+
   await farmUpdatedEventParsed.publicIps.forEach(async ip => {
     if (ip.ip.toString().indexOf('\x00') >= 0) {
       return
@@ -113,6 +116,7 @@ export async function farmUpdated(ctx: EventHandlerContext) {
       savedIP.ip = ip.ip.toString()
       savedIP.contractId = ip.contractId
       savedIP.gateway = ip.gateway.toString()
+      farmIPS.push(savedIP)
       await ctx.store.save<PublicIp>(savedIP)
     } else {
       const newIP = new PublicIp()
@@ -127,10 +131,19 @@ export async function farmUpdated(ctx: EventHandlerContext) {
         savedFarm.publicIPs = []
       }
       savedFarm.publicIPs.push(newIP)
+      farmIPS.push(newIP)
     }
   })
 
   await ctx.store.save<Farm>(savedFarm)
+
+  farmIPS.forEach(async ip => {
+    if (eventPublicIPs.filter(eventIp => eventIp.ip.toString() === ip.ip).length === 0) {
+      // IP got removed from farm
+      console.log(`deleting ip: ${ip}`)
+      await ctx.store.remove<PublicIp>(ip)
+    }
+  })
 
   let farm = ctx.event.params[0].value as Farm
   if (farm.dedicatedFarm) {
