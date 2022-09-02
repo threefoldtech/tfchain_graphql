@@ -76,7 +76,7 @@ export async function farmUpdated(ctx: EventHandlerContext) {
     farmUpdatedEventParsed = farmUpdatedEvent.asV50
   } else if (farmUpdatedEvent.isV63) {
     farmUpdatedEventParsed = farmUpdatedEvent.asV63
-    switch(farmUpdatedEvent.asV101.certification.__kind) {
+    switch (farmUpdatedEvent.asV101.certification.__kind) {
       case "Gold": {
         certification = FarmCertification.Gold
       }
@@ -85,7 +85,7 @@ export async function farmUpdated(ctx: EventHandlerContext) {
     let eventValue = ctx.event.params[0].value as v63.Farm
     eventValue.dedicatedFarm = false
     farmUpdatedEventParsed = farmUpdatedEvent.asV101
-    switch(farmUpdatedEvent.asV101.certification.__kind) {
+    switch (farmUpdatedEvent.asV101.certification.__kind) {
       case "Gold": {
         certification = FarmCertification.Gold
       }
@@ -104,7 +104,6 @@ export async function farmUpdated(ctx: EventHandlerContext) {
   savedFarm.certification = certification
 
   let eventPublicIPs = farmUpdatedEventParsed.publicIps
-  const farmIPS: PublicIp[] = []
 
   await farmUpdatedEventParsed.publicIps.forEach(async ip => {
     if (ip.ip.toString().indexOf('\x00') >= 0) {
@@ -116,7 +115,6 @@ export async function farmUpdated(ctx: EventHandlerContext) {
       savedIP.ip = ip.ip.toString()
       savedIP.contractId = ip.contractId
       savedIP.gateway = ip.gateway.toString()
-      farmIPS.push(savedIP)
       await ctx.store.save<PublicIp>(savedIP)
     } else {
       const newIP = new PublicIp()
@@ -131,16 +129,15 @@ export async function farmUpdated(ctx: EventHandlerContext) {
         savedFarm.publicIPs = []
       }
       savedFarm.publicIPs.push(newIP)
-      farmIPS.push(newIP)
     }
   })
 
   await ctx.store.save<Farm>(savedFarm)
 
-  farmIPS.forEach(async ip => {
+  const publicIPsOfFarm = await ctx.store.find<PublicIp>(PublicIp, { where: { farm: savedFarm } })
+  publicIPsOfFarm.forEach(async ip => {
     if (eventPublicIPs.filter(eventIp => eventIp.ip.toString() === ip.ip).length === 0) {
       // IP got removed from farm
-      console.log(`deleting ip: ${ip}`)
       await ctx.store.remove<PublicIp>(ip)
     }
   })
