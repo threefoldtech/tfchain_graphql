@@ -141,6 +141,7 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
   savedNode.nodeID = nodeEvent.id
   savedNode.twinID = nodeEvent.twinId
   savedNode.updatedAt = BigInt(ctx.event.blockTimestamp)
+  savedNode.farmingPolicyId = nodeEvent.farmingPolicyId
 
   // Recalculate total / free resoures when a node get's updated
   let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
@@ -210,7 +211,7 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
       nodeEvent = node.asV101
     } else if (node.isV63) {
       nodeEvent = node.asV63
-    }else if (node.isV105) {
+    } else if (node.isV105) {
       nodeEvent = node.asV105
     } else {
       return
