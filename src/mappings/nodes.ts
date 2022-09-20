@@ -342,26 +342,30 @@ export async function nodePublicConfigStored(ctx: EventHandlerContext) {
 
   } else if (storedEvent.isV105) {
     nodeID = storedEvent.asV105[0]
-    config = storedEvent.asV105[1]
+    let pubconfig = storedEvent.asV105[1]
 
     const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
     if (!savedNode) return
 
-    let publicConfig = await ctx.store.get(PublicConfig, { where: { node: savedNode } })
+    let savedPubConfig = await ctx.store.get(PublicConfig, { where: { node: savedNode } })
 
-    if (!publicConfig) {
-      publicConfig = new PublicConfig()
-      publicConfig.id = ctx.event.id
-      publicConfig.node = savedNode
+    if (!savedPubConfig) {
+      savedPubConfig = new PublicConfig()
+      savedPubConfig.id = ctx.event.id
+      savedPubConfig.node = savedNode
     }
 
-    publicConfig.ipv4 = config?.ip4.ip.toString()
-    publicConfig.ipv6 = config?.ip6?.ip.toString()
-    publicConfig.gw4 = config?.ip4.gw.toString()
-    publicConfig.gw6 = config?.ip6?.gw.toString()
-    publicConfig.domain = config?.domain ? config.domain.toString() : ''
-
-    await ctx.store.save<PublicConfig>(publicConfig)
+    if (!pubconfig) {
+      await ctx.store.remove<PublicConfig>(savedPubConfig)
+    } else {
+      savedPubConfig.ipv4 = pubconfig?.ip4.ip.toString()
+      savedPubConfig.ipv6 = pubconfig?.ip6?.ip.toString()
+      savedPubConfig.gw4 = pubconfig?.ip4.gw.toString()
+      savedPubConfig.gw6 = pubconfig?.ip6?.gw.toString()
+      savedPubConfig.domain = pubconfig?.domain ? pubconfig.domain.toString() : ''
+  
+      await ctx.store.save<PublicConfig>(savedPubConfig)
+    }
   }
 }
 
