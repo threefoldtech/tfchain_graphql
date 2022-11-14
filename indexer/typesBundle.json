@@ -526,6 +526,74 @@
               "longitude": "Vec<u8>"
             }
           }
+        },
+        {
+          "minmax": [119, null],
+          "types": {
+            "Group": {
+              "id": "u32",
+              "twinId": "u32",
+              "capacityReservationId": "u32"
+            },
+            "NodeGroupConfig": {
+              "nodeId": "u32",
+              "groupId": "u32"
+            },
+            "ContractData": {
+              "_enum": {
+                "DeploymentContract": "DeploymentContract",
+                "NameContract": "NameContract",
+                "CapacityReservationContract": "CapacityReservationContract"
+              }
+            },
+            "CapacityReservationContract": {
+              "nodeId": "u32",
+              "resources": "ConsumableResources",
+              "groupId": "Option<u32>",
+              "publicIps": "u32",
+              "deploymentContract": "Vec<u64>"
+            },
+            "DeploymentContract": {
+              "capacityReservationId": "u64",
+              "deploymentHash": "Vec<u8>",
+              "deploymentData": "Vec<u8>",
+              "publicIps": "u32",
+              "publicIpsList": "Vec<PublicIP>",
+              "resources": "Resources"
+            },
+            "Node": {
+              "version": "u32",
+              "id": "u32",
+              "farmId": "u32",
+              "twinId": "u32",
+              "resources": "Resources",
+              "location": "Location",
+              "power": "Power",
+              "publicConfig": "Option<PublicConfig>",
+              "created": "u64",
+              "farmingPolicyId": "u32",
+              "interfaces": "Vec<Interface>",
+              "certification": "NodeCertification",
+              "secureBoot": "bool",
+              "virtualized": "bool",
+              "serialNumber": "Vec<u8>",
+              "connectionPrice": "u32"
+            },
+            "Power": {
+              "target": "PowerTarget",
+              "state": "PowerState",
+              "lastUptime": "u64"
+            },
+            "PowerTarget": {
+              "_enum": ["Up", "Down"]
+            },
+            "PowerState": {
+              "_enum": {
+                "Up": null,
+                "Down": "u32"
+              }
+            }
+          }
         }
       ]
     }

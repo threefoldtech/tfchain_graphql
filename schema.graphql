@@ -71,7 +71,7 @@ type Node @entity {
   country: String
   city: String
   publicConfig: PublicConfig @derivedFrom(field: "node")
-  resourcesTotal: NodeResourcesTotal @derivedFrom(field: "node")
+  resources: NodeConsumableResources @derivedFrom(field: "node")
   uptime: BigInt
   created: Int!
   farmingPolicyId: Int!
@@ -83,9 +83,37 @@ type Node @entity {
   createdAt: BigInt!
   updatedAt: BigInt!
   connectionPrice: Int
+  power: Power @derivedFrom(field: "node")
 }
 
+type Power {
+  node: Node! @unique
+  target: PowerTarget
+  state: PowerState
+  lastUptime: Int!
+}
+
+enum PowerState {
+  Up
+  Down
+}
+
+# deprecated
 type NodeResourcesTotal @entity {
+  node: Node! @unique
+  hru: BigInt!
+  sru: BigInt!
+  cru: BigInt!
+  mru: BigInt!
+}
+
+type NodeConsumableResources @entity {
+  node: Node! @unique
+  total: Resources!
+  used: Resources
+}
+
+type Resources {
   node: Node! @unique
   hru: BigInt!
   sru: BigInt!
@@ -156,6 +184,46 @@ type City @entity {
   cityID: Int!
   countryID: Int!
   name: String!
+}
+
+type CapacityReservationContract @entity {
+  contractID: BigInt!
+  nodeID: Int!
+  resources: ConsumableResources
+  groupID: Group!
+  publicIPs: Int!
+  deploymentContracts: [Int!]!
+}
+
+type ConsumableResources {
+  total: Resources
+  used: Resources
+}
+
+type Resources {
+  hru: BigInt!
+  sru: BigInt!
+  cru: BigInt!
+  mru: BigInt!
+}
+
+type DeploymentContract @entity {
+  contractID: BigInt!
+  twinID: Int!
+  nodeID: Int!
+  deploymentData: String!
+  deploymentHash: String!
+  numberOfPublicIPs: Int!
+  PublicIPs: ContractPublicIp
+  state: ContractState!
+  resourcesUsed: ContractResources
+  createdAt: BigInt!
+  solutionProviderID: Int
+}
+
+type ContractPublicIp {
+  ip: String!
+  gateway: String!
 }
 
 type NodeContract @entity {
