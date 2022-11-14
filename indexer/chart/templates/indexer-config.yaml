@@ -501,7 +501,7 @@ data:
               }
             },
             {
-              "minmax": [117, null],
+              "minmax": [118, null],
               "types": {
                 "Node": {
                   "version": "u32",
