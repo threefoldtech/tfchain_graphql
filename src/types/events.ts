@@ -11,6 +11,7 @@ import * as v51 from './v51'
 import * as v59 from './v59'
 import * as v62 from './v63'
 import * as v105 from './v105'
+import * as v118 from './v118'
 
 export type AccountId32 = Uint8Array
 
@@ -903,14 +904,23 @@ export class TfgridModuleNodeStoredEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV105
+  get isV118(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.NodeStored') === 'ec0a703c48c152550a88338dc646b5a56c58e1070be0e60059d0a03b653d75a8'
   }
 
-  get asLatest(): v105.Node {
+  get asV118(): v118.Node {
+    assert(this.isV118)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
     deprecateLatest()
-    return this.asV105
+    return this.isV118
+  }
+
+  get asLatest(): v118.Node {
+    deprecateLatest()
+    return this.asV118
   }
 }
 
@@ -973,14 +983,23 @@ export class TfgridModuleNodeUpdatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV105
+  get isV118(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.NodeUpdated') === 'ec0a703c48c152550a88338dc646b5a56c58e1070be0e60059d0a03b653d75a8'
   }
 
-  get asLatest(): v105.Node {
+  get asV118(): v118.Node {
+    assert(this.isV118)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
     deprecateLatest()
-    return this.asV105
+    return this.isV118
+  }
+
+  get asLatest(): v118.Node {
+    deprecateLatest()
+    return this.asV118
   }
 }
 
