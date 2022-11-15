@@ -125,7 +125,7 @@ export interface Node {
   certification: NodeCertification
   secureBoot: boolean
   virtualized: boolean
-  serialNumber: SerialNumber
+  serialNumber: (SerialNumber | undefined)
   connectionPrice: number
 }
 

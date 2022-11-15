@@ -905,7 +905,7 @@ export class TfgridModuleNodeStoredEvent {
   }
 
   get isV118(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.NodeStored') === 'ec0a703c48c152550a88338dc646b5a56c58e1070be0e60059d0a03b653d75a8'
+    return this.ctx._chain.getEventHash('tfgridModule.NodeStored') === 'f41f098c82aee52660133d1fb75d350fab4d99e9a67ba251b35e04ee4c292fb3'
   }
 
   get asV118(): v118.Node {
@@ -984,7 +984,7 @@ export class TfgridModuleNodeUpdatedEvent {
   }
 
   get isV118(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.NodeUpdated') === 'ec0a703c48c152550a88338dc646b5a56c58e1070be0e60059d0a03b653d75a8'
+    return this.ctx._chain.getEventHash('tfgridModule.NodeUpdated') === 'f41f098c82aee52660133d1fb75d350fab4d99e9a67ba251b35e04ee4c292fb3'
   }
 
   get asV118(): v118.Node {

@@ -2,7 +2,7 @@ import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
 import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal } from "../model";
-import { SmartContractModuleNodeMarkedAsDedicatedEvent, TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
+import { TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
 
 export async function nodeStored(ctx: EventHandlerContext) {
   const node = new TfgridModuleNodeStoredEvent(ctx)
@@ -47,11 +47,6 @@ export async function nodeStored(ctx: EventHandlerContext) {
     nodeEvent = node.asV28
     newNode.country = nodeEvent.country.toString()
     newNode.city = nodeEvent.city.toString()
-  }
-  if (node.isV118) {
-    nodeEvent = node.asV118
-    newNode.country = nodeEvent.location.country.toString()
-    newNode.city = nodeEvent.location.city.toString()
   }
 
   newNode.created = Number(nodeEvent.created)
@@ -100,6 +95,16 @@ export async function nodeStored(ctx: EventHandlerContext) {
     newNode.secure = nodeEvent.secureBoot ? true : false
     newNode.virtualized = nodeEvent.virtualized ? true : false
     newNode.serialNumber = nodeEvent.serialNumber.toString()
+    newNode.connectionPrice = nodeEvent.connectionPrice
+  }
+
+  if (node.isV118) {
+    let nodeEvent = node.asV118
+    newNode.country = nodeEvent.location.country.toString()
+    newNode.city = nodeEvent.location.city.toString()
+    newNode.secure = nodeEvent.secureBoot ? true : false
+    newNode.virtualized = nodeEvent.virtualized ? true : false
+    newNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
     newNode.connectionPrice = nodeEvent.connectionPrice
   }
 
@@ -198,7 +203,7 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     const nodeAsV28 = node.asV28
     savedNode.country = nodeAsV28.country.toString()
     savedNode.city = nodeAsV28.city.toString()
-    
+
     if (nodeAsV28.certificationType) {
       const certificationTypeAsString = nodeAsV28.certificationType.__kind.toString()
       let certType = NodeCertification.Diy
@@ -272,6 +277,32 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
       savedNode.certification = NodeCertification.Diy
     }
   }
+
+  if (node.isV118) {
+    const nodeEvent = node.asV118
+
+    savedNode.country = nodeEvent.location.country.toString()
+    savedNode.city = nodeEvent.location.city.toString()
+    savedNode.secure = nodeEvent.secureBoot ? true : false
+    savedNode.virtualized = nodeEvent.virtualized ? true : false
+    savedNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
+    if (nodeEvent.certification) {
+      const certificationTypeAsString = nodeEvent.certification.__kind.toString()
+      let certType = NodeCertification.Diy
+      switch (certificationTypeAsString) {
+        case 'Diy':
+          certType = NodeCertification.Diy
+          break
+        case 'Certified':
+          certType = NodeCertification.Certified
+          break
+      }
+      savedNode.certification = certType
+    } else {
+      savedNode.certification = NodeCertification.Diy
+    }
+  }
+
 
 
   await ctx.store.save<Node>(savedNode)
@@ -400,7 +431,7 @@ export async function nodePublicConfigStored(ctx: EventHandlerContext) {
       savedPubConfig.gw4 = pubconfig?.ip4.gw.toString()
       savedPubConfig.gw6 = pubconfig?.ip6?.gw.toString()
       savedPubConfig.domain = pubconfig?.domain ? pubconfig.domain.toString() : ''
-  
+
       await ctx.store.save<PublicConfig>(savedPubConfig)
     }
   }
