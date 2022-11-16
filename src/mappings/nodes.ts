@@ -637,15 +637,15 @@ export async function powerTargetChanged(ctx: EventHandlerContext) {
   if (!nodePower) return 
 
   switch (powerTarget.__kind) {
-    case 'Down': nodePower.target = PowerState.Down
     case 'Up': nodePower.target = PowerState.Up
+    case 'Down': nodePower.target = PowerState.Down
   }
 
   await ctx.store.save<NodePower>(nodePower)
 }
 
 export async function powerStateChanged(ctx: EventHandlerContext) {
-    const { nodeId, powerState } = new TfgridModulePowerStateChangedEvent(ctx).asV119
+  const { nodeId, powerState } = new TfgridModulePowerStateChangedEvent(ctx).asV119
 
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeId } })
   if (!savedNode) return
@@ -654,8 +654,8 @@ export async function powerStateChanged(ctx: EventHandlerContext) {
   if (!nodePower) return 
 
   switch (powerState.__kind) {
-    case 'Down': nodePower.state = PowerState.Down
     case 'Up': nodePower.state = PowerState.Up
+    case 'Down': nodePower.state = PowerState.Down
   }
 
   await ctx.store.save<NodePower>(nodePower)
