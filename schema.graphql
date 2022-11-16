@@ -83,12 +83,12 @@ type Node @entity {
   createdAt: BigInt!
   updatedAt: BigInt!
   connectionPrice: Int
-  power: Power @derivedFrom(field: "node")
+  power: NodePower @derivedFrom(field: "node")
 }
 
-type Power {
+type NodePower @entity {
   node: Node! @unique
-  target: PowerTarget
+  target: PowerState
   state: PowerState
   lastUptime: Int!
 }
@@ -114,7 +114,6 @@ type NodeConsumableResources @entity {
 }
 
 type Resources {
-  node: Node! @unique
   hru: BigInt!
   sru: BigInt!
   cru: BigInt!
@@ -190,17 +189,16 @@ type CapacityReservationContract @entity {
   contractID: BigInt!
   nodeID: Int!
   resources: ConsumableResources
-  groupID: Group!
   publicIPs: Int!
   deploymentContracts: [Int!]!
 }
 
 type ConsumableResources {
-  total: Resources
-  used: Resources
+  total: ResourcesType
+  used: ResourcesType
 }
 
-type Resources {
+type ResourcesType {
   hru: BigInt!
   sru: BigInt!
   cru: BigInt!
@@ -210,15 +208,23 @@ type Resources {
 type DeploymentContract @entity {
   contractID: BigInt!
   twinID: Int!
-  nodeID: Int!
+  capacityReservationID: BigInt!
   deploymentData: String!
   deploymentHash: String!
   numberOfPublicIPs: Int!
-  PublicIPs: ContractPublicIp
+  publicIps: ContractPublicIp
   state: ContractState!
-  resourcesUsed: ContractResources
+  resourcesUsed: DeploymentContractResources
   createdAt: BigInt!
   solutionProviderID: Int
+}
+
+type DeploymentContractResources @entity {
+  contract: DeploymentContract!
+  hru: BigInt!
+  sru: BigInt!
+  cru: BigInt!
+  mru: BigInt!
 }
 
 type ContractPublicIp {

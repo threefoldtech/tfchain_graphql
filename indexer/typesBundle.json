@@ -645,7 +645,7 @@
               "certification": "NodeCertification",
               "secureBoot": "bool",
               "virtualized": "bool",
-              "serialNumber": "Vec<u8>",
+              "serialNumber": "Option<Vec<u8>>",
               "connectionPrice": "u32"
             },
             "Power": {

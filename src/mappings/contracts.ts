@@ -2,7 +2,7 @@ import {
   EventHandlerContext,
   Store
 } from "@subsquid/substrate-processor";
-import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractResources, NodeResourcesTotal, Node, RentContract, Farm, NruConsumption } from "../model";
+import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractResources, NodeResourcesTotal, Node, RentContract, Farm, NruConsumption, CapacityReservationContract, ConsumableResources, ResourcesType, DeploymentContract, DeploymentContractResources } from "../model";
 import { SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent, SmartContractModuleNodeContractCanceledEvent, SmartContractModuleNameContractCanceledEvent, SmartContractModuleContractBilledEvent, SmartContractModuleUpdatedUsedResourcesEvent, SmartContractModuleNruConsumptionReportReceivedEvent, SmartContractModuleRentContractCanceledEvent, SmartContractModuleContractGracePeriodStartedEvent, SmartContractModuleContractGracePeriodEndedEvent } from "../types/events";
 
 export async function contractCreated(ctx: EventHandlerContext) {
@@ -21,6 +21,8 @@ export async function contractCreated(ctx: EventHandlerContext) {
     contractEvent = contractCreatedEvent.asV101
   } else if (contractCreatedEvent.isV105) {
     contractEvent = contractCreatedEvent.asV105
+  } else if (contractCreatedEvent.isV119) {
+    return processContractV119(contractCreatedEvent, ctx)
   }
 
   if (!contractEvent) return
@@ -105,6 +107,115 @@ export async function contractCreated(ctx: EventHandlerContext) {
       newRentContract.solutionProviderID = Number(contractEvent.solutionProviderId) || 0
     }
     await ctx.store.save<RentContract>(newRentContract)
+  }
+}
+
+async function processContractV119(event: SmartContractModuleContractCreatedEvent, ctx: EventHandlerContext) {
+  let contractEvent = event.asV119
+
+  if (!contractEvent) return
+
+  let state = ContractState.Created
+
+  let contract
+
+  if (contractEvent.contractType.__kind === "NameContract") {
+    let newNameContract = new NameContract()
+    newNameContract.id = ctx.event.id
+    contract = contractEvent.contractType.value
+    newNameContract.name = contract.name.toString()
+    newNameContract.contractID = contractEvent.contractId
+    newNameContract.gridVersion = contractEvent.version
+    newNameContract.twinID = contractEvent.twinId
+    newNameContract.state = state
+    newNameContract.createdAt = BigInt(ctx.event.blockTimestamp)
+    newNameContract.solutionProviderID = Number(contractEvent.solutionProviderId) || 0
+    await ctx.store.save<NameContract>(newNameContract)
+  }
+
+  if (contractEvent.contractType.__kind === 'CapacityReservationContract') {
+    let newCapacityReservationContract = new CapacityReservationContract()
+    newCapacityReservationContract.id = ctx.event.id
+    newCapacityReservationContract.contractID = contractEvent.contractId
+
+    contract = contractEvent.contractType.value
+
+    newCapacityReservationContract.nodeID = contract.nodeId
+    let resources = new ConsumableResources()
+    
+    let totalResources = new ResourcesType()
+    totalResources.cru = contract.resources.totalResources.cru
+    totalResources.sru = contract.resources.totalResources.sru
+    totalResources.hru = contract.resources.totalResources.hru
+    totalResources.mru = contract.resources.totalResources.mru
+    resources.total = totalResources
+
+    let usedResources = new ResourcesType()
+    usedResources.cru = contract.resources.usedResources.cru
+    usedResources.sru = contract.resources.usedResources.sru
+    usedResources.hru = contract.resources.usedResources.hru
+    usedResources.mru = contract.resources.usedResources.mru
+    resources.used = usedResources
+
+    newCapacityReservationContract.resources = resources
+
+    newCapacityReservationContract.publicIPs = contract.publicIps
+    newCapacityReservationContract.deploymentContracts = []
+
+    await ctx.store.save<CapacityReservationContract>(newCapacityReservationContract)
+  }
+
+  if (contractEvent.contractType.__kind === 'DeploymentContract') {
+    let newDeploymentContract = new DeploymentContract()
+    newDeploymentContract.id = ctx.event.id
+    
+    contract = contractEvent.contractType.value
+
+    newDeploymentContract.state = state
+    newDeploymentContract.createdAt = BigInt(ctx.event.blockTimestamp)
+
+    if (contract.deploymentData.toString().indexOf('\x00') >= 0) {
+      newDeploymentContract.deploymentData = ""
+    } else {
+      newDeploymentContract.deploymentData = contract.deploymentData.toString()
+    }
+    if (contract.deploymentHash.toString().indexOf('\x00')  >= 0) {
+      newDeploymentContract.deploymentHash = ""
+    } else {
+      newDeploymentContract.deploymentHash = contract.deploymentHash.toString()
+    }
+    
+    newDeploymentContract.capacityReservationID = contract.capacityReservationId
+    newDeploymentContract.numberOfPublicIPs = contract.publicIps
+    newDeploymentContract.solutionProviderID = Number(contractEvent.solutionProviderId) || 0
+
+    await ctx.store.save<DeploymentContract>(newDeploymentContract)
+
+    let contractResources = new DeploymentContractResources()
+    contractResources.id = ctx.event.id
+    contractResources.contract = newDeploymentContract
+
+    contractResources.cru = contract.resources.cru
+    contractResources.sru = contract.resources.sru
+    contractResources.hru = contract.resources.hru
+    contractResources.mru = contract.resources.mru
+
+    newDeploymentContract.resourcesUsed = contractResources
+
+    await ctx.store.save<DeploymentContractResources>(contractResources)
+    await ctx.store.save<DeploymentContract>(newDeploymentContract)
+
+    contract.publicIpsList.forEach(async ip => {
+      if (ip.ip.toString().indexOf('\x00') >= 0) {
+        return
+      }
+      const savedIp = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() } })
+
+      if (savedIp) {
+        savedIp.contractId = newDeploymentContract.contractID
+        await ctx.store.save<PublicIp>(savedIp)
+      }
+    })
   }
 }
 

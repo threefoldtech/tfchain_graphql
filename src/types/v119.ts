@@ -1,4 +1,4 @@
-import type {Result} from './support'
+import type {Result} from '../typesLocal/support'
 
 export type AccountId32 = Uint8Array
 
@@ -116,8 +116,9 @@ export interface Node {
   id: number
   farmId: number
   twinId: number
-  resources: Resources
+  resources: ConsumableResources
   location: Location
+  power: Power
   publicConfig: (PublicConfig | undefined)
   created: bigint
   farmingPolicyId: number
@@ -125,8 +126,29 @@ export interface Node {
   certification: NodeCertification
   secureBoot: boolean
   virtualized: boolean
-  serialNumber: (SerialNumber | undefined)
+  serialNumber: SerialNumber
   connectionPrice: number
+}
+
+export type PowerState = PowerState_Up | PowerState_Down
+
+export interface PowerState_Up {
+  __kind: 'Up'
+}
+
+export interface PowerState_Down {
+  __kind: 'Down'
+  value: number
+}
+
+export type PowerTarget = PowerTarget_Up | PowerTarget_Down
+
+export interface PowerTarget_Up {
+  __kind: 'Up'
+}
+
+export interface PowerTarget_Down {
+  __kind: 'Down'
 }
 
 export interface PricingPolicy {
@@ -214,11 +236,11 @@ export interface ContractState_GracePeriod {
   value: bigint
 }
 
-export type ContractData = ContractData_NodeContract | ContractData_NameContract | ContractData_RentContract
+export type ContractData = ContractData_DeploymentContract | ContractData_NameContract | ContractData_CapacityReservationContract
 
-export interface ContractData_NodeContract {
-  __kind: 'NodeContract'
-  value: NodeContract
+export interface ContractData_DeploymentContract {
+  __kind: 'DeploymentContract'
+  value: DeploymentContract
 }
 
 export interface ContractData_NameContract {
@@ -226,9 +248,9 @@ export interface ContractData_NameContract {
   value: NameContract
 }
 
-export interface ContractData_RentContract {
-  __kind: 'RentContract'
-  value: RentContract
+export interface ContractData_CapacityReservationContract {
+  __kind: 'CapacityReservationContract'
+  value: CapacityReservationContract
 }
 
 export interface Provider {
@@ -262,11 +284,22 @@ export interface IP {
 
 export type Domain = Uint8Array
 
+export interface ConsumableResources {
+  totalResources: Resources
+  usedResources: Resources
+}
+
 export interface Location {
   city: CityName
   country: CountryName
   latitude: Uint8Array
   longitude: Uint8Array
+}
+
+export interface Power {
+  target: PowerTarget
+  state: PowerState
+  lastUptime: bigint
 }
 
 export interface Interface {
@@ -304,20 +337,25 @@ export interface Cause_OutOfFunds {
   __kind: 'OutOfFunds'
 }
 
-export interface NodeContract {
-  nodeId: number
+export interface DeploymentContract {
+  capacityReservationId: bigint
   deploymentHash: H256
   deploymentData: Uint8Array
   publicIps: number
   publicIpsList: PublicIP[]
+  resources: Resources
 }
 
 export interface NameContract {
   name: NameContractName
 }
 
-export interface RentContract {
+export interface CapacityReservationContract {
   nodeId: number
+  resources: ConsumableResources
+  groupId: (number | undefined)
+  publicIps: number
+  deploymentContracts: bigint[]
 }
 
 export type GatewayIP = Uint8Array

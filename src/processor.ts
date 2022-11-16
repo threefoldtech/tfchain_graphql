@@ -65,7 +65,10 @@ processor.addEventHandler('smartContractModule.ContractGracePeriodEnded', ctx =>
 processor.addEventHandler('smartContractModule.SolutionProviderCreated', ctx => solutionProviderCreated(ctx))
 processor.addEventHandler('smartContractModule.SolutionProviderApproved', ctx => solutionProviderApproved(ctx))
 
-// processor.addEventHandler('smartContractModule.NodeMarkedAsDedicated', ctx => nodeMarkedAsDedicated(ctx));
+// processor.addEventHandler('smartContractModule.GroupCreated', ctx => ())
+// processor.addEventHandler('smartContractModule.GroupDeleted', ctx => ())
+// processor.addEventHandler('smartContractModule.CapacityReservationContractCanceled', ctx => ())
+// processor.addEventHandler('smartContractModule.DeploymentContractCanceled', ctx => ())
 
 processor.addEventHandler('tftBridgeModule.MintCompleted', ctx => mintCompleted(ctx));
 processor.addEventHandler('tfgridModule.BurnTransactionProcessed', ctx => burnProcessed(ctx));
