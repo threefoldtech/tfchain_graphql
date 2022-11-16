@@ -207,7 +207,7 @@ type DeploymentContract @entity {
   deploymentData: String!
   deploymentHash: String!
   numberOfPublicIPs: Int!
-  publicIps: ContractPublicIp
+  publicIps: [ContractPublicIp]
   state: ContractState!
   resourcesUsed: DeploymentContractResources
   createdAt: BigInt!

@@ -2,7 +2,7 @@ import {
   EventHandlerContext,
   Store
 } from "@subsquid/substrate-processor";
-import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractResources, NodeResourcesTotal, Node, RentContract, Farm, NruConsumption, CapacityReservationContract, ConsumableResources, ResourcesType, DeploymentContract, DeploymentContractResources } from "../model";
+import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractResources, NodeResourcesTotal, Node, RentContract, Farm, NruConsumption, CapacityReservationContract, DeploymentContract, DeploymentContractResources, Resources, ContractPublicIp } from "../model";
 import { SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent, SmartContractModuleNodeContractCanceledEvent, SmartContractModuleNameContractCanceledEvent, SmartContractModuleContractBilledEvent, SmartContractModuleUpdatedUsedResourcesEvent, SmartContractModuleNruConsumptionReportReceivedEvent, SmartContractModuleRentContractCanceledEvent, SmartContractModuleContractGracePeriodStartedEvent, SmartContractModuleContractGracePeriodEndedEvent, SmartContractModuleDeploymentContractCanceledEvent, SmartContractModuleCapacityReservationContractCanceledEvent } from "../types/events";
 import { Contract as ContractV119 } from "../types/v119";
 
@@ -143,22 +143,12 @@ async function processContractV119(event: SmartContractModuleContractCreatedEven
 
     newCapacityReservationContract.state = state
     newCapacityReservationContract.nodeID = contract.nodeId
-    let resources = new ConsumableResources()
-    
-    let totalResources = new ResourcesType()
-    totalResources.cru = contract.resources.totalResources.cru
-    totalResources.sru = contract.resources.totalResources.sru
-    totalResources.hru = contract.resources.totalResources.hru
-    totalResources.mru = contract.resources.totalResources.mru
-    resources.total = totalResources
 
-    let usedResources = new ResourcesType()
-    usedResources.cru = contract.resources.usedResources.cru
-    usedResources.sru = contract.resources.usedResources.sru
-    usedResources.hru = contract.resources.usedResources.hru
-    usedResources.mru = contract.resources.usedResources.mru
-    resources.used = usedResources
-
+    let resources = new Resources()
+    resources.cru = contract.resources.totalResources.cru
+    resources.sru = contract.resources.totalResources.sru
+    resources.hru = contract.resources.totalResources.hru
+    resources.mru = contract.resources.totalResources.mru
     newCapacityReservationContract.resources = resources
 
     newCapacityReservationContract.publicIPs = contract.publicIps
@@ -217,8 +207,15 @@ async function processContractV119(event: SmartContractModuleContractCreatedEven
       if (savedIp) {
         savedIp.contractId = newDeploymentContract.contractID
         await ctx.store.save<PublicIp>(savedIp)
+
+        let cIP = new ContractPublicIp
+        cIP.ip = ip.ip.toString()
+        cIP.gateway = ip.gateway.toString()
+        newDeploymentContract.publicIps?.push(cIP)
       }
     })
+
+    await ctx.store.save<DeploymentContract>(newDeploymentContract)
   }
 }
 
@@ -326,6 +323,7 @@ async function processContractV119Update(event: SmartContractModuleContractUpdat
   if (contractEvent.contractType.__kind === 'CapacityReservationContract') {
     const savedCapacityContract = await ctx.store.get(CapacityReservationContract, { where: { contractID: contractEvent.contractId } })
     if (savedCapacityContract) {
+      contractEvent.contractType.value.resources.totalResources
       await updateCapacityReservationContract(contractEvent, savedCapacityContract, ctx.store)
     }
   }
@@ -355,23 +353,13 @@ async function updateCapacityReservationContract(ctr: any, contract: CapacityRes
   contract.nodeID = parsedCapacityContract.nodeID
   contract.publicIPs = parsedCapacityContract.publicIPs
 
-  let totalResources = new ResourcesType()
-  totalResources.cru = parsedCapacityContract.resources?.total.cru
-  totalResources.sru = parsedCapacityContract.resources?.total.sru
-  totalResources.hru = parsedCapacityContract.resources?.total.hru
-  totalResources.mru = parsedCapacityContract.resources?.total.mru
-
-  let usedResources = new ResourcesType()
-  usedResources.cru = parsedCapacityContract.resources?.used.cru
-  usedResources.sru = parsedCapacityContract.resources?.used.sru
-  usedResources.hru = parsedCapacityContract.resources?.used.hru
-  usedResources.mru = parsedCapacityContract.resources?.used.mru
-
-  let resources = new ConsumableResources()
+  let resources = new Resources()
+  resources.cru = ctr.contractType.value.resources.totalResources.cru
+  resources.hru = ctr.contractType.value.resources.totalResources.hru
+  resources.sru = ctr.contractType.value.resources.totalResources.sru
+  resources.mru = ctr.contractType.value.resources.totalResources.mru
 
   contract.resources = resources
-  contract.resources.total = totalResources
-  contract.resources.used = usedResources
 
   await store.save<CapacityReservationContract>(contract)
 }

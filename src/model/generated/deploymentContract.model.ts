@@ -31,8 +31,8 @@ export class DeploymentContract {
   @Column_("integer", {nullable: false})
   numberOfPublicIPs!: number
 
-  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new ContractPublicIp(undefined, obj)}, nullable: true})
-  publicIps!: ContractPublicIp | undefined | null
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val == null ? undefined : val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => val == null ? undefined : new ContractPublicIp(undefined, val))}, nullable: true})
+  publicIps!: (ContractPublicIp | undefined | null)[] | undefined | null
 
   @Column_("varchar", {length: 11, nullable: false})
   state!: ContractState

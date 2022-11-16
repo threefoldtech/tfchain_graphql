@@ -1,5 +1,5 @@
-module.exports = class power_management1668604866658 {
-  name = "power-management1668604866658";
+module.exports = class power_management1668614837087 {
+  name = "power_management1668614837087";
 
   async up(db) {
     await db.query(
