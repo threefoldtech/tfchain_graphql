@@ -1,7 +1,7 @@
 import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
-import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal, PowerState, NodePower } from "../model";
+import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal, PowerState, NodePower, NodeConsumableResources, Resources } from "../model";
 import { TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent, TfgridModulePowerStateChangedEvent, TfgridModulePowerTargetChangedEvent } from "../types/events";
 
 export async function nodeStored(ctx: EventHandlerContext) {
@@ -23,6 +23,8 @@ export async function nodeStored(ctx: EventHandlerContext) {
     nodeEvent = node.asV105
   } else if (node.isV118) {
     nodeEvent = node.asV118
+  } else if (node.isV119) {
+    nodeEvent = node.asV119
   }
 
   if (!nodeEvent) {
@@ -43,11 +45,31 @@ export async function nodeStored(ctx: EventHandlerContext) {
     nodeEvent = node.asV9
     newNode.country = nodeEvent.country.toString()
     newNode.city = nodeEvent.city.toString()
+
+    const resourcesTotal = new NodeResourcesTotal()
+    resourcesTotal.node = newNode
+    resourcesTotal.id = ctx.event.id
+    resourcesTotal.sru = nodeEvent.resources.sru
+    resourcesTotal.hru = nodeEvent.resources.hru
+    resourcesTotal.mru = nodeEvent.resources.mru
+    resourcesTotal.cru = nodeEvent.resources.cru
+
+    await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
   }
+
   if (node.isV28) {
     nodeEvent = node.asV28
     newNode.country = nodeEvent.country.toString()
     newNode.city = nodeEvent.city.toString()
+    const resourcesTotal = new NodeResourcesTotal()
+    resourcesTotal.node = newNode
+    resourcesTotal.id = ctx.event.id
+    resourcesTotal.sru = nodeEvent.resources.sru
+    resourcesTotal.hru = nodeEvent.resources.hru
+    resourcesTotal.mru = nodeEvent.resources.mru
+    resourcesTotal.cru = nodeEvent.resources.cru
+
+    await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
   }
 
   newNode.created = Number(nodeEvent.created)
@@ -78,6 +100,16 @@ export async function nodeStored(ctx: EventHandlerContext) {
     newNode.secure = nodeAsV43.secureBoot ? true : false
     newNode.virtualized = nodeAsV43.virtualized ? true : false
     newNode.serialNumber = nodeAsV43.serialNumber.toString()
+
+    const resourcesTotal = new NodeResourcesTotal()
+    resourcesTotal.node = newNode
+    resourcesTotal.id = ctx.event.id
+    resourcesTotal.sru = nodeAsV43.resources.sru
+    resourcesTotal.hru = nodeAsV43.resources.hru
+    resourcesTotal.mru = nodeAsV43.resources.mru
+    resourcesTotal.cru = nodeAsV43.resources.cru
+
+    await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
   }
 
   if (node.isV105 || node.isV101 || node.isV63) {
@@ -97,6 +129,16 @@ export async function nodeStored(ctx: EventHandlerContext) {
     newNode.virtualized = nodeEvent.virtualized ? true : false
     newNode.serialNumber = nodeEvent.serialNumber.toString()
     newNode.connectionPrice = nodeEvent.connectionPrice
+
+    const resourcesTotal = new NodeResourcesTotal()
+    resourcesTotal.node = newNode
+    resourcesTotal.id = ctx.event.id
+    resourcesTotal.sru = nodeEvent.resources.sru
+    resourcesTotal.hru = nodeEvent.resources.hru
+    resourcesTotal.mru = nodeEvent.resources.mru
+    resourcesTotal.cru = nodeEvent.resources.cru
+
+    await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
   }
 
   if (node.isV118) {
@@ -108,28 +150,60 @@ export async function nodeStored(ctx: EventHandlerContext) {
     newNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
     newNode.connectionPrice = nodeEvent.connectionPrice
     
+    const resourcesTotal = new NodeResourcesTotal()
+    resourcesTotal.node = newNode
+    resourcesTotal.id = ctx.event.id
+    resourcesTotal.sru = nodeEvent.resources.sru
+    resourcesTotal.hru = nodeEvent.resources.hru
+    resourcesTotal.mru = nodeEvent.resources.mru
+    resourcesTotal.cru = nodeEvent.resources.cru
+
+    await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
+  }
+
+  if (node.isV119) {
+    let nodeEvent = node.asV119
+    newNode.country = nodeEvent.location.country.toString()
+    newNode.city = nodeEvent.location.city.toString()
+    newNode.secure = nodeEvent.secureBoot ? true : false
+    newNode.virtualized = nodeEvent.virtualized ? true : false
+    newNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
+    newNode.connectionPrice = nodeEvent.connectionPrice
+    
+    await ctx.store.save<Node>(newNode)
+
     // Construct the node power object
     const power = new NodePower()
     power.id = ctx.event.id
     power.node = newNode
     power.state = PowerState.Up
     power.target = PowerState.Up
+    power.lastUptime = BigInt(ctx.event.blockTimestamp)
     await ctx.store.save<NodePower>(power)
 
-    newNode.power = power
+    const nodeConsumableResources = new NodeConsumableResources()
+    nodeConsumableResources.id = ctx.event.id
+    nodeConsumableResources.node = newNode
+
+    const totalResources = new Resources()
+    totalResources.sru = nodeEvent.resources.totalResources.sru
+    totalResources.hru = nodeEvent.resources.totalResources.hru
+    totalResources.mru = nodeEvent.resources.totalResources.mru
+    totalResources.cru = nodeEvent.resources.totalResources.cru
+    
+    const usedResources = new Resources()
+    usedResources.sru = nodeEvent.resources.usedResources.sru
+    usedResources.hru = nodeEvent.resources.usedResources.hru
+    usedResources.mru = nodeEvent.resources.usedResources.mru
+    usedResources.cru = nodeEvent.resources.usedResources.cru 
+
+    nodeConsumableResources.total = totalResources
+    nodeConsumableResources.used = usedResources
+
+    await ctx.store.save<NodeConsumableResources>(nodeConsumableResources)
   }
 
   await ctx.store.save<Node>(newNode)
-
-  const resourcesTotal = new NodeResourcesTotal()
-  resourcesTotal.node = newNode
-  resourcesTotal.id = ctx.event.id
-  resourcesTotal.sru = nodeEvent.resources.sru
-  resourcesTotal.hru = nodeEvent.resources.hru
-  resourcesTotal.mru = nodeEvent.resources.mru
-  resourcesTotal.cru = nodeEvent.resources.cru
-
-  await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
 
   newNode.interfaces = []
 
@@ -166,6 +240,8 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     nodeEvent = node.asV105
   } else if (node.isV118) {
     nodeEvent = node.asV118
+  } else if (node.isV119) {
+    nodeEvent = node.asV119
   }
 
   if (!nodeEvent) return
@@ -180,26 +256,36 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
   savedNode.updatedAt = BigInt(ctx.event.blockTimestamp)
   savedNode.farmingPolicyId = nodeEvent.farmingPolicyId
 
-  // Recalculate total / free resoures when a node get's updated
-  let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
-  if (resourcesTotal) {
-    resourcesTotal.sru = nodeEvent.resources.sru
-    resourcesTotal.hru = nodeEvent.resources.hru
-    resourcesTotal.mru = nodeEvent.resources.mru
-    resourcesTotal.cru = nodeEvent.resources.cru
-    await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
-  }
-
   if (node.isV9) {
     nodeEvent = node.asV9
     savedNode.country = nodeEvent.country.toString()
     savedNode.city = nodeEvent.city.toString()
+
+    // Recalculate total / free resoures when a node get's updated
+    let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
+    if (resourcesTotal) {
+      resourcesTotal.sru = nodeEvent.resources.sru
+      resourcesTotal.hru = nodeEvent.resources.hru
+      resourcesTotal.mru = nodeEvent.resources.mru
+      resourcesTotal.cru = nodeEvent.resources.cru
+      await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
+    }
   }
 
   if (node.isV118) {
     nodeEvent = node.asV118
     savedNode.country = nodeEvent.location.country.toString()
     savedNode.city = nodeEvent.location.city.toString()
+
+    // Recalculate total / free resoures when a node get's updated
+    let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
+    if (resourcesTotal) {
+      resourcesTotal.sru = nodeEvent.resources.sru
+      resourcesTotal.hru = nodeEvent.resources.hru
+      resourcesTotal.mru = nodeEvent.resources.mru
+      resourcesTotal.cru = nodeEvent.resources.cru
+      await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
+    }
   }
 
   if (savedNode.location) {
@@ -211,12 +297,12 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
   await ctx.store.save<Node>(savedNode)
 
   if (node.isV28) {
-    const nodeAsV28 = node.asV28
-    savedNode.country = nodeAsV28.country.toString()
-    savedNode.city = nodeAsV28.city.toString()
+    const nodeEvent = node.asV28
+    savedNode.country = nodeEvent.country.toString()
+    savedNode.city = nodeEvent.city.toString()
 
-    if (nodeAsV28.certificationType) {
-      const certificationTypeAsString = nodeAsV28.certificationType.__kind.toString()
+    if (nodeEvent.certificationType) {
+      const certificationTypeAsString = nodeEvent.certificationType.__kind.toString()
       let certType = NodeCertification.Diy
       switch (certificationTypeAsString) {
         case 'Diy':
@@ -230,17 +316,27 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     } else {
       savedNode.certification = NodeCertification.Diy
     }
+
+    // Recalculate total / free resoures when a node get's updated
+    let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
+    if (resourcesTotal) {
+      resourcesTotal.sru = nodeEvent.resources.sru
+      resourcesTotal.hru = nodeEvent.resources.hru
+      resourcesTotal.mru = nodeEvent.resources.mru
+      resourcesTotal.cru = nodeEvent.resources.cru
+      await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
+    }
   }
 
   if (node.isV43) {
-    const nodeAsV43 = node.asV43
-    savedNode.country = nodeAsV43.country.toString()
-    savedNode.city = nodeAsV43.city.toString()
-    savedNode.secure = nodeAsV43.secureBoot ? true : false
-    savedNode.virtualized = nodeAsV43.virtualized ? true : false
-    savedNode.serialNumber = nodeAsV43.serialNumber.toString()
-    if (nodeAsV43.certificationType) {
-      const certificationTypeAsString = nodeAsV43.certificationType.__kind.toString()
+    const nodeEvent = node.asV43
+    savedNode.country = nodeEvent.country.toString()
+    savedNode.city = nodeEvent.city.toString()
+    savedNode.secure = nodeEvent.secureBoot ? true : false
+    savedNode.virtualized = nodeEvent.virtualized ? true : false
+    savedNode.serialNumber = nodeEvent.serialNumber.toString()
+    if (nodeEvent.certificationType) {
+      const certificationTypeAsString = nodeEvent.certificationType.__kind.toString()
       let certType = NodeCertification.Diy
       switch (certificationTypeAsString) {
         case 'Diy':
@@ -253,6 +349,16 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
       savedNode.certification = certType
     } else {
       savedNode.certification = NodeCertification.Diy
+    }
+
+    // Recalculate total / free resoures when a node get's updated
+    let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
+    if (resourcesTotal) {
+      resourcesTotal.sru = nodeEvent.resources.sru
+      resourcesTotal.hru = nodeEvent.resources.hru
+      resourcesTotal.mru = nodeEvent.resources.mru
+      resourcesTotal.cru = nodeEvent.resources.cru
+      await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
     }
   }
 
@@ -287,6 +393,15 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     } else {
       savedNode.certification = NodeCertification.Diy
     }
+    // Recalculate total / free resoures when a node get's updated
+    let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
+    if (resourcesTotal) {
+      resourcesTotal.sru = nodeEvent.resources.sru
+      resourcesTotal.hru = nodeEvent.resources.hru
+      resourcesTotal.mru = nodeEvent.resources.mru
+      resourcesTotal.cru = nodeEvent.resources.cru
+      await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
+    }
   }
 
   if (node.isV118) {
@@ -312,9 +427,52 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     } else {
       savedNode.certification = NodeCertification.Diy
     }
+
+    // Recalculate total / free resoures when a node get's updated
+    let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
+    if (resourcesTotal) {
+      resourcesTotal.sru = nodeEvent.resources.sru
+      resourcesTotal.hru = nodeEvent.resources.hru
+      resourcesTotal.mru = nodeEvent.resources.mru
+      resourcesTotal.cru = nodeEvent.resources.cru
+      await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
+    }
   }
 
+  if (node.isV119) {
+    const nodeEvent = node.asV119
 
+    savedNode.country = nodeEvent.location.country.toString()
+    savedNode.city = nodeEvent.location.city.toString()
+    savedNode.secure = nodeEvent.secureBoot ? true : false
+    savedNode.virtualized = nodeEvent.virtualized ? true : false
+    savedNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
+    if (nodeEvent.certification) {
+      const certificationTypeAsString = nodeEvent.certification.__kind.toString()
+      let certType = NodeCertification.Diy
+      switch (certificationTypeAsString) {
+        case 'Diy':
+          certType = NodeCertification.Diy
+          break
+        case 'Certified':
+          certType = NodeCertification.Certified
+          break
+      }
+      savedNode.certification = certType
+    } else {
+      savedNode.certification = NodeCertification.Diy
+    }
+
+    // Recalculate total / free resoures when a node get's updated
+    let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
+    if (resourcesTotal) {
+      resourcesTotal.sru = nodeEvent.resources.totalResources.sru
+      resourcesTotal.hru = nodeEvent.resources.totalResources.hru
+      resourcesTotal.mru = nodeEvent.resources.totalResources.mru
+      resourcesTotal.cru = nodeEvent.resources.totalResources.cru
+      await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
+    }
+  }
 
   await ctx.store.save<Node>(savedNode)
 

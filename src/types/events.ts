@@ -1044,14 +1044,23 @@ export class TfgridModuleNodeStoredEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV118
+  get isV119(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.NodeStored') === 'f5e91bfb694c0142908c326bc1efd68d7a2d391e22c23adf0ab14616de5952b0'
   }
 
-  get asLatest(): v118.Node {
+  get asV119(): v119.Node {
+    assert(this.isV119)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
     deprecateLatest()
-    return this.asV118
+    return this.isV119
+  }
+
+  get asLatest(): v119.Node {
+    deprecateLatest()
+    return this.asV119
   }
 }
 
@@ -1123,14 +1132,23 @@ export class TfgridModuleNodeUpdatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV118
+  get isV119(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.NodeStored') === 'f5e91bfb694c0142908c326bc1efd68d7a2d391e22c23adf0ab14616de5952b0'
   }
 
-  get asLatest(): v118.Node {
+  get asV119(): v119.Node {
+    assert(this.isV119)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
     deprecateLatest()
-    return this.asV118
+    return this.isV119
+  }
+
+  get asLatest(): v119.Node {
+    deprecateLatest()
+    return this.asV119
   }
 }
 

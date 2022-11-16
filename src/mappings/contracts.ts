@@ -141,6 +141,7 @@ async function processContractV119(event: SmartContractModuleContractCreatedEven
 
     contract = contractEvent.contractType.value
 
+    newCapacityReservationContract.state = state
     newCapacityReservationContract.nodeID = contract.nodeId
     let resources = new ConsumableResources()
     
@@ -168,7 +169,9 @@ async function processContractV119(event: SmartContractModuleContractCreatedEven
   if (contractEvent.contractType.__kind === 'DeploymentContract') {
     let newDeploymentContract = new DeploymentContract()
     newDeploymentContract.id = ctx.event.id
-    
+    newDeploymentContract.contractID = contractEvent.contractId
+    newDeploymentContract.twinID = contractEvent.twinId
+
     contract = contractEvent.contractType.value
 
     newDeploymentContract.state = state

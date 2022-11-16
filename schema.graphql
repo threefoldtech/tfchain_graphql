@@ -90,7 +90,7 @@ type NodePower @entity {
   node: Node! @unique
   target: PowerState
   state: PowerState
-  lastUptime: Int!
+  lastUptime: BigInt
 }
 
 enum PowerState {
