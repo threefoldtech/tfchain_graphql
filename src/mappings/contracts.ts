@@ -4,6 +4,7 @@ import {
 } from "@subsquid/substrate-processor";
 import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractResources, NodeResourcesTotal, Node, RentContract, Farm, NruConsumption, CapacityReservationContract, ConsumableResources, ResourcesType, DeploymentContract, DeploymentContractResources } from "../model";
 import { SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent, SmartContractModuleNodeContractCanceledEvent, SmartContractModuleNameContractCanceledEvent, SmartContractModuleContractBilledEvent, SmartContractModuleUpdatedUsedResourcesEvent, SmartContractModuleNruConsumptionReportReceivedEvent, SmartContractModuleRentContractCanceledEvent, SmartContractModuleContractGracePeriodStartedEvent, SmartContractModuleContractGracePeriodEndedEvent } from "../types/events";
+import { Contract as ContractV119 } from "../types/v119";
 
 export async function contractCreated(ctx: EventHandlerContext) {
   let contractCreatedEvent = new SmartContractModuleContractCreatedEvent(ctx)
@@ -233,6 +234,8 @@ export async function contractUpdated(ctx: EventHandlerContext) {
     contractEvent = contractUpdatedEvent.asV59
   } else if (contractUpdatedEvent.isV101) {
     contractEvent = contractUpdatedEvent.asV101
+  } else if (contractUpdatedEvent.isV119) {
+    processContractV119Update(contractUpdatedEvent, ctx)
   }
 
   if (!contractEvent) return
@@ -304,6 +307,117 @@ async function updateNameContract(ctr: any, contract: NameContract, store: Store
   }
   contract.state = state
   await store.save<NameContract>(contract)
+}
+
+async function processContractV119Update(event: SmartContractModuleContractUpdatedEvent, ctx: EventHandlerContext) {
+  let contractEvent = event.asV119
+
+  if (!contractEvent) return
+
+  if (contractEvent.contractType.__kind === 'NameContract') {
+    const SavedNameContract = await ctx.store.get(NameContract, { where: { contractID: contractEvent.contractId } })
+    if (SavedNameContract) {
+      await updateNameContract(contractEvent, SavedNameContract, ctx.store)
+    }
+  }
+
+  if (contractEvent.contractType.__kind === 'CapacityReservationContract') {
+    const savedCapacityContract = await ctx.store.get(CapacityReservationContract, { where: { contractID: contractEvent.contractId } })
+    if (savedCapacityContract) {
+      await updateCapacityReservationContract(contractEvent, savedCapacityContract, ctx.store)
+    }
+  }
+
+  if (contractEvent.contractType.__kind === 'DeploymentContract') {
+    const savedDeploymentContract = await ctx.store.get(DeploymentContract, { where: { contractID: contractEvent.contractId } })
+    if (savedDeploymentContract) {
+      await updateDeploymentContract(contractEvent, savedDeploymentContract, ctx.store)
+    }
+  }
+}
+
+async function updateCapacityReservationContract(ctr: any, contract: CapacityReservationContract, store: Store) {
+  const parsedCapacityContract = ctr.contractType.value as CapacityReservationContract
+
+  let state = ContractState.OutOfFunds
+  switch (ctr.state.__kind) {
+    case 'Created':
+      state = ContractState.Created
+      break
+    case 'Deleted':
+      state = ContractState.Deleted
+      break
+  }
+  contract.state = state
+
+  contract.deploymentContracts = parsedCapacityContract.deploymentContracts
+  contract.nodeID = parsedCapacityContract.nodeID
+  contract.publicIPs = parsedCapacityContract.publicIPs
+
+  let totalResources = new ResourcesType()
+  totalResources.cru = parsedCapacityContract.resources?.total.cru
+  totalResources.sru = parsedCapacityContract.resources?.total.sru
+  totalResources.hru = parsedCapacityContract.resources?.total.hru
+  totalResources.mru = parsedCapacityContract.resources?.total.mru
+
+  let usedResources = new ResourcesType()
+  usedResources.cru = parsedCapacityContract.resources?.used.cru
+  usedResources.sru = parsedCapacityContract.resources?.used.sru
+  usedResources.hru = parsedCapacityContract.resources?.used.hru
+  usedResources.mru = parsedCapacityContract.resources?.used.mru
+
+  let resources = new ConsumableResources()
+
+  contract.resources = resources
+  contract.resources.total = totalResources
+  contract.resources.used = usedResources
+
+  await store.save<CapacityReservationContract>(contract)
+}
+
+async function updateDeploymentContract(ctr: any, contract: DeploymentContract, store: Store) {
+    if (ctr.contractType.__kind !== 'DeploymentContract') return
+
+    const parsedDeploymentContract = ctr.contractType.value
+
+    contract.contractID = ctr.contractId
+    contract.twinID = ctr.twinId
+    contract.numberOfPublicIPs = parsedDeploymentContract.publicIps
+
+    if (contract.deploymentData.toString().indexOf('\x00') >= 0) {
+      contract.deploymentData = ""
+    } else {
+      contract.deploymentData = contract.deploymentData.toString()
+    }
+    if (contract.deploymentHash.toString().indexOf('\x00')  >= 0) {
+      contract.deploymentHash = ""
+    } else {
+      contract.deploymentHash = contract.deploymentHash.toString()
+    }
+
+    let state = ContractState.OutOfFunds
+    switch (ctr.state.__kind) {
+      case 'Created':
+        state = ContractState.Created
+        break
+      case 'Deleted':
+        state = ContractState.Deleted
+        break
+    }
+    contract.state = state
+  
+    const savedDeploymentContractRsources = await store.get(DeploymentContractResources, { where: { contract }})
+    if (savedDeploymentContractRsources) {
+      savedDeploymentContractRsources.cru = ctr.resources.cru 
+      savedDeploymentContractRsources.sru = ctr.resources.sru 
+      savedDeploymentContractRsources.hru = ctr.resources.hru 
+      savedDeploymentContractRsources.mru = ctr.resources.mru 
+      await store.save<DeploymentContractResources>(savedDeploymentContractRsources)
+    }
+  
+    contract.resourcesUsed = savedDeploymentContractRsources
+    
+    await store.save<DeploymentContract>(contract)
 }
 
 export async function nodeContractCanceled(ctx: EventHandlerContext) {

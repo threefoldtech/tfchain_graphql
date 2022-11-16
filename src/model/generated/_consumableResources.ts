@@ -3,37 +3,39 @@ import * as marshal from "./marshal"
 import {ResourcesType} from "./_resourcesType"
 
 export class ConsumableResources {
-  private _total!: ResourcesType | undefined | null
-  private _used!: ResourcesType | undefined | null
+  private _total!: ResourcesType
+  private _used!: ResourcesType
 
   constructor(props?: Partial<Omit<ConsumableResources, 'toJSON'>>, json?: any) {
     Object.assign(this, props)
     if (json != null) {
-      this._total = json.total == null ? undefined : new ResourcesType(undefined, json.total)
-      this._used = json.used == null ? undefined : new ResourcesType(undefined, json.used)
+      this._total = new ResourcesType(undefined, marshal.nonNull(json.total))
+      this._used = new ResourcesType(undefined, marshal.nonNull(json.used))
     }
   }
 
-  get total(): ResourcesType | undefined | null {
+  get total(): ResourcesType {
+    assert(this._total != null, 'uninitialized access')
     return this._total
   }
 
-  set total(value: ResourcesType | undefined | null) {
+  set total(value: ResourcesType) {
     this._total = value
   }
 
-  get used(): ResourcesType | undefined | null {
+  get used(): ResourcesType {
+    assert(this._used != null, 'uninitialized access')
     return this._used
   }
 
-  set used(value: ResourcesType | undefined | null) {
+  set used(value: ResourcesType) {
     this._used = value
   }
 
   toJSON(): object {
     return {
-      total: this.total == null ? undefined : this.total.toJSON(),
-      used: this.used == null ? undefined : this.used.toJSON(),
+      total: this.total.toJSON(),
+      used: this.used.toJSON(),
     }
   }
 }

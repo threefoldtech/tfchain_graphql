@@ -1,6 +1,7 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_} from "typeorm"
 import * as marshal from "./marshal"
 import {ConsumableResources} from "./_consumableResources"
+import {ContractState} from "./_contractState"
 
 @Entity_()
 export class CapacityReservationContract {
@@ -17,12 +18,15 @@ export class CapacityReservationContract {
   @Column_("integer", {nullable: false})
   nodeID!: number
 
-  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new ConsumableResources(undefined, obj)}, nullable: true})
-  resources!: ConsumableResources | undefined | null
+  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => new ConsumableResources(undefined, marshal.nonNull(obj))}, nullable: false})
+  resources!: ConsumableResources
 
   @Column_("integer", {nullable: false})
   publicIPs!: number
 
   @Column_("integer", {array: true, nullable: false})
   deploymentContracts!: (number)[]
+
+  @Column_("varchar", {length: 11, nullable: false})
+  state!: ContractState
 }
