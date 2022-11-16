@@ -1,4 +1,4 @@
-import type {Result} from './support'
+import type { Result } from './support'
 
 export type NodeCertification = NodeCertification_Diy | NodeCertification_Certified
 
@@ -30,7 +30,7 @@ export interface Node {
   certification: NodeCertification
   secureBoot: boolean
   virtualized: boolean
-  serialNumber: SerialNumber
+  serialNumber: (SerialNumber | undefined)
   connectionPrice: number
 }
 
