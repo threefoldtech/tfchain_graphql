@@ -194,6 +194,12 @@ async function processContractV119(event: SmartContractModuleContractCreatedEven
     contractResources.mru = contract.resources.mru
 
     newDeploymentContract.resourcesUsed = contractResources
+    newDeploymentContract.publicIps = contract.publicIpsList.map(ip => {
+      let cIP = new ContractPublicIp
+        cIP.ip = ip.ip.toString()
+      cIP.gateway = ip.gateway.toString()
+      return cIP
+    })
 
     await ctx.store.save<DeploymentContractResources>(contractResources)
     await ctx.store.save<DeploymentContract>(newDeploymentContract)
@@ -207,15 +213,8 @@ async function processContractV119(event: SmartContractModuleContractCreatedEven
       if (savedIp) {
         savedIp.contractId = newDeploymentContract.contractID
         await ctx.store.save<PublicIp>(savedIp)
-
-        let cIP = new ContractPublicIp
-        cIP.ip = ip.ip.toString()
-        cIP.gateway = ip.gateway.toString()
-        newDeploymentContract.publicIps?.push(cIP)
       }
     })
-
-    await ctx.store.save<DeploymentContract>(newDeploymentContract)
   }
 }
 
