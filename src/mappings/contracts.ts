@@ -3,7 +3,7 @@ import {
   Store
 } from "@subsquid/substrate-processor";
 import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractResources, NodeResourcesTotal, Node, RentContract, Farm, NruConsumption, CapacityReservationContract, ConsumableResources, ResourcesType, DeploymentContract, DeploymentContractResources } from "../model";
-import { SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent, SmartContractModuleNodeContractCanceledEvent, SmartContractModuleNameContractCanceledEvent, SmartContractModuleContractBilledEvent, SmartContractModuleUpdatedUsedResourcesEvent, SmartContractModuleNruConsumptionReportReceivedEvent, SmartContractModuleRentContractCanceledEvent, SmartContractModuleContractGracePeriodStartedEvent, SmartContractModuleContractGracePeriodEndedEvent } from "../types/events";
+import { SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent, SmartContractModuleNodeContractCanceledEvent, SmartContractModuleNameContractCanceledEvent, SmartContractModuleContractBilledEvent, SmartContractModuleUpdatedUsedResourcesEvent, SmartContractModuleNruConsumptionReportReceivedEvent, SmartContractModuleRentContractCanceledEvent, SmartContractModuleContractGracePeriodStartedEvent, SmartContractModuleContractGracePeriodEndedEvent, SmartContractModuleDeploymentContractCanceledEvent, SmartContractModuleCapacityReservationContractCanceledEvent } from "../types/events";
 import { Contract as ContractV119 } from "../types/v119";
 
 export async function contractCreated(ctx: EventHandlerContext) {
@@ -161,7 +161,6 @@ async function processContractV119(event: SmartContractModuleContractCreatedEven
     newCapacityReservationContract.resources = resources
 
     newCapacityReservationContract.publicIPs = contract.publicIps
-    newCapacityReservationContract.deploymentContracts = []
 
     await ctx.store.save<CapacityReservationContract>(newCapacityReservationContract)
   }
@@ -350,7 +349,6 @@ async function updateCapacityReservationContract(ctr: any, contract: CapacityRes
   }
   contract.state = state
 
-  contract.deploymentContracts = parsedCapacityContract.deploymentContracts
   contract.nodeID = parsedCapacityContract.nodeID
   contract.publicIPs = parsedCapacityContract.publicIPs
 
@@ -628,4 +626,28 @@ export async function contractGracePeriodEnded(ctx: EventHandlerContext) {
     await ctx.store.save<NameContract>(savedNameContract)
     return
   }
+}
+
+export async function capacityReservationContractCanceled(ctx: EventHandlerContext) {
+  const contractID = new SmartContractModuleCapacityReservationContractCanceledEvent(ctx).asV119.contractId
+
+  const savedContract = await ctx.store.get(CapacityReservationContract, { where: { contractID } })
+
+  if (!savedContract) return
+
+  savedContract.state = ContractState.Deleted
+
+  await ctx.store.save<CapacityReservationContract>(savedContract)
+}
+
+export async function deploymentContractCanceled(ctx: EventHandlerContext) {
+  const contractID = new SmartContractModuleDeploymentContractCanceledEvent(ctx).asV119.contractId
+
+  const savedContract = await ctx.store.get(DeploymentContract, { where: { contractID } })
+
+  if (!savedContract) return
+
+  savedContract.state = ContractState.Deleted
+
+  await ctx.store.save<DeploymentContract>(savedContract)
 }

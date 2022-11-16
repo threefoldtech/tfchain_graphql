@@ -1,10 +1,10 @@
 import { balancesTransfer } from './mappings/balances'
 import { twinStored, twinDeleted, twinEntityStored, twinEntityRemoved, twinUpdated } from './mappings/twins'
-import { nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported, nodePublicConfigStored, nodeCertificationSet } from './mappings/nodes'
+import { nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported, nodePublicConfigStored, nodeCertificationSet, powerStateChanged, powerTargetChanged } from './mappings/nodes'
 import { farmingPolicyStored, pricingPolicyStored, farmingPolicyUpdated } from './mappings/policies';
 import { farmDeleted, farmPayoutV2AddressRegistered, farmStored, farmUpdated, farmCertificationSet } from './mappings/farms';
 import { entityDeleted, entityStored, entityUpdated } from './mappings/entity';
-import { contractBilled, contractCreated, contractUpdated, contractUpdateUsedResources, nameContractCanceled, nodeContractCanceled, nruConsumptionReportReceived, rentContractCanceled, contractGracePeriodStarted, contractGracePeriodEnded } from './mappings/contracts';
+import { contractBilled, contractCreated, contractUpdated, contractUpdateUsedResources, nameContractCanceled, nodeContractCanceled, nruConsumptionReportReceived, rentContractCanceled, contractGracePeriodStarted, contractGracePeriodEnded, deploymentContractCanceled, capacityReservationContractCanceled } from './mappings/contracts';
 import { burnProcessed, mintCompleted, refundProcessed } from './mappings/bridge';
 import { solutionProviderCreated, solutionProviderApproved } from './mappings/solutionProviders'
 
@@ -52,6 +52,9 @@ processor.addEventHandler('tfgridModule.EntityStored', ctx => entityStored(ctx))
 processor.addEventHandler('tfgridModule.EntityUpdated', ctx => entityUpdated(ctx));
 processor.addEventHandler('tfgridModule.EntityDeleted', ctx => entityDeleted(ctx));
 
+processor.addEventHandler('tfgridModule.PowerTargetChanged', ctx => powerTargetChanged(ctx));
+processor.addEventHandler('tfgridModule.PowerStateChanged', ctx => powerStateChanged(ctx));
+
 processor.addEventHandler('smartContractModule.ContractCreated', ctx => contractCreated(ctx));
 processor.addEventHandler('smartContractModule.ContractUpdated', ctx => contractUpdated(ctx));
 processor.addEventHandler('smartContractModule.NodeContractCanceled', ctx => nodeContractCanceled(ctx));
@@ -64,11 +67,8 @@ processor.addEventHandler('smartContractModule.ContractGracePeriodStarted', ctx 
 processor.addEventHandler('smartContractModule.ContractGracePeriodEnded', ctx => contractGracePeriodEnded(ctx))
 processor.addEventHandler('smartContractModule.SolutionProviderCreated', ctx => solutionProviderCreated(ctx))
 processor.addEventHandler('smartContractModule.SolutionProviderApproved', ctx => solutionProviderApproved(ctx))
-
-// processor.addEventHandler('smartContractModule.GroupCreated', ctx => ())
-// processor.addEventHandler('smartContractModule.GroupDeleted', ctx => ())
-// processor.addEventHandler('smartContractModule.CapacityReservationContractCanceled', ctx => ())
-// processor.addEventHandler('smartContractModule.DeploymentContractCanceled', ctx => ())
+processor.addEventHandler('smartContractModule.CapacityReservationContractCanceled', ctx => capacityReservationContractCanceled(ctx))
+processor.addEventHandler('smartContractModule.DeploymentContractCanceled', ctx => deploymentContractCanceled(ctx))
 
 processor.addEventHandler('tftBridgeModule.MintCompleted', ctx => mintCompleted(ctx));
 processor.addEventHandler('tfgridModule.BurnTransactionProcessed', ctx => burnProcessed(ctx));

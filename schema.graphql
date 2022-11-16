@@ -190,7 +190,6 @@ type CapacityReservationContract @entity {
   nodeID: Int!
   resources: ConsumableResources!
   publicIPs: Int!
-  deploymentContracts: [Int!]!
   state: ContractState!
 }
 

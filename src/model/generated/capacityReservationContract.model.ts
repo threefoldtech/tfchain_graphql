@@ -24,9 +24,6 @@ export class CapacityReservationContract {
   @Column_("integer", {nullable: false})
   publicIPs!: number
 
-  @Column_("integer", {array: true, nullable: false})
-  deploymentContracts!: (number)[]
-
   @Column_("varchar", {length: 11, nullable: false})
   state!: ContractState
 }

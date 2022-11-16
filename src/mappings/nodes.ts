@@ -1,12 +1,13 @@
 import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
-import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal } from "../model";
-import { TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
+import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal, PowerState, NodePower } from "../model";
+import { TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent, TfgridModulePowerStateChangedEvent, TfgridModulePowerTargetChangedEvent } from "../types/events";
 
 export async function nodeStored(ctx: EventHandlerContext) {
   const node = new TfgridModuleNodeStoredEvent(ctx)
 
+  console.log(ctx._chain.getEventHash('tfgridModule.NodeStored'))
   let nodeEvent
   if (node.isV9) {
     nodeEvent = node.asV9
@@ -106,6 +107,16 @@ export async function nodeStored(ctx: EventHandlerContext) {
     newNode.virtualized = nodeEvent.virtualized ? true : false
     newNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
     newNode.connectionPrice = nodeEvent.connectionPrice
+    
+    // Construct the node power object
+    const power = new NodePower()
+    power.id = ctx.event.id
+    power.node = newNode
+    power.state = PowerState.Up
+    power.target = PowerState.Up
+    await ctx.store.save<NodePower>(power)
+
+    newNode.power = power
   }
 
   await ctx.store.save<Node>(newNode)
@@ -458,6 +469,41 @@ export async function nodeCertificationSet(ctx: EventHandlerContext) {
   await ctx.store.save<Node>(savedNode)
 }
 
+export async function powerTargetChanged(ctx: EventHandlerContext) {
+  const { nodeId, powerTarget } = new TfgridModulePowerTargetChangedEvent(ctx).asV119
+
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeId } })
+  if (!savedNode) return
+
+  const nodePower = await ctx.store.get(NodePower, { where: { node: savedNode } })
+  if (!nodePower) return 
+
+  switch (powerTarget.__kind) {
+    case 'Down': nodePower.target = PowerState.Down
+    case 'Up': nodePower.target = PowerState.Up
+  }
+
+  await ctx.store.save<NodePower>(nodePower)
+}
+
+export async function powerStateChanged(ctx: EventHandlerContext) {
+    const { nodeId, powerState } = new TfgridModulePowerStateChangedEvent(ctx).asV119
+
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeId } })
+  if (!savedNode) return
+
+  const nodePower = await ctx.store.get(NodePower, { where: { node: savedNode } })
+  if (!nodePower) return 
+
+  switch (powerState.__kind) {
+    case 'Down': nodePower.state = PowerState.Down
+    case 'Up': nodePower.state = PowerState.Up
+  }
+
+  await ctx.store.save<NodePower>(nodePower)
+}
+
+
 
 interface NodePublicConfig {
   ip4: string
@@ -545,3 +591,4 @@ function getNodePublicConfig(node: TfgridModuleNodeStoredEvent): NodePublicConfi
 
   return null
 }
+
