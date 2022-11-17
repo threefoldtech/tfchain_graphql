@@ -1,6 +1,6 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToOne as OneToOne_} from "typeorm"
 import * as marshal from "./marshal"
-import {Resources} from "./_resources"
+import {ConsumableResources} from "./consumableResources.model"
 import {ContractState} from "./_contractState"
 
 @Entity_()
@@ -18,8 +18,8 @@ export class CapacityReservationContract {
   @Column_("integer", {nullable: false})
   nodeID!: number
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => new Resources(undefined, marshal.nonNull(obj))}, nullable: false})
-  resources!: Resources
+  @OneToOne_(() => ConsumableResources)
+  resources!: ConsumableResources | undefined | null
 
   @Column_("integer", {nullable: false})
   publicIPs!: number

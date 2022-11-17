@@ -2,7 +2,7 @@ import {
   EventHandlerContext,
   Store
 } from "@subsquid/substrate-processor";
-import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractResources, NodeResourcesTotal, Node, RentContract, Farm, NruConsumption, CapacityReservationContract, DeploymentContract, DeploymentContractResources, Resources, ContractPublicIp } from "../model";
+import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractResources, NodeResourcesTotal, Node, RentContract, Farm, NruConsumption, CapacityReservationContract, DeploymentContract, DeploymentContractResources, Resources, ContractPublicIp, ConsumableResources } from "../model";
 import { SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent, SmartContractModuleNodeContractCanceledEvent, SmartContractModuleNameContractCanceledEvent, SmartContractModuleContractBilledEvent, SmartContractModuleUpdatedUsedResourcesEvent, SmartContractModuleNruConsumptionReportReceivedEvent, SmartContractModuleRentContractCanceledEvent, SmartContractModuleContractGracePeriodStartedEvent, SmartContractModuleContractGracePeriodEndedEvent, SmartContractModuleDeploymentContractCanceledEvent, SmartContractModuleCapacityReservationContractCanceledEvent } from "../types/events";
 import { Contract as ContractV119 } from "../types/v119";
 
@@ -64,7 +64,7 @@ export async function contractCreated(ctx: EventHandlerContext) {
     } else {
       newNodeContract.deploymentData = contract.deploymentData.toString()
     }
-    if (contract.deploymentHash.toString().indexOf('\x00')  >= 0) {
+    if (contract.deploymentHash.toString().indexOf('\x00') >= 0) {
       newNodeContract.deploymentHash = ""
     } else {
       newNodeContract.deploymentHash = contract.deploymentHash.toString()
@@ -143,13 +143,28 @@ async function processContractV119(event: SmartContractModuleContractCreatedEven
 
     newCapacityReservationContract.state = state
     newCapacityReservationContract.nodeID = contract.nodeId
+    await ctx.store.save<CapacityReservationContract>(newCapacityReservationContract)
 
-    let resources = new Resources()
-    resources.cru = contract.resources.totalResources.cru
-    resources.sru = contract.resources.totalResources.sru
-    resources.hru = contract.resources.totalResources.hru
-    resources.mru = contract.resources.totalResources.mru
-    newCapacityReservationContract.resources = resources
+    let consumableResources = new ConsumableResources()
+    consumableResources.contract = newCapacityReservationContract
+
+    let resourcesTotal = new Resources()
+    resourcesTotal.cru = contract.resources.totalResources.cru
+    resourcesTotal.sru = contract.resources.totalResources.sru
+    resourcesTotal.hru = contract.resources.totalResources.hru
+    resourcesTotal.mru = contract.resources.totalResources.mru
+    consumableResources.total = resourcesTotal
+
+    let resourcesUsed = new Resources()
+    resourcesUsed.cru = BigInt(0)
+    resourcesUsed.sru = BigInt(0)
+    resourcesUsed.hru = BigInt(0)
+    resourcesUsed.mru = BigInt(0)
+    consumableResources.used = resourcesUsed
+
+    await ctx.store.save<ConsumableResources>(consumableResources)
+
+    // newCapacityReservationContract.resources = consumableResources
 
     newCapacityReservationContract.publicIPs = contract.publicIps
 
@@ -172,12 +187,12 @@ async function processContractV119(event: SmartContractModuleContractCreatedEven
     } else {
       newDeploymentContract.deploymentData = contract.deploymentData.toString()
     }
-    if (contract.deploymentHash.toString().indexOf('\x00')  >= 0) {
+    if (contract.deploymentHash.toString().indexOf('\x00') >= 0) {
       newDeploymentContract.deploymentHash = ""
     } else {
       newDeploymentContract.deploymentHash = contract.deploymentHash.toString()
     }
-    
+
     newDeploymentContract.capacityReservationID = contract.capacityReservationId
     newDeploymentContract.numberOfPublicIPs = contract.publicIps
     newDeploymentContract.solutionProviderID = Number(contractEvent.solutionProviderId) || 0
@@ -196,7 +211,7 @@ async function processContractV119(event: SmartContractModuleContractCreatedEven
     newDeploymentContract.resourcesUsed = contractResources
     newDeploymentContract.publicIps = contract.publicIpsList.map(ip => {
       let cIP = new ContractPublicIp
-        cIP.ip = ip.ip.toString()
+      cIP.ip = ip.ip.toString()
       cIP.gateway = ip.gateway.toString()
       return cIP
     })
@@ -265,7 +280,7 @@ async function updateNodeContract(ctr: any, contract: NodeContract, store: Store
   } else {
     contract.deploymentData = contract.deploymentData.toString()
   }
-  if (contract.deploymentHash.toString().indexOf('\x00')  >= 0) {
+  if (contract.deploymentHash.toString().indexOf('\x00') >= 0) {
     contract.deploymentHash = ""
   } else {
     contract.deploymentHash = contract.deploymentHash.toString()
@@ -335,8 +350,64 @@ async function processContractV119Update(event: SmartContractModuleContractUpdat
   }
 }
 
-async function updateCapacityReservationContract(ctr: any, contract: CapacityReservationContract, store: Store) {
-  const parsedCapacityContract = ctr.contractType.value as CapacityReservationContract
+async function updateCapacityReservationContract(ctr: ContractV119, contract: CapacityReservationContract, store: Store) {
+  let cap
+  if (ctr.contractType.__kind === 'CapacityReservationContract') {
+    cap = ctr.contractType.value
+  }
+
+  if (!cap) return
+
+  let state = ContractState.OutOfFunds
+  switch (ctr.state.__kind) {
+    case 'Created':
+      state = ContractState.Created
+      break
+    case 'Deleted':
+      state = ContractState.Deleted
+      break
+  }
+
+  contract.state = state
+  contract.nodeID = Number(cap?.nodeId || 0)
+  contract.publicIPs = Number(cap?.publicIps || 0)
+  await store.save<CapacityReservationContract>(contract)
+
+  let savedResources = await store.get(ConsumableResources, { where: { contract } })
+  if (!savedResources) return
+
+  savedResources.total.cru = cap.resources.totalResources.cru
+  savedResources.total.sru = cap.resources.totalResources.sru
+  savedResources.total.hru = cap.resources.totalResources.hru
+  savedResources.total.mru = cap.resources.totalResources.mru
+
+  savedResources.used.cru = cap.resources.usedResources.cru
+  savedResources.used.sru = cap.resources.usedResources.sru
+  savedResources.used.hru = cap.resources.usedResources.hru
+  savedResources.used.mru = cap.resources.usedResources.mru
+
+  await store.save<ConsumableResources>(savedResources)
+}
+
+async function updateDeploymentContract(ctr: any, contract: DeploymentContract, store: Store) {
+  if (ctr.contractType.__kind !== 'DeploymentContract') return
+
+  const parsedDeploymentContract = ctr.contractType.value
+
+  contract.contractID = ctr.contractId
+  contract.twinID = ctr.twinId
+  contract.numberOfPublicIPs = parsedDeploymentContract.publicIps
+
+  if (contract.deploymentData.toString().indexOf('\x00') >= 0) {
+    contract.deploymentData = ""
+  } else {
+    contract.deploymentData = contract.deploymentData.toString()
+  }
+  if (contract.deploymentHash.toString().indexOf('\x00') >= 0) {
+    contract.deploymentHash = ""
+  } else {
+    contract.deploymentHash = contract.deploymentHash.toString()
+  }
 
   let state = ContractState.OutOfFunds
   switch (ctr.state.__kind) {
@@ -349,63 +420,26 @@ async function updateCapacityReservationContract(ctr: any, contract: CapacityRes
   }
   contract.state = state
 
-  contract.nodeID = parsedCapacityContract.nodeID
-  contract.publicIPs = parsedCapacityContract.publicIPs
+  const savedDeploymentContractRsources = await store.get(DeploymentContractResources, { where: { contract } })
+  if (savedDeploymentContractRsources) {
+    savedDeploymentContractRsources.cru = ctr.resources.cru
+    savedDeploymentContractRsources.cru = ctr.resources.cru
+    savedDeploymentContractRsources.cru = ctr.resources.cru
+    savedDeploymentContractRsources.sru = ctr.resources.sru
+    savedDeploymentContractRsources.sru = ctr.resources.sru
+    savedDeploymentContractRsources.sru = ctr.resources.sru
+    savedDeploymentContractRsources.hru = ctr.resources.hru
+    savedDeploymentContractRsources.hru = ctr.resources.hru
+    savedDeploymentContractRsources.hru = ctr.resources.hru
+    savedDeploymentContractRsources.mru = ctr.resources.mru
+    savedDeploymentContractRsources.mru = ctr.resources.mru
+    savedDeploymentContractRsources.mru = ctr.resources.mru
+    await store.save<DeploymentContractResources>(savedDeploymentContractRsources)
+  }
 
-  let resources = new Resources()
-  resources.cru = ctr.contractType.value.resources.totalResources.cru
-  resources.hru = ctr.contractType.value.resources.totalResources.hru
-  resources.sru = ctr.contractType.value.resources.totalResources.sru
-  resources.mru = ctr.contractType.value.resources.totalResources.mru
+  contract.resourcesUsed = savedDeploymentContractRsources
 
-  contract.resources = resources
-
-  await store.save<CapacityReservationContract>(contract)
-}
-
-async function updateDeploymentContract(ctr: any, contract: DeploymentContract, store: Store) {
-    if (ctr.contractType.__kind !== 'DeploymentContract') return
-
-    const parsedDeploymentContract = ctr.contractType.value
-
-    contract.contractID = ctr.contractId
-    contract.twinID = ctr.twinId
-    contract.numberOfPublicIPs = parsedDeploymentContract.publicIps
-
-    if (contract.deploymentData.toString().indexOf('\x00') >= 0) {
-      contract.deploymentData = ""
-    } else {
-      contract.deploymentData = contract.deploymentData.toString()
-    }
-    if (contract.deploymentHash.toString().indexOf('\x00')  >= 0) {
-      contract.deploymentHash = ""
-    } else {
-      contract.deploymentHash = contract.deploymentHash.toString()
-    }
-
-    let state = ContractState.OutOfFunds
-    switch (ctr.state.__kind) {
-      case 'Created':
-        state = ContractState.Created
-        break
-      case 'Deleted':
-        state = ContractState.Deleted
-        break
-    }
-    contract.state = state
-  
-    const savedDeploymentContractRsources = await store.get(DeploymentContractResources, { where: { contract }})
-    if (savedDeploymentContractRsources) {
-      savedDeploymentContractRsources.cru = ctr.resources.cru 
-      savedDeploymentContractRsources.sru = ctr.resources.sru 
-      savedDeploymentContractRsources.hru = ctr.resources.hru 
-      savedDeploymentContractRsources.mru = ctr.resources.mru 
-      await store.save<DeploymentContractResources>(savedDeploymentContractRsources)
-    }
-  
-    contract.resourcesUsed = savedDeploymentContractRsources
-    
-    await store.save<DeploymentContract>(contract)
+  await store.save<DeploymentContract>(contract)
 }
 
 export async function nodeContractCanceled(ctx: EventHandlerContext) {

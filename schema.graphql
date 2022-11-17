@@ -188,16 +188,15 @@ type City @entity {
 type CapacityReservationContract @entity {
   contractID: BigInt!
   nodeID: Int!
-  resources: Resources!
+  resources: ConsumableResources @derivedFrom(field: "contract")
   publicIPs: Int!
   state: ContractState!
 }
 
-type ResourcesType {
-  hru: BigInt!
-  sru: BigInt!
-  cru: BigInt!
-  mru: BigInt!
+type ConsumableResources @entity {
+  contract: CapacityReservationContract! @unique
+  total: Resources!
+  used: Resources!
 }
 
 type DeploymentContract @entity {
