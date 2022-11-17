@@ -149,7 +149,7 @@ export async function nodeStored(ctx: EventHandlerContext) {
     newNode.virtualized = nodeEvent.virtualized ? true : false
     newNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
     newNode.connectionPrice = nodeEvent.connectionPrice
-    
+
     const resourcesTotal = new NodeResourcesTotal()
     resourcesTotal.node = newNode
     resourcesTotal.id = ctx.event.id
@@ -169,7 +169,7 @@ export async function nodeStored(ctx: EventHandlerContext) {
     newNode.virtualized = nodeEvent.virtualized ? true : false
     newNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
     newNode.connectionPrice = nodeEvent.connectionPrice
-    
+
     await ctx.store.save<Node>(newNode)
 
     // Construct the node power object
@@ -190,12 +190,12 @@ export async function nodeStored(ctx: EventHandlerContext) {
     totalResources.hru = nodeEvent.resources.totalResources.hru
     totalResources.mru = nodeEvent.resources.totalResources.mru
     totalResources.cru = nodeEvent.resources.totalResources.cru
-    
+
     const usedResources = new Resources()
     usedResources.sru = nodeEvent.resources.usedResources.sru
     usedResources.hru = nodeEvent.resources.usedResources.hru
     usedResources.mru = nodeEvent.resources.usedResources.mru
-    usedResources.cru = nodeEvent.resources.usedResources.cru 
+    usedResources.cru = nodeEvent.resources.usedResources.cru
 
     nodeConsumableResources.total = totalResources
     nodeConsumableResources.used = usedResources
@@ -464,13 +464,19 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     }
 
     // Recalculate total / free resoures when a node get's updated
-    let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: savedNode } })
-    if (resourcesTotal) {
-      resourcesTotal.sru = nodeEvent.resources.totalResources.sru
-      resourcesTotal.hru = nodeEvent.resources.totalResources.hru
-      resourcesTotal.mru = nodeEvent.resources.totalResources.mru
-      resourcesTotal.cru = nodeEvent.resources.totalResources.cru
-      await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
+    let nodeConsumableResources = await ctx.store.get(NodeConsumableResources, { where: { node: savedNode } })
+    if (nodeConsumableResources) {
+      nodeConsumableResources.total.sru = nodeEvent.resources.totalResources.sru
+      nodeConsumableResources.total.hru = nodeEvent.resources.totalResources.hru
+      nodeConsumableResources.total.mru = nodeEvent.resources.totalResources.mru
+      nodeConsumableResources.total.cru = nodeEvent.resources.totalResources.cru
+
+      nodeConsumableResources.used.sru = nodeEvent.resources.usedResources.sru
+      nodeConsumableResources.used.hru = nodeEvent.resources.usedResources.hru
+      nodeConsumableResources.used.mru = nodeEvent.resources.usedResources.mru
+      nodeConsumableResources.used.cru = nodeEvent.resources.usedResources.cru
+
+      await ctx.store.save<NodeConsumableResources>(nodeConsumableResources)
     }
   }
 
@@ -634,7 +640,7 @@ export async function powerTargetChanged(ctx: EventHandlerContext) {
   if (!savedNode) return
 
   const nodePower = await ctx.store.get(NodePower, { where: { node: savedNode } })
-  if (!nodePower) return 
+  if (!nodePower) return
 
   switch (powerTarget.__kind) {
     case 'Up': nodePower.target = PowerState.Up
@@ -651,7 +657,7 @@ export async function powerStateChanged(ctx: EventHandlerContext) {
   if (!savedNode) return
 
   const nodePower = await ctx.store.get(NodePower, { where: { node: savedNode } })
-  if (!nodePower) return 
+  if (!nodePower) return
 
   switch (powerState.__kind) {
     case 'Up': nodePower.state = PowerState.Up

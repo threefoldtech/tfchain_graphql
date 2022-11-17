@@ -20,6 +20,6 @@ export class NodeConsumableResources {
   @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => new Resources(undefined, marshal.nonNull(obj))}, nullable: false})
   total!: Resources
 
-  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Resources(undefined, obj)}, nullable: true})
-  used!: Resources | undefined | null
+  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => new Resources(undefined, marshal.nonNull(obj))}, nullable: false})
+  used!: Resources
 }

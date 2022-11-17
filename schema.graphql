@@ -110,7 +110,7 @@ type NodeResourcesTotal @entity {
 type NodeConsumableResources @entity {
   node: Node! @unique
   total: Resources!
-  used: Resources
+  used: Resources!
 }
 
 type Resources {

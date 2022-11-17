@@ -1,8 +1,8 @@
-module.exports = class power- management1668677394120 {
-  name = 'power-management1668677394120'
+module.exports = class power-management1668677826274 {
+  name = 'power-management1668677826274'
 
   async up(db) {
-    await db.query(`CREATE TABLE "node_consumable_resources" ("id" character varying NOT NULL, "total" jsonb NOT NULL, "used" jsonb, "node_id" character varying NOT NULL, CONSTRAINT "REL_4db566d46cee02edd8d909031a" UNIQUE ("node_id"), CONSTRAINT "PK_b8139023fc17a6dfa27ed05e52a" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "node_consumable_resources" ("id" character varying NOT NULL, "total" jsonb NOT NULL, "used" jsonb NOT NULL, "node_id" character varying NOT NULL, CONSTRAINT "REL_4db566d46cee02edd8d909031a" UNIQUE ("node_id"), CONSTRAINT "PK_b8139023fc17a6dfa27ed05e52a" PRIMARY KEY ("id"))`)
     await db.query(`CREATE UNIQUE INDEX "IDX_4db566d46cee02edd8d909031a" ON "node_consumable_resources" ("node_id") `)
     await db.query(`CREATE TABLE "node_power" ("id" character varying NOT NULL, "target" character varying(4), "state" character varying(4), "last_uptime" numeric, "node_id" character varying NOT NULL, CONSTRAINT "REL_66baaf0b7bad0c93ce841a9e58" UNIQUE ("node_id"), CONSTRAINT "PK_2a4f76caa15ed3174994959c62c" PRIMARY KEY ("id"))`)
     await db.query(`CREATE UNIQUE INDEX "IDX_66baaf0b7bad0c93ce841a9e58" ON "node_power" ("node_id") `)
