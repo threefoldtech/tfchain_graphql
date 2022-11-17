@@ -978,6 +978,21 @@
   dependencies:
     "@subsquid/util" "^0.0.4"
 
+"@subsquid/typeorm-config@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/typeorm-config/-/typeorm-config-2.0.0.tgz#ec998d1afc93af4b6f8ec7dc17547d2b9b9745cf"
+  integrity sha512-TJ/ksxTLTEHqY6NiYM5S9JXFdUEROTjTY+PKQv3ixoQuuidNzIGRwwGvzMnSKNl9s1V5ADcwWIEbmcPBZjHURg==
+  dependencies:
+    "@subsquid/util-naming" "^0.0.1"
+
+"@subsquid/util-naming@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@subsquid/util-naming/-/util-naming-0.0.1.tgz#141f3a231ff53f969457d47cf774f89c81a11fe0"
+  integrity sha512-qxvZX/JJ8zqBxsGrVATu/M3Q3vGWXPO5L0AGIGtNUaBZm8T3WlzKUn6+MDuxU18xaLS50xEpYa91tUgIqga9WA==
+  dependencies:
+    camelcase "^6.3.0"
+    inflected "^2.1.0"
+
 "@subsquid/util-xxhash@^0.1.0":
   version "0.1.0"
   resolved "https://registry.npmjs.org/@subsquid/util-xxhash/-/util-xxhash-0.1.0.tgz"

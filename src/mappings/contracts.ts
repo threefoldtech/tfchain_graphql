@@ -423,16 +423,8 @@ async function updateDeploymentContract(ctr: any, contract: DeploymentContract, 
   const savedDeploymentContractRsources = await store.get(DeploymentContractResources, { where: { contract } })
   if (savedDeploymentContractRsources) {
     savedDeploymentContractRsources.cru = ctr.resources.cru
-    savedDeploymentContractRsources.cru = ctr.resources.cru
-    savedDeploymentContractRsources.cru = ctr.resources.cru
-    savedDeploymentContractRsources.sru = ctr.resources.sru
-    savedDeploymentContractRsources.sru = ctr.resources.sru
     savedDeploymentContractRsources.sru = ctr.resources.sru
     savedDeploymentContractRsources.hru = ctr.resources.hru
-    savedDeploymentContractRsources.hru = ctr.resources.hru
-    savedDeploymentContractRsources.hru = ctr.resources.hru
-    savedDeploymentContractRsources.mru = ctr.resources.mru
-    savedDeploymentContractRsources.mru = ctr.resources.mru
     savedDeploymentContractRsources.mru = ctr.resources.mru
     await store.save<DeploymentContractResources>(savedDeploymentContractRsources)
   }

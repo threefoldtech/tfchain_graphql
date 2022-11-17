@@ -12,7 +12,10 @@
     "emitDecoratorMetadata": true,
     "skipLibCheck": true
   },
-  "include": ["src"],
+  "include": [
+    "src",
+    "migrate-contracts.js"
+  ],
   "exclude": [
     "node_modules"
   ]

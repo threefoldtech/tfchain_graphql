@@ -1,4 +1,4 @@
-module.exports = class power-management1668677826274 {
+module.exports = class power_management1668677826274 {
   name = 'power-management1668677826274'
 
   async up(db) {
