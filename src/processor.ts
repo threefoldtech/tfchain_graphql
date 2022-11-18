@@ -1,10 +1,20 @@
 import { balancesTransfer } from './mappings/balances'
 import { twinStored, twinDeleted, twinEntityStored, twinEntityRemoved, twinUpdated } from './mappings/twins'
-import { nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported, nodePublicConfigStored, nodeCertificationSet, powerStateChanged, powerTargetChanged } from './mappings/nodes'
+import {
+  nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported,
+  nodePublicConfigStored, nodeCertificationSet, powerStateChanged, powerTargetChanged
+} from './mappings/nodes'
 import { farmingPolicyStored, pricingPolicyStored, farmingPolicyUpdated } from './mappings/policies';
 import { farmDeleted, farmPayoutV2AddressRegistered, farmStored, farmUpdated, farmCertificationSet } from './mappings/farms';
 import { entityDeleted, entityStored, entityUpdated } from './mappings/entity';
-import { contractBilled, contractCreated, contractUpdated, contractUpdateUsedResources, nameContractCanceled, nodeContractCanceled, nruConsumptionReportReceived, rentContractCanceled, contractGracePeriodStarted, contractGracePeriodEnded, deploymentContractCanceled, capacityReservationContractCanceled } from './mappings/contracts';
+import {
+  contractBilled, contractCreated, contractUpdated, contractUpdateUsedResources, nameContractCanceled,
+  nodeContractCanceled, nruConsumptionReportReceived, rentContractCanceled, contractGracePeriodStarted, contractGracePeriodEnded,
+  capacityReservationContractCanceled
+} from './mappings/contracts';
+import {
+  deploymentCreated, deploymentUpdated, deploymentCanceled,
+} from './mappings/deployments'
 import { burnProcessed, mintCompleted, refundProcessed } from './mappings/bridge';
 import { solutionProviderCreated, solutionProviderApproved } from './mappings/solutionProviders'
 
@@ -68,7 +78,10 @@ processor.addEventHandler('smartContractModule.ContractGracePeriodEnded', ctx =>
 processor.addEventHandler('smartContractModule.SolutionProviderCreated', ctx => solutionProviderCreated(ctx))
 processor.addEventHandler('smartContractModule.SolutionProviderApproved', ctx => solutionProviderApproved(ctx))
 processor.addEventHandler('smartContractModule.CapacityReservationContractCanceled', ctx => capacityReservationContractCanceled(ctx))
-processor.addEventHandler('smartContractModule.DeploymentContractCanceled', ctx => deploymentContractCanceled(ctx))
+
+processor.addEventHandler('smartContractModule.DeploymentCreated', ctx => deploymentCreated(ctx))
+processor.addEventHandler('smartContractModule.DeploymentUpdated', ctx => deploymentUpdated(ctx))
+processor.addEventHandler('smartContractModule.DeploymentCanceled', ctx => deploymentCanceled(ctx))
 
 processor.addEventHandler('tftBridgeModule.MintCompleted', ctx => mintCompleted(ctx));
 processor.addEventHandler('tfgridModule.BurnTransactionProcessed', ctx => burnProcessed(ctx));

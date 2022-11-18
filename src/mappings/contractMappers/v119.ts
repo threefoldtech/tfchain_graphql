@@ -1,8 +1,60 @@
-import { EventHandlerContext, Store } from "@subsquid/substrate-processor";
-import { CapacityReservationContract, ConsumableResources, Resources, ContractState, Deployment, DeploymentResources, DeploymentPublicIp, PublicIp } from "../../model";
-import * as v119 from '../../types/v119'
+import { Store, EventHandlerContext } from "@subsquid/substrate-processor";
+import { CapacityReservationContract, ConsumableResources, Resources, ContractState, NameContract } from "../../model";
+// import { updateNameContract } from '../contracts'
+import { Contract as ContractV119 } from "../../types/v119";
+import { SmartContractModuleContractUpdatedEvent, SmartContractModuleContractCreatedEvent } from "../../types/events"
 
-export async function parseCapacityContractCreate(id: string, ctr: v119.Contract, store: Store) {
+export async function processContractV119Create(event: SmartContractModuleContractCreatedEvent, ctx: EventHandlerContext) {
+    let contractEvent = event.asV119
+
+    if (!contractEvent) return
+
+    let state = ContractState.Created
+
+    let contract
+
+    if (contractEvent.contractType.__kind === "NameContract") {
+        let newNameContract = new NameContract()
+        newNameContract.id = ctx.event.id
+        contract = contractEvent.contractType.value
+        newNameContract.name = contract.name.toString()
+        newNameContract.contractID = contractEvent.contractId
+        newNameContract.gridVersion = contractEvent.version
+        newNameContract.twinID = contractEvent.twinId
+        newNameContract.state = state
+        newNameContract.createdAt = BigInt(ctx.event.blockTimestamp)
+        newNameContract.solutionProviderID = Number(contractEvent.solutionProviderId) || 0
+        await ctx.store.save<NameContract>(newNameContract)
+    }
+
+    if (contractEvent.contractType.__kind === 'CapacityReservationContract') {
+        return parseCapacityContractCreate(ctx.event.id, contractEvent, ctx.store)
+    }
+}
+
+
+export async function processContractV119Update(event: SmartContractModuleContractUpdatedEvent, ctx: EventHandlerContext) {
+    let contractEvent = event.asV119
+
+    if (!contractEvent) return
+
+    if (contractEvent.contractType.__kind === 'NameContract') {
+        const SavedNameContract = await ctx.store.get(NameContract, { where: { contractID: contractEvent.contractId } })
+        if (SavedNameContract) {
+            await updateNameContract(contractEvent, SavedNameContract, ctx.store)
+        }
+    }
+
+    if (contractEvent.contractType.__kind === 'CapacityReservationContract') {
+        const savedCapacityContract = await ctx.store.get(CapacityReservationContract, { where: { contractID: contractEvent.contractId } })
+        if (savedCapacityContract) {
+            contractEvent.contractType.value.resources.totalResources
+            await updateCapacityReservationContract(contractEvent, savedCapacityContract, ctx.store)
+        }
+    }
+}
+
+async function parseCapacityContractCreate(id: string, ctr: ContractV119, store: Store) {
     let cap
     if (ctr.contractType.__kind === 'CapacityReservationContract') {
         cap = ctr.contractType.value
@@ -13,22 +65,24 @@ export async function parseCapacityContractCreate(id: string, ctr: v119.Contract
     let newCapacityReservationContract = new CapacityReservationContract()
     newCapacityReservationContract.id = id
     newCapacityReservationContract.contractID = ctr.contractId
+    newCapacityReservationContract.publicIPs = cap.publicIps
 
     newCapacityReservationContract.state = ContractState.Created
     newCapacityReservationContract.nodeID = cap.nodeId
     await store.save<CapacityReservationContract>(newCapacityReservationContract)
 
-    let consumableResources = new ConsumableResources()
+    const consumableResources = new ConsumableResources()
+    consumableResources.id = id
     consumableResources.contract = newCapacityReservationContract
 
-    let resourcesTotal = new Resources()
+    const resourcesTotal = new Resources()
     resourcesTotal.cru = cap.resources.totalResources.cru
     resourcesTotal.sru = cap.resources.totalResources.sru
     resourcesTotal.hru = cap.resources.totalResources.hru
     resourcesTotal.mru = cap.resources.totalResources.mru
     consumableResources.total = resourcesTotal
 
-    let resourcesUsed = new Resources()
+    const resourcesUsed = new Resources()
     resourcesUsed.cru = BigInt(0)
     resourcesUsed.sru = BigInt(0)
     resourcesUsed.hru = BigInt(0)
@@ -39,64 +93,67 @@ export async function parseCapacityContractCreate(id: string, ctr: v119.Contract
 
     // newCapacityReservationContract.resources = consumableResources
 
-    newCapacityReservationContract.publicIPs = cap.publicIps
-
     await store.save<CapacityReservationContract>(newCapacityReservationContract)
 }
 
-export async function parseDeploymentContractCreate(id: string, deployment: v119.Deployment, store: Store) {
-    let newDeployment = new Deployment()
-    newDeployment.id = id
-    newDeployment.deploymentID = deployment.id
-    newDeployment.twinID = deployment.twinId
-
-    // newDeployment.createdAt = BigInt(ctx.event.blockTimestamp)
-
-    if (deployment.deploymentData.toString().indexOf('\x00') >= 0) {
-        newDeployment.deploymentData = ""
-    } else {
-        newDeployment.deploymentData = deployment.deploymentData.toString()
-    }
-    if (deployment.deploymentHash.toString().indexOf('\x00') >= 0) {
-        newDeployment.deploymentHash = ""
-    } else {
-        newDeployment.deploymentHash = deployment.deploymentHash.toString()
+async function updateCapacityReservationContract(ctr: ContractV119, contract: CapacityReservationContract, store: Store) {
+    let cap
+    if (ctr.contractType.__kind === 'CapacityReservationContract') {
+        cap = ctr.contractType.value
     }
 
-    newDeployment.capacityReservationID = deployment.capacityReservationId
-    newDeployment.numberOfPublicIPs = deployment.publicIps
+    if (!cap) return
 
-    await store.save<Deployment>(newDeployment)
+    let state = ContractState.OutOfFunds
+    switch (ctr.state.__kind) {
+        case 'Created':
+            state = ContractState.Created
+            break
+        case 'Deleted':
+            state = ContractState.Deleted
+            break
+    }
 
-    let contractResources = new DeploymentResources()
-    contractResources.id = id
-    contractResources.contract = newDeployment
+    contract.state = state
+    contract.nodeID = Number(cap?.nodeId || 0)
+    contract.publicIPs = Number(cap?.publicIps || 0)
+    await store.save<CapacityReservationContract>(contract)
 
-    contractResources.cru = deployment.resources.cru
-    contractResources.sru = deployment.resources.sru
-    contractResources.hru = deployment.resources.hru
-    contractResources.mru = deployment.resources.mru
+    let savedResources = await store.get(ConsumableResources, { where: { contract } })
+    if (!savedResources) return
 
-    newDeployment.resources = contractResources
-    newDeployment.publicIps = deployment.publicIpsList.map(ip => {
-        let cIP = new DeploymentPublicIp()
-        cIP.ip = ip.ip.toString()
-        cIP.gateway = ip.gateway.toString()
-        return cIP
-    })
+    savedResources.total.cru = cap.resources.totalResources.cru
+    savedResources.total.sru = cap.resources.totalResources.sru
+    savedResources.total.hru = cap.resources.totalResources.hru
+    savedResources.total.mru = cap.resources.totalResources.mru
 
-    await store.save<DeploymentResources>(contractResources)
-    await store.save<Deployment>(newDeployment)
+    savedResources.used.cru = cap.resources.usedResources.cru
+    savedResources.used.sru = cap.resources.usedResources.sru
+    savedResources.used.hru = cap.resources.usedResources.hru
+    savedResources.used.mru = cap.resources.usedResources.mru
 
-    deployment.publicIpsList.forEach(async ip => {
-        if (ip.ip.toString().indexOf('\x00') >= 0) {
-            return
-        }
-        const savedIp = await store.get(PublicIp, { where: { ip: ip.ip.toString() } })
+    await store.save<ConsumableResources>(savedResources)
+}
 
-        if (savedIp) {
-            savedIp.contractId = newDeployment.deploymentID
-            await store.save<PublicIp>(savedIp)
-        }
-    })
+async function updateNameContract(ctr: any, contract: NameContract, store: Store) {
+    if (ctr.contractType.__kind !== "NameContract") return
+
+    const parsedNameContract = ctr.contractType.value
+
+    contract.contractID = ctr.contractId
+    contract.gridVersion = ctr.version
+    contract.twinID = ctr.twinId
+    contract.name = parsedNameContract.name.toString()
+
+    let state = ContractState.OutOfFunds
+    switch (ctr.state.__kind) {
+        case 'Created':
+            state = ContractState.Created
+            break
+        case 'Deleted':
+            state = ContractState.Deleted
+            break
+    }
+    contract.state = state
+    await store.save<NameContract>(contract)
 }

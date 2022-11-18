@@ -6,8 +6,6 @@ import { TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, Tf
 
 export async function nodeStored(ctx: EventHandlerContext) {
   const node = new TfgridModuleNodeStoredEvent(ctx)
-
-  console.log(ctx._chain.getEventHash('tfgridModule.NodeStored'))
   let nodeEvent
   if (node.isV9) {
     nodeEvent = node.asV9
