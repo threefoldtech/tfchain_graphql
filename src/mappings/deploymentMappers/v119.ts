@@ -2,13 +2,13 @@ import { Store, SubstrateEvent } from "@subsquid/substrate-processor";
 import { Deployment, DeploymentResources, DeploymentPublicIp, PublicIp } from "../../model";
 import * as v119 from '../../types/v119'
 
-export async function parseDeploymentCreate(event: SubstrateEvent, deployment: v119.Deployment, store: Store) {
+export async function createDeployment(id: string, timestamp: bigint, deployment: v119.Deployment, store: Store) {
     let newDeployment = new Deployment()
-    newDeployment.id = event.id
+    newDeployment.id = id
     newDeployment.deploymentID = deployment.id
     newDeployment.twinID = deployment.twinId
 
-    newDeployment.createdAt = BigInt(event.blockTimestamp)
+    newDeployment.createdAt = timestamp
 
     if (deployment.deploymentData.toString().indexOf('\x00') >= 0) {
         newDeployment.deploymentData = ""
@@ -27,7 +27,7 @@ export async function parseDeploymentCreate(event: SubstrateEvent, deployment: v
     await store.save<Deployment>(newDeployment)
 
     let contractResources = new DeploymentResources()
-    contractResources.id = event.id
+    contractResources.id = id
     contractResources.contract = newDeployment
 
     contractResources.cru = deployment.resources.cru
@@ -50,16 +50,16 @@ export async function parseDeploymentCreate(event: SubstrateEvent, deployment: v
         if (ip.ip.toString().indexOf('\x00') >= 0) {
             return
         }
-        const savedIp = await store.get(PublicIp, { where: { ip: ip.ip.toString() } })
+        const savedIp = await store.find(PublicIp, { where: { ip: ip.ip.toString() } })
 
-        if (savedIp) {
-            savedIp.contractId = newDeployment.deploymentID
+        if (savedIp.length >= 1) {
+            savedIp[0].contractId = newDeployment.deploymentID
             await store.save<PublicIp>(savedIp)
         }
     })
 }
 
-export async function parseDeploymentUpdate(deployment: v119.Deployment, store: Store) {
+export async function updateDeployment(deployment: v119.Deployment, store: Store) {
     const savedDeployment = await store.get(Deployment, { where: { deploymentID: deployment.id } })
 
     if (!savedDeployment) return

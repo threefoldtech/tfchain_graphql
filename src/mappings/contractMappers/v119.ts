@@ -28,7 +28,7 @@ export async function processContractV119Create(event: SmartContractModuleContra
     }
 
     if (contractEvent.contractType.__kind === 'CapacityReservationContract') {
-        return parseCapacityContractCreate(ctx.event.id, contractEvent, ctx.store)
+        return createCapacityContract(ctx.event.id, contractEvent, ctx.store)
     }
 }
 
@@ -49,12 +49,12 @@ export async function processContractV119Update(event: SmartContractModuleContra
         const savedCapacityContract = await ctx.store.get(CapacityReservationContract, { where: { contractID: contractEvent.contractId } })
         if (savedCapacityContract) {
             contractEvent.contractType.value.resources.totalResources
-            await updateCapacityReservationContract(contractEvent, savedCapacityContract, ctx.store)
+            await updateCapacityContract(contractEvent, savedCapacityContract, ctx.store)
         }
     }
 }
 
-async function parseCapacityContractCreate(id: string, ctr: ContractV119, store: Store) {
+export async function createCapacityContract(id: string, ctr: ContractV119, store: Store) {
     let cap
     if (ctr.contractType.__kind === 'CapacityReservationContract') {
         cap = ctr.contractType.value
@@ -83,10 +83,10 @@ async function parseCapacityContractCreate(id: string, ctr: ContractV119, store:
     consumableResources.total = resourcesTotal
 
     const resourcesUsed = new Resources()
-    resourcesUsed.cru = BigInt(0)
-    resourcesUsed.sru = BigInt(0)
-    resourcesUsed.hru = BigInt(0)
-    resourcesUsed.mru = BigInt(0)
+    resourcesUsed.cru = cap.resources.usedResources.cru
+    resourcesUsed.sru = cap.resources.usedResources.cru
+    resourcesUsed.hru = cap.resources.usedResources.cru
+    resourcesUsed.mru = cap.resources.usedResources.cru
     consumableResources.used = resourcesUsed
 
     await store.save<ConsumableResources>(consumableResources)
@@ -96,7 +96,7 @@ async function parseCapacityContractCreate(id: string, ctr: ContractV119, store:
     await store.save<CapacityReservationContract>(newCapacityReservationContract)
 }
 
-async function updateCapacityReservationContract(ctr: ContractV119, contract: CapacityReservationContract, store: Store) {
+export async function updateCapacityContract(ctr: ContractV119, contract: CapacityReservationContract, store: Store) {
     let cap
     if (ctr.contractType.__kind === 'CapacityReservationContract') {
         cap = ctr.contractType.value

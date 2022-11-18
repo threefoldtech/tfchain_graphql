@@ -7,16 +7,16 @@ import {
     SmartContractModuleDeploymentUpdatedEvent,
     SmartContractModuleDeploymentCanceledEvent
 } from "../types/events";
-import { parseDeploymentCreate, parseDeploymentUpdate } from "./deploymentMappers/v119"
+import { createDeployment, updateDeployment } from "./deploymentMappers/v119"
 
 export async function deploymentCreated(ctx: EventHandlerContext) {
     let event = new SmartContractModuleDeploymentCreatedEvent(ctx).asV119
-    return parseDeploymentCreate(ctx.event, event, ctx.store)
+    return createDeployment(ctx.event.id, BigInt(ctx.event.blockTimestamp), event, ctx.store)
 }
 
 export async function deploymentUpdated(ctx: EventHandlerContext) {
     let event = new SmartContractModuleDeploymentUpdatedEvent(ctx).asV119
-    return parseDeploymentUpdate(event, ctx.store)
+    return updateDeployment(event, ctx.store)
 }
 
 export async function deploymentCanceled(ctx: EventHandlerContext) {
