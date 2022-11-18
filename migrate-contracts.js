@@ -1,20 +1,14 @@
-const { map, flatten } = require("lodash");
-const format = require("pg-format");
 const { createCapacityContract } = require('./lib/mappings/contractMappers/v119')
 const { createDeployment } = require('./lib/mappings/deploymentMappers/v119')
-const v119 = require('./lib/types/v119')
 require('dotenv/config')
 const typeormConfig = require('@subsquid/typeorm-config');
 const typeorm = require('typeorm')
-const { NodeContract, PublicIp, NodeResourcesTotal, RentContract, DeploymentContract, CapacityReservationContract, Node, ContractState, ContractResources } = require('./lib/model/index')
-
-const { DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER } = process.env;
+const { NodeContract, PublicIp, NodeResourcesTotal, RentContract, Node, ContractState, ContractResources } = require('./lib/model/index')
 
 async function main() {
   const ormconfig = {
     type: 'postgres',
     migrations: [__dirname + 'db/migrations/*.js'],
-    // entities: [NodeContract, NameContract, RentContract, DeploymentContract, CapacityContract],
     entities: [require.resolve('./lib/model')],
     synchronize: false,
     migrationsRun: false,
@@ -29,6 +23,7 @@ async function main() {
 
   const connetion = await typeorm.createConnection(typeormConfig.createOrmConfig(ormconfig))
   await connetion.runMigrations({ transaction: 'all' })
+
   const entityManager = connetion.createEntityManager()
 
   // Get all NodeContracts
@@ -73,16 +68,16 @@ async function main() {
           publicIps: 0,
           resources: {
             totalResources: {
-              cru: resources.cru,
-              hru: resources.hru,
-              mru: resources.mru,
-              sru: resources.sru,
+              cru: parsedResources.cru,
+              hru: parsedResources.hru,
+              mru: parsedResources.mru,
+              sru: parsedResources.sru,
             },
             usedResources: {
-              cru: resources.cru,
-              hru: resources.hru,
-              mru: resources.mru,
-              sru: resources.sru,
+              cru: parsedResources.cru,
+              hru: parsedResources.hru,
+              mru: parsedResources.mru,
+              sru: parsedResources.sru,
             },
           }
         },
@@ -99,7 +94,7 @@ async function main() {
 
   const deploymentCapacityContracts = nodeContracts.map(async nodeC => {
     const toExecute = []
-    // console.log(`migrating contract ${nodeC.contractID}`)
+    console.log(`migrating contract ${nodeC.contractID}`)
     const contractResources = await entityManager.find(ContractResources, { where: { contract: nodeC } })
     const publicIPs = await entityManager.find(PublicIp, { where: { contractId: nodeC.contractID } })
 
@@ -184,7 +179,5 @@ async function main() {
 
   await Promise.all(deploymentCapacityContracts)
 }
-
-
 
 main()

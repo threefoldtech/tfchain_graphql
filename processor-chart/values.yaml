@@ -84,6 +84,8 @@ indexer_endpoint: http://indexer-gateway:4010/v1/graphql
 # ws_url: wss://tfchain.test.grid.tf
 ws_url: 
 
+migrate: false
+
 volume:
   size: 5Gi
   existingpersistentVolumeClaim: ""

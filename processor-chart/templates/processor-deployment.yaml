@@ -22,6 +22,36 @@ spec:
         {{- include "processor.selectorLabels" . | nindent 8 }}
     spec:
       containers:
+        {{ if .Values.migrate }}
+        - args:
+          - sh
+          - -c
+          - npm run migrate
+          image: "{{ .Values.image.processor.repository }}:{{ .Values.image.processor.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.processor.pullPolicy }}
+          name: query-node
+          ports:
+            - containerPort: 4000
+          resources: {}
+          env:
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_NAME
+                  name: env
+            - name: DB_PASS
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_PASS
+                  name: env
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_USER
+                  name: env
+            - name: DB_HOST
+              value: {{ .Values.db_host }}
+        {{ end }}
         - args:
           - sh
           - -c
