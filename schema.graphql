@@ -199,29 +199,27 @@ type ConsumableResources @entity {
   used: Resources!
 }
 
-type DeploymentContract @entity {
-  contractID: BigInt!
+type Deployment @entity {
+  deploymentID: BigInt!
   twinID: Int!
   capacityReservationID: BigInt!
   deploymentData: String!
   deploymentHash: String!
   numberOfPublicIPs: Int!
-  publicIps: [ContractPublicIp]
-  state: ContractState!
-  resourcesUsed: DeploymentContractResources
+  publicIps: [DeploymentPublicIp]
+  resources: DeploymentResources
   createdAt: BigInt!
-  solutionProviderID: Int
 }
 
-type DeploymentContractResources @entity {
-  contract: DeploymentContract!
+type DeploymentResources @entity {
+  contract: Deployment!
   hru: BigInt!
   sru: BigInt!
   cru: BigInt!
   mru: BigInt!
 }
 
-type ContractPublicIp {
+type DeploymentPublicIp {
   ip: String!
   gateway: String!
 }

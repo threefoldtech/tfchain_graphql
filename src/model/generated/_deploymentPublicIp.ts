@@ -1,11 +1,11 @@
 import assert from "assert"
 import * as marshal from "./marshal"
 
-export class ContractPublicIp {
+export class DeploymentPublicIp {
   private _ip!: string
   private _gateway!: string
 
-  constructor(props?: Partial<Omit<ContractPublicIp, 'toJSON'>>, json?: any) {
+  constructor(props?: Partial<Omit<DeploymentPublicIp, 'toJSON'>>, json?: any) {
     Object.assign(this, props)
     if (json != null) {
       this._ip = marshal.string.fromJSON(json.ip)

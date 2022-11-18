@@ -45,7 +45,9 @@
     "smartContractModule.GroupCreated",
     "smartContractModule.GroupDeleted",
     "smartContractModule.CapacityReservationContractCanceled",
-    "smartContractModule.DeploymentContractCanceled",
+    "smartContractModule.DeploymentCreated",
+    "smartContractModule.DeploymentUpdated",
+    "smartContractModule.DeploymentCanceled",
     "tftBridgeModule.MintCompleted",
     "tftBridgeModule.BurnTransactionProcessed",
     "tftBridgeModule.RefundTransactionProcessed"

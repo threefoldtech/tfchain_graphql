@@ -1,4 +1,4 @@
-import type {Result} from '../typesLocal/support'
+import type { Result } from './support'
 
 export type AccountId32 = Uint8Array
 
@@ -16,6 +16,17 @@ export interface Contract {
   twinId: number
   contractType: ContractData
   solutionProviderId: (bigint | undefined)
+}
+
+export interface Deployment {
+  id: bigint
+  twinId: number
+  capacityReservationId: bigint
+  deploymentHash: H256
+  deploymentData: Uint8Array
+  publicIps: number
+  publicIpsList: PublicIP[]
+  resources: Resources
 }
 
 export interface NruConsumption {
@@ -126,7 +137,7 @@ export interface Node {
   certification: NodeCertification
   secureBoot: boolean
   virtualized: boolean
-  serialNumber: SerialNumber
+  serialNumber: (SerialNumber | undefined)
   connectionPrice: number
 }
 
@@ -236,12 +247,7 @@ export interface ContractState_GracePeriod {
   value: bigint
 }
 
-export type ContractData = ContractData_DeploymentContract | ContractData_NameContract | ContractData_CapacityReservationContract
-
-export interface ContractData_DeploymentContract {
-  __kind: 'DeploymentContract'
-  value: DeploymentContract
-}
+export type ContractData = ContractData_NameContract | ContractData_CapacityReservationContract
 
 export interface ContractData_NameContract {
   __kind: 'NameContract'
@@ -253,9 +259,12 @@ export interface ContractData_CapacityReservationContract {
   value: CapacityReservationContract
 }
 
-export interface Provider {
-  who: AccountId32
-  take: number
+export type H256 = Uint8Array
+
+export interface PublicIP {
+  ip: Uint8Array
+  gateway: GatewayIP
+  contractId: bigint
 }
 
 export interface Resources {
@@ -265,17 +274,16 @@ export interface Resources {
   mru: bigint
 }
 
+export interface Provider {
+  who: AccountId32
+  take: number
+}
+
 export type CountryName = Uint8Array
 
 export type CityName = Uint8Array
 
 export type FarmName = Uint8Array
-
-export interface PublicIP {
-  ip: Uint8Array
-  gateway: GatewayIP
-  contractId: bigint
-}
 
 export interface IP {
   ip: IP4
@@ -337,15 +345,6 @@ export interface Cause_OutOfFunds {
   __kind: 'OutOfFunds'
 }
 
-export interface DeploymentContract {
-  capacityReservationId: bigint
-  deploymentHash: H256
-  deploymentData: Uint8Array
-  publicIps: number
-  publicIpsList: PublicIP[]
-  resources: Resources
-}
-
 export interface NameContract {
   name: NameContractName
 }
@@ -355,7 +354,7 @@ export interface CapacityReservationContract {
   resources: ConsumableResources
   groupId: (number | undefined)
   publicIps: number
-  deploymentContracts: bigint[]
+  deployments: bigint[]
 }
 
 export type GatewayIP = Uint8Array
@@ -391,7 +390,5 @@ export interface Unit_Gigabytes {
 export interface Unit_Terrabytes {
   __kind: 'Terrabytes'
 }
-
-export type H256 = Uint8Array
 
 export type NameContractName = Uint8Array

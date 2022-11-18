@@ -1,10 +1,10 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
 import * as marshal from "./marshal"
-import {DeploymentContract} from "./deploymentContract.model"
+import {Deployment} from "./deployment.model"
 
 @Entity_()
-export class DeploymentContractResources {
-  constructor(props?: Partial<DeploymentContractResources>) {
+export class DeploymentResources {
+  constructor(props?: Partial<DeploymentResources>) {
     Object.assign(this, props)
   }
 
@@ -12,8 +12,8 @@ export class DeploymentContractResources {
   id!: string
 
   @Index_()
-  @ManyToOne_(() => DeploymentContract, {nullable: false})
-  contract!: DeploymentContract
+  @ManyToOne_(() => Deployment, {nullable: false})
+  contract!: Deployment
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   hru!: bigint

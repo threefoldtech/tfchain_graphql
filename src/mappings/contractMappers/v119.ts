@@ -1,5 +1,5 @@
 import { EventHandlerContext, Store } from "@subsquid/substrate-processor";
-import { CapacityReservationContract, ConsumableResources, Resources, ContractState, DeploymentContract } from "../../model";
+import { CapacityReservationContract, ConsumableResources, Resources, ContractState, Deployment, DeploymentResources, DeploymentPublicIp, PublicIp } from "../../model";
 import * as v119 from '../../types/v119'
 
 export async function parseCapacityContractCreate(id: string, ctr: v119.Contract, store: Store) {
@@ -44,68 +44,59 @@ export async function parseCapacityContractCreate(id: string, ctr: v119.Contract
     await store.save<CapacityReservationContract>(newCapacityReservationContract)
 }
 
-export async function parseDeploymentContractCreate(id: string, ctr: v119.Contract, store: Store) {
-    let cap
-    if (ctr.contractType.__kind === 'DeploymentContract') {
-        cap = ctr.contractType.value
-    }
+export async function parseDeploymentContractCreate(id: string, deployment: v119.Deployment, store: Store) {
+    let newDeployment = new Deployment()
+    newDeployment.id = id
+    newDeployment.deploymentID = deployment.id
+    newDeployment.twinID = deployment.twinId
 
-    if (!cap) return
+    // newDeployment.createdAt = BigInt(ctx.event.blockTimestamp)
 
-    let newDeploymentContract = new DeploymentContract()
-    newDeploymentContract.id = id
-    newDeploymentContract.contractID = ctr.contractId
-    newDeploymentContract.twinID = ctr.twinId
-
-    newDeploymentContract.state = ContractState.Created
-    newDeploymentContract.createdAt = BigInt(ctx.event.blockTimestamp)
-
-    if (contract.deploymentData.toString().indexOf('\x00') >= 0) {
-        newDeploymentContract.deploymentData = ""
+    if (deployment.deploymentData.toString().indexOf('\x00') >= 0) {
+        newDeployment.deploymentData = ""
     } else {
-        newDeploymentContract.deploymentData = contract.deploymentData.toString()
+        newDeployment.deploymentData = deployment.deploymentData.toString()
     }
-    if (contract.deploymentHash.toString().indexOf('\x00') >= 0) {
-        newDeploymentContract.deploymentHash = ""
+    if (deployment.deploymentHash.toString().indexOf('\x00') >= 0) {
+        newDeployment.deploymentHash = ""
     } else {
-        newDeploymentContract.deploymentHash = contract.deploymentHash.toString()
+        newDeployment.deploymentHash = deployment.deploymentHash.toString()
     }
 
-    newDeploymentContract.capacityReservationID = contract.capacityReservationId
-    newDeploymentContract.numberOfPublicIPs = contract.publicIps
-    newDeploymentContract.solutionProviderID = Number(contractEvent.solutionProviderId) || 0
+    newDeployment.capacityReservationID = deployment.capacityReservationId
+    newDeployment.numberOfPublicIPs = deployment.publicIps
 
-    await ctx.store.save<DeploymentContract>(newDeploymentContract)
+    await store.save<Deployment>(newDeployment)
 
-    let contractResources = new DeploymentContractResources()
+    let contractResources = new DeploymentResources()
     contractResources.id = id
-    contractResources.contract = newDeploymentContract
+    contractResources.contract = newDeployment
 
-    contractResources.cru = contract.resources.cru
-    contractResources.sru = contract.resources.sru
-    contractResources.hru = contract.resources.hru
-    contractResources.mru = contract.resources.mru
+    contractResources.cru = deployment.resources.cru
+    contractResources.sru = deployment.resources.sru
+    contractResources.hru = deployment.resources.hru
+    contractResources.mru = deployment.resources.mru
 
-    newDeploymentContract.resourcesUsed = contractResources
-    newDeploymentContract.publicIps = contract.publicIpsList.map(ip => {
-        let cIP = new ContractPublicIp
+    newDeployment.resources = contractResources
+    newDeployment.publicIps = deployment.publicIpsList.map(ip => {
+        let cIP = new DeploymentPublicIp()
         cIP.ip = ip.ip.toString()
         cIP.gateway = ip.gateway.toString()
         return cIP
     })
 
-    await ctx.store.save<DeploymentContractResources>(contractResources)
-    await ctx.store.save<DeploymentContract>(newDeploymentContract)
+    await store.save<DeploymentResources>(contractResources)
+    await store.save<Deployment>(newDeployment)
 
-    contract.publicIpsList.forEach(async ip => {
+    deployment.publicIpsList.forEach(async ip => {
         if (ip.ip.toString().indexOf('\x00') >= 0) {
             return
         }
-        const savedIp = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() } })
+        const savedIp = await store.get(PublicIp, { where: { ip: ip.ip.toString() } })
 
         if (savedIp) {
-            savedIp.contractId = newDeploymentContract.contractID
-            await ctx.store.save<PublicIp>(savedIp)
+            savedIp.contractId = newDeployment.deploymentID
+            await store.save<PublicIp>(savedIp)
         }
     })
 }

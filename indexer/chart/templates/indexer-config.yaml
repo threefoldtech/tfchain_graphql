@@ -600,7 +600,10 @@ data:
               }
             },
             {
-              "minmax": [119, null],
+              "minmax": [
+                119,
+                null
+              ],
               "types": {
                 "Group": {
                   "id": "u32",
@@ -613,7 +616,6 @@ data:
                 },
                 "ContractData": {
                   "_enum": {
-                    "DeploymentContract": "DeploymentContract",
                     "NameContract": "NameContract",
                     "CapacityReservationContract": "CapacityReservationContract"
                   }
@@ -625,7 +627,9 @@ data:
                   "publicIps": "u32",
                   "deploymentContract": "Vec<u64>"
                 },
-                "DeploymentContract": {
+                "Deployment": {
+                  "id": "u64",
+                  "twinId": "u32",
                   "capacityReservationId": "u64",
                   "deploymentHash": "Vec<u8>",
                   "deploymentData": "Vec<u8>",
@@ -648,7 +652,7 @@ data:
                   "certification": "NodeCertification",
                   "secureBoot": "bool",
                   "virtualized": "bool",
-                  "serialNumber": "Vec<u8>",
+                  "serialNumber": "Option<Vec<u8>>",
                   "connectionPrice": "u32"
                 },
                 "Power": {
@@ -657,7 +661,10 @@ data:
                   "lastUptime": "u64"
                 },
                 "PowerTarget": {
-                  "_enum": ["Up", "Down"]
+                  "_enum": [
+                    "Up",
+                    "Down"
+                  ]
                 },
                 "PowerState": {
                   "_enum": {
