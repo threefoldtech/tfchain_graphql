@@ -27,6 +27,7 @@
     "dotenv": "^16.0.0",
     "lodash": "^4.17.21",
     "pg-format": "^1.0.4",
+    "standard": "^17.0.0",
     "substrate-tfgrid-ts-types": "^0.4.0",
     "typeorm": "^0.2.45"
   },

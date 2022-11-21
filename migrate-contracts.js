@@ -1,11 +1,11 @@
 const {
   createCapacityContract,
-  updateCapacityContract,
-} = require("./lib/mappings/contractMappers/v119")
-const { createDeployment } = require("./lib/mappings/deploymentMappers/v119")
-require("dotenv/config")
-const typeormConfig = require("@subsquid/typeorm-config")
-const typeorm = require("typeorm")
+  updateCapacityContract
+} = require('./lib/mappings/contractMappers/v119')
+const { createDeployment } = require('./lib/mappings/deploymentMappers/v119')
+require('dotenv/config')
+const typeormConfig = require('@subsquid/typeorm-config')
+const typeorm = require('typeorm')
 const {
   NodeContract,
   PublicIp,
@@ -13,45 +13,45 @@ const {
   RentContract,
   Node,
   ContractState,
-  ContractResources,
-} = require("./lib/model/index")
+  ContractResources
+} = require('./lib/model/index')
 const {
-  CapacityReservationContract,
-} = require("./lib/model/generated/capacityReservationContract.model")
+  CapacityReservationContract
+} = require('./lib/model/generated/capacityReservationContract.model')
 
 async function main () {
   const ormconfig = {
-    type: "postgres",
-    migrations: [__dirname + "db/migrations/*.js"],
-    entities: [require.resolve("./lib/model")],
+    type: 'postgres',
+    migrations: [__dirname + 'db/migrations/*.js'],
+    entities: [require.resolve('./lib/model')],
     synchronize: false,
     migrationsRun: false,
     dropSchema: false,
-    logging: ["query", "error", "schema"],
+    logging: ['query', 'error', 'schema'],
 
-    host: process.env.DB_HOST || "localhost",
+    host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
-    database: process.env.DB_NAME || "tfgrid-graphql",
-    username: process.env.DB_USER || "postgres",
-    password: process.env.DB_PASS || "postgres",
+    database: process.env.DB_NAME || 'tfgrid-graphql',
+    username: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASS || 'postgres'
   }
 
   const connetion = await typeorm.createConnection(
     typeormConfig.createOrmConfig(ormconfig)
   )
-  await connetion.runMigrations({ transaction: "all" })
+  await connetion.runMigrations({ transaction: 'all' })
 
   const entityManager = connetion.createEntityManager()
 
   // Get all NodeContracts
   const nodeContracts = await entityManager.find(NodeContract, {
     where: { state: ContractState.Created },
-    relations: { relation: true },
+    relations: { relation: true }
   })
 
   // Get all RentContracts
   const rentContracts = await entityManager.find(RentContract, {
-    where: { state: ContractState.Created },
+    where: { state: ContractState.Created }
   })
 
   // Get all Nodes
@@ -63,14 +63,14 @@ async function main () {
     const foundNode = nodes.find((n) => n.nodeID === rentContract.nodeID)
     if (!foundNode) return
     const resources = await entityManager.find(NodeResourcesTotal, {
-      where: { node: foundNode },
+      where: { node: foundNode }
     })
 
     const parsedResources = {
       cru: BigInt(0),
       hru: BigInt(0),
       mru: BigInt(0),
-      sru: BigInt(0),
+      sru: BigInt(0)
     }
 
     if (resources.length > 0) {
@@ -86,7 +86,7 @@ async function main () {
       contractId: rentContract.contractID,
       twinId: rentContract.twinID,
       contractType: {
-        __kind: "CapacityReservationContract",
+        __kind: 'CapacityReservationContract',
         value: {
           nodeId: rentContract.nodeID,
           publicIps: 0,
@@ -95,20 +95,20 @@ async function main () {
               cru: parsedResources.cru,
               hru: parsedResources.hru,
               mru: parsedResources.mru,
-              sru: parsedResources.sru,
+              sru: parsedResources.sru
             },
             usedResources: {
               cru: parsedResources.cru,
               hru: parsedResources.hru,
               mru: parsedResources.mru,
-              sru: parsedResources.sru,
-            },
-          },
+              sru: parsedResources.sru
+            }
+          }
         },
         groupId: undefined,
         publicIps: 0,
-        deploymentContracts: [],
-      },
+        deploymentContracts: []
+      }
     }
 
     return createCapacityContract(
@@ -124,17 +124,17 @@ async function main () {
     const toExecute = []
     // console.log(`migrating contract ${nodeC.contractID}`)
     const contractResources = await entityManager.find(ContractResources, {
-      where: { contract: nodeC },
+      where: { contract: nodeC }
     })
     const publicIPs = await entityManager.find(PublicIp, {
-      where: { contractId: nodeC.contractID },
+      where: { contractId: nodeC.contractID }
     })
 
     const resources = {
       cru: BigInt(0),
       hru: BigInt(0),
       mru: BigInt(0),
-      sru: BigInt(0),
+      sru: BigInt(0)
     }
 
     if (contractResources.length > 0) {
@@ -152,7 +152,7 @@ async function main () {
         contractId: nodeC.contractID,
         twinId: nodeC.twinID,
         contractType: {
-          __kind: "CapacityReservationContract",
+          __kind: 'CapacityReservationContract',
           value: {
             nodeId: nodeC.nodeID,
             publicIps: nodeC.numberOfPublicIPs,
@@ -161,28 +161,28 @@ async function main () {
                 cru: resources.cru,
                 hru: resources.hru,
                 mru: resources.mru,
-                sru: resources.sru,
+                sru: resources.sru
               },
               usedResources: {
                 cru: BigInt(0),
                 hru: BigInt(0),
                 mru: BigInt(0),
-                sru: BigInt(0),
-              },
-            },
+                sru: BigInt(0)
+              }
+            }
           },
           groupId: undefined,
           publicIps: nodeC.numberOfPublicIPs,
-          deploymentContracts: [],
-        },
+          deploymentContracts: []
+        }
       }
 
       toExecute.push(
         createCapacityContract(nodeC.id, capacityContract, entityManager)
       )
     } else {
-      console.log("includes in rentcontracts")
-      let capacityContract = await entityManager.find(
+      console.log('includes in rentcontracts')
+      const capacityContract = await entityManager.find(
         CapacityReservationContract,
         { where: { nodeID: nodeC.nodeID } }
       )[0]
@@ -199,7 +199,7 @@ async function main () {
       capacityContract.contractType.value.resoruces.usedResources.mru +=
         resources.mru
 
-      console.log("had to update capacity contract")
+      console.log('had to update capacity contract')
       toExecute.push(updateCapacityContract(capacityContract, entityManager))
     }
 
@@ -207,7 +207,7 @@ async function main () {
       return {
         ip: ip.ip,
         gateway: ip.gateway,
-        contractId: nodeC.contractID,
+        contractId: nodeC.contractID
       }
     })
 
@@ -223,8 +223,8 @@ async function main () {
         hru: resources.hru,
         sru: resources.sru,
         cru: resources.cru,
-        mru: resources.mru,
-      },
+        mru: resources.mru
+      }
     }
 
     toExecute.push(
