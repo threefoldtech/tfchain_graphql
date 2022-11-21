@@ -39,18 +39,11 @@ export async function processContractV119Update(event: SmartContractModuleContra
     if (!contractEvent) return
 
     if (contractEvent.contractType.__kind === 'NameContract') {
-        const SavedNameContract = await ctx.store.get(NameContract, { where: { contractID: contractEvent.contractId } })
-        if (SavedNameContract) {
-            await updateNameContract(contractEvent, SavedNameContract, ctx.store)
-        }
+        await updateNameContract(contractEvent, ctx.store)
     }
 
     if (contractEvent.contractType.__kind === 'CapacityReservationContract') {
-        const savedCapacityContract = await ctx.store.get(CapacityReservationContract, { where: { contractID: contractEvent.contractId } })
-        if (savedCapacityContract) {
-            contractEvent.contractType.value.resources.totalResources
-            await updateCapacityContract(contractEvent, savedCapacityContract, ctx.store)
-        }
+        await updateCapacityContract(contractEvent, ctx.store)
     }
 }
 
@@ -96,7 +89,10 @@ export async function createCapacityContract(id: string, ctr: ContractV119, stor
     await store.save<CapacityReservationContract>(newCapacityReservationContract)
 }
 
-export async function updateCapacityContract(ctr: ContractV119, contract: CapacityReservationContract, store: Store) {
+export async function updateCapacityContract(ctr: ContractV119, store: Store) {
+    let savedCapacityContract = await store.get(CapacityReservationContract, { where: { contractID: ctr.contractId } })
+    if (!savedCapacityContract) return
+
     let cap
     if (ctr.contractType.__kind === 'CapacityReservationContract') {
         cap = ctr.contractType.value
@@ -114,12 +110,12 @@ export async function updateCapacityContract(ctr: ContractV119, contract: Capaci
             break
     }
 
-    contract.state = state
-    contract.nodeID = Number(cap?.nodeId || 0)
-    contract.publicIPs = Number(cap?.publicIps || 0)
-    await store.save<CapacityReservationContract>(contract)
+    savedCapacityContract.state = state
+    savedCapacityContract.nodeID = Number(cap?.nodeId || 0)
+    savedCapacityContract.publicIPs = Number(cap?.publicIps || 0)
+    await store.save<CapacityReservationContract>(savedCapacityContract)
 
-    let savedResources = await store.get(ConsumableResources, { where: { contract } })
+    let savedResources = await store.get(ConsumableResources, { where: { savedCapacityContract } })
     if (!savedResources) return
 
     savedResources.total.cru = cap.resources.totalResources.cru
@@ -135,15 +131,18 @@ export async function updateCapacityContract(ctr: ContractV119, contract: Capaci
     await store.save<ConsumableResources>(savedResources)
 }
 
-async function updateNameContract(ctr: any, contract: NameContract, store: Store) {
+async function updateNameContract(ctr: any, store: Store) {
+    let savedNameContract = await store.get(NameContract, { where: { contractID: ctr.contractId } })
+    if (!savedNameContract) return
+
     if (ctr.contractType.__kind !== "NameContract") return
 
     const parsedNameContract = ctr.contractType.value
 
-    contract.contractID = ctr.contractId
-    contract.gridVersion = ctr.version
-    contract.twinID = ctr.twinId
-    contract.name = parsedNameContract.name.toString()
+    savedNameContract.contractID = ctr.contractId
+    savedNameContract.gridVersion = ctr.version
+    savedNameContract.twinID = ctr.twinId
+    savedNameContract.name = parsedNameContract.name.toString()
 
     let state = ContractState.OutOfFunds
     switch (ctr.state.__kind) {
@@ -154,6 +153,6 @@ async function updateNameContract(ctr: any, contract: NameContract, store: Store
             state = ContractState.Deleted
             break
     }
-    contract.state = state
-    await store.save<NameContract>(contract)
+    savedNameContract.state = state
+    await store.save<NameContract>(savedNameContract)
 }
