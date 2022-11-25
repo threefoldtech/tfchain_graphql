@@ -13,7 +13,7 @@ import {
   SmartContractModuleNruConsumptionReportReceivedEvent, SmartContractModuleRentContractCanceledEvent, SmartContractModuleContractGracePeriodStartedEvent,
   SmartContractModuleContractGracePeriodEndedEvent, SmartContractModuleCapacityReservationContractCanceledEvent,
 } from "../types/events";
-import { processContractV119Create, processContractV119Update } from './contractMappers/v119'
+import { processContractV119Create, processContractV119Update } from './contractMappers/v120'
 
 export async function contractCreated(ctx: EventHandlerContext) {
   let contractCreatedEvent = new SmartContractModuleContractCreatedEvent(ctx)
@@ -31,7 +31,7 @@ export async function contractCreated(ctx: EventHandlerContext) {
     contractEvent = contractCreatedEvent.asV101
   } else if (contractCreatedEvent.isV105) {
     contractEvent = contractCreatedEvent.asV105
-  } else if (contractCreatedEvent.isV119) {
+  } else if (contractCreatedEvent.isV120) {
     return processContractV119Create(contractCreatedEvent, ctx)
   }
 
@@ -134,7 +134,7 @@ export async function contractUpdated(ctx: EventHandlerContext) {
     contractEvent = contractUpdatedEvent.asV59
   } else if (contractUpdatedEvent.isV101) {
     contractEvent = contractUpdatedEvent.asV101
-  } else if (contractUpdatedEvent.isV119) {
+  } else if (contractUpdatedEvent.isV120) {
     return processContractV119Update(contractUpdatedEvent, ctx)
   }
 
@@ -420,7 +420,7 @@ export async function contractGracePeriodEnded(ctx: EventHandlerContext) {
 }
 
 export async function capacityReservationContractCanceled(ctx: EventHandlerContext) {
-  const contractID = new SmartContractModuleCapacityReservationContractCanceledEvent(ctx).asV119.contractId
+  const contractID = new SmartContractModuleCapacityReservationContractCanceledEvent(ctx).asV120.contractId
 
   const savedContract = await ctx.store.get(CapacityReservationContract, { where: { contractID } })
 

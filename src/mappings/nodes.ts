@@ -21,8 +21,8 @@ export async function nodeStored(ctx: EventHandlerContext) {
     nodeEvent = node.asV105
   } else if (node.isV118) {
     nodeEvent = node.asV118
-  } else if (node.isV119) {
-    nodeEvent = node.asV119
+  } else if (node.isV120) {
+    nodeEvent = node.asV120
   }
 
   if (!nodeEvent) {
@@ -159,8 +159,8 @@ export async function nodeStored(ctx: EventHandlerContext) {
     await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
   }
 
-  if (node.isV119) {
-    let nodeEvent = node.asV119
+  if (node.isV120) {
+    let nodeEvent = node.asV120
     newNode.country = nodeEvent.location.country.toString()
     newNode.city = nodeEvent.location.city.toString()
     newNode.secure = nodeEvent.secureBoot ? true : false
@@ -238,8 +238,8 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     nodeEvent = node.asV105
   } else if (node.isV118) {
     nodeEvent = node.asV118
-  } else if (node.isV119) {
-    nodeEvent = node.asV119
+  } else if (node.isV120) {
+    nodeEvent = node.asV120
   }
 
   if (!nodeEvent) return
@@ -437,8 +437,8 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     }
   }
 
-  if (node.isV119) {
-    const nodeEvent = node.asV119
+  if (node.isV120) {
+    const nodeEvent = node.asV120
 
     savedNode.country = nodeEvent.location.country.toString()
     savedNode.city = nodeEvent.location.city.toString()
@@ -632,7 +632,7 @@ export async function nodeCertificationSet(ctx: EventHandlerContext) {
 }
 
 export async function powerTargetChanged(ctx: EventHandlerContext) {
-  const { nodeId, powerTarget } = new TfgridModulePowerTargetChangedEvent(ctx).asV119
+  const { nodeId, powerTarget } = new TfgridModulePowerTargetChangedEvent(ctx).asV120
 
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeId } })
   if (!savedNode) return
@@ -649,7 +649,7 @@ export async function powerTargetChanged(ctx: EventHandlerContext) {
 }
 
 export async function powerStateChanged(ctx: EventHandlerContext) {
-  const { nodeId, powerState } = new TfgridModulePowerStateChangedEvent(ctx).asV119
+  const { nodeId, powerState } = new TfgridModulePowerStateChangedEvent(ctx).asV120
 
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeId } })
   if (!savedNode) return

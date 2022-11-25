@@ -1,11 +1,11 @@
 import { Store, EventHandlerContext } from "@subsquid/substrate-processor";
 import { CapacityReservationContract, ConsumableResources, Resources, ContractState, NameContract } from "../../model";
 // import { updateNameContract } from '../contracts'
-import { Contract as ContractV119 } from "../../types/v119";
+import { Contract as ContractV119 } from "../../types/v120";
 import { SmartContractModuleContractUpdatedEvent, SmartContractModuleContractCreatedEvent } from "../../types/events"
 
 export async function processContractV119Create(event: SmartContractModuleContractCreatedEvent, ctx: EventHandlerContext) {
-    let contractEvent = event.asV119
+    let contractEvent = event.asV120
 
     if (!contractEvent) return
 
@@ -34,7 +34,7 @@ export async function processContractV119Create(event: SmartContractModuleContra
 
 
 export async function processContractV119Update(event: SmartContractModuleContractUpdatedEvent, ctx: EventHandlerContext) {
-    let contractEvent = event.asV119
+    let contractEvent = event.asV120
 
     if (!contractEvent) return
 
@@ -115,7 +115,7 @@ export async function updateCapacityContract(ctr: ContractV119, store: Store) {
     savedCapacityContract.publicIPs = Number(cap?.publicIps || 0)
     await store.save<CapacityReservationContract>(savedCapacityContract)
 
-    let savedResources = await store.get(ConsumableResources, { where: { savedCapacityContract } })
+    let savedResources = await store.get(ConsumableResources, { where: { contract: savedCapacityContract } })
     if (!savedResources) return
 
     savedResources.total.cru = cap.resources.totalResources.cru

@@ -1,8 +1,8 @@
 import { Store, SubstrateEvent } from "@subsquid/substrate-processor";
 import { Deployment, DeploymentResources, DeploymentPublicIp, PublicIp } from "../../model";
-import * as v119 from '../../types/v119'
+import * as v120 from '../../types/v120'
 
-export async function createDeployment(id: string, timestamp: bigint, deployment: v119.Deployment, store: Store) {
+export async function createDeployment(id: string, timestamp: bigint, deployment: v120.Deployment, store: Store) {
     let newDeployment = new Deployment()
     newDeployment.id = id
     newDeployment.deploymentID = deployment.id
@@ -59,7 +59,7 @@ export async function createDeployment(id: string, timestamp: bigint, deployment
     })
 }
 
-export async function updateDeployment(deployment: v119.Deployment, store: Store) {
+export async function updateDeployment(deployment: v120.Deployment, store: Store) {
     const savedDeployment = await store.get(Deployment, { where: { deploymentID: deployment.id } })
 
     if (!savedDeployment) return
