@@ -1,5 +1,5 @@
 import { Store, SubstrateEvent } from "@subsquid/substrate-processor";
-import { Deployment, DeploymentResources, DeploymentPublicIp, PublicIp } from "../../model";
+import { Deployment, DeploymentResources, DeploymentPublicIp, PublicIp, CapacityReservationContract } from "../../model";
 import * as v120 from '../../types/v120'
 
 export async function createDeployment(id: string, timestamp: bigint, deployment: v120.Deployment, store: Store) {
@@ -26,6 +26,12 @@ export async function createDeployment(id: string, timestamp: bigint, deployment
 
     await store.save<Deployment>(newDeployment)
 
+    const savedCapacityContract = await store.get(CapacityReservationContract, { where: { contractID: deployment.capacityReservationId } })
+    if (savedCapacityContract) {
+        savedCapacityContract.publicIPs += deployment.publicIps
+        await store.save<CapacityReservationContract>(savedCapacityContract)
+    }
+
     let contractResources = new DeploymentResources()
     contractResources.id = id
     contractResources.contract = newDeployment
@@ -39,7 +45,7 @@ export async function createDeployment(id: string, timestamp: bigint, deployment
     newDeployment.publicIps = deployment.publicIpsList.map(ip => {
         let cIP = new DeploymentPublicIp()
         cIP.ip = ip.ip.toString()
-        cIP.gateway = ip.gateway.toString()
+        cIP.gateway = ip.gw.toString()
         return cIP
     })
 
@@ -75,6 +81,13 @@ export async function updateDeployment(deployment: v120.Deployment, store: Store
         savedDeployment.deploymentHash = ""
     } else {
         savedDeployment.deploymentHash = deployment.deploymentHash.toString()
+    }
+
+    const savedCapacityContract = await store.get(CapacityReservationContract, { where: { contractID: deployment.capacityReservationId } })
+    if (savedCapacityContract) {
+        savedCapacityContract.publicIPs -= savedDeployment.numberOfPublicIPs
+        savedCapacityContract.publicIPs += deployment.publicIps
+        await store.save<CapacityReservationContract>(savedCapacityContract)
     }
 
     const savedDeploymentResources = await store.get(DeploymentResources, { where: { contract: savedDeployment } })

@@ -534,6 +534,16 @@
     {
       "minmax": [120, null],
       "types": {
+        "Farm": {
+          "version": "u32",
+          "id": "u32",
+          "name": "Vec<u8>",
+          "twin_id": "u32",
+          "pricing_policy_id": "u32",
+          "certification": "FarmCertification",
+          "dedicated_farm": "bool",
+          "farming_policy_limits": "Option<FarmingPolicyLimit>"
+        },
         "Group": {
           "id": "u32",
           "twinId": "u32",
@@ -545,16 +555,17 @@
         },
         "ContractData": {
           "_enum": {
-            "NameContract": "NameContract",
-            "CapacityReservationContract": "CapacityReservationContract"
+            "CapacityReservationContract": "CapacityReservationContract",
+            "NameContract": "NameContract"
           }
         },
         "CapacityReservationContract": {
           "nodeId": "u32",
-          "resources": "ConsumableResources",
-          "groupId": "Option<u32>",
-          "publicIps": "u32",
-          "deploymentContract": "Vec<u64>"
+          "groupId": "Option<u32>"
+        },
+        "IP4": {
+          "ip": "Vec<u8>",
+          "gateway": "Vec<u8>"
         },
         "Deployment": {
           "id": "u64",
@@ -563,7 +574,7 @@
           "deploymentHash": "Vec<u8>",
           "deploymentData": "Vec<u8>",
           "publicIps": "u32",
-          "publicIpsList": "Vec<PublicIP>",
+          "publicIpsList": "Vec<IP4>",
           "resources": "Resources"
         },
         "Node": {
@@ -571,9 +582,7 @@
           "id": "u32",
           "farmId": "u32",
           "twinId": "u32",
-          "resources": "Resources",
           "location": "Location",
-          "power": "Power",
           "publicConfig": "Option<PublicConfig>",
           "created": "u64",
           "farmingPolicyId": "u32",

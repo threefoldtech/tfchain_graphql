@@ -17,6 +17,7 @@ import {
 } from './mappings/deployments'
 import { burnProcessed, mintCompleted, refundProcessed } from './mappings/bridge';
 import { solutionProviderCreated, solutionProviderApproved } from './mappings/solutionProviders'
+import { capacityReservationContractResourcesChanged } from './mappings/contractMappers/v120'
 
 import {
   SubstrateProcessor,
@@ -77,7 +78,9 @@ processor.addEventHandler('smartContractModule.ContractGracePeriodStarted', ctx 
 processor.addEventHandler('smartContractModule.ContractGracePeriodEnded', ctx => contractGracePeriodEnded(ctx))
 processor.addEventHandler('smartContractModule.SolutionProviderCreated', ctx => solutionProviderCreated(ctx))
 processor.addEventHandler('smartContractModule.SolutionProviderApproved', ctx => solutionProviderApproved(ctx))
+
 processor.addEventHandler('smartContractModule.CapacityReservationContractCanceled', ctx => capacityReservationContractCanceled(ctx))
+processor.addEventHandler('smartContractModule.CapacityReservationConsumableResourcesChanged', ctx => capacityReservationContractResourcesChanged(ctx))
 
 processor.addEventHandler('smartContractModule.DeploymentCreated', ctx => deploymentCreated(ctx))
 processor.addEventHandler('smartContractModule.DeploymentUpdated', ctx => deploymentUpdated(ctx))

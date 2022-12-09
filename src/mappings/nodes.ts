@@ -2,7 +2,7 @@ import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
 import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal, PowerState, NodePower, NodeConsumableResources, Resources } from "../model";
-import { TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent, TfgridModulePowerStateChangedEvent, TfgridModulePowerTargetChangedEvent } from "../types/events";
+import { TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeConsumableResourcesChangedEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent, TfgridModulePowerStateChangedEvent, TfgridModulePowerTargetChangedEvent } from "../types/events";
 
 export async function nodeStored(ctx: EventHandlerContext) {
   const node = new TfgridModuleNodeStoredEvent(ctx)
@@ -183,17 +183,18 @@ export async function nodeStored(ctx: EventHandlerContext) {
     nodeConsumableResources.id = ctx.event.id
     nodeConsumableResources.node = newNode
 
+    // Resources are emitted in another event (NodeConsumableResourcesChanged)
     const totalResources = new Resources()
-    totalResources.sru = nodeEvent.resources.totalResources.sru
-    totalResources.hru = nodeEvent.resources.totalResources.hru
-    totalResources.mru = nodeEvent.resources.totalResources.mru
-    totalResources.cru = nodeEvent.resources.totalResources.cru
+    totalResources.sru = BigInt(0)
+    totalResources.hru = BigInt(0)
+    totalResources.mru = BigInt(0)
+    totalResources.cru = BigInt(0)
 
     const usedResources = new Resources()
-    usedResources.sru = nodeEvent.resources.usedResources.sru
-    usedResources.hru = nodeEvent.resources.usedResources.hru
-    usedResources.mru = nodeEvent.resources.usedResources.mru
-    usedResources.cru = nodeEvent.resources.usedResources.cru
+    usedResources.sru = BigInt(0)
+    usedResources.hru = BigInt(0)
+    usedResources.mru = BigInt(0)
+    usedResources.cru = BigInt(0)
 
     nodeConsumableResources.total = totalResources
     nodeConsumableResources.used = usedResources
@@ -461,21 +462,21 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
       savedNode.certification = NodeCertification.Diy
     }
 
-    // Recalculate total / free resoures when a node get's updated
-    let nodeConsumableResources = await ctx.store.get(NodeConsumableResources, { where: { node: savedNode } })
-    if (nodeConsumableResources) {
-      nodeConsumableResources.total.sru = nodeEvent.resources.totalResources.sru
-      nodeConsumableResources.total.hru = nodeEvent.resources.totalResources.hru
-      nodeConsumableResources.total.mru = nodeEvent.resources.totalResources.mru
-      nodeConsumableResources.total.cru = nodeEvent.resources.totalResources.cru
+    // // Recalculate total / free resoures when a node get's updated
+    // let nodeConsumableResources = await ctx.store.get(NodeConsumableResources, { where: { node: savedNode } })
+    // if (nodeConsumableResources) {
+    //   nodeConsumableResources.total.sru = nodeEvent.resources.totalResources.sru
+    //   nodeConsumableResources.total.hru = nodeEvent.resources.totalResources.hru
+    //   nodeConsumableResources.total.mru = nodeEvent.resources.totalResources.mru
+    //   nodeConsumableResources.total.cru = nodeEvent.resources.totalResources.cru
 
-      nodeConsumableResources.used.sru = nodeEvent.resources.usedResources.sru
-      nodeConsumableResources.used.hru = nodeEvent.resources.usedResources.hru
-      nodeConsumableResources.used.mru = nodeEvent.resources.usedResources.mru
-      nodeConsumableResources.used.cru = nodeEvent.resources.usedResources.cru
+    //   nodeConsumableResources.used.sru = nodeEvent.resources.usedResources.sru
+    //   nodeConsumableResources.used.hru = nodeEvent.resources.usedResources.hru
+    //   nodeConsumableResources.used.mru = nodeEvent.resources.usedResources.mru
+    //   nodeConsumableResources.used.cru = nodeEvent.resources.usedResources.cru
 
-      await ctx.store.save<NodeConsumableResources>(nodeConsumableResources)
-    }
+    //   await ctx.store.save<NodeConsumableResources>(nodeConsumableResources)
+    // }
   }
 
   await ctx.store.save<Node>(savedNode)
@@ -532,6 +533,29 @@ export async function nodeDeleted(ctx: EventHandlerContext) {
     await Promise.all(promises)
 
     await ctx.store.remove(savedNode)
+  }
+}
+
+export async function nodeConsumableResourcesChanged(ctx: EventHandlerContext) {
+  const { nodeId, resources } = new TfgridModuleNodeConsumableResourcesChangedEvent(ctx).asV120
+
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeId } })
+  if (!savedNode) return
+
+  // Recalculate total / free resoures when a node get's updated
+  let nodeConsumableResources = await ctx.store.get(NodeConsumableResources, { where: { node: savedNode } })
+  if (nodeConsumableResources) {
+    nodeConsumableResources.total.sru = resources.totalResources.sru
+    nodeConsumableResources.total.hru = resources.totalResources.hru
+    nodeConsumableResources.total.mru = resources.totalResources.mru
+    nodeConsumableResources.total.cru = resources.totalResources.cru
+
+    nodeConsumableResources.used.sru = resources.usedResources.sru
+    nodeConsumableResources.used.hru = resources.usedResources.hru
+    nodeConsumableResources.used.mru = resources.usedResources.mru
+    nodeConsumableResources.used.cru = resources.usedResources.cru
+
+    await ctx.store.save<NodeConsumableResources>(nodeConsumableResources)
   }
 }
 

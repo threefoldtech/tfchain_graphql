@@ -62,6 +62,118 @@ export class BalancesTransferEvent {
   }
 }
 
+export class SmartContractModuleActiveDeploymentsChangedEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'smartContractModule.ActiveDeploymentsChanged')
+  }
+
+  get isV120(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.ActiveDeploymentsChanged') === 'cb7eb7bb43234824ea722d91c332d9bf195dcaf6b59947ddeb564e45b200d123'
+  }
+
+  get asV120(): {contractId: bigint, deployments: bigint[]} {
+    assert(this.isV120)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV120
+  }
+
+  get asLatest(): {contractId: bigint, deployments: bigint[]} {
+    deprecateLatest()
+    return this.asV120
+  }
+}
+
+export class SmartContractModuleCapacityReservationConsumableResourcesChangedEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'smartContractModule.CapacityReservationConsumableResourcesChanged')
+  }
+
+  get isV120(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.CapacityReservationConsumableResourcesChanged') === 'b293c55cb6f1f1088d714389674a86341041cf343e5fdc36ca910ecdec40d249'
+  }
+
+  get asV120(): {contractId: bigint, resources: v120.ConsumableResources} {
+    assert(this.isV120)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV120
+  }
+
+  get asLatest(): {contractId: bigint, resources: v120.ConsumableResources} {
+    deprecateLatest()
+    return this.asV120
+  }
+}
+
+export class SmartContractModuleIPsFreedEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'smartContractModule.IPsFreed')
+  }
+
+  /**
+   * IP got freed by a Node contract
+   */
+  get isV120(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.IPsFreed') === 'e3486a171a2e8ddfb92c6e41d056701ff58e06d3624dfa8f38b65b860eb60291'
+  }
+
+  /**
+   * IP got freed by a Node contract
+   */
+  get asV120(): {contractId: bigint, publicIps: v120.IP4[]} {
+    assert(this.isV120)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV120
+  }
+
+  get asLatest(): {contractId: bigint, publicIps: v120.IP4[]} {
+    deprecateLatest()
+    return this.asV120
+  }
+}
+
+export class SmartContractModuleIPsReservedEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'smartContractModule.IPsReserved')
+  }
+
+  /**
+   * IP got reserved by a Node contract
+   */
+  get isV120(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.IPsReserved') === 'e3486a171a2e8ddfb92c6e41d056701ff58e06d3624dfa8f38b65b860eb60291'
+  }
+
+  /**
+   * IP got reserved by a Node contract
+   */
+  get asV120(): {contractId: bigint, publicIps: v120.IP4[]} {
+    assert(this.isV120)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV120
+  }
+
+  get asLatest(): {contractId: bigint, publicIps: v120.IP4[]} {
+    deprecateLatest()
+    return this.asV120
+  }
+}
+
 export class SmartContractModuleCapacityReservationContractCanceledEvent {
   constructor(private ctx: EventContext) {
     assert(this.ctx.event.name === 'smartContractModule.CapacityReservationContractCanceled')
@@ -181,7 +293,7 @@ export class SmartContractModuleContractCreatedEvent {
  * A contract got created
  */
   get isV120(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ContractCreated') === '67897028270b69d0adf674950e04fc027235a3cac7e1534e5944e8b0efbb7f5d'
+    return this.ctx._chain.getEventHash('smartContractModule.ContractCreated') === '8a59d10f6f2b263610ef4d25dbfc50c21b0f999cf28ce257b2ca4e9be581a6ce'
   }
 
   /**
@@ -272,7 +384,7 @@ export class SmartContractModuleContractUpdatedEvent {
    * A contract was updated
    */
   get isV120(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ContractCreated') === '67897028270b69d0adf674950e04fc027235a3cac7e1534e5944e8b0efbb7f5d'
+    return this.ctx._chain.getEventHash('smartContractModule.ContractCreated') === '8a59d10f6f2b263610ef4d25dbfc50c21b0f999cf28ce257b2ca4e9be581a6ce'
   }
 
   /**
@@ -300,7 +412,7 @@ export class SmartContractModuleDeploymentCanceledEvent {
   }
 
   get isV120(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.DeploymentCanceled') === '6fb1cca63bfc731f7f1557228fa0796f7e5e8b3dea7af7fd2f3e15114ba5e641'
+    return this.ctx._chain.getEventHash('smartContractModule.DeploymentCanceled') === '33a072130f613abb5b356db1d5cb4f912d60b4c50cc8efefffec4ed5c09ef67c'
   }
 
   get asV120(): { deploymentId: bigint } {
@@ -325,7 +437,7 @@ export class SmartContractModuleDeploymentCreatedEvent {
   }
 
   get isV120(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.DeploymentCreated') === '855a92f52baa7fa64bd1a212c0417b80d7daaa9c9da073f2ee85aadcfe63cb50'
+    return this.ctx._chain.getEventHash('smartContractModule.DeploymentCreated') === '19d52d9d6011c2bbab161360f83a81d5f608dc567998af89397f160d37c659c2'
   }
 
   get asV120(): v120.Deployment {
@@ -350,7 +462,7 @@ export class SmartContractModuleDeploymentUpdatedEvent {
   }
 
   get isV120(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.DeploymentUpdated') === '855a92f52baa7fa64bd1a212c0417b80d7daaa9c9da073f2ee85aadcfe63cb50'
+    return this.ctx._chain.getEventHash('smartContractModule.DeploymentUpdated') === '19d52d9d6011c2bbab161360f83a81d5f608dc567998af89397f160d37c659c2'
   }
 
   get asV120(): v120.Deployment {
@@ -629,31 +741,6 @@ export class SmartContractModuleUpdatedUsedResourcesEvent {
   }
 }
 
-export class SmartContractModuleDeploymentContractCanceledEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.DeploymentContractCanceled')
-  }
-
-  get isV120(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.DeploymentContractCanceled') === 'a626df09820a74be835424b39555afe3dc9b002886f5e5e1cd8fe7e2f7d01638'
-  }
-
-  get asV120(): { contractId: bigint, capacityReservationContractId: bigint, twinId: number } {
-    assert(this.isV120)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV120
-  }
-
-  get asLatest(): { contractId: bigint, capacityReservationContractId: bigint, twinId: number } {
-    deprecateLatest()
-    return this.asV120
-  }
-}
-
 export class SmartContractModuleGroupCreatedEvent {
   constructor(private ctx: EventContext) {
     assert(this.ctx.event.name === 'smartContractModule.GroupCreated')
@@ -703,6 +790,57 @@ export class SmartContractModuleGroupDeletedEvent {
     return this.asV120
   }
 }
+
+export class TfgridModuleNodeConsumableResourcesChangedEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'tfgridModule.NodeConsumableResourcesChanged')
+  }
+
+  get isV120(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.NodeConsumableResourcesChanged') === '1a2158aa57323dc627db3b1436e83668ee00d71648808c8727f2f9bd4921341c'
+  }
+
+  get asV120(): {farmId: number, nodeId: number, resources: v120.ConsumableResources} {
+    assert(this.isV120)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV120
+  }
+
+  get asLatest(): {farmId: number, nodeId: number, resources: v120.ConsumableResources} {
+    deprecateLatest()
+    return this.asV120
+  }
+}
+
+export class TfgridModuleFarmUnusedPublicIpsChangedEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'tfgridModule.FarmUnusedPublicIpsChanged')
+  }
+
+  get isV120(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.FarmUnusedPublicIpsChanged') === '8ec64b6860c8489a6759fe8302ec663c300b1022b6c34dae72e571271aa2eb6d'
+  }
+
+  get asV120(): {farmId: number, publicIps: v120.IP4[]} {
+    assert(this.isV120)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV120
+  }
+
+  get asLatest(): {farmId: number, publicIps: v120.IP4[]} {
+    deprecateLatest()
+    return this.asV120
+  }
+}
+
 
 export class TfgridModuleEntityDeletedEvent {
   constructor(private ctx: EventContext) {
@@ -870,14 +1008,23 @@ export class TfgridModuleFarmStoredEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV101
+  get isV120(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.FarmStored') === 'c5511ccdb26201c1fc5243aa71f0c9fa976199be0b2fd8495d8a346267e17f3a'
   }
 
-  get asLatest(): v62.Farm {
+  get asV120(): v120.Farm {
+    assert(this.isV120)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
     deprecateLatest()
-    return this.asV101
+    return this.isV120
+  }
+
+  get asLatest(): v120.Farm {
+    deprecateLatest()
+    return this.asV120
   }
 }
 
@@ -922,14 +1069,23 @@ export class TfgridModuleFarmUpdatedEvent {
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV101
+  get isV120(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.FarmUpdated') === 'c5511ccdb26201c1fc5243aa71f0c9fa976199be0b2fd8495d8a346267e17f3a'
   }
 
-  get asLatest(): v62.Farm {
+  get asV120(): v120.Farm {
+    assert(this.isV120)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
     deprecateLatest()
-    return this.asV101
+    return this.isV120
+  }
+
+  get asLatest(): v120.Farm {
+    deprecateLatest()
+    return this.asV120
   }
 }
 
@@ -1120,7 +1276,7 @@ export class TfgridModuleNodeStoredEvent {
   }
 
   get isV120(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.NodeStored') === 'f5e91bfb694c0142908c326bc1efd68d7a2d391e22c23adf0ab14616de5952b0'
+    return this.ctx._chain.getEventHash('tfgridModule.NodeStored') === '306aa604021f85236f84f51ed5b994af6950e1d9f376200504792848786bb8be'
   }
 
   get asV120(): v120.Node {
@@ -1208,7 +1364,7 @@ export class TfgridModuleNodeUpdatedEvent {
   }
 
   get isV120(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.NodeStored') === 'f5e91bfb694c0142908c326bc1efd68d7a2d391e22c23adf0ab14616de5952b0'
+    return this.ctx._chain.getEventHash('tfgridModule.NodeStored') === '306aa604021f85236f84f51ed5b994af6950e1d9f376200504792848786bb8be'
   }
 
   get asV120(): v120.Node {
