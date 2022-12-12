@@ -388,16 +388,16 @@ export class SmartContractModuleIPsFreedEvent {
   }
 
   /**
-   * IP got freed by a Node contract
+   * IP got freed by a Deployment
    */
   get isV120(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.IPsFreed') === 'e3486a171a2e8ddfb92c6e41d056701ff58e06d3624dfa8f38b65b860eb60291'
+    return this.ctx._chain.getEventHash('smartContractModule.IPsFreed') === 'f55ebca4aa425d9439573cd221b2c8f333a8c58bb3d956effe67b0b1ff8938f9'
   }
 
   /**
-   * IP got freed by a Node contract
+   * IP got freed by a Deployment
    */
-  get asV120(): {contractId: bigint, publicIps: v120.IP4[]} {
+  get asV120(): {deploymentId: bigint, publicIps: v120.IP4[]} {
     assert(this.isV120)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
@@ -407,7 +407,7 @@ export class SmartContractModuleIPsFreedEvent {
     return this.isV120
   }
 
-  get asLatest(): {contractId: bigint, publicIps: v120.IP4[]} {
+  get asLatest(): {deploymentId: bigint, publicIps: v120.IP4[]} {
     deprecateLatest()
     return this.asV120
   }
@@ -419,16 +419,16 @@ export class SmartContractModuleIPsReservedEvent {
   }
 
   /**
-   * IP got reserved by a Node contract
+   * IP got reserved by a Deployment
    */
   get isV120(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.IPsReserved') === 'e3486a171a2e8ddfb92c6e41d056701ff58e06d3624dfa8f38b65b860eb60291'
+    return this.ctx._chain.getEventHash('smartContractModule.IPsReserved') === 'f55ebca4aa425d9439573cd221b2c8f333a8c58bb3d956effe67b0b1ff8938f9'
   }
 
   /**
-   * IP got reserved by a Node contract
+   * IP got reserved by a Deployment
    */
-  get asV120(): {contractId: bigint, publicIps: v120.IP4[]} {
+  get asV120(): {deploymentId: bigint, publicIps: v120.IP4[]} {
     assert(this.isV120)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
@@ -438,7 +438,7 @@ export class SmartContractModuleIPsReservedEvent {
     return this.isV120
   }
 
-  get asLatest(): {contractId: bigint, publicIps: v120.IP4[]} {
+  get asLatest(): {deploymentId: bigint, publicIps: v120.IP4[]} {
     deprecateLatest()
     return this.asV120
   }
