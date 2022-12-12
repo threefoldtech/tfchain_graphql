@@ -5,7 +5,7 @@ import {
 import {
   ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel,
   ContractResources, Node, RentContract, NruConsumption,
-  CapacityReservationContract, Resources, ConsumableResources
+  CapacityReservationContract
 } from "../model";
 import {
   SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent, SmartContractModuleNodeContractCanceledEvent,
@@ -13,7 +13,7 @@ import {
   SmartContractModuleNruConsumptionReportReceivedEvent, SmartContractModuleRentContractCanceledEvent, SmartContractModuleContractGracePeriodStartedEvent,
   SmartContractModuleContractGracePeriodEndedEvent, SmartContractModuleCapacityReservationContractCanceledEvent,
 } from "../types/events";
-import { processContractV119Create, processContractV119Update } from './contractMappers/v120'
+import { processContractV120Create, processContractV120Update } from './contractMappers/v120'
 
 export async function contractCreated(ctx: EventHandlerContext) {
   let contractCreatedEvent = new SmartContractModuleContractCreatedEvent(ctx)
@@ -32,7 +32,7 @@ export async function contractCreated(ctx: EventHandlerContext) {
   } else if (contractCreatedEvent.isV105) {
     contractEvent = contractCreatedEvent.asV105
   } else if (contractCreatedEvent.isV120) {
-    return processContractV119Create(contractCreatedEvent, ctx)
+    return processContractV120Create(contractCreatedEvent, ctx)
   }
 
   if (!contractEvent) return
@@ -135,7 +135,7 @@ export async function contractUpdated(ctx: EventHandlerContext) {
   } else if (contractUpdatedEvent.isV101) {
     contractEvent = contractUpdatedEvent.asV101
   } else if (contractUpdatedEvent.isV120) {
-    return processContractV119Update(contractUpdatedEvent, ctx)
+    return processContractV120Update(contractUpdatedEvent, ctx)
   }
 
   if (!contractEvent) return
@@ -385,6 +385,13 @@ export async function contractGracePeriodStarted(ctx: EventHandlerContext) {
     await ctx.store.save<NameContract>(savedNameContract)
     return
   }
+
+  const savedCapacityContract = await ctx.store.get(CapacityReservationContract, { where: { contractID } })
+  if (savedCapacityContract) {
+    savedCapacityContract.state = ContractState.GracePeriod
+    await ctx.store.save<CapacityReservationContract>(savedCapacityContract)
+    return
+  }
 }
 
 export async function contractGracePeriodEnded(ctx: EventHandlerContext) {
@@ -415,6 +422,13 @@ export async function contractGracePeriodEnded(ctx: EventHandlerContext) {
   if (savedNameContract) {
     savedNameContract.state = ContractState.Created
     await ctx.store.save<NameContract>(savedNameContract)
+    return
+  }
+
+  const savedCapacityContract = await ctx.store.get(CapacityReservationContract, { where: { contractID } })
+  if (savedCapacityContract) {
+    savedCapacityContract.state = ContractState.Created
+    await ctx.store.save<CapacityReservationContract>(savedCapacityContract)
     return
   }
 }

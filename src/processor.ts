@@ -2,7 +2,8 @@ import { balancesTransfer } from './mappings/balances'
 import { twinStored, twinDeleted, twinEntityStored, twinEntityRemoved, twinUpdated } from './mappings/twins'
 import {
   nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported,
-  nodePublicConfigStored, nodeCertificationSet, powerStateChanged, powerTargetChanged
+  nodePublicConfigStored, nodeCertificationSet, powerStateChanged, powerTargetChanged,
+  nodeConsumableResourcesChanged
 } from './mappings/nodes'
 import { farmingPolicyStored, pricingPolicyStored, farmingPolicyUpdated } from './mappings/policies';
 import { farmDeleted, farmPayoutV2AddressRegistered, farmStored, farmUpdated, farmCertificationSet } from './mappings/farms';
@@ -65,6 +66,7 @@ processor.addEventHandler('tfgridModule.EntityDeleted', ctx => entityDeleted(ctx
 
 processor.addEventHandler('tfgridModule.PowerTargetChanged', ctx => powerTargetChanged(ctx));
 processor.addEventHandler('tfgridModule.PowerStateChanged', ctx => powerStateChanged(ctx));
+processor.addEventHandler('tfgridModule.NodeConsumableResourcesChanged', ctx => nodeConsumableResourcesChanged(ctx))
 
 processor.addEventHandler('smartContractModule.ContractCreated', ctx => contractCreated(ctx));
 processor.addEventHandler('smartContractModule.ContractUpdated', ctx => contractUpdated(ctx));

@@ -20,16 +20,16 @@ const newFarm = new Farm()
 }
 
 export async function updateFarmv120(ctx: EventHandlerContext, farm: v120.Farm) {
-    let savedFarm = await ctx.store.get(Farm, { where: { farmID: farm.id } })
-    if (!savedFarm) return
+  let savedFarm = await ctx.store.get(Farm, { where: { farmID: farm.id } })
+  if (!savedFarm) return
 
-    savedFarm.gridVersion = farm.version
-    savedFarm.farmID = farm.id
-    savedFarm.name = farm.name.toString()
-    savedFarm.twinID = farm.twinId
-    savedFarm.pricingPolicyID = farm.pricingPolicyId
-    savedFarm.dedicatedFarm = false
-    savedFarm.certification = FarmCertification.NotCertified
+  savedFarm.gridVersion = farm.version
+  savedFarm.farmID = farm.id
+  savedFarm.name = farm.name.toString()
+  savedFarm.twinID = farm.twinId
+  savedFarm.pricingPolicyID = farm.pricingPolicyId
+  savedFarm.dedicatedFarm = false
+  savedFarm.certification = FarmCertification.NotCertified
 
-    await ctx.store.save<Farm>(savedFarm)
+  await ctx.store.save<Farm>(savedFarm)
 }

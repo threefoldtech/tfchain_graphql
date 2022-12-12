@@ -1,8 +1,17 @@
 import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
-import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal, PowerState, NodePower, NodeConsumableResources, Resources } from "../model";
-import { TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeConsumableResourcesChangedEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent, TfgridModulePowerStateChangedEvent, TfgridModulePowerTargetChangedEvent } from "../types/events";
+import {
+  Node, Location, PublicConfig, NodeCertification, Interfaces,
+  UptimeEvent, NodeResourcesTotal, PowerState, NodePower, NodeConsumableResources,
+  Resources
+} from "../model";
+import {
+  TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeConsumableResourcesChangedEvent, TfgridModuleNodeDeletedEvent,
+  TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent,
+  TfgridModulePowerStateChangedEvent, TfgridModulePowerTargetChangedEvent
+} from "../types/events";
+import { createNodeV120, updateNodeV120 } from './nodeMappers/v120'
 
 export async function nodeStored(ctx: EventHandlerContext) {
   const node = new TfgridModuleNodeStoredEvent(ctx)
@@ -22,7 +31,7 @@ export async function nodeStored(ctx: EventHandlerContext) {
   } else if (node.isV118) {
     nodeEvent = node.asV118
   } else if (node.isV120) {
-    nodeEvent = node.asV120
+    return createNodeV120(ctx, node.asV120)
   }
 
   if (!nodeEvent) {
@@ -159,49 +168,6 @@ export async function nodeStored(ctx: EventHandlerContext) {
     await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
   }
 
-  if (node.isV120) {
-    let nodeEvent = node.asV120
-    newNode.country = nodeEvent.location.country.toString()
-    newNode.city = nodeEvent.location.city.toString()
-    newNode.secure = nodeEvent.secureBoot ? true : false
-    newNode.virtualized = nodeEvent.virtualized ? true : false
-    newNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
-    newNode.connectionPrice = nodeEvent.connectionPrice
-
-    await ctx.store.save<Node>(newNode)
-
-    // Construct the node power object
-    const power = new NodePower()
-    power.id = ctx.event.id
-    power.node = newNode
-    power.state = PowerState.Up
-    power.target = PowerState.Up
-    power.lastUptime = BigInt(ctx.event.blockTimestamp)
-    await ctx.store.save<NodePower>(power)
-
-    const nodeConsumableResources = new NodeConsumableResources()
-    nodeConsumableResources.id = ctx.event.id
-    nodeConsumableResources.node = newNode
-
-    // Resources are emitted in another event (NodeConsumableResourcesChanged)
-    const totalResources = new Resources()
-    totalResources.sru = BigInt(0)
-    totalResources.hru = BigInt(0)
-    totalResources.mru = BigInt(0)
-    totalResources.cru = BigInt(0)
-
-    const usedResources = new Resources()
-    usedResources.sru = BigInt(0)
-    usedResources.hru = BigInt(0)
-    usedResources.mru = BigInt(0)
-    usedResources.cru = BigInt(0)
-
-    nodeConsumableResources.total = totalResources
-    nodeConsumableResources.used = usedResources
-
-    await ctx.store.save<NodeConsumableResources>(nodeConsumableResources)
-  }
-
   await ctx.store.save<Node>(newNode)
 
   newNode.interfaces = []
@@ -240,7 +206,7 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
   } else if (node.isV118) {
     nodeEvent = node.asV118
   } else if (node.isV120) {
-    nodeEvent = node.asV120
+    return updateNodeV120(ctx, node.asV120)
   }
 
   if (!nodeEvent) return
@@ -438,50 +404,8 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     }
   }
 
-  if (node.isV120) {
-    const nodeEvent = node.asV120
-
-    savedNode.country = nodeEvent.location.country.toString()
-    savedNode.city = nodeEvent.location.city.toString()
-    savedNode.secure = nodeEvent.secureBoot ? true : false
-    savedNode.virtualized = nodeEvent.virtualized ? true : false
-    savedNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
-    if (nodeEvent.certification) {
-      const certificationTypeAsString = nodeEvent.certification.__kind.toString()
-      let certType = NodeCertification.Diy
-      switch (certificationTypeAsString) {
-        case 'Diy':
-          certType = NodeCertification.Diy
-          break
-        case 'Certified':
-          certType = NodeCertification.Certified
-          break
-      }
-      savedNode.certification = certType
-    } else {
-      savedNode.certification = NodeCertification.Diy
-    }
-
-    // // Recalculate total / free resoures when a node get's updated
-    // let nodeConsumableResources = await ctx.store.get(NodeConsumableResources, { where: { node: savedNode } })
-    // if (nodeConsumableResources) {
-    //   nodeConsumableResources.total.sru = nodeEvent.resources.totalResources.sru
-    //   nodeConsumableResources.total.hru = nodeEvent.resources.totalResources.hru
-    //   nodeConsumableResources.total.mru = nodeEvent.resources.totalResources.mru
-    //   nodeConsumableResources.total.cru = nodeEvent.resources.totalResources.cru
-
-    //   nodeConsumableResources.used.sru = nodeEvent.resources.usedResources.sru
-    //   nodeConsumableResources.used.hru = nodeEvent.resources.usedResources.hru
-    //   nodeConsumableResources.used.mru = nodeEvent.resources.usedResources.mru
-    //   nodeConsumableResources.used.cru = nodeEvent.resources.usedResources.cru
-
-    //   await ctx.store.save<NodeConsumableResources>(nodeConsumableResources)
-    // }
-  }
 
   await ctx.store.save<Node>(savedNode)
-
-  // savedNode.interfaces = []
 
   const interfacesPromisses = nodeEvent.interfaces.map(async intf => {
     let newInterface
@@ -688,8 +612,6 @@ export async function powerStateChanged(ctx: EventHandlerContext) {
 
   await ctx.store.save<NodePower>(nodePower)
 }
-
-
 
 interface NodePublicConfig {
   ip4: string

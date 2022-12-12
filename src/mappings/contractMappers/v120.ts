@@ -4,7 +4,7 @@ import { CapacityReservationContract, ConsumableResources, Resources, ContractSt
 import { Contract as ContractV119 } from "../../types/v120";
 import { SmartContractModuleContractUpdatedEvent, SmartContractModuleContractCreatedEvent, SmartContractModuleCapacityReservationConsumableResourcesChangedEvent } from "../../types/events"
 
-export async function processContractV119Create(event: SmartContractModuleContractCreatedEvent, ctx: EventHandlerContext) {
+export async function processContractV120Create(event: SmartContractModuleContractCreatedEvent, ctx: EventHandlerContext) {
     let contractEvent = event.asV120
 
     if (!contractEvent) return
@@ -33,7 +33,7 @@ export async function processContractV119Create(event: SmartContractModuleContra
 }
 
 
-export async function processContractV119Update(event: SmartContractModuleContractUpdatedEvent, ctx: EventHandlerContext) {
+export async function processContractV120Update(event: SmartContractModuleContractUpdatedEvent, ctx: EventHandlerContext) {
     let contractEvent = event.asV120
 
     if (!contractEvent) return
