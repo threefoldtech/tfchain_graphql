@@ -1,5 +1,5 @@
-module.exports = class power_management1668759900901 {
-  name = 'power_management1668759900901'
+module.exports = class power_mngmt1670852577609 {
+  name = 'power_mngmt1670852577609'
 
   async up(db) {
     await db.query(`CREATE TABLE "node_consumable_resources" ("id" character varying NOT NULL, "total" jsonb NOT NULL, "used" jsonb NOT NULL, "node_id" character varying NOT NULL, CONSTRAINT "REL_4db566d46cee02edd8d909031a" UNIQUE ("node_id"), CONSTRAINT "PK_b8139023fc17a6dfa27ed05e52a" PRIMARY KEY ("id"))`)
@@ -16,7 +16,7 @@ module.exports = class power_management1668759900901 {
     await db.query(`ALTER TABLE "node_consumable_resources" ADD CONSTRAINT "FK_4db566d46cee02edd8d909031a1" FOREIGN KEY ("node_id") REFERENCES "node"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "node_power" ADD CONSTRAINT "FK_66baaf0b7bad0c93ce841a9e582" FOREIGN KEY ("node_id") REFERENCES "node"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "consumable_resources" ADD CONSTRAINT "FK_87ad1aaaf2ed5e62565831811b4" FOREIGN KEY ("contract_id") REFERENCES "capacity_reservation_contract"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
-    await db.query(`ALTER TABLE "deployment_resources" ADD CONSTRAINT "FK_110ad3a72d8cd9fc5a3d72dd833" FOREIGN KEY ("contract_id") REFERENCES "deployment"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+    await db.query(`ALTER TABLE "deployment_resources" ADD CONSTRAINT "FK_110ad3a72d8cd9fc5a3d72dd833" FOREIGN KEY ("contract_id") REFERENCES "deployment"("id") ON DELETE CASCADE ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "deployment" ADD CONSTRAINT "FK_c6e3a69f7b9bb63ccc82e4ef213" FOREIGN KEY ("resources_id") REFERENCES "deployment_resources"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
   }
 

@@ -1,7 +1,7 @@
 import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
-import { Deployment, DeploymentResources, PublicIp } from "../model";
+import { Deployment, CapacityReservationContract, PublicIp } from "../model";
 import {
   SmartContractModuleDeploymentCreatedEvent,
   SmartContractModuleDeploymentUpdatedEvent,
@@ -23,11 +23,16 @@ export async function deploymentCanceled(ctx: EventHandlerContext) {
   let { deploymentId } = new SmartContractModuleDeploymentCanceledEvent(ctx).asV120
 
   const savedDeployment = await ctx.store.get(Deployment, { where: { deploymentID: deploymentId } })
-
   if (!savedDeployment) return
 
+  const savedCapacityContract = await ctx.store.get(CapacityReservationContract, { where: { contractID: savedDeployment.capacityReservationID } })
+  if (savedCapacityContract) {
+    savedCapacityContract.publicIPs -= savedDeployment.numberOfPublicIPs
+    await ctx.store.save<CapacityReservationContract>(savedCapacityContract)
+  }
+
   savedDeployment.publicIps?.forEach(async ip => {
-    const savedIp = await ctx.store.find(PublicIp, { where: { ip } })
+    const savedIp = await ctx.store.find(PublicIp, { where: { ip: ip?.ip } })
     
     if (savedIp.length >= 1) {
       savedIp[0].contractId = BigInt(0)
@@ -36,8 +41,4 @@ export async function deploymentCanceled(ctx: EventHandlerContext) {
   })
   
   await ctx.store.remove(savedDeployment)
-  const savedDeploymentResources = await ctx.store.get(DeploymentResources, { where: { contract: savedDeployment } })
-  if (savedDeploymentResources) {
-    await ctx.store.remove(savedDeploymentResources)
-  }
 }
