@@ -849,31 +849,6 @@ export class TfgridModuleFarmStoredEvent {
   }
 }
 
-export class TfgridModuleFarmUnusedPublicIpsChangedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.FarmUnusedPublicIpsChanged')
-  }
-
-  get isV120(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmUnusedPublicIpsChanged') === '8ec64b6860c8489a6759fe8302ec663c300b1022b6c34dae72e571271aa2eb6d'
-  }
-
-  get asV120(): {farmId: number, publicIps: v120.IP4[]} {
-    assert(this.isV120)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV120
-  }
-
-  get asLatest(): {farmId: number, publicIps: v120.IP4[]} {
-    deprecateLatest()
-    return this.asV120
-  }
-}
-
 export class TfgridModuleFarmUpdatedEvent {
   constructor(private ctx: EventContext) {
     assert(this.ctx.event.name === 'tfgridModule.FarmUpdated')
@@ -1225,6 +1200,56 @@ export class TfgridModulePricingPolicyStoredEvent {
   }
 
   get asLatest(): v120.PricingPolicy {
+    deprecateLatest()
+    return this.asV120
+  }
+}
+
+export class TfgridModulePublicIpAddedEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'tfgridModule.PublicIPAdded')
+  }
+
+  get isV120(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.PublicIPAdded') === '9a9a94609ce7701073a6234b004e1c97838628cd504a143962319fb5bb02a803'
+  }
+
+  get asV120(): {farmId: number, publicIp: v120.IP4} {
+    assert(this.isV120)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV120
+  }
+
+  get asLatest(): {farmId: number, publicIp: v120.IP4} {
+    deprecateLatest()
+    return this.asV120
+  }
+}
+
+export class TfgridModulePublicIpRemovedEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'tfgridModule.PublicIPRemoved')
+  }
+
+  get isV120(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.PublicIPRemoved') === '9a9a94609ce7701073a6234b004e1c97838628cd504a143962319fb5bb02a803'
+  }
+
+  get asV120(): {farmId: number, publicIp: v120.IP4} {
+    assert(this.isV120)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV120
+  }
+
+  get asLatest(): {farmId: number, publicIp: v120.IP4} {
     deprecateLatest()
     return this.asV120
   }

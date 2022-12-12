@@ -19,6 +19,7 @@ import {
 import { burnProcessed, mintCompleted, refundProcessed } from './mappings/bridge';
 import { solutionProviderCreated, solutionProviderApproved } from './mappings/solutionProviders'
 import { capacityReservationContractResourcesChanged } from './mappings/contractMappers/v120'
+import { farmPublicIpAdded, farmPublicIpRemoved } from './mappings/farmMappers/v120'
 
 import {
   SubstrateProcessor,
@@ -49,6 +50,9 @@ processor.addEventHandler('tfgridModule.NodeDeleted', ctx => nodeDeleted(ctx));
 processor.addEventHandler('tfgridModule.NodePublicConfigStored', ctx => nodePublicConfigStored(ctx));
 processor.addEventHandler('tfgridModule.NodeUpdated', ctx => nodeUpdated(ctx));
 processor.addEventHandler('tfgridModule.NodeCertificationSet', ctx => nodeCertificationSet(ctx));
+processor.addEventHandler('tfgridModule.PowerTargetChanged', ctx => powerTargetChanged(ctx));
+processor.addEventHandler('tfgridModule.PowerStateChanged', ctx => powerStateChanged(ctx));
+processor.addEventHandler('tfgridModule.NodeConsumableResourcesChanged', ctx => nodeConsumableResourcesChanged(ctx))
 
 processor.addEventHandler('tfgridModule.PricingPolicyStored', ctx => pricingPolicyStored(ctx));
 processor.addEventHandler('tfgridModule.FarmingPolicyStored', ctx => farmingPolicyStored(ctx));
@@ -59,14 +63,12 @@ processor.addEventHandler('tfgridModule.FarmUpdated', ctx => farmUpdated(ctx));
 processor.addEventHandler('tfgridModule.FarmDeleted', ctx => farmDeleted(ctx));
 processor.addEventHandler('tfgridModule.FarmPayoutV2AddressRegistered', ctx => farmPayoutV2AddressRegistered(ctx));
 processor.addEventHandler('tfgridModule.FarmCertificationSet', ctx => farmCertificationSet(ctx));
+processor.addEventHandler('tfgridModule.PublicIPAdded', ctx => farmPublicIpAdded(ctx))
+processor.addEventHandler('tfgridModule.PublicIPRemoved', ctx => farmPublicIpRemoved(ctx))
 
 processor.addEventHandler('tfgridModule.EntityStored', ctx => entityStored(ctx));
 processor.addEventHandler('tfgridModule.EntityUpdated', ctx => entityUpdated(ctx));
 processor.addEventHandler('tfgridModule.EntityDeleted', ctx => entityDeleted(ctx));
-
-processor.addEventHandler('tfgridModule.PowerTargetChanged', ctx => powerTargetChanged(ctx));
-processor.addEventHandler('tfgridModule.PowerStateChanged', ctx => powerStateChanged(ctx));
-processor.addEventHandler('tfgridModule.NodeConsumableResourcesChanged', ctx => nodeConsumableResourcesChanged(ctx))
 
 processor.addEventHandler('smartContractModule.ContractCreated', ctx => contractCreated(ctx));
 processor.addEventHandler('smartContractModule.ContractUpdated', ctx => contractUpdated(ctx));
