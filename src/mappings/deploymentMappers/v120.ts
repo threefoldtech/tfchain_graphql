@@ -26,30 +26,38 @@ export async function createDeployment(id: string, timestamp: bigint, deployment
 
     await store.save<Deployment>(newDeployment)
 
-    const savedCapacityContract = await store.get(CapacityReservationContract, { where: { contractID: deployment.capacityReservationId } })
-    if (savedCapacityContract) {
-        savedCapacityContract.publicIPs += deployment.publicIps
+    const savedCapacityContract = await store.find(CapacityReservationContract, { where: { contractID: deployment.capacityReservationId } })
+    if (savedCapacityContract.length >= 1) {
+        savedCapacityContract[0].publicIPs += deployment.publicIps
         await store.save<CapacityReservationContract>(savedCapacityContract)
     }
 
-    let deploymentResources = new DeploymentResources()
-    deploymentResources.id = id
-    deploymentResources.contract = newDeployment
+    const savedResources = await store.find(DeploymentResources, { where: { contract: newDeployment } })
+    if (!savedResources) {
+        let deploymentResources = new DeploymentResources()
+        deploymentResources.id = id
+        deploymentResources.contract = newDeployment
+    
+        deploymentResources.cru = deployment.resources.cru
+        deploymentResources.sru = deployment.resources.sru
+        deploymentResources.hru = deployment.resources.hru
+        deploymentResources.mru = deployment.resources.mru
+    
+        newDeployment.resources = deploymentResources
+        await store.save<DeploymentResources>(deploymentResources)
+    }
 
-    deploymentResources.cru = deployment.resources.cru
-    deploymentResources.sru = deployment.resources.sru
-    deploymentResources.hru = deployment.resources.hru
-    deploymentResources.mru = deployment.resources.mru
-
-    newDeployment.resources = deploymentResources
     newDeployment.publicIps = deployment.publicIpsList.map(ip => {
         let cIP = new DeploymentPublicIp()
         cIP.ip = ip.ip.toString()
-        cIP.gateway = ip.gw.toString()
+        if (ip.gw) {
+            cIP.gateway = ip.gw.toString()
+        } else {
+            cIP.gateway = "undefined"
+        }
         return cIP
     })
 
-    await store.save<DeploymentResources>(deploymentResources)
     await store.save<Deployment>(newDeployment)
 
     deployment.publicIpsList.forEach(async ip => {

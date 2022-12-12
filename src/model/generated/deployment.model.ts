@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToOne as OneToOne_} from "typeorm"
 import * as marshal from "./marshal"
 import {DeploymentPublicIp} from "./_deploymentPublicIp"
 import {DeploymentResources} from "./deploymentResources.model"
@@ -33,8 +33,7 @@ export class Deployment {
   @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val == null ? undefined : val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => val == null ? undefined : new DeploymentPublicIp(undefined, val))}, nullable: true})
   publicIps!: (DeploymentPublicIp | undefined | null)[] | undefined | null
 
-  @Index_()
-  @ManyToOne_(() => DeploymentResources, {nullable: true})
+  @OneToOne_(() => DeploymentResources)
   resources!: DeploymentResources | undefined | null
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})

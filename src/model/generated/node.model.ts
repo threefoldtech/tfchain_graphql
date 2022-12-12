@@ -2,6 +2,7 @@ import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, M
 import * as marshal from "./marshal"
 import {Location} from "./location.model"
 import {PublicConfig} from "./publicConfig.model"
+import {NodeResourcesTotal} from "./nodeResourcesTotal.model"
 import {NodeConsumableResources} from "./nodeConsumableResources.model"
 import {Interfaces} from "./interfaces.model"
 import {NodeCertification} from "./_nodeCertification"
@@ -41,8 +42,11 @@ export class Node {
   @OneToOne_(() => PublicConfig)
   publicConfig!: PublicConfig | undefined | null
 
+  @OneToOne_(() => NodeResourcesTotal)
+  resourcesTotal!: NodeResourcesTotal | undefined | null
+
   @OneToOne_(() => NodeConsumableResources)
-  resources!: NodeConsumableResources | undefined | null
+  consumableResources!: NodeConsumableResources | undefined | null
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
   uptime!: bigint | undefined | null

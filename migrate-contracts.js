@@ -1,8 +1,3 @@
-const {
-  createCapacityContract,
-  updateCapacityContract
-} = require('./lib/mappings/contractMappers/v119')
-const { createDeployment } = require('./lib/mappings/deploymentMappers/v119')
 require('dotenv/config')
 const typeormConfig = require('@subsquid/typeorm-config')
 const typeorm = require('typeorm')
@@ -10,10 +5,17 @@ const {
   NodeContract,
   PublicIp,
   NodeResourcesTotal,
+  NodeResourcesUsed,
+  Deployment,
+  DeploymentPublicIp,
+  DeploymentResources,
   RentContract,
   Node,
   ContractState,
-  ContractResources
+  ContractResources,
+  NodeConsumableResources,
+  ConsumableResources,
+  Resources,
 } = require('./lib/model/index')
 const {
   CapacityReservationContract
@@ -56,190 +58,165 @@ async function main () {
 
   // Get all Nodes
   const nodes = await entityManager.find(Node)
+  console.log(`- MIGRATING NODE RESOURCES: amount of nodes: ${nodes.length}`)
 
-  const capacityRentContracts = rentContracts.map(async (rentContract) => {
-    // console.log(`migrating rent contract ${rentContract.nodeID}`)
+  const migrateNodeResources = nodes.map(async node => {   
+    const { id } = node
+    const nodeResources = await entityManager.find(NodeResourcesTotal, { where: { node } })
 
+    const total = new Resources()
+    
+    if (nodeResources.length > 0) {
+      total.cru = nodeResources[0].cru
+      total.hru = nodeResources[0].hru
+      total.mru = nodeResources[0].mru
+      total.sru = nodeResources[0].sru
+    }
+    
+    const used = new Resources()
+    used.cru = BigInt(0)
+    used.sru = BigInt(0)
+    used.hru = BigInt(0)
+    used.mru = BigInt(0)
+
+    const consumableResources = {
+      id,
+      total,
+      used,
+      node,
+    }
+
+    return entityManager.save(NodeConsumableResources, consumableResources)
+  })
+  await Promise.all(migrateNodeResources)
+
+  console.log(`- MIGRATING RENT CONTRACTS: amount of contract: ${rentContracts.length}`)
+  rentContracts.forEach(async (rentContract) => {
     const foundNode = nodes.find((n) => n.nodeID === rentContract.nodeID)
     if (!foundNode) return
-    const resources = await entityManager.find(NodeResourcesTotal, {
+
+    const nodeResourcesTotal = await entityManager.find(NodeResourcesTotal, {
       where: { node: foundNode }
     })
 
-    const parsedResources = {
-      cru: BigInt(0),
-      hru: BigInt(0),
-      mru: BigInt(0),
-      sru: BigInt(0)
+    const totalResources = new Resources()
+    if (nodeResourcesTotal.length > 0) {
+      totalResources.cru = nodeResourcesTotal[0].cru
+      totalResources.hru = nodeResourcesTotal[0].hru
+      totalResources.mru = nodeResourcesTotal[0].mru
+      totalResources.sru = nodeResourcesTotal[0].sru
     }
 
-    if (resources.length > 0) {
-      parsedResources.cru = resources[0].cru
-      parsedResources.hru = resources[0].hru
-      parsedResources.mru = resources[0].mru
-      parsedResources.sru = resources[0].sru
-    }
-
-    const capacityContract = {
-      version: rentContract.gridVersion,
-      state: rentContract.state,
-      contractId: rentContract.contractID,
-      twinId: rentContract.twinID,
-      contractType: {
-        __kind: 'CapacityReservationContract',
-        value: {
-          nodeId: rentContract.nodeID,
-          publicIps: 0,
-          resources: {
-            totalResources: {
-              cru: parsedResources.cru,
-              hru: parsedResources.hru,
-              mru: parsedResources.mru,
-              sru: parsedResources.sru
-            },
-            usedResources: {
-              cru: parsedResources.cru,
-              hru: parsedResources.hru,
-              mru: parsedResources.mru,
-              sru: parsedResources.sru
-            }
-          }
-        },
-        groupId: undefined,
-        publicIps: 0,
-        deploymentContracts: []
-      }
-    }
-
-    return createCapacityContract(
+    await createCapacityContract(
+      entityManager,
       rentContract.id,
-      capacityContract,
-      entityManager
+      rentContract.nodeID,
+      rentContract.contractID,
+      0,
+      totalResources,
+      totalResources
     )
   })
 
-  await Promise.all(capacityRentContracts)
-
-  const deploymentCapacityContracts = nodeContracts.map(async (nodeC) => {
-    const toExecute = []
-    // console.log(`migrating contract ${nodeC.contractID}`)
+  console.log(`- MIGRATING NODE CONTRACTS: amount of contract: ${nodeContracts.length}`)
+  nodeContracts.forEach(async (nodeC) => {
     const contractResources = await entityManager.find(ContractResources, {
       where: { contract: nodeC }
     })
+
     const publicIPs = await entityManager.find(PublicIp, {
       where: { contractId: nodeC.contractID }
     })
 
-    const resources = {
-      cru: BigInt(0),
-      hru: BigInt(0),
-      mru: BigInt(0),
-      sru: BigInt(0)
-    }
-
+    const totalContractResources = new Resources()
     if (contractResources.length > 0) {
-      resources.cru = contractResources[0].cru
-      resources.hru = contractResources[0].hru
-      resources.mru = contractResources[0].mru
-      resources.sru = contractResources[0].sru
-    }
-
-    // Only create capacity contract it was not already created by parsing rent contracts
-    if (!rentContracts.includes((c) => c.nodeID === nodeC.nodeID)) {
-      const capacityContract = {
-        version: nodeC.gridVersion,
-        state: nodeC.state,
-        contractId: nodeC.contractID,
-        twinId: nodeC.twinID,
-        contractType: {
-          __kind: 'CapacityReservationContract',
-          value: {
-            nodeId: nodeC.nodeID,
-            publicIps: nodeC.numberOfPublicIPs,
-            resources: {
-              totalResources: {
-                cru: resources.cru,
-                hru: resources.hru,
-                mru: resources.mru,
-                sru: resources.sru
-              },
-              usedResources: {
-                cru: BigInt(0),
-                hru: BigInt(0),
-                mru: BigInt(0),
-                sru: BigInt(0)
-              }
-            }
-          },
-          groupId: undefined,
-          publicIps: nodeC.numberOfPublicIPs,
-          deploymentContracts: []
-        }
-      }
-
-      toExecute.push(
-        createCapacityContract(nodeC.id, capacityContract, entityManager)
-      )
+      totalContractResources.cru = contractResources[0].cru
+      totalContractResources.hru = contractResources[0].hru
+      totalContractResources.mru = contractResources[0].mru
+      totalContractResources.sru = contractResources[0].sru
     } else {
-      console.log('includes in rentcontracts')
-      const capacityContract = await entityManager.find(
-        CapacityReservationContract,
-        { where: { nodeID: nodeC.nodeID } }
-      )[0]
-      if (!capacityContract) {
-        console.log(`capacity contract for node ${nodeC.nodeID} not found`)
-      }
-
-      capacityContract.contractType.value.resoruces.usedResources.cru +=
-        resources.cru
-      capacityContract.contractType.value.resoruces.usedResources.sru +=
-        resources.sru
-      capacityContract.contractType.value.resoruces.usedResources.hru +=
-        resources.hru
-      capacityContract.contractType.value.resoruces.usedResources.mru +=
-        resources.mru
-
-      console.log('had to update capacity contract')
-      toExecute.push(updateCapacityContract(capacityContract, entityManager))
+      totalContractResources.cru = BigInt(0)
+      totalContractResources.hru = BigInt(0)
+      totalContractResources.mru = BigInt(0)
+      totalContractResources.sru = BigInt(0)
     }
 
-    const parsedPublicIps = publicIPs.map((ip) => {
-      return {
-        ip: ip.ip,
-        gateway: ip.gateway,
-        contractId: nodeC.contractID
-      }
+    // Only create capacity contract if it was not already created by parsing rent contracts
+    if (!rentContracts.includes((c) => c.nodeID === nodeC.nodeID)) {
+      // Used resources is equal to total resources
+      await createCapacityContract(
+        entityManager,
+        nodeC.id,
+        nodeC.nodeID,
+        nodeC.contractID,
+        nodeC.numberOfPublicIPs,
+        totalContractResources,
+        totalContractResources
+      )
+    }
+
+    const newDeployment = new Deployment()
+    newDeployment.id = nodeC.id
+    newDeployment.deploymentID = nodeC.contractID
+    newDeployment.twinID = nodeC.twinID
+    newDeployment.capacityReservationID = 0 // TODO
+    newDeployment.deploymentData = nodeC.deploymentData
+    newDeployment.deploymentHash = nodeC.deploymentHash
+    newDeployment.numberOfPublicIPs = nodeC.numberOfPublicIPs
+    newDeployment.createdAt = nodeC.createdAt
+
+    newDeployment.publicIps = publicIPs.map((ip) => {
+      let depIp = new DeploymentPublicIp()
+      depIp.ip = ip.ip
+      depIp.gateway = ip.gateway
+      return depIp
     })
 
-    const deploymentContract = {
-      id: nodeC.contractID,
-      twinId: nodeC.twinID,
-      capacityReservationId: nodeC.contractID,
-      deploymentHash: nodeC.deploymentHash,
-      deploymentData: nodeC.deploymentData,
-      publicIps: nodeC.numberOfPublicIPs,
-      publicIpsList: parsedPublicIps,
-      resources: {
-        hru: resources.hru,
-        sru: resources.sru,
-        cru: resources.cru,
-        mru: resources.mru
-      }
-    }
+    await entityManager.save(Deployment, newDeployment)
 
-    toExecute.push(
-      createDeployment(
-        nodeC.id,
-        BigInt(nodeC.createdAt),
-        deploymentContract,
-        entityManager
-      )
-    )
+    const deploymentResources = new DeploymentResources()
+    deploymentResources.id = nodeC.id
+    deploymentResources.contract = newDeployment
+    deploymentResources.hru = totalContractResources.hru
+    deploymentResources.sru = totalContractResources.sru
+    deploymentResources.mru = totalContractResources.mru
+    deploymentResources.cru = totalContractResources.cru
 
-    return toExecute
+    await entityManager.save(DeploymentResources, deploymentResources)
   })
+}
 
-  await Promise.all(deploymentCapacityContracts)
+async function createCapacityContract(entityManager, id, nodeID, contractID, publicIps, totalResources, usedResources) {
+  const capContract = new CapacityReservationContract()
+  capContract.id = id
+  capContract.nodeID = nodeID
+  capContract.contractID = contractID
+  capContract.publicIPs = BigInt(publicIps)
+  capContract.state = 'Created'
+  await entityManager.save(CapacityReservationContract, capContract)
+
+  const consumableResources = new ConsumableResources()
+  consumableResources.id = id
+  consumableResources.contract = capContract
+  consumableResources.total = totalResources
+  consumableResources.used = usedResources
+  await entityManager.save(ConsumableResources, consumableResources)
+
+  const node = await entityManager.find(Node, {
+    where: { nodeID }
+  })[0]
+
+  const nodeConsumableResources = await entityManager.find(NodeConsumableResources, {
+    where: { node }
+  })
+  if (nodeConsumableResources.length > 0) {
+    console.log(`updating resources used: ${nodeConsumableResources}`)
+    nodeConsumableResources[0].used.cru = usedResources.cru
+    nodeConsumableResources[0].used.sru = usedResources.sru
+    nodeConsumableResources[0].used.hru = usedResources.hru
+    nodeConsumableResources[0].used.mru = usedResources.mru
+    await entityManager.save(NodeConsumableResources, nodeConsumableResources)
+  }
 }
 
 main()

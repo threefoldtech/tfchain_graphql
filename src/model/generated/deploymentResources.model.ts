@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToOne as OneToOne_, Index as Index_, JoinColumn as JoinColumn_} from "typeorm"
 import * as marshal from "./marshal"
 import {Deployment} from "./deployment.model"
 
@@ -11,8 +11,9 @@ export class DeploymentResources {
   @PrimaryColumn_()
   id!: string
 
-  @Index_()
-  @ManyToOne_(() => Deployment, {nullable: false})
+  @Index_({unique: true})
+  @OneToOne_(() => Deployment, {nullable: false})
+  @JoinColumn_()
   contract!: Deployment
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})

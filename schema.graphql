@@ -71,7 +71,10 @@ type Node @entity {
   country: String
   city: String
   publicConfig: PublicConfig @derivedFrom(field: "node")
-  resources: NodeConsumableResources @derivedFrom(field: "node")
+  # deprecated resourcesTotal field
+  resourcesTotal: NodeResourcesTotal @derivedFrom(field: "node")
+  # new consumable resources field
+  consumableResources: NodeConsumableResources @derivedFrom(field: "node")
   uptime: BigInt
   created: Int!
   farmingPolicyId: Int!
@@ -212,7 +215,7 @@ type Deployment @entity {
 }
 
 type DeploymentResources @entity {
-  contract: Deployment!
+  contract: Deployment! @unique
   hru: BigInt!
   sru: BigInt!
   cru: BigInt!
