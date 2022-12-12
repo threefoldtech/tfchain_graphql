@@ -463,8 +463,15 @@ export async function nodeDeleted(ctx: EventHandlerContext) {
 export async function nodeConsumableResourcesChanged(ctx: EventHandlerContext) {
   const { nodeId, resources } = new TfgridModuleNodeConsumableResourcesChangedEvent(ctx).asV120
 
+  console.log('get node resources changed event')
+
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeId } })
-  if (!savedNode) return
+  if (!savedNode) {
+    console.log('no saved node')
+    return
+  }
+
+  console.log('got saved node')
 
   // Recalculate total / free resoures when a node get's updated
   let nodeConsumableResources = await ctx.store.get(NodeConsumableResources, { where: { node: savedNode } })

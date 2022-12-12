@@ -32,16 +32,16 @@ export async function createDeployment(id: string, timestamp: bigint, deployment
         await store.save<CapacityReservationContract>(savedCapacityContract)
     }
 
-    let contractResources = new DeploymentResources()
-    contractResources.id = id
-    contractResources.contract = newDeployment
+    let deploymentResources = new DeploymentResources()
+    deploymentResources.id = id
+    deploymentResources.contract = newDeployment
 
-    contractResources.cru = deployment.resources.cru
-    contractResources.sru = deployment.resources.sru
-    contractResources.hru = deployment.resources.hru
-    contractResources.mru = deployment.resources.mru
+    deploymentResources.cru = deployment.resources.cru
+    deploymentResources.sru = deployment.resources.sru
+    deploymentResources.hru = deployment.resources.hru
+    deploymentResources.mru = deployment.resources.mru
 
-    newDeployment.resources = contractResources
+    newDeployment.resources = deploymentResources
     newDeployment.publicIps = deployment.publicIpsList.map(ip => {
         let cIP = new DeploymentPublicIp()
         cIP.ip = ip.ip.toString()
@@ -49,7 +49,7 @@ export async function createDeployment(id: string, timestamp: bigint, deployment
         return cIP
     })
 
-    await store.save<DeploymentResources>(contractResources)
+    await store.save<DeploymentResources>(deploymentResources)
     await store.save<Deployment>(newDeployment)
 
     deployment.publicIpsList.forEach(async ip => {

@@ -11,7 +11,10 @@ export async function createNodeV120(ctx: EventHandlerContext, node: v120.Node) 
   newNode.nodeID = node.id
   newNode.twinID = node.twinId
 
+  newNode.createdAt = BigInt(ctx.event.blockTimestamp)
+  newNode.updatedAt = BigInt(ctx.event.blockTimestamp)
   newNode.created = Number(node.created)
+
   newNode.farmingPolicyId = node.farmingPolicyId
   newNode.certification = NodeCertification.Diy
 
@@ -74,6 +77,8 @@ export async function createNodeV120(ctx: EventHandlerContext, node: v120.Node) 
   nodeConsumableResources.used = usedResources
 
   await ctx.store.save<NodeConsumableResources>(nodeConsumableResources)
+
+  newNode.interfaces = []
 
   const interfacesPromisses = node.interfaces.map(async intf => {
     const newInterface = new Interfaces()

@@ -207,7 +207,7 @@ type Deployment @entity {
   deploymentHash: String!
   numberOfPublicIPs: Int!
   publicIps: [DeploymentPublicIp]
-  resources: DeploymentResources
+  resources: DeploymentResources @derivedFrom(field: "contract")
   createdAt: BigInt!
 }
 
