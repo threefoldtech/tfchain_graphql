@@ -107,6 +107,12 @@ async function main () {
       totalResources.sru = nodeResourcesTotal[0].sru
     }
 
+    const usedResources = new Resources()
+    usedResources.cru = BigInt(0)
+    usedResources.hru = BigInt(0)
+    usedResources.mru = BigInt(0)
+    usedResources.sru = BigInt(0)
+
     await createCapacityContract(
       entityManager,
       rentContract.id,
@@ -114,18 +120,21 @@ async function main () {
       rentContract.contractID,
       0,
       totalResources,
-      totalResources
+      usedResources,
+      nodes,
     )
   })
 
   console.log(`- MIGRATING NODE CONTRACTS: amount of contract: ${nodeContracts.length}`)
   nodeContracts.forEach(async (nodeC) => {
+    const { id, nodeID, twinID, contractID } = nodeC
+
     const contractResources = await entityManager.find(ContractResources, {
       where: { contract: nodeC }
     })
 
     const publicIPs = await entityManager.find(PublicIp, {
-      where: { contractId: nodeC.contractID }
+      where: { contractId: contractID }
     })
 
     const totalContractResources = new Resources()
@@ -141,25 +150,56 @@ async function main () {
       totalContractResources.sru = BigInt(0)
     }
 
+    const hasRentContract = rentContracts.filter(c => c.nodeID === nodeID).length > 0
     // Only create capacity contract if it was not already created by parsing rent contracts
-    if (!rentContracts.includes((c) => c.nodeID === nodeC.nodeID)) {
+    if (!hasRentContract) {
       // Used resources is equal to total resources
       await createCapacityContract(
         entityManager,
-        nodeC.id,
-        nodeC.nodeID,
-        nodeC.contractID,
+        id,
+        nodeID,
+        contractID,
         nodeC.numberOfPublicIPs,
         totalContractResources,
-        totalContractResources
+        totalContractResources,
+        nodes
       )
+    } else {
+      // fetch and increment used resources on the node
+      const capacityContract = await entityManager.find(CapacityReservationContract, { where: { nodeID }})
+      if (capacityContract.length > 0) {
+        const consumableResources = await entityManager.find(ConsumableResources, { where : { contract: capacityContract[0] }})
+
+        if (consumableResources.length > 0) {
+          consumableResources[0].used.cru += totalContractResources.cru
+          consumableResources[0].used.hru += totalContractResources.hru
+          consumableResources[0].used.sru += totalContractResources.sru
+          consumableResources[0].used.mru += totalContractResources.mru
+
+          await entityManager.save(ConsumableResources, consumableResources[0])
+        }
+
+        const node = nodes.filter(n => n.nodeID === nodeID)[0]
+        if (!node) return
+      
+        const nodeConsumableResources = await entityManager.find(NodeConsumableResources, {
+          where: { node }
+        })
+        if (nodeConsumableResources.length > 0) {
+          nodeConsumableResources[0].used.cru += totalContractResources.cru
+          nodeConsumableResources[0].used.sru += totalContractResources.sru
+          nodeConsumableResources[0].used.hru += totalContractResources.hru
+          nodeConsumableResources[0].used.mru += totalContractResources.mru
+          await entityManager.save(NodeConsumableResources, nodeConsumableResources)
+        }
+      }
     }
 
     const newDeployment = new Deployment()
-    newDeployment.id = nodeC.id
-    newDeployment.deploymentID = nodeC.contractID
-    newDeployment.twinID = nodeC.twinID
-    newDeployment.capacityReservationID = 0 // TODO
+    newDeployment.id = id
+    newDeployment.deploymentID = contractID
+    newDeployment.twinID = twinID
+    newDeployment.capacityReservationID = contractID
     newDeployment.deploymentData = nodeC.deploymentData
     newDeployment.deploymentHash = nodeC.deploymentHash
     newDeployment.numberOfPublicIPs = nodeC.numberOfPublicIPs
@@ -175,7 +215,7 @@ async function main () {
     await entityManager.save(Deployment, newDeployment)
 
     const deploymentResources = new DeploymentResources()
-    deploymentResources.id = nodeC.id
+    deploymentResources.id = id
     deploymentResources.contract = newDeployment
     deploymentResources.hru = totalContractResources.hru
     deploymentResources.sru = totalContractResources.sru
@@ -186,7 +226,7 @@ async function main () {
   })
 }
 
-async function createCapacityContract(entityManager, id, nodeID, contractID, publicIps, totalResources, usedResources) {
+async function createCapacityContract(entityManager, id, nodeID, contractID, publicIps, totalResources, usedResources, nodes) {
   const capContract = new CapacityReservationContract()
   capContract.id = id
   capContract.nodeID = nodeID
@@ -202,19 +242,17 @@ async function createCapacityContract(entityManager, id, nodeID, contractID, pub
   consumableResources.used = usedResources
   await entityManager.save(ConsumableResources, consumableResources)
 
-  const node = await entityManager.find(Node, {
-    where: { nodeID }
-  })[0]
+  const node = nodes.filter(n => n.nodeID === nodeID)[0]
+  if (!node) return
 
   const nodeConsumableResources = await entityManager.find(NodeConsumableResources, {
     where: { node }
   })
   if (nodeConsumableResources.length > 0) {
-    console.log(`updating resources used: ${nodeConsumableResources}`)
-    nodeConsumableResources[0].used.cru = usedResources.cru
-    nodeConsumableResources[0].used.sru = usedResources.sru
-    nodeConsumableResources[0].used.hru = usedResources.hru
-    nodeConsumableResources[0].used.mru = usedResources.mru
+    nodeConsumableResources[0].used.cru += usedResources.cru
+    nodeConsumableResources[0].used.sru += usedResources.sru
+    nodeConsumableResources[0].used.hru += usedResources.hru
+    nodeConsumableResources[0].used.mru += usedResources.mru
     await entityManager.save(NodeConsumableResources, nodeConsumableResources)
   }
 }
