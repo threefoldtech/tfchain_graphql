@@ -10,7 +10,7 @@
     "db:create-migration": "sqd db create-migration",
     "db:init": "node init-countries.js",
     "db:up": "docker-compose up -d db",
-    "process": "node db/init.js && node init-countries.js && node -r dotenv/config lib/processor.js",
+    "process": "node db/init.js && node init-countries.js && node migrate-contracts.js && node -r dotenv/config lib/processor.js",
     "api": "squid-graphql-server",
     "codegen": "sqd codegen",
     "typegen": "squid-substrate-typegen typegen/typegen.json",

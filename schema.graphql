@@ -352,3 +352,7 @@ type RefundTransaction @entity {
   target: String!
   txHash: String!
 }
+
+type ExecutedContractMigration @entity {
+  executed: Boolean!
+}

@@ -5,7 +5,7 @@ const {
   NodeContract,
   PublicIp,
   NodeResourcesTotal,
-  NodeResourcesUsed,
+  ExecutedContractMigration,
   Deployment,
   DeploymentPublicIp,
   DeploymentResources,
@@ -44,6 +44,14 @@ async function main () {
   await connetion.runMigrations({ transaction: 'all' })
 
   const entityManager = connetion.createEntityManager()
+
+  const executedMigration = await entityManager.find(ExecutedContractMigration)
+  if (executedMigration.length > 0) {
+    if (executedMigration[0].executed) {
+      console.log(`contract migration executed, aborting now ...`)
+      process.exit(0)
+    }
+  }
 
   // Get all NodeContracts
   const nodeContracts = await entityManager.find(NodeContract, {
@@ -224,6 +232,11 @@ async function main () {
 
     await entityManager.save(DeploymentResources, deploymentResources)
   })
+
+  let setExecutedMigration = new ExecutedContractMigration()
+  setExecutedMigration.executed = true
+  setExecutedMigration.id = "someid"
+  await entityManager.save(ExecutedContractMigration, setExecutedMigration)
 }
 
 async function createCapacityContract(entityManager, id, nodeID, contractID, publicIps, totalResources, usedResources, nodes) {
