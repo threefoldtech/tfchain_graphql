@@ -71,7 +71,10 @@ type Node @entity {
   country: String
   city: String
   publicConfig: PublicConfig @derivedFrom(field: "node")
+  # deprecated resourcesTotal field
   resourcesTotal: NodeResourcesTotal @derivedFrom(field: "node")
+  # new consumable resources field
+  consumableResources: NodeConsumableResources @derivedFrom(field: "node")
   uptime: BigInt
   created: Int!
   farmingPolicyId: Int!
@@ -83,10 +86,37 @@ type Node @entity {
   createdAt: BigInt!
   updatedAt: BigInt!
   connectionPrice: Int
+  power: NodePower @derivedFrom(field: "node")
 }
 
+type NodePower @entity {
+  node: Node! @unique
+  target: PowerState
+  state: PowerState
+  lastUptime: BigInt
+}
+
+enum PowerState {
+  Up
+  Down
+}
+
+# deprecated
 type NodeResourcesTotal @entity {
   node: Node! @unique
+  hru: BigInt!
+  sru: BigInt!
+  cru: BigInt!
+  mru: BigInt!
+}
+
+type NodeConsumableResources @entity {
+  node: Node! @unique
+  total: Resources!
+  used: Resources!
+}
+
+type Resources {
   hru: BigInt!
   sru: BigInt!
   cru: BigInt!
@@ -156,6 +186,45 @@ type City @entity {
   cityID: Int!
   countryID: Int!
   name: String!
+}
+
+type CapacityReservationContract @entity {
+  contractID: BigInt!
+  nodeID: Int!
+  resources: ConsumableResources @derivedFrom(field: "contract")
+  publicIPs: Int!
+  state: ContractState!
+}
+
+type ConsumableResources @entity {
+  contract: CapacityReservationContract! @unique
+  total: Resources!
+  used: Resources!
+}
+
+type Deployment @entity {
+  deploymentID: BigInt!
+  twinID: Int!
+  capacityReservationID: BigInt!
+  deploymentData: String!
+  deploymentHash: String!
+  numberOfPublicIPs: Int!
+  publicIps: [DeploymentPublicIp]
+  resources: DeploymentResources @derivedFrom(field: "contract")
+  createdAt: BigInt!
+}
+
+type DeploymentResources @entity {
+  contract: Deployment! @unique
+  hru: BigInt!
+  sru: BigInt!
+  cru: BigInt!
+  mru: BigInt!
+}
+
+type DeploymentPublicIp {
+  ip: String!
+  gateway: String!
 }
 
 type NodeContract @entity {
@@ -282,4 +351,8 @@ type RefundTransaction @entity {
   amount: BigInt!
   target: String!
   txHash: String!
+}
+
+type ExecutedContractMigration @entity {
+  executed: Boolean!
 }

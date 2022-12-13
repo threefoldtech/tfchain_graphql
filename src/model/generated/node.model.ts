@@ -3,8 +3,10 @@ import * as marshal from "./marshal"
 import {Location} from "./location.model"
 import {PublicConfig} from "./publicConfig.model"
 import {NodeResourcesTotal} from "./nodeResourcesTotal.model"
+import {NodeConsumableResources} from "./nodeConsumableResources.model"
 import {Interfaces} from "./interfaces.model"
 import {NodeCertification} from "./_nodeCertification"
+import {NodePower} from "./nodePower.model"
 
 @Entity_()
 export class Node {
@@ -43,6 +45,9 @@ export class Node {
   @OneToOne_(() => NodeResourcesTotal)
   resourcesTotal!: NodeResourcesTotal | undefined | null
 
+  @OneToOne_(() => NodeConsumableResources)
+  consumableResources!: NodeConsumableResources | undefined | null
+
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
   uptime!: bigint | undefined | null
 
@@ -75,4 +80,7 @@ export class Node {
 
   @Column_("integer", {nullable: true})
   connectionPrice!: number | undefined | null
+
+  @OneToOne_(() => NodePower)
+  power!: NodePower | undefined | null
 }

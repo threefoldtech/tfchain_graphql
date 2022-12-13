@@ -2,6 +2,11 @@ import type {Result} from './support'
 
 export type AccountId32 = Uint8Array
 
+export interface ConsumableResources {
+  totalResources: Resources
+  usedResources: Resources
+}
+
 export interface ContractBill {
   contractId: bigint
   timestamp: bigint
@@ -16,6 +21,22 @@ export interface Contract {
   twinId: number
   contractType: ContractData
   solutionProviderId: (bigint | undefined)
+}
+
+export interface Deployment {
+  id: bigint
+  twinId: number
+  capacityReservationId: bigint
+  deploymentHash: Uint8Array
+  deploymentData: Uint8Array
+  publicIps: number
+  publicIpsList: IP4[]
+  resources: Resources
+}
+
+export interface IP4 {
+  ip: Uint8Array
+  gw: Uint8Array
 }
 
 export interface NruConsumption {
@@ -64,7 +85,6 @@ export interface Farm {
   twinId: number
   pricingPolicyId: number
   certification: FarmCertification
-  publicIps: PublicIP[]
   dedicatedFarm: boolean
   farmingPolicyLimits: (FarmingPolicyLimit | undefined)
 }
@@ -106,9 +126,9 @@ export interface NodeCertification_Certified {
 }
 
 export interface PublicConfig {
-  ip4: IP
-  ip6: (IP | undefined)
-  domain: (Domain | undefined)
+  ip4: IP4
+  ip6: (IP6 | undefined)
+  domain: (Uint8Array | undefined)
 }
 
 export interface Node {
@@ -116,7 +136,6 @@ export interface Node {
   id: number
   farmId: number
   twinId: number
-  resources: Resources
   location: Location
   publicConfig: (PublicConfig | undefined)
   created: bigint
@@ -127,6 +146,27 @@ export interface Node {
   virtualized: boolean
   serialNumber: (SerialNumber | undefined)
   connectionPrice: number
+}
+
+export type PowerState = PowerState_Up | PowerState_Down
+
+export interface PowerState_Up {
+  __kind: 'Up'
+}
+
+export interface PowerState_Down {
+  __kind: 'Down'
+  value: number
+}
+
+export type PowerTarget = PowerTarget_Up | PowerTarget_Down
+
+export interface PowerTarget_Up {
+  __kind: 'Up'
+}
+
+export interface PowerTarget_Down {
+  __kind: 'Down'
 }
 
 export interface PricingPolicy {
@@ -176,6 +216,13 @@ export interface RefundTransaction {
   sequenceNumber: bigint
 }
 
+export interface Resources {
+  hru: bigint
+  sru: bigint
+  cru: bigint
+  mru: bigint
+}
+
 export type DiscountLevel = DiscountLevel_None | DiscountLevel_Default | DiscountLevel_Bronze | DiscountLevel_Silver | DiscountLevel_Gold
 
 export interface DiscountLevel_None {
@@ -214,33 +261,21 @@ export interface ContractState_GracePeriod {
   value: bigint
 }
 
-export type ContractData = ContractData_NodeContract | ContractData_NameContract | ContractData_RentContract
-
-export interface ContractData_NodeContract {
-  __kind: 'NodeContract'
-  value: NodeContract
-}
+export type ContractData = ContractData_NameContract | ContractData_CapacityReservationContract
 
 export interface ContractData_NameContract {
   __kind: 'NameContract'
   value: NameContract
 }
 
-export interface ContractData_RentContract {
-  __kind: 'RentContract'
-  value: RentContract
+export interface ContractData_CapacityReservationContract {
+  __kind: 'CapacityReservationContract'
+  value: CapacityReservationContract
 }
 
 export interface Provider {
   who: AccountId32
   take: number
-}
-
-export interface Resources {
-  hru: bigint
-  sru: bigint
-  cru: bigint
-  mru: bigint
 }
 
 export type CountryName = Uint8Array
@@ -249,18 +284,10 @@ export type CityName = Uint8Array
 
 export type FarmName = Uint8Array
 
-export interface PublicIP {
+export interface IP6 {
   ip: Uint8Array
-  gateway: GatewayIP
-  contractId: bigint
+  gw: Uint8Array
 }
-
-export interface IP {
-  ip: IP4
-  gw: GW4
-}
-
-export type Domain = Uint8Array
 
 export interface Location {
   city: CityName
@@ -304,27 +331,14 @@ export interface Cause_OutOfFunds {
   __kind: 'OutOfFunds'
 }
 
-export interface NodeContract {
-  nodeId: number
-  deploymentHash: H256
-  deploymentData: Uint8Array
-  publicIps: number
-  publicIpsList: PublicIP[]
-}
-
 export interface NameContract {
   name: NameContractName
 }
 
-export interface RentContract {
+export interface CapacityReservationContract {
   nodeId: number
+  groupId: (number | undefined)
 }
-
-export type GatewayIP = Uint8Array
-
-export type IP4 = Uint8Array
-
-export type GW4 = Uint8Array
 
 export type InterfaceName = Uint8Array
 
@@ -353,7 +367,5 @@ export interface Unit_Gigabytes {
 export interface Unit_Terrabytes {
   __kind: 'Terrabytes'
 }
-
-export type H256 = Uint8Array
 
 export type NameContractName = Uint8Array

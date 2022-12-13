@@ -4,6 +4,7 @@ import {
 import { Farm, FarmCertification, PublicIp } from "../model";
 import { TfgridModuleFarmStoredEvent, TfgridModuleFarmDeletedEvent, TfgridModuleFarmUpdatedEvent, TfgridModuleFarmPayoutV2AddressRegisteredEvent, TfgridModuleFarmCertificationSetEvent, TfgridModuleFarmingPolicySetEvent } from "../types/events";
 import * as v63 from '../types/v63'
+import { createFarmv120, updateFarmv120 } from "./farmMappers/v120";
 
 export async function farmStored(ctx: EventHandlerContext) {
   const farmStoredEvent = new TfgridModuleFarmStoredEvent(ctx)
@@ -19,6 +20,8 @@ export async function farmStored(ctx: EventHandlerContext) {
     let eventValue = ctx.event.params[0].value as v63.Farm
     eventValue.dedicatedFarm = false
     farmStoredEventParsed = farmStoredEvent.asV101
+  } else if (farmStoredEvent.isV120) {
+    return createFarmv120(ctx, farmStoredEvent.asV120)
   }
 
   if (!farmStoredEventParsed) return
@@ -90,6 +93,8 @@ export async function farmUpdated(ctx: EventHandlerContext) {
         certification = FarmCertification.Gold
       }
     }
+  } else if (farmUpdatedEvent.isV120) {
+    return updateFarmv120(ctx, farmUpdatedEvent.asV120)
   }
 
   if (!farmUpdatedEventParsed) return
