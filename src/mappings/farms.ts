@@ -9,19 +9,21 @@ import { Ctx } from '../processor'
 import * as v63 from '../types/v63'
 
 export class FarmWithIPs {
-  constructor(farm: Farm, ips?: PublicIp[]) {
-    this.farm = farm
+  constructor(farmID: number, ips: PublicIp[]) {
+    this.farmID = farmID
     this.publicIPs = ips
   }
 
-  farm: Farm;
-  publicIPs?: PublicIp[];
+  farmID: number;
+  publicIPs: PublicIp[];
 }
 
-export async function farmCreateOrUpdateOrDelete(ctx: Ctx): Promise<[FarmWithIPs[], FarmWithIPs[], FarmWithIPs[]]> {
-  let newFarms: FarmWithIPs[] = []
-  let updatedFarms: FarmWithIPs[] = []
-  let deletedFarms: FarmWithIPs = []
+export async function farmCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Farm[], Farm[], Farm[], FarmWithIPs[]]> {
+  let newFarms: Farm[] = []
+  let updatedFarms: Farm[] = []
+  let deletedFarms: Farm[] = []
+  let publicIPs: FarmWithIPs[] = []
+
   for (let block of ctx.blocks) {
     for (let item of block.items) { 
       if (item.name === "TfgridModule.FarmStored") {
@@ -50,10 +52,7 @@ export async function farmCreateOrUpdateOrDelete(ctx: Ctx): Promise<[FarmWithIPs
         newFarm.twinID = farmStoredEventParsed.twinId
         newFarm.pricingPolicyID = farmStoredEventParsed.pricingPolicyId
         newFarm.dedicatedFarm = false
-
-        if (farmStoredEvent.isV63 || farmStoredEvent.isV101) {
-          newFarm.certification = FarmCertification.NotCertified
-        }
+        newFarm.certification = FarmCertification.NotCertified
 
         newFarm.publicIPs = []
 
@@ -82,7 +81,8 @@ export async function farmCreateOrUpdateOrDelete(ctx: Ctx): Promise<[FarmWithIPs
 
         ctx.log.info(`storing farm: ${newFarm.id}`)
 
-        newFarms.push(new FarmWithIPs(newFarm, ips))
+        newFarms.push(newFarm)
+        publicIPs.push(new FarmWithIPs(newFarm.farmID, ips))
       }
       if (item.name === "TfgridModule.FarmUpdated") {
         const farmUpdatedEvent = new TfgridModuleFarmUpdatedEvent(ctx, item.event)
@@ -105,19 +105,22 @@ export async function farmCreateOrUpdateOrDelete(ctx: Ctx): Promise<[FarmWithIPs
 
         const eventID = item.event.id
 
-        const foundInNewListIndex: number = newFarms.findIndex(t => t.farm.farmID == farmUpdatedEventParsed.id)
+        const foundInNewListIndex: number = newFarms.findIndex(t => t.farmID == farmUpdatedEventParsed.id)
         if (foundInNewListIndex != -1) {
           const savedFarm: Farm = newFarms[foundInNewListIndex]
           savedFarm.gridVersion = farmUpdatedEventParsed.version
           savedFarm.name = farmUpdatedEventParsed.name.toString()
           savedFarm.twinID = farmUpdatedEventParsed.twinId
           savedFarm.pricingPolicyID = farmUpdatedEventParsed.pricingPolicyId
+          // const pubIps = updatePublicIPs(ctx, farmUpdatedEventParsed.publicIps, eventID, savedFarm)
           newFarms[foundInNewListIndex] = savedFarm
-          await updatePublicIPs(ctx, farmUpdatedEventParsed.publicIps, eventID, savedFarm)
+          
+          publicIPs = getPublicIPs(ctx, savedFarm, publicIPs, farmUpdatedEventParsed.publicIps, eventID)
+          
           continue
         }
         
-        const foundInUpdatedListIndex: number = updatedFarms.findIndex(t => t.farm.farmID == farmUpdatedEventParsed.id)
+        const foundInUpdatedListIndex: number = updatedFarms.findIndex(t => t.farmID == farmUpdatedEventParsed.id)
         if (foundInUpdatedListIndex != -1) {
           let savedFarm: Farm = updatedFarms[foundInUpdatedListIndex]
           savedFarm.gridVersion = farmUpdatedEventParsed.version
@@ -125,7 +128,9 @@ export async function farmCreateOrUpdateOrDelete(ctx: Ctx): Promise<[FarmWithIPs
           savedFarm.twinID = farmUpdatedEventParsed.twinId
           savedFarm.pricingPolicyID = farmUpdatedEventParsed.pricingPolicyId
           updatedFarms[foundInUpdatedListIndex] = savedFarm
-          await updatePublicIPs(ctx, farmUpdatedEventParsed.publicIps, eventID, savedFarm)
+
+          publicIPs = getPublicIPs(ctx, savedFarm, publicIPs, farmUpdatedEventParsed.publicIps, eventID)
+
           continue
         } 
 
@@ -136,9 +141,10 @@ export async function farmCreateOrUpdateOrDelete(ctx: Ctx): Promise<[FarmWithIPs
         savedFarm.name = farmUpdatedEventParsed.name.toString()
         savedFarm.twinID = farmUpdatedEventParsed.twinId
         savedFarm.pricingPolicyID = farmUpdatedEventParsed.pricingPolicyId
-        await updatePublicIPs(ctx, farmUpdatedEventParsed.publicIps, eventID, savedFarm)
 
         ctx.log.info(`updating farm: ${savedFarm.id}`)
+
+        publicIPs = getPublicIPs(ctx, savedFarm, publicIPs, farmUpdatedEventParsed.publicIps, eventID)
 
         updatedFarms.push(savedFarm)
       }
@@ -152,38 +158,39 @@ export async function farmCreateOrUpdateOrDelete(ctx: Ctx): Promise<[FarmWithIPs
     }
   }
 
-  return [newFarms, updatedFarms, deletedFarms]
+  return [newFarms, updatedFarms, deletedFarms, publicIPs]
 }
 
-async function updatePublicIPs(ctx: Ctx, ips: PublicIp[], eventID: any, farm: Farm) {
-  const ipPromises = ips.map(async (ip: PublicIp) => {
-    if (ip.ip.toString().indexOf('\x00') >= 0) {
-      return
-    }
+function getPublicIPs(ctx: Ctx, farm: Farm, savedFarmIps: FarmWithIPs[], newIps: PublicIp[], eventID: any): FarmWithIPs[] {
+  let toModify = savedFarmIps.filter(f => f.farmID === farm.farmID)
+  if (toModify.length === 0) {
+    return []
+  }
 
-    const savedIP = await ctx.store.get(PublicIp, {
-      where: {
-        ip: ip.ip.toString(),
-        gateway: ip.gateway.toString(),
-        contractId: ip.contractId
-      }, relations: { farm: true }
-    })
-
-    // ip is already there in storage, don't save it again
-    if (!savedIP) {
+  // For every IP in the updated event:
+  // Check if it's already in the savedFarmIps to be saved, if so, update the value
+  // If it's not there, add it
+  newIps.forEach((ip: PublicIp) => {
+    let foundIdx = toModify[0].publicIPs.findIndex(pubip => pubip.ip === ip.ip.toString())
+    console.log(`found index: ${foundIdx}`)
+    if (foundIdx !== -1) {
+      toModify[0].publicIPs[foundIdx].contractId = ip.contractId
+      toModify[0].publicIPs[foundIdx].ip = ip.ip.toString()
+      toModify[0].publicIPs[foundIdx].gateway = ip.gateway.toString()
+    } else {
       const newIP = new PublicIp()
       newIP.id = eventID
       newIP.ip = ip.ip.toString()
       newIP.gateway = ip.gateway.toString()
       newIP.contractId = ip.contractId
       newIP.farm = farm
-
       ctx.log.info(`saving new ip: ${newIP.ip}`)
-
-      return ctx.store.save<PublicIp>(newIP)
+      ctx.log.warn(`farm ips: ${toModify[0].publicIPs}`)
+      toModify[0].publicIPs.push(newIP)
     }
   })
-  await Promise.all(ipPromises)
+
+  return savedFarmIps
 }
 
 export async function farmDeleted(ctx: EventHandlerContext) {

@@ -12,8 +12,9 @@ import {
   SubstrateProcessor
 } from "@subsquid/substrate-processor";
 import { TypeormDatabase, Store } from '@subsquid/typeorm-store'
-import {BatchContext, BatchProcessorItem, SubstrateBatchProcessor} from "@subsquid/substrate-processor"
+import {BatchContext, BatchProcessorItem, SubstrateBatchProcessor } from "@subsquid/substrate-processor"
 import {In} from "typeorm"
+import { uniqBy } from 'lodash'
 
 // const db = new TypeormDatabase()
 // const processor = new SubstrateProcessor(db);
@@ -148,8 +149,8 @@ import * as ss58 from "@subsquid/ss58";
 
 processor.run(new TypeormDatabase(), async ctx => {
   let [newTwins, updatedTwin, deletedTwins] = await twinCreateOrUpdateOrDelete(ctx)
+  let [newFarms, updatedFarms, deletedFarms, publicIps] = await farmCreateOrUpdateOrDelete(ctx)
   let transfersData = getTransfers(ctx)
-  let [newFarms, updatedFarms, deletedFarms] = await farmCreateOrUpdateOrDelete(ctx)
 
   let accountIds = new Set<string>()
   for (let t of transfersData) {
@@ -182,12 +183,34 @@ processor.run(new TypeormDatabase(), async ctx => {
   // Delete twins
   await ctx.store.remove(deletedTwins)
 
-  // Insert new farms
-  await ctx.store.insert(newFarms)
+  // // Insert new farms
+  let newFarmPromises = newFarms.map(f => {
+    return ctx.store.insert(f)
+  })
+  await Promise.all(newFarmPromises)
+
+  let updatedFarmsPromises = updatedFarms.map(f => {
+    return ctx.store.save(f)
+  })
+  await Promise.all(updatedFarmsPromises)
+
+  let deletedFarmsPromises = deletedFarms.map(f => {
+    return ctx.store.remove(f)
+  })
+  await Promise.all(deletedFarmsPromises)
+
+  let newPublicIpsPromises = publicIps.map(ip => {
+    if (ip.publicIPs) {
+      return ctx.store.save(uniqBy(ip.publicIPs, 'ip'))
+    }
+  })
+  await Promise.all(newPublicIpsPromises)
+
+  // await Promise.all(newPublicIpsPromises)
   // Save updated farms
-  await ctx.store.save(updatedFarms)
+  // await ctx.store.save(updatedFarms)
   // Delete Farm
-  await ctx.store.remove(deletedFarms)
+  // await ctx.store.remove(deletedFarms)
 
   await ctx.store.save(Array.from(accounts.values()))
   await ctx.store.insert(transfers)
