@@ -62,7 +62,7 @@ services:
     ports:
       - "4444:3000"
 
-networks:
-  default:
-    external:
-      name: graphql
+#networks:
+#  default:
+#    external:
+#      name: graphql

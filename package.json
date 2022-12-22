@@ -6,6 +6,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
+    "update": "npx npm-check-updates --filter /subsquid/ --upgrade && npm i -f",
     "build": "rm -rf lib && tsc",
     "db:create-migration": "sqd db create-migration",
     "db:init": "node init-countries.js",
@@ -19,8 +20,8 @@
   },
   "dependencies": {
     "@subsquid/archive-registry": "1.0.18",
-    "@subsquid/cli": "0.6.0",
-    "@subsquid/graphql-server": "3.2.4",
+    "@subsquid/cli": "2.0.1",
+    "@subsquid/graphql-server": "3.3.0",
     "@subsquid/ss58": "^0.1.2",
     "@subsquid/substrate-processor": "2.1.0",
     "@subsquid/typeorm-migration": "0.1.4",
