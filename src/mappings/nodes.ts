@@ -4,6 +4,8 @@ import { Equal } from 'typeorm';
 import {
   EventHandlerContext,
 } from "../types/context";
+import { SubstrateBlock } from '@subsquid/substrate-processor';
+import { In } from 'typeorm'
 
 import { Ctx } from '../processor'
 
@@ -362,40 +364,85 @@ export async function nodeDeleted(ctx: Ctx, node: TfgridModuleNodeDeletedEvent) 
   }
 }
 
-export async function nodeUptimeReported(ctx: Ctx): Promise<[UptimeEvent[], Promise<any>[]]> {
-  let uptimeEvents: UptimeEvent[] = []
-  let nodeUpdatePromises: Promise<any>[] = []
+export async function nodeUptimeReported(ctx: Ctx): Promise<void> {
+  let uptimes = collectUptimeEvents(ctx)
 
+  let touchedNodes = new Map(
+      (await ctx.store.find(Node, {
+        where: {
+          id: In([...new Set(uptimes.map(up => up.event.nodeID)).keys()])
+        }
+      })).map(n => [n.id, n])
+  )
+
+  for (let up of uptimes) {
+    let node = touchedNodes.get(up.event.nodeID.toString())
+    if (node) {
+      node.uptime = up.event.uptime
+      node.updatedAt = BigInt(up.block.timestamp)
+    }
+  }
+  
+  await ctx.store.save(uptimes.map(up => up.event))
+  await ctx.store.save([...touchedNodes.values()])
+}
+
+
+function collectUptimeEvents(ctx: Ctx): {block: SubstrateBlock, event: UptimeEvent}[] {
+  let list: {block: SubstrateBlock, event: UptimeEvent}[] = []
   for (let block of ctx.blocks) {
     for (let item of block.items) {
       if (item.name === "TfgridModule.NodeUptimeReported") {
         const [nodeID, now, uptime] = new TfgridModuleNodeUptimeReportedEvent(ctx, item.event).asV49
-      
-        const newUptimeEvent = new UptimeEvent()
-        newUptimeEvent.id = item.event.id
-        newUptimeEvent.nodeID = nodeID
-        newUptimeEvent.timestamp = now
-        newUptimeEvent.uptime = uptime
-
-        // await ctx.store.save<UptimeEvent>(newUptimeEvent)
-        uptimeEvents.push(newUptimeEvent)
-
-        let nodeUpdatePromise = new Promise(() => {
-          ctx.store.get(Node, { where: { nodeID } })
-            .then(savedNode => {
-              if (savedNode) {
-                savedNode.uptime = uptime
-                savedNode.updatedAt = BigInt(block.header.timestamp)
-                return ctx.store.save<Node>(savedNode)
-              }
-            })
-          })
-        nodeUpdatePromises.push(nodeUpdatePromise)
+        const event = new UptimeEvent()
+        event.id = item.event.id
+        event.nodeID = nodeID
+        event.timestamp = now
+        event.uptime = uptime
+        list.push({
+          block: block.header,
+          event
+        })
       }
     }
   }
-  return [uptimeEvents, nodeUpdatePromises]
+  return list
 }
+
+// export async function nodeUptimeReported(ctx: Ctx): Promise<[UptimeEvent[], Promise<any>[]]> {
+//   let uptimeEvents: UptimeEvent[] = []
+//   let nodeUpdatePromises: Promise<any>[] = []
+
+//   for (let block of ctx.blocks) {
+//     for (let item of block.items) {
+//       if (item.name === "TfgridModule.NodeUptimeReported") {
+//         const [nodeID, now, uptime] = new TfgridModuleNodeUptimeReportedEvent(ctx, item.event).asV49
+      
+//         const newUptimeEvent = new UptimeEvent()
+//         newUptimeEvent.id = item.event.id
+//         newUptimeEvent.nodeID = nodeID
+//         newUptimeEvent.timestamp = now
+//         newUptimeEvent.uptime = uptime
+
+//         // await ctx.store.save<UptimeEvent>(newUptimeEvent)
+//         uptimeEvents.push(newUptimeEvent)
+
+//         let nodeUpdatePromise = new Promise(() => {
+//           ctx.store.get(Node, { where: { nodeID } })
+//             .then(savedNode => {
+//               if (savedNode) {
+//                 savedNode.uptime = uptime
+//                 savedNode.updatedAt = BigInt(block.header.timestamp)
+//                 return ctx.store.save<Node>(savedNode)
+//               }
+//             })
+//           })
+//         nodeUpdatePromises.push(nodeUpdatePromise)
+//       }
+//     }
+//   }
+//   return [uptimeEvents, nodeUpdatePromises]
+// }
 
 export async function nodePublicConfigStored(ctx: EventHandlerContext) {
   const storedEvent = new TfgridModuleNodePublicConfigStoredEvent(ctx)

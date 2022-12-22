@@ -235,13 +235,7 @@ processor.run(new TypeormDatabase(), async ctx => {
 
   await nodeCreateUpdateOrDelete(ctx)
 
-  let [uptimeReports, nodeUpdates] = await nodeUptimeReported(ctx)
-  let uptimeReportsToSave = uptimeReports.map(u => {
-    console.log(u)
-    return ctx.store.save(u)
-  })
-  await Promise.all([uptimeReportsToSave, nodeUpdates])
-  await Promise.all(newPublicIpsPromises)
+  await nodeUptimeReported(ctx)
   // Save updated farms
   await ctx.store.save(updatedFarms)
   // Delete Farm
