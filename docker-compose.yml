@@ -46,7 +46,7 @@ services:
     depends_on:
       - db
 
-networks:
-  default:
-    external:
-      name: graphql
+#networks:
+#  default:
+#    external:
+#      name: graphql
