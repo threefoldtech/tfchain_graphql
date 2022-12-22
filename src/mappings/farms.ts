@@ -58,7 +58,7 @@ export async function farmCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Farm[], Far
 
         let ips: PublicIp[] = []
         farmStoredEventParsed.publicIps.forEach(ip => {
-          ctx.log.info("storing ips")
+          // ctx.log.info("storing ips")
           const newIP = new PublicIp()
 
           newIP.id = eventID
@@ -79,7 +79,7 @@ export async function farmCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Farm[], Far
           ips.push(newIP)
         })
 
-        ctx.log.info(`storing farm: ${newFarm.id}`)
+        // ctx.log.info(`storing farm: ${newFarm.id}`)
 
         newFarms.push(newFarm)
         publicIPs.push(new FarmWithIPs(newFarm.farmID, ips))
@@ -142,7 +142,7 @@ export async function farmCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Farm[], Far
         savedFarm.twinID = farmUpdatedEventParsed.twinId
         savedFarm.pricingPolicyID = farmUpdatedEventParsed.pricingPolicyId
 
-        ctx.log.info(`updating farm: ${savedFarm.id}`)
+        // ctx.log.info(`updating farm: ${savedFarm.id}`)
 
         publicIPs = getPublicIPs(ctx, savedFarm, publicIPs, farmUpdatedEventParsed.publicIps, eventID)
 
@@ -172,7 +172,7 @@ function getPublicIPs(ctx: Ctx, farm: Farm, savedFarmIps: FarmWithIPs[], newIps:
   // If it's not there, add it
   newIps.forEach((ip: PublicIp) => {
     let foundIdx = toModify[0].publicIPs.findIndex(pubip => pubip.ip === ip.ip.toString())
-    console.log(`found index: ${foundIdx}`)
+    // console.log(`found index: ${foundIdx}`)
     if (foundIdx !== -1) {
       toModify[0].publicIPs[foundIdx].contractId = ip.contractId
       toModify[0].publicIPs[foundIdx].ip = ip.ip.toString()
@@ -184,8 +184,8 @@ function getPublicIPs(ctx: Ctx, farm: Farm, savedFarmIps: FarmWithIPs[], newIps:
       newIP.gateway = ip.gateway.toString()
       newIP.contractId = ip.contractId
       newIP.farm = farm
-      ctx.log.info(`saving new ip: ${newIP.ip}`)
-      ctx.log.warn(`farm ips: ${toModify[0].publicIPs}`)
+      // ctx.log.info(`saving new ip: ${newIP.ip}`)
+      // ctx.log.warn(`farm ips: ${toModify[0].publicIPs}`)
       toModify[0].publicIPs.push(newIP)
     }
   })

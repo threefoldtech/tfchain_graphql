@@ -1,6 +1,6 @@
 import { balancesTransfer } from './mappings/balances'
 import { twinCreateOrUpdateOrDelete } from './mappings/twins'
-import { nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported, nodePublicConfigStored, nodeCertificationSet } from './mappings/nodes'
+import { nodeCreateUpdateOrDelete, nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported, nodePublicConfigStored, nodeCertificationSet } from './mappings/nodes'
 import { farmingPolicyStored, pricingPolicyStored, farmingPolicyUpdated } from './mappings/policies';
 import { farmCreateOrUpdateOrDelete, farmDeleted, farmPayoutV2AddressRegistered, farmCertificationSet } from './mappings/farms';
 import { entityDeleted, entityStored, entityUpdated } from './mappings/entity';
@@ -81,7 +81,6 @@ import { uniqBy } from 'lodash'
 import {Account, Transfer} from "./model"
 
 const processor = new SubstrateBatchProcessor()
-    .setBatchSize(100)
     .setTypesBundle("typegen/typesBundle.json")
     .setDataSource({
       archive: process.env.INDEXER_ENDPOINT_URL || 'http://localhost:8888/graphql',
@@ -134,6 +133,34 @@ const processor = new SubstrateBatchProcessor()
       }
     } as const)
     .addEvent('TfgridModule.FarmDeleted', {
+      data: {
+        event: {
+          args: true,
+        }
+      }
+    } as const)
+    .addEvent('TfgridModule.NodeStored', {
+      data: {
+        event: {
+          args: true,
+        }
+      }
+    } as const)
+    .addEvent('TfgridModule.NodeUpdated', {
+      data: {
+        event: {
+          args: true,
+        }
+      }
+    } as const)
+    .addEvent('TfgridModule.NodeDeleted', {
+      data: {
+        event: {
+          args: true,
+        }
+      }
+    } as const)
+    .addEvent('TfgridModule.NodeUptimeReported', {
       data: {
         event: {
           args: true,
@@ -206,11 +233,19 @@ processor.run(new TypeormDatabase(), async ctx => {
   })
   await Promise.all(newPublicIpsPromises)
 
-  // await Promise.all(newPublicIpsPromises)
+  await nodeCreateUpdateOrDelete(ctx)
+
+  let [uptimeReports, nodeUpdates] = await nodeUptimeReported(ctx)
+  let uptimeReportsToSave = uptimeReports.map(u => {
+    console.log(u)
+    return ctx.store.save(u)
+  })
+  await Promise.all([uptimeReportsToSave, nodeUpdates])
+  await Promise.all(newPublicIpsPromises)
   // Save updated farms
-  // await ctx.store.save(updatedFarms)
+  await ctx.store.save(updatedFarms)
   // Delete Farm
-  // await ctx.store.remove(deletedFarms)
+  await ctx.store.remove(deletedFarms)
 
   await ctx.store.save(Array.from(accounts.values()))
   await ctx.store.insert(transfers)

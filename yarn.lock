@@ -21,10 +21,38 @@
     "@types/node" "^10.1.0"
     long "^4.0.0"
 
+"@apollo/protobufjs@1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@apollo/protobufjs/-/protobufjs-1.2.6.tgz#d601e65211e06ae1432bf5993a1a0105f2862f27"
+  integrity sha512-Wqo1oSHNUj/jxmsVp4iR3I480p6qdqHikn38lKrFhfzcDJ7lwd7Ck7cHRl4JE81tWNArl77xhnG/OkZhxKBYOw==
+  dependencies:
+    "@protobufjs/aspromise" "^1.1.2"
+    "@protobufjs/base64" "^1.1.2"
+    "@protobufjs/codegen" "^2.0.4"
+    "@protobufjs/eventemitter" "^1.1.0"
+    "@protobufjs/fetch" "^1.1.0"
+    "@protobufjs/float" "^1.0.2"
+    "@protobufjs/inquire" "^1.1.0"
+    "@protobufjs/path" "^1.1.2"
+    "@protobufjs/pool" "^1.1.0"
+    "@protobufjs/utf8" "^1.1.0"
+    "@types/long" "^4.0.0"
+    "@types/node" "^10.1.0"
+    long "^4.0.0"
+
 "@apollo/utils.dropunuseddefinitions@^1.1.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@apollo/utils.dropunuseddefinitions/-/utils.dropunuseddefinitions-1.1.0.tgz"
   integrity sha512-jU1XjMr6ec9pPoL+BFWzEPW7VHHulVdGKMkPAMiCigpVIT11VmCbnij0bWob8uS3ODJ65tZLYKAh/55vLw2rbg==
+
+"@apollo/utils.keyvadapter@~1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@apollo/utils.keyvadapter/-/utils.keyvadapter-1.1.2.tgz#e0aceed9eba21e0d155342accfb22a9e743ced5e"
+  integrity sha512-vPC5e97uwHuZ2iMHVrEeRsV4dLw0lNx2UY9APhb7StC/RMR3BdnuPwS/+5yR9tUF5IUut+iJZocHkS4y6mR9aA==
+  dependencies:
+    "@apollo/utils.keyvaluecache" "^1.0.1"
+    dataloader "^2.1.0"
+    keyv "^4.4.0"
 
 "@apollo/utils.keyvaluecache@^1.0.1":
   version "1.0.1"
@@ -33,6 +61,14 @@
   dependencies:
     "@apollo/utils.logger" "^1.0.0"
     lru-cache "^7.10.1"
+
+"@apollo/utils.keyvaluecache@~1.0.1":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@apollo/utils.keyvaluecache/-/utils.keyvaluecache-1.0.2.tgz#2bfe358c4d82f3a0950518451996758c52613f57"
+  integrity sha512-p7PVdLPMnPzmXSQVEsy27cYEjVON+SH/Wb7COyW3rQN8+wJgT1nv9jZouYtztWW8ZgTkii5T6tC9qfoDREd4mg==
+  dependencies:
+    "@apollo/utils.logger" "^1.0.0"
+    lru-cache "7.10.1 - 7.13.1"
 
 "@apollo/utils.logger@^1.0.0":
   version "1.0.0"
@@ -171,6 +207,11 @@
   dependencies:
     tslib "^2.4.0"
 
+"@ioredis/commands@^1.1.1":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@ioredis/commands/-/commands-1.2.0.tgz#6d61b3097470af1fdbbe622795b8921d42018e11"
+  integrity sha512-Sx1pU8EM64o2BrqNpEO1CNLtKQwyhuXuqyfH7oGKCk+1a33d2r5saW8zNwm3j6BTExtjrv2BxTgzzkMwts6vGg==
+
 "@isaacs/string-locale-compare@^1.1.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@isaacs/string-locale-compare/-/string-locale-compare-1.1.0.tgz"
@@ -180,6 +221,13 @@
   version "1.0.1"
   resolved "https://registry.npmjs.org/@josephg/resolvable/-/resolvable-1.0.1.tgz"
   integrity sha512-CtzORUwWTTOTqfVtHaKRJ0I1kNQd1bpn3sUh8I3nJDVY+5/M/Oe1DnEWzPQvqq/xPIIkzzzIP7mfCoAjFRvDhg==
+
+"@keyv/redis@~2.5.1":
+  version "2.5.4"
+  resolved "https://registry.yarnpkg.com/@keyv/redis/-/redis-2.5.4.tgz#012e35e73909782d42cbf460309c852c40d5532a"
+  integrity sha512-27MTiJFME3R13fPiiOV/ww550gU9Zc75eJkzD+EpwRXcgunjcXcYEw1cM9XyaEI5y0aS1PPknRjKGlYRjT8nTQ==
+  dependencies:
+    ioredis "^5.2.4"
 
 "@kwsites/file-exists@^1.1.1":
   version "1.1.1"
@@ -706,10 +754,10 @@
   resolved "https://registry.npmjs.org/@sqltools/formatter/-/formatter-1.2.3.tgz"
   integrity sha512-O3uyB/JbkAEMZaP3YqyHH7TMnex7tWyCbCI4EfJdOCoN6HIhqdJBWTM6aCCiWQ/5f5wxjgU735QAIpJbjDvmzg==
 
-"@subsquid/archive-registry@1.0.10":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@subsquid/archive-registry/-/archive-registry-1.0.10.tgz#91e73d239bbbba939b0d715fb141590be11551f7"
-  integrity sha512-jQLAbUEsp53SYN1cePjxEQhf9f9vjsmMxdwde/rZCdn29cOGMIBSsN63kGoMVgkLwhsfCJ0VNUKNGqCey8oiZQ==
+"@subsquid/archive-registry@1.0.18":
+  version "1.0.18"
+  resolved "https://registry.yarnpkg.com/@subsquid/archive-registry/-/archive-registry-1.0.18.tgz#9e5639b29b4fac306a35bc4394509dad06429f11"
+  integrity sha512-3o1adzHc0Xxj7jlIEC3A6fmyfMcAHuIFE9mEsE1Fp+0O76moqCpvRYCtu8qBWNqudq2BjfjiswPJnK1ouCOMUQ==
   dependencies:
     node-abort-controller "^3.0.1"
     node-fetch "^2"
@@ -744,37 +792,47 @@
   resolved "https://registry.npmjs.org/@subsquid/graphiql-console/-/graphiql-console-0.2.0.tgz"
   integrity sha512-Wh2Oxi9JkK79Y728yDEeY7JelcY1cGiQTbzVIRMFLT2tjkkoQ69goAGXdh9QmM/ANAVrHQkBUNJOLd5oAg//oQ==
 
-"@subsquid/graphql-server@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@subsquid/graphql-server/-/graphql-server-2.0.0.tgz#9935a27ca629b4719ec7b857570b8ad390358a57"
-  integrity sha512-aLdz5MYyOSsg+TT1xHEUHg0mk20vkgktZ3/GaQPJEIjd4jpT86nWTR/UFqcgb+RVcnRbHNMtjeE1GDFgwM5zQw==
+"@subsquid/graphiql-console@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/graphiql-console/-/graphiql-console-0.3.0.tgz#415d305f1b7df7f737c788a3311cfa3179b6dbd1"
+  integrity sha512-C89mus6IXnNi0xMQrZqUFBZwLj8tbuq9lye8Gq/lHmmERAUpi6UsWEyLdJLx2mneZzF3JtY8eNiiZ16jmjtvfw==
+
+"@subsquid/graphql-server@3.2.4":
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/@subsquid/graphql-server/-/graphql-server-3.2.4.tgz#22f02480ec9e32753e29c527546446238b9f8fbb"
+  integrity sha512-n+hk3Ii9fWryb0KvGN4qdio5C3u4+VgEjOHK22/f9Bsrdpug2jmIw05mHDpufcnzG289ZJrzuh0DsorkKf1GHw==
   dependencies:
+    "@apollo/utils.keyvadapter" "~1.1.2"
+    "@apollo/utils.keyvaluecache" "~1.0.1"
     "@graphql-tools/merge" "^8"
     "@graphql-tools/schema" "^8"
     "@graphql-tools/utils" "^8"
-    "@subsquid/logger" "^0.1.0"
-    "@subsquid/openreader" "^2.0.0"
+    "@keyv/redis" "~2.5.1"
+    "@subsquid/logger" "^0.3.0"
+    "@subsquid/openreader" "^3.1.4"
     "@subsquid/typeorm-config" "^2.0.0"
-    "@subsquid/util-internal" "^0.0.1"
-    "@subsquid/util-internal-commander" "^0.0.0"
+    "@subsquid/util-internal" "^1.0.0"
+    "@subsquid/util-internal-commander" "^0.0.1"
     "@subsquid/util-internal-http-server" "^0.1.0"
     apollo-server-core "^3.9.0"
     apollo-server-express "^3.9.0"
+    apollo-server-plugin-response-cache "~3.7.0"
     commander "^9.3.0"
     dotenv "^10.0.0"
     express "^4.18.1"
     graphql "^15.8.0"
     graphql-ws "^5.9.1"
+    keyv "~4.5.0"
     pg "^8.7.3"
     ws "^8.8.1"
 
-"@subsquid/logger@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@subsquid/logger/-/logger-0.1.0.tgz#88f7092306dd621b6467553ea0802d57288b5457"
-  integrity sha512-tiM9gUyaB9RJupfD8CskKSMyDb8xXFl6JhQm0r/xy00RhFO3EKOu2Jc7UvvCkCVuJImVwWLh/xdwqZ+d4SXY2g==
+"@subsquid/logger@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/logger/-/logger-0.3.0.tgz#7f78d91da85a5ad2f561f636e81322cf9ea2d712"
+  integrity sha512-uflVPTey/6p/KCIpdzP2/Q1RRd3Ec4iLPjqdSFSmFPtai3IDEOQv5dXzUeiDRwa/63Q9tmzsLeKgdW8TDw5c7Q==
   dependencies:
     "@subsquid/util-internal-hex" "^0.0.1"
-    "@subsquid/util-internal-json" "^0.1.1"
+    "@subsquid/util-internal-json" "^0.2.0"
     supports-color "^8.1.1"
 
 "@subsquid/openreader@^0.7.1":
@@ -793,16 +851,16 @@
     graphql-parse-resolve-info "^4.12.0"
     pg "^8.7.3"
 
-"@subsquid/openreader@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@subsquid/openreader/-/openreader-2.0.0.tgz#6acaaa95e00a7e903fb3075d4d3d70309ee51d2f"
-  integrity sha512-FDpZNeWbben7dkEw350waDku+wtElJzlfO+o4HMMIXZ126UpEZTJ7BHywAmioCAFGGti2lhuGYWcgNxTqFbehA==
+"@subsquid/openreader@^3.1.4":
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/@subsquid/openreader/-/openreader-3.1.5.tgz#350b66952fc881432bbc08daaebb586f6033b31b"
+  integrity sha512-hbPuSIgNC5g/rHB5Fqw9v5xMoFIS5EJkeVnm+Fm0P5tnEZz9UfQKI4mu4wvaAkAdQZQPCOQpWw+Ws1YavpDQHw==
   dependencies:
     "@graphql-tools/merge" "^8"
-    "@subsquid/graphiql-console" "^0.2.0"
-    "@subsquid/logger" "^0.1.0"
-    "@subsquid/util-internal" "^0.0.1"
-    "@subsquid/util-internal-commander" "^0.0.0"
+    "@subsquid/graphiql-console" "^0.3.0"
+    "@subsquid/logger" "^0.3.0"
+    "@subsquid/util-internal" "^1.0.0"
+    "@subsquid/util-internal-commander" "^0.0.1"
     "@subsquid/util-internal-hex" "^0.0.1"
     "@subsquid/util-internal-http-server" "^0.1.0"
     "@subsquid/util-naming" "^0.0.1"
@@ -825,13 +883,13 @@
     "@subsquid/util-timeout" "^0.0.0"
     websocket "^1.0.34"
 
-"@subsquid/scale-codec@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/@subsquid/scale-codec/-/scale-codec-1.0.3.tgz"
-  integrity sha512-wUPtNrO9i6doOqoxH7IeoZ8wS/jSgH/VZraBCzno+Cmv/6pRf6svWiCuooPzEXFZ1BI1XDHoZ2NLBf7DFkdMkA==
+"@subsquid/scale-codec@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/scale-codec/-/scale-codec-1.1.0.tgz#8610d72d610b53f5324268f8f8a608d311e8e932"
+  integrity sha512-QaNh4PZoglmfO9L03q7XJ8zcDcvXwVTzXzlWPGvnqAEagGsGBJqAopzyqMAAIytd56gfLKSQkvtKJkWEzNtkuw==
   dependencies:
     "@subsquid/util-internal-hex" "^0.0.1"
-    "@subsquid/util-internal-json" "^0.1.1"
+    "@subsquid/util-internal-json" "^0.2.0"
 
 "@subsquid/ss58-codec@^0.1.1":
   version "0.1.1"
@@ -841,82 +899,81 @@
     base-x "^3.0.9"
     blake2b "^2.1.4"
 
-"@subsquid/ss58@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.npmjs.org/@subsquid/ss58/-/ss58-0.1.1.tgz"
-  integrity sha512-7zVlhh+dF7fFB069n9VjeLrQpuVGgvcImzCf7zSNSq0DGUD9/EFr8t2x3h52DbxOXoDTSx+zbK2Wq179SSnfTg==
+"@subsquid/ss58@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@subsquid/ss58/-/ss58-0.1.2.tgz#304b9740196dce406e0742a775db59a4500c4129"
+  integrity sha512-oT7EBliBNt0TD4789IrcAolA1bduMSvEyEysyZgk/G9DdFQbwW21ApNwCubasGnrnlp+JOoxILZOknd5GoWNbQ==
   dependencies:
     "@subsquid/ss58-codec" "^0.1.1"
 
-"@subsquid/substrate-metadata-explorer@1.0.6", "@subsquid/substrate-metadata-explorer@^1.0.6":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@subsquid/substrate-metadata-explorer/-/substrate-metadata-explorer-1.0.6.tgz#0845ec085d563764ddc02b336e2fd405a22408b7"
-  integrity sha512-eC55jimzI16E3TerwJIFIvO04vex/eONNNLNOoX+aznO6gq59NZwJi4T9u6JYcPvNJN6NzF1D2AfSKjK+TFmrQ==
+"@subsquid/substrate-metadata-explorer@1.0.9", "@subsquid/substrate-metadata-explorer@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@subsquid/substrate-metadata-explorer/-/substrate-metadata-explorer-1.0.9.tgz#6044fa38b6227076aa1f206d9dc68ab61060a992"
+  integrity sha512-5GwdPsDUzEyIYdoo+E56C8wuyR7oHSzUY6WQJfLK1XrZ54Gk8K8LpWtAgtifnRLAknXIAgXq4lXLfhTKhrf2hA==
   dependencies:
-    "@subsquid/logger" "^0.1.0"
+    "@subsquid/logger" "^0.3.0"
     "@subsquid/rpc-client" "^1.0.2"
-    "@subsquid/util-internal" "^0.0.1"
-    "@subsquid/util-internal-gql-request" "^0.1.0"
+    "@subsquid/util-internal" "^1.0.0"
+    "@subsquid/util-internal-gql-request" "^0.1.1"
     "@subsquid/util-internal-read-lines" "^0.0.1"
     ajv "^8.11.0"
     commander "^9.3.0"
 
-"@subsquid/substrate-metadata@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@subsquid/substrate-metadata/-/substrate-metadata-1.1.0.tgz#284db6d5cfc193d095bc8cf1cec1a96ce1e44424"
-  integrity sha512-X19/x8SFcQ3Yyupld8bm2DsoukOUbhCUqEnwCb+a4NqutmoZhiKMnK8lsUyzND21SGEt3CQ7QRO7VB0nw3P5tA==
+"@subsquid/substrate-metadata@^2.1.0":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@subsquid/substrate-metadata/-/substrate-metadata-2.1.2.tgz#deeaf8667689832139a9c0effbc1e689a288a2b6"
+  integrity sha512-XoKgMTIUPbHRLmTwUvB6/8XY2ZHWePDUfRURpL/3HzyR9wQabOExM0b6cWwp+5k7dikxHCfZSqUre1yoskaO7w==
   dependencies:
-    "@subsquid/scale-codec" "^1.0.3"
-    "@subsquid/util-internal" "^0.0.1"
+    "@subsquid/scale-codec" "^1.1.0"
+    "@subsquid/util-internal" "^1.0.0"
     "@subsquid/util-naming" "^0.0.1"
 
-"@subsquid/substrate-processor@1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@subsquid/substrate-processor/-/substrate-processor-1.6.0.tgz#2a18bedd5f632b5e01ad5596df7a968f6c71846a"
-  integrity sha512-s/HrmNjX0EIsmtz75WSRH6rhpNlFsqE61YUEMfmDCSK+JrNm8ozan1zkkGh6QdjO5trujyZkaTZJpFCg55J4/A==
+"@subsquid/substrate-processor@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/substrate-processor/-/substrate-processor-2.1.0.tgz#967a672540e00ccf2ae0bf47e07094de10288ffc"
+  integrity sha512-nbDfQ7YwShiEBdq+OkQKjB4vo0yZjYDsraXzHXXkhrEpXGwri/7DhGq1u95fIcw1qjgPu6JA3QcG9ojqRJgi/A==
   dependencies:
-    "@subsquid/logger" "^0.1.0"
+    "@subsquid/logger" "^0.3.0"
     "@subsquid/rpc-client" "^1.0.2"
-    "@subsquid/scale-codec" "^1.0.3"
-    "@subsquid/substrate-metadata" "^1.1.0"
+    "@subsquid/scale-codec" "^1.1.0"
+    "@subsquid/substrate-metadata" "^2.1.0"
     "@subsquid/typeorm-config" "^2.0.0"
-    "@subsquid/util-internal" "^0.0.1"
+    "@subsquid/util-internal" "^1.0.0"
     "@subsquid/util-internal-binary-heap" "^0.0.0"
-    "@subsquid/util-internal-code-printer" "^0.0.2"
+    "@subsquid/util-internal-code-printer" "^0.1.0"
     "@subsquid/util-internal-counters" "^0.0.1"
-    "@subsquid/util-internal-gql-request" "^0.1.0"
+    "@subsquid/util-internal-gql-request" "^0.1.1"
     "@subsquid/util-internal-hex" "^0.0.1"
     "@subsquid/util-internal-prometheus-server" "^0.0.2"
     "@subsquid/util-xxhash" "^0.1.1"
     blake2b "^2.1.4"
     prom-client "^14.0.1"
 
-"@subsquid/substrate-typegen@1.2.2":
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/@subsquid/substrate-typegen/-/substrate-typegen-1.2.2.tgz#bca1cfd1298508f3b1b91ec7df440e7d3012f7bc"
-  integrity sha512-4UKDYBaZxCpfUQbVHNS5pKKBopYe+Eg46pewfbdk2TqYVRE16uQPJjJBa6qfjQGl6snfGJp8BJ93RNIU2K4LVw==
+"@subsquid/substrate-typegen@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/substrate-typegen/-/substrate-typegen-2.0.0.tgz#c366b6bf35a6e53f445328959e635b2ea54c582a"
+  integrity sha512-UPNWoQlA9iuRTlVPPFAkNA/aXvZ6Ne1SDdbvUWy0BXIfRKsi7gRNilfhwJavs0j5lVZIxQviDJ0GFG9eb/BQ2Q==
   dependencies:
-    "@subsquid/logger" "^0.1.0"
-    "@subsquid/scale-codec" "^1.0.3"
-    "@subsquid/substrate-metadata" "^1.1.0"
-    "@subsquid/substrate-metadata-explorer" "^1.0.6"
-    "@subsquid/util-internal" "^0.0.1"
-    "@subsquid/util-internal-code-printer" "^0.0.2"
-    "@subsquid/util-internal-gql-request" "^0.1.0"
+    "@subsquid/logger" "^0.3.0"
+    "@subsquid/scale-codec" "^1.1.0"
+    "@subsquid/substrate-metadata" "^2.1.0"
+    "@subsquid/substrate-metadata-explorer" "^1.0.9"
+    "@subsquid/util-internal" "^1.0.0"
+    "@subsquid/util-internal-code-printer" "^0.1.0"
+    "@subsquid/util-internal-gql-request" "^0.1.1"
     "@subsquid/util-internal-read-lines" "^0.0.1"
     "@subsquid/util-naming" "^0.0.1"
     ajv "^8.11.0"
     commander "^9.3.0"
 
-"@subsquid/typeorm-codegen@0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@subsquid/typeorm-codegen/-/typeorm-codegen-0.1.1.tgz#06a0233621b40a906fff0e34798ef56784086408"
-  integrity sha512-vLissbWuoJ85zccSMH99ghLq3CEKeyEMZW/AkWFNh2kp0z2eVw8iFpBpNOoLxWj9Q46zvcvTxpmLxSuqNpYw+w==
+"@subsquid/typeorm-codegen@0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@subsquid/typeorm-codegen/-/typeorm-codegen-0.3.1.tgz#ffccbee2797ed8beb0ba60d1e5678801975ac5f6"
+  integrity sha512-oNyKeFkSE9w4lIr1yOUAyVcSAZ694bCni16YH3TJEQnIFs6ANGAvLX/GuSUpcmhW1MN44UhV2jy75l6Oz5ghMA==
   dependencies:
-    "@subsquid/openreader" "^2.0.0"
-    "@subsquid/typeorm-config" "^2.0.0"
-    "@subsquid/util-internal" "^0.0.1"
-    "@subsquid/util-internal-code-printer" "^0.0.2"
+    "@subsquid/openreader" "^3.1.4"
+    "@subsquid/util-internal" "^1.0.0"
+    "@subsquid/util-internal-code-printer" "^0.1.0"
     "@subsquid/util-naming" "^0.0.1"
     commander "^9.3.0"
 
@@ -934,49 +991,49 @@
   dependencies:
     "@subsquid/util-naming" "^0.0.1"
 
-"@subsquid/typeorm-migration@0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@subsquid/typeorm-migration/-/typeorm-migration-0.1.2.tgz#2b8ff13eb8eebb6bbcaecb42b4bde1c4d89a52f0"
-  integrity sha512-VF3N20hXRAqeXY2Mydql0sKfIXjrwqLyWgXGLfBO4FvHnJDj46Iot6QjhTd0mDdEJc3MWDODmGM0Q3f9Gi7rbQ==
+"@subsquid/typeorm-migration@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@subsquid/typeorm-migration/-/typeorm-migration-0.1.4.tgz#f4128d9f0b84d8cd63dfc32d4712efd1b0623538"
+  integrity sha512-x2VCODuomJrxCPQFJipQ3//0BsrK+dx4lJbr7nPPbh7zULo17pQ0gByD5H849fua3bLDzRzQHm1kCC+IgTj2lg==
   dependencies:
     "@subsquid/typeorm-config" "^2.0.0"
-    "@subsquid/util-internal" "^0.0.1"
-    "@subsquid/util-internal-code-printer" "^0.0.2"
+    "@subsquid/util-internal" "^1.0.0"
+    "@subsquid/util-internal-code-printer" "^0.1.0"
     commander "^9.3.0"
     dotenv "^10.0.0"
 
-"@subsquid/typeorm-store@0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@subsquid/typeorm-store/-/typeorm-store-0.1.2.tgz#8584dfd537a5390f6b0dd9d32813be9eb669aaa5"
-  integrity sha512-FGR/5lkPSpWZtPRx2CDjSVKmdXyahn1db4zQ7WJO+TMLhE7sZuBiqLidNGFusu9U2gJtrIklCFPtz3dvI7Fqnw==
+"@subsquid/typeorm-store@0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@subsquid/typeorm-store/-/typeorm-store-0.1.5.tgz#e552d58882ebf0dae8a092b60b32415c7fcf06e6"
+  integrity sha512-m5OwEaEKNlkq8KRvWCGmUJRdSzW4Jqqc4KT6Pko7aCqzBwoJHOXZsPiR+Hofv6w4Lfnwo3dGPSTS2V6R2MdIaA==
   dependencies:
     "@subsquid/typeorm-config" "^2.0.0"
-    "@subsquid/util-internal" "^0.0.1"
+    "@subsquid/util-internal" "^1.0.0"
 
 "@subsquid/util-internal-binary-heap@^0.0.0":
   version "0.0.0"
   resolved "https://registry.npmjs.org/@subsquid/util-internal-binary-heap/-/util-internal-binary-heap-0.0.0.tgz"
   integrity sha512-eVtdf442+L10G4lgSHCcxgNzYEcrdZ3WKy7Y7CGkhKLJhKuOlgDtEwklZmh1/lM+37AQn9XnX/VpxTaJ2vA2sg==
 
-"@subsquid/util-internal-code-printer@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.npmjs.org/@subsquid/util-internal-code-printer/-/util-internal-code-printer-0.0.2.tgz"
-  integrity sha512-JqOMotioko6SLAquVM5GMi7qvzo4W9LPw6kw2Wse1wdnQt1HjpS9t2Zo8QkAh9PzZR+0lfVskBm83AhUCGsOGQ==
+"@subsquid/util-internal-code-printer@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/util-internal-code-printer/-/util-internal-code-printer-0.1.0.tgz#c613c73e08c82b80b42be2c85cfb49ea20c0addb"
+  integrity sha512-qVlW3cvEo64gbjxLCBRu95eDORKDZmSxGpILbtNWq34Gg8fChSsnvdyL2rN9vIU/sMZtcPhL52RdDJI0lVWv9Q==
 
-"@subsquid/util-internal-commander@^0.0.0":
-  version "0.0.0"
-  resolved "https://registry.yarnpkg.com/@subsquid/util-internal-commander/-/util-internal-commander-0.0.0.tgz#5eb42d0cc43e1948bacc750d8229c024e4364e57"
-  integrity sha512-awjfLe+jV8tecRmFwI5UtUSTMqV3Br6TvunicFaFAuSUtUnuqEYEUT/Xbbd5tTLRPPPDQNih+WB+1UKeAHfDoA==
+"@subsquid/util-internal-commander@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@subsquid/util-internal-commander/-/util-internal-commander-0.0.1.tgz#06677b671e9d3cf79aa85b12730dec47f1dc5426"
+  integrity sha512-WLNQ6rVHRZXar/iyUQfuKK98ecMCNOIzzFlKtgTgo98TkLK9QY8VFfhQBtqXLBn1mDsIlZ+zcnlqeHo680hrfA==
 
 "@subsquid/util-internal-counters@^0.0.1":
   version "0.0.1"
   resolved "https://registry.npmjs.org/@subsquid/util-internal-counters/-/util-internal-counters-0.0.1.tgz"
   integrity sha512-cZOrsBWGDSV+0JuWBesGLxIXaXMG2aclNVsOnfZ3jV1ACXepLF8fM/U1ilaBBXIYxPjEeGoWNCcj0LRSQt6yFQ==
 
-"@subsquid/util-internal-gql-request@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.npmjs.org/@subsquid/util-internal-gql-request/-/util-internal-gql-request-0.1.0.tgz"
-  integrity sha512-3dUM6Ny58gKCglnxKpPZ41NZwYHo++GipsWUQ5IyUVh+o/D9JRH9dYZdE+IludWpU1q10EqEsMP2AQuAjNlcEA==
+"@subsquid/util-internal-gql-request@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@subsquid/util-internal-gql-request/-/util-internal-gql-request-0.1.1.tgz#eb0f50fea2eb437225bf70bced5cfa2d54b7fe8d"
+  integrity sha512-KBCtokrwi7jjEqucUhHm/x4hmZvmJjxkEoYEhPCLwPirzOCtcNWjmsgaE41hGfbd8VnTeo2cji9cjGjSvwGvkw==
   dependencies:
     node-fetch "^2.6.7"
 
@@ -997,10 +1054,10 @@
   dependencies:
     stoppable "^1.1.0"
 
-"@subsquid/util-internal-json@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.npmjs.org/@subsquid/util-internal-json/-/util-internal-json-0.1.1.tgz"
-  integrity sha512-L2EmdX5eH3hINF13JXigxA5VqW9rvqE+C/IYA+UcqFik8hYgvWZh8p0KaSv5PZ6ZjQDPtqqEJQj1VDWw/fQXmg==
+"@subsquid/util-internal-json@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/util-internal-json/-/util-internal-json-0.2.0.tgz#538323eabdab07f5184fe6b58b8fa9c9e49c3422"
+  integrity sha512-tkDPXQ+2/2RCO2+O3AtaI71p9TQLOcv2hJWOmgNGzzQrTXp8wbyEZIybm33lsLo2HUmQN/BQKzk4PHkLa36nMQ==
   dependencies:
     "@subsquid/util-internal-hex" "^0.0.1"
 
@@ -1016,10 +1073,10 @@
   resolved "https://registry.yarnpkg.com/@subsquid/util-internal-read-lines/-/util-internal-read-lines-0.0.1.tgz#b0e9a4355ca1836e2f771657e2d8f7fe0720cd11"
   integrity sha512-QqhA1kLLPHn0x8NIRiEv6u0nCpQZAlXbaAQxTJPAVLEKDOhlDg/A+P+vaGVorVyQ5nKWWQlNlY77Cf2nmWuIxw==
 
-"@subsquid/util-internal@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.npmjs.org/@subsquid/util-internal/-/util-internal-0.0.1.tgz"
-  integrity sha512-bO9+yN+3H1AvFnoSV+5W6CpRcZ2haf3a77xwZwrI4T5U3CxvRHO9v03Iam7A1tf+1ZEw9TbKN5VHvajzVsHbEw==
+"@subsquid/util-internal@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@subsquid/util-internal/-/util-internal-1.0.0.tgz#87313bf0c12522095d87fce3f2dcd5daefc93d3a"
+  integrity sha512-uiGA6LwrgqZzg/1M8CL4CQdZ5k8yZmR1fEor6wGOf366RyL5tyXCETrhI5xsX/AXCO+nPAtahemOqqJKTAAbkQ==
 
 "@subsquid/util-naming@^0.0.1":
   version "0.0.1"
@@ -1309,6 +1366,13 @@ apollo-reporting-protobuf@^3.3.1, apollo-reporting-protobuf@^3.3.2:
   dependencies:
     "@apollo/protobufjs" "1.2.4"
 
+apollo-reporting-protobuf@^3.3.3:
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/apollo-reporting-protobuf/-/apollo-reporting-protobuf-3.3.3.tgz#df2b7ff73422cd682af3f1805d32301aefdd9e89"
+  integrity sha512-L3+DdClhLMaRZWVmMbBcwl4Ic77CnEBPXLW53F7hkYhkaZD88ivbCVB1w/x5gunO6ZHrdzhjq0FHmTsBvPo7aQ==
+  dependencies:
+    "@apollo/protobufjs" "1.2.6"
+
 apollo-server-core@^3.10.1, apollo-server-core@^3.6.2, apollo-server-core@^3.9.0:
   version "3.10.1"
   resolved "https://registry.npmjs.org/apollo-server-core/-/apollo-server-core-3.10.1.tgz"
@@ -1373,6 +1437,22 @@ apollo-server-plugin-base@^3.6.2:
   dependencies:
     apollo-server-types "^3.6.2"
 
+apollo-server-plugin-base@^3.6.3:
+  version "3.7.1"
+  resolved "https://registry.yarnpkg.com/apollo-server-plugin-base/-/apollo-server-plugin-base-3.7.1.tgz#aa78ef49bd114e35906ca9cf7493fed2664cbde8"
+  integrity sha512-g3vJStmQtQvjGI289UkLMfThmOEOddpVgHLHT2bNj0sCD/bbisj4xKbBHETqaURokteqSWyyd4RDTUe0wAUDNQ==
+  dependencies:
+    apollo-server-types "^3.7.1"
+
+apollo-server-plugin-response-cache@~3.7.0:
+  version "3.7.1"
+  resolved "https://registry.yarnpkg.com/apollo-server-plugin-response-cache/-/apollo-server-plugin-response-cache-3.7.1.tgz#ee48637ff487880d97fb7311838e6e9eea01233e"
+  integrity sha512-3FHwwySf1kQl8dGC+2E08LtDeFGUOeqckLchAD1REYx1vwMZbGhmEIwaNezjXwxkTM5Y7l38n0vQTka6YoQN7w==
+  dependencies:
+    "@apollo/utils.keyvaluecache" "^1.0.1"
+    apollo-server-plugin-base "^3.6.3"
+    apollo-server-types "^3.6.3"
+
 apollo-server-types@^3.6.2:
   version "3.6.2"
   resolved "https://registry.npmjs.org/apollo-server-types/-/apollo-server-types-3.6.2.tgz"
@@ -1381,6 +1461,16 @@ apollo-server-types@^3.6.2:
     "@apollo/utils.keyvaluecache" "^1.0.1"
     "@apollo/utils.logger" "^1.0.0"
     apollo-reporting-protobuf "^3.3.2"
+    apollo-server-env "^4.2.1"
+
+apollo-server-types@^3.6.3, apollo-server-types@^3.7.1:
+  version "3.7.1"
+  resolved "https://registry.yarnpkg.com/apollo-server-types/-/apollo-server-types-3.7.1.tgz#87adfcb52ec0893999a9cfafd5474bfda7ab0798"
+  integrity sha512-aE9RDVplmkaOj/OduNmGa+0a1B5RIWI0o3zC1zLvBTVWMKTpo0ifVf11TyMkLCY+T7cnZqVqwyShziOyC3FyUw==
+  dependencies:
+    "@apollo/utils.keyvaluecache" "^1.0.1"
+    "@apollo/utils.logger" "^1.0.0"
+    apollo-reporting-protobuf "^3.3.3"
     apollo-server-env "^4.2.1"
 
 app-root-path@^3.0.0:
@@ -1893,6 +1983,11 @@ cloneable-readable@^1.0.0:
     process-nextick-args "^2.0.0"
     readable-stream "^2.3.5"
 
+cluster-key-slot@^1.1.0:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/cluster-key-slot/-/cluster-key-slot-1.1.2.tgz#88ddaa46906e303b5de30d3153b7d9fe0a0c19ac"
+  integrity sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==
+
 cmd-shim@^5.0.0:
   version "5.0.0"
   resolved "https://registry.npmjs.org/cmd-shim/-/cmd-shim-5.0.0.tgz"
@@ -2067,6 +2162,11 @@ dargs@^7.0.0:
   resolved "https://registry.npmjs.org/dargs/-/dargs-7.0.0.tgz"
   integrity sha512-2iy1EkLdlBzQGvbweYRFxmFath8+K7+AKB0TlhHWkNuH+TmovaMH/Wp7V7R4u7f4SnX3OgLsU9t1NI9ioDnUpg==
 
+dataloader@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/dataloader/-/dataloader-2.1.0.tgz#c69c538235e85e7ac6c6c444bae8ecabf5de9df7"
+  integrity sha512-qTcEYLen3r7ojZNgVUaRggOI+KM7jrKxXeSHhogh/TWxYMeONEMqY+hmkobiYQozsGIyg9OYVzO4ZIfoB4I0pQ==
+
 date-fns@^2.16.1, date-fns@^2.28.0:
   version "2.29.2"
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-2.29.2.tgz"
@@ -2151,6 +2251,11 @@ delegates@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/delegates/-/delegates-1.0.0.tgz"
   integrity sha512-bd2L678uiWATM6m5Z1VzNCErI3jiGzt6HGY8OVICs40JQq/HALfbyNJmp0UDakEY4pMMaN0Ly5om/B1VI/+xfQ==
+
+denque@^2.0.1:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/denque/-/denque-2.1.0.tgz#e93e1a6569fb5e66f16a3c2a2964617d349d6ab1"
+  integrity sha512-HVQE3AAb/pxF8fQAoiqpvg9i3evqug3hoiwakOyZAwJm+6vZehbkYXZ0l4JxS+I3QxM97v5aaRNhj8v5oBhekw==
 
 depd@2.0.0:
   version "2.0.0"
@@ -3117,6 +3222,21 @@ invert-kv@^1.0.0:
   resolved "https://registry.yarnpkg.com/invert-kv/-/invert-kv-1.0.0.tgz#104a8e4aaca6d3d8cd157a8ef8bfab2d7a3ffdb6"
   integrity sha512-xgs2NH9AE66ucSq4cNG1nhSFghr5l6tdL15Pk+jl46bmmBapgoaY/AacXyaDznAqmGL99TiLSQgO/XazFSKYeQ==
 
+ioredis@^5.2.4:
+  version "5.2.4"
+  resolved "https://registry.yarnpkg.com/ioredis/-/ioredis-5.2.4.tgz#9e262a668bc29bae98f2054c1e0d7efd86996b96"
+  integrity sha512-qIpuAEt32lZJQ0XyrloCRdlEdUUNGG9i0UOk6zgzK6igyudNWqEBxfH6OlbnOOoBBvr1WB02mm8fR55CnikRng==
+  dependencies:
+    "@ioredis/commands" "^1.1.1"
+    cluster-key-slot "^1.1.0"
+    debug "^4.3.4"
+    denque "^2.0.1"
+    lodash.defaults "^4.2.0"
+    lodash.isarguments "^3.1.0"
+    redis-errors "^1.2.0"
+    redis-parser "^3.0.0"
+    standard-as-callback "^2.1.0"
+
 ip@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/ip/-/ip-2.0.0.tgz"
@@ -3421,6 +3541,11 @@ js-yaml@^4.0.0, js-yaml@^4.1.0:
   dependencies:
     argparse "^2.0.1"
 
+json-buffer@3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/json-buffer/-/json-buffer-3.0.1.tgz#9338802a30d3b6605fbe0613e094008ca8c05a13"
+  integrity sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==
+
 json-parse-better-errors@^1.0.1:
   version "1.0.2"
   resolved "https://registry.npmjs.org/json-parse-better-errors/-/json-parse-better-errors-1.0.2.tgz"
@@ -3471,6 +3596,13 @@ just-diff@^5.0.1:
   version "5.1.1"
   resolved "https://registry.npmjs.org/just-diff/-/just-diff-5.1.1.tgz"
   integrity sha512-u8HXJ3HlNrTzY7zrYYKjNEfBlyjqhdBkoyTVdjtn7p02RJD5NvR8rIClzeGA7t+UYP1/7eAkWNLU0+P3QrEqKQ==
+
+keyv@^4.4.0, keyv@~4.5.0:
+  version "4.5.2"
+  resolved "https://registry.yarnpkg.com/keyv/-/keyv-4.5.2.tgz#0e310ce73bf7851ec702f2eaf46ec4e3805cce56"
+  integrity sha512-5MHbFaKn8cNSmVW7BYnijeAVlE4cYA/SVkifVgrh7yotnfhKmjuXpDKjrABLnT0SfHWV21P8ow07OGfRrNDg8g==
+  dependencies:
+    json-buffer "3.0.1"
 
 lcid@^1.0.0:
   version "1.0.0"
@@ -3534,6 +3666,16 @@ lodash.assign@^4.1.0, lodash.assign@^4.2.0:
   resolved "https://registry.yarnpkg.com/lodash.assign/-/lodash.assign-4.2.0.tgz#0d99f3ccd7a6d261d19bdaeb9245005d285808e7"
   integrity sha512-hFuH8TY+Yji7Eja3mGiuAxBqLagejScbG8GbG0j6o9vzn0YL14My+ktnqtZgFTosKymC9/44wP6s7xyuLfnClw==
 
+lodash.defaults@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/lodash.defaults/-/lodash.defaults-4.2.0.tgz#d09178716ffea4dde9e5fb7b37f6f0802274580c"
+  integrity sha512-qjxPLHd3r5DnsdGacqOMU6pb/avJzdh9tFX2ymgoZE27BmjXrNy/y4LoaiTeAb+O3gL8AfpJGtqfX/ae2leYYQ==
+
+lodash.isarguments@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/lodash.isarguments/-/lodash.isarguments-3.1.0.tgz#2f573d85c6a24289ff00663b491c1d338ff3458a"
+  integrity sha512-chi4NHZlZqZD18a0imDHnZPrDeBbTtVN7GXMwuGdRH9qotxAjYs3aVLKc7zNOG9eddR5Ksd8rvFEBc9SsggPpg==
+
 lodash.sortby@^4.7.0:
   version "4.7.0"
   resolved "https://registry.npmjs.org/lodash.sortby/-/lodash.sortby-4.7.0.tgz"
@@ -3561,6 +3703,11 @@ long@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/long/-/long-4.0.0.tgz"
   integrity sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA==
+
+"lru-cache@7.10.1 - 7.13.1":
+  version "7.13.1"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-7.13.1.tgz#267a81fbd0881327c46a81c5922606a2cfe336c4"
+  integrity sha512-CHqbAq7NFlW3RSnoWXLJBxCWaZVBrfa9UEHId2M3AW8iEBurbqduNexEUCGc3SHc6iCYXNJCDi903LajSVAEPQ==
 
 lru-cache@^6.0.0:
   version "6.0.0"
@@ -4751,6 +4898,18 @@ redeyed@~2.1.0:
   dependencies:
     esprima "~4.0.0"
 
+redis-errors@^1.0.0, redis-errors@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/redis-errors/-/redis-errors-1.2.0.tgz#eb62d2adb15e4eaf4610c04afe1529384250abad"
+  integrity sha512-1qny3OExCf0UvUV/5wpYKf2YwPcOqXzkwKKSmKHiE6ZMQs5heeE/c8eXK+PNllPvmjgAbfnsbpkGZWy8cBpn9w==
+
+redis-parser@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/redis-parser/-/redis-parser-3.0.0.tgz#b66d828cdcafe6b4b8a428a7def4c6bcac31c8b4"
+  integrity sha512-DJnGAeenTdpMEH6uAJRK/uiyEIH9WVsUmoLwzudwGJUwZPp80PDBWPHXSAGNPwNvIXAbe7MSUB1zQFugFml66A==
+  dependencies:
+    redis-errors "^1.0.0"
+
 reflect-metadata@^0.1.13:
   version "0.1.13"
   resolved "https://registry.npmjs.org/reflect-metadata/-/reflect-metadata-0.1.13.tgz"
@@ -5107,6 +5266,11 @@ ssri@^9.0.0:
   integrity sha512-o57Wcn66jMQvfHG1FlYbWeZWW/dHZhJXjpIcTfXldXEk5nz5lStPo3mK0OJQfGR3RbZUlbISexbljkJzuEj/8Q==
   dependencies:
     minipass "^3.1.1"
+
+standard-as-callback@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/standard-as-callback/-/standard-as-callback-2.1.0.tgz#8953fc05359868a77b5b9739a665c5977bb7df45"
+  integrity sha512-qoRRSyROncaz1z0mvYqIE4lCd9p2R90i6GxW3uZv5ucSu8tU7B5HXUP1gG8pVZsYNVaXjk8ClXHPttLyxAL48A==
 
 statuses@2.0.1:
   version "2.0.1"

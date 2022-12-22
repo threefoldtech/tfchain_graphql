@@ -5,8 +5,28 @@ import {
   EventHandlerContext,
 } from "../types/context";
 
-export async function nodeStored(ctx: EventHandlerContext) {
-  const node = new TfgridModuleNodeStoredEvent(ctx)
+import { Ctx } from '../processor'
+
+export async function nodeCreateUpdateOrDelete(ctx: Ctx) {
+  for (let block of ctx.blocks) {
+    for (let item of block.items) {
+      if (item.name === "TfgridModule.NodeStored") {
+        const nodeStoredEvent = new TfgridModuleNodeStoredEvent(ctx, item.event)
+        await nodeStored(ctx, nodeStoredEvent, item.event.id, block.header.timestamp)
+      }
+      if (item.name === "TfgridModule.NodeUpdated") {
+        const nodeUpdatedEvent = new TfgridModuleNodeUpdatedEvent(ctx, item.event)
+        await nodeUpdated(ctx, nodeUpdatedEvent, item.event.id, block.header.timestamp)
+      }
+      if (item.name === "TfgridModule.NodeDeleted") {
+        const nodeDeletedEvent = new TfgridModuleNodeDeletedEvent(ctx, item.event)
+        await nodeDeleted(ctx, nodeDeletedEvent)
+      }
+    }
+  }
+}
+
+export async function nodeStored(ctx: Ctx, node: TfgridModuleNodeStoredEvent, id: string, timestamp: number) {
   let nodeEvent
   if (node.isV9) {
     nodeEvent = node.asV9
@@ -23,14 +43,14 @@ export async function nodeStored(ctx: EventHandlerContext) {
   if (!nodeEvent) return
 
   const newNode = new Node()
-  newNode.id = ctx.event.id
+  newNode.id = id
   newNode.gridVersion = nodeEvent.version
   newNode.farmID = nodeEvent.farmId
   newNode.nodeID = nodeEvent.id
   newNode.twinID = nodeEvent.twinId
 
-  newNode.createdAt = BigInt(ctx.block.timestamp)
-  newNode.updatedAt = BigInt(ctx.block.timestamp)
+  newNode.createdAt = BigInt(timestamp)
+  newNode.updatedAt = BigInt(timestamp)
 
   newNode.country = nodeEvent.country.toString()
   newNode.city = nodeEvent.city.toString()
@@ -39,7 +59,7 @@ export async function nodeStored(ctx: EventHandlerContext) {
   newNode.farmingPolicyId = nodeEvent.farmingPolicyId
 
   const newLocation = new Location()
-  newLocation.id = ctx.event.id
+  newLocation.id = id
   newLocation.latitude = nodeEvent.location.latitude.toString()
   newLocation.longitude = nodeEvent.location.longitude.toString()
   await ctx.store.save<Location>(newLocation)
@@ -123,7 +143,7 @@ export async function nodeStored(ctx: EventHandlerContext) {
 
   const resourcesTotal = new NodeResourcesTotal()
   resourcesTotal.node = newNode
-  resourcesTotal.id = ctx.event.id
+  resourcesTotal.id = id
   resourcesTotal.sru = nodeEvent.resources.sru
   resourcesTotal.hru = nodeEvent.resources.hru
   resourcesTotal.mru = nodeEvent.resources.mru
@@ -134,7 +154,7 @@ export async function nodeStored(ctx: EventHandlerContext) {
   if (nodeEvent.publicConfig) {
     const pubConfig = new PublicConfig()
     pubConfig.node = newNode
-    pubConfig.id = ctx.event.id
+    pubConfig.id = id
     pubConfig.ipv4 = nodeEvent.publicConfig.ipv4.toString()
     pubConfig.ipv6 = nodeEvent.publicConfig.ipv6.toString()
     pubConfig.gw4 = nodeEvent.publicConfig.gw4.toString()
@@ -149,7 +169,7 @@ export async function nodeStored(ctx: EventHandlerContext) {
 
   const interfacesPromisses = nodeEvent.interfaces.map(async intf => {
     const newInterface = new Interfaces()
-    newInterface.id = ctx.event.id
+    newInterface.id = id
     newInterface.node = newNode
     newInterface.name = intf.name.toString()
     newInterface.mac = intf.mac.toString()
@@ -162,8 +182,8 @@ export async function nodeStored(ctx: EventHandlerContext) {
   await ctx.store.save<Node>(newNode)
 }
 
-export async function nodeUpdated(ctx: EventHandlerContext) {
-  const node = new TfgridModuleNodeUpdatedEvent(ctx)
+export async function nodeUpdated(ctx: Ctx, node: TfgridModuleNodeUpdatedEvent, id: string, timestamp: number) {
+  // const node = new TfgridModuleNodeUpdatedEvent(ctx)
 
   let nodeEvent
   if (node.isV9) {
@@ -188,7 +208,7 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
   savedNode.farmID = nodeEvent.farmId
   savedNode.nodeID = nodeEvent.id
   savedNode.twinID = nodeEvent.twinId
-  savedNode.updatedAt = BigInt(ctx.block.timestamp)
+  savedNode.updatedAt = BigInt(timestamp)
 
   // Recalculate total / free resoures when a node get's updated
   let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: Equal(savedNode) }, relations: { node: true } })
@@ -296,7 +316,7 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
         newInterface = savedNode.interfaces[found]
       } else {
         newInterface = new Interfaces()
-        newInterface.id = ctx.event.id
+        newInterface.id = id
         newInterface.node = savedNode
       }
     }
@@ -314,8 +334,9 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
   await ctx.store.save<Node>(savedNode)
 }
 
-export async function nodeDeleted(ctx: EventHandlerContext) {
-  const nodeID = new TfgridModuleNodeDeletedEvent(ctx).asV49
+export async function nodeDeleted(ctx: Ctx, node: TfgridModuleNodeDeletedEvent) {
+  // const nodeID = new TfgridModuleNodeDeletedEvent(ctx).asV49
+  const nodeID = node.asV49
 
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
 
@@ -341,23 +362,39 @@ export async function nodeDeleted(ctx: EventHandlerContext) {
   }
 }
 
-export async function nodeUptimeReported(ctx: EventHandlerContext) {
-  const [nodeID, now, uptime] = new TfgridModuleNodeUptimeReportedEvent(ctx).asV49
+export async function nodeUptimeReported(ctx: Ctx): Promise<[UptimeEvent[], Promise<any>[]]> {
+  let uptimeEvents: UptimeEvent[] = []
+  let nodeUpdatePromises: Promise<any>[] = []
 
-  const newUptimeEvent = new UptimeEvent()
-  newUptimeEvent.id = ctx.event.id
-  newUptimeEvent.nodeID = nodeID
-  newUptimeEvent.timestamp = now
-  newUptimeEvent.uptime = uptime
-  await ctx.store.save<UptimeEvent>(newUptimeEvent)
+  for (let block of ctx.blocks) {
+    for (let item of block.items) {
+      if (item.name === "TfgridModule.NodeUptimeReported") {
+        const [nodeID, now, uptime] = new TfgridModuleNodeUptimeReportedEvent(ctx, item.event).asV49
+      
+        const newUptimeEvent = new UptimeEvent()
+        newUptimeEvent.id = item.event.id
+        newUptimeEvent.nodeID = nodeID
+        newUptimeEvent.timestamp = now
+        newUptimeEvent.uptime = uptime
 
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } , relations: { location: true }})
+        // await ctx.store.save<UptimeEvent>(newUptimeEvent)
+        uptimeEvents.push(newUptimeEvent)
 
-  if (savedNode) {
-    savedNode.uptime = uptime
-    savedNode.updatedAt = BigInt(ctx.block.timestamp)
-    await ctx.store.save<Node>(savedNode)
+        let nodeUpdatePromise = new Promise(() => {
+          ctx.store.get(Node, { where: { nodeID } })
+            .then(savedNode => {
+              if (savedNode) {
+                savedNode.uptime = uptime
+                savedNode.updatedAt = BigInt(block.header.timestamp)
+                return ctx.store.save<Node>(savedNode)
+              }
+            })
+          })
+        nodeUpdatePromises.push(nodeUpdatePromise)
+      }
+    }
   }
+  return [uptimeEvents, nodeUpdatePromises]
 }
 
 export async function nodePublicConfigStored(ctx: EventHandlerContext) {
