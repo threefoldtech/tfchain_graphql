@@ -29,6 +29,8 @@ spec:
           image: "{{ .Values.image.processor.repository }}:{{ .Values.image.processor.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.processor.pullPolicy }}
           name: processor
+          ports:
+            - containerPort: 44233  
           resources: {}
           env:
             - name: BATCH_SIZE
