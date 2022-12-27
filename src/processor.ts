@@ -7,6 +7,7 @@ import { entityDeleted, entityStored, entityUpdated } from './mappings/entity';
 import { contractBilled, contractCreated, contractUpdated, contractUpdateUsedResources, nameContractCanceled, nodeContractCanceled, nruConsumptionReportReceived, rentContractCanceled, contractGracePeriodStarted, contractGracePeriodEnded } from './mappings/contracts';
 import { burnProcessed, mintCompleted, refundProcessed } from './mappings/bridge';
 import { solutionProviderCreated, solutionProviderApproved } from './mappings/solutionProviders'
+import { serviceContractCreated, serviceContractApproved, serviceContractCanceled, serviceContractBilled } from './mappings/serviceContracts';
 
 import {
   SubstrateProcessor,
@@ -64,6 +65,10 @@ processor.addEventHandler('smartContractModule.ContractGracePeriodStarted', ctx 
 processor.addEventHandler('smartContractModule.ContractGracePeriodEnded', ctx => contractGracePeriodEnded(ctx))
 processor.addEventHandler('smartContractModule.SolutionProviderCreated', ctx => solutionProviderCreated(ctx))
 processor.addEventHandler('smartContractModule.SolutionProviderApproved', ctx => solutionProviderApproved(ctx))
+processor.addEventHandler('smartContractModule.ServiceContractCreated', ctx => serviceContractCreated(ctx))
+processor.addEventHandler('smartContractModule.ServiceContractApproved', ctx => serviceContractApproved(ctx))
+processor.addEventHandler('smartContractModule.ServiceContractCanceled', ctx => serviceContractCanceled(ctx))
+processor.addEventHandler('smartContractModule.ServiceContractBilled', ctx => serviceContractBilled(ctx))
 
 // processor.addEventHandler('smartContractModule.NodeMarkedAsDedicated', ctx => nodeMarkedAsDedicated(ctx));
 
