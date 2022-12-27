@@ -135,6 +135,7 @@ The process will likely crash or stop but the db is initialised with the current
 Once changes are done to the schema, you can create a database migration:
 
 ```
+yarn codegen
 yarn build
 yarn db:create-migration
 ```
@@ -144,3 +145,5 @@ yarn db:create-migration
 Make the corresponding changes in `src/processor.ts` and mappers `src/mappings/..` for the type changes that were made
 
 ### 7: Build and test
+
+TODO
