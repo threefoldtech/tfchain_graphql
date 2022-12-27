@@ -303,7 +303,7 @@ enum ServiceContractState {
   ApprovedByBoth
 }
 
-type ServiceContractBill {
+type ServiceContractBill @entity {
   serviceContractID: BigInt!
   variableAmount: BigInt!
   window: BigInt!
