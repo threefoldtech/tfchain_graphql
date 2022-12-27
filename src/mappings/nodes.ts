@@ -2,7 +2,7 @@ import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
 import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal } from "../model";
-import { SmartContractModuleNodeMarkedAsDedicatedEvent, TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
+import { TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
 
 export async function nodeStored(ctx: EventHandlerContext) {
   const node = new TfgridModuleNodeStoredEvent(ctx)
@@ -20,6 +20,8 @@ export async function nodeStored(ctx: EventHandlerContext) {
     nodeEvent = node.asV101
   } else if (node.isV105) {
     nodeEvent = node.asV105
+  } else if (node.isV118) {
+    nodeEvent = node.asV118
   }
 
   if (!nodeEvent) {
@@ -36,8 +38,16 @@ export async function nodeStored(ctx: EventHandlerContext) {
   newNode.createdAt = BigInt(ctx.event.blockTimestamp)
   newNode.updatedAt = BigInt(ctx.event.blockTimestamp)
 
-  newNode.country = nodeEvent.country.toString()
-  newNode.city = nodeEvent.city.toString()
+  if (node.isV9) {
+    nodeEvent = node.asV9
+    newNode.country = nodeEvent.country.toString()
+    newNode.city = nodeEvent.city.toString()
+  }
+  if (node.isV28) {
+    nodeEvent = node.asV28
+    newNode.country = nodeEvent.country.toString()
+    newNode.city = nodeEvent.city.toString()
+  }
 
   newNode.created = Number(nodeEvent.created)
   newNode.farmingPolicyId = nodeEvent.farmingPolicyId
@@ -62,6 +72,8 @@ export async function nodeStored(ctx: EventHandlerContext) {
 
   if (node.isV43) {
     const nodeAsV43 = node.asV43
+    newNode.country = nodeAsV43.country.toString()
+    newNode.city = nodeAsV43.city.toString()
     newNode.secure = nodeAsV43.secureBoot ? true : false
     newNode.virtualized = nodeAsV43.virtualized ? true : false
     newNode.serialNumber = nodeAsV43.serialNumber.toString()
@@ -78,9 +90,21 @@ export async function nodeStored(ctx: EventHandlerContext) {
     } else {
       return
     }
+    newNode.country = nodeEvent.country.toString()
+    newNode.city = nodeEvent.city.toString()
     newNode.secure = nodeEvent.secureBoot ? true : false
     newNode.virtualized = nodeEvent.virtualized ? true : false
     newNode.serialNumber = nodeEvent.serialNumber.toString()
+    newNode.connectionPrice = nodeEvent.connectionPrice
+  }
+
+  if (node.isV118) {
+    let nodeEvent = node.asV118
+    newNode.country = nodeEvent.location.country.toString()
+    newNode.city = nodeEvent.location.city.toString()
+    newNode.secure = nodeEvent.secureBoot ? true : false
+    newNode.virtualized = nodeEvent.virtualized ? true : false
+    newNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
     newNode.connectionPrice = nodeEvent.connectionPrice
   }
 
@@ -129,6 +153,8 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     nodeEvent = node.asV101
   } else if (node.isV105) {
     nodeEvent = node.asV105
+  } else if (node.isV118) {
+    nodeEvent = node.asV118
   }
 
   if (!nodeEvent) return
@@ -153,8 +179,17 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
   }
 
-  savedNode.country = nodeEvent.country.toString()
-  savedNode.city = nodeEvent.city.toString()
+  if (node.isV9) {
+    nodeEvent = node.asV9
+    savedNode.country = nodeEvent.country.toString()
+    savedNode.city = nodeEvent.city.toString()
+  }
+
+  if (node.isV118) {
+    nodeEvent = node.asV118
+    savedNode.country = nodeEvent.location.country.toString()
+    savedNode.city = nodeEvent.location.city.toString()
+  }
 
   if (savedNode.location) {
     savedNode.location.latitude = nodeEvent.location.latitude.toString()
@@ -166,6 +201,9 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
 
   if (node.isV28) {
     const nodeAsV28 = node.asV28
+    savedNode.country = nodeAsV28.country.toString()
+    savedNode.city = nodeAsV28.city.toString()
+
     if (nodeAsV28.certificationType) {
       const certificationTypeAsString = nodeAsV28.certificationType.__kind.toString()
       let certType = NodeCertification.Diy
@@ -185,6 +223,8 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
 
   if (node.isV43) {
     const nodeAsV43 = node.asV43
+    savedNode.country = nodeAsV43.country.toString()
+    savedNode.city = nodeAsV43.city.toString()
     savedNode.secure = nodeAsV43.secureBoot ? true : false
     savedNode.virtualized = nodeAsV43.virtualized ? true : false
     savedNode.serialNumber = nodeAsV43.serialNumber.toString()
@@ -216,6 +256,8 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
     } else {
       return
     }
+    savedNode.country = nodeEvent.country.toString()
+    savedNode.city = nodeEvent.city.toString()
     savedNode.secure = nodeEvent.secureBoot ? true : false
     savedNode.virtualized = nodeEvent.virtualized ? true : false
     savedNode.serialNumber = nodeEvent.serialNumber.toString()
@@ -235,6 +277,32 @@ export async function nodeUpdated(ctx: EventHandlerContext) {
       savedNode.certification = NodeCertification.Diy
     }
   }
+
+  if (node.isV118) {
+    const nodeEvent = node.asV118
+
+    savedNode.country = nodeEvent.location.country.toString()
+    savedNode.city = nodeEvent.location.city.toString()
+    savedNode.secure = nodeEvent.secureBoot ? true : false
+    savedNode.virtualized = nodeEvent.virtualized ? true : false
+    savedNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
+    if (nodeEvent.certification) {
+      const certificationTypeAsString = nodeEvent.certification.__kind.toString()
+      let certType = NodeCertification.Diy
+      switch (certificationTypeAsString) {
+        case 'Diy':
+          certType = NodeCertification.Diy
+          break
+        case 'Certified':
+          certType = NodeCertification.Certified
+          break
+      }
+      savedNode.certification = certType
+    } else {
+      savedNode.certification = NodeCertification.Diy
+    }
+  }
+
 
 
   await ctx.store.save<Node>(savedNode)
@@ -363,7 +431,7 @@ export async function nodePublicConfigStored(ctx: EventHandlerContext) {
       savedPubConfig.gw4 = pubconfig?.ip4.gw.toString()
       savedPubConfig.gw6 = pubconfig?.ip6?.gw.toString()
       savedPubConfig.domain = pubconfig?.domain ? pubconfig.domain.toString() : ''
-  
+
       await ctx.store.save<PublicConfig>(savedPubConfig)
     }
   }

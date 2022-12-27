@@ -3,7 +3,10 @@
     "substrate-threefold": {
       "types": [
         {
-          "minmax": [9, null],
+          "minmax": [
+            9,
+            null
+          ],
           "types": {
             "Farm": {
               "version": "u32",
@@ -61,10 +64,16 @@
               "ips": "Vec<Vec<u8>>"
             },
             "CertificationType": {
-              "_enum": ["Diy", "Certified"]
+              "_enum": [
+                "Diy",
+                "Certified"
+              ]
             },
             "CertificationCodeType": {
-              "_enum": ["Farm", "Entity"]
+              "_enum": [
+                "Farm",
+                "Entity"
+              ]
             },
             "CertificationCodes": {
               "version": "u32",
@@ -87,7 +96,13 @@
               ]
             },
             "DiscountLevel": {
-              "_enum": ["None", "Default", "Bronze", "Silver", "Gold"]
+              "_enum": [
+                "None",
+                "Default",
+                "Bronze",
+                "Silver",
+                "Gold"
+              ]
             },
             "NameRegistration": {
               "nameRegistrationId": "u64",
@@ -112,10 +127,18 @@
               "amountBilled": "u128"
             },
             "PalletStorageVersion": {
-              "_enum": ["V1", "V2", "V3"]
+              "_enum": [
+                "V1",
+                "V2",
+                "V3"
+              ]
             },
             "StorageVersion": {
-              "_enum": ["V1Struct", "V2Struct", "V3Struct"]
+              "_enum": [
+                "V1Struct",
+                "V2Struct",
+                "V3Struct"
+              ]
             },
             "Address": "MultiAddress",
             "LookupSource": "MultiAddress",
@@ -186,7 +209,11 @@
               "state": "ValidatorRequestState"
             },
             "ValidatorRequestState": {
-              "_enum": ["Created", "Approved", "Validating"]
+              "_enum": [
+                "Created",
+                "Approved",
+                "Validating"
+              ]
             },
             "PricingPolicy": {
               "version": "u32",
@@ -244,7 +271,10 @@
           }
         },
         {
-          "minmax": [9, 27],
+          "minmax": [
+            9,
+            27
+          ],
           "types": {
             "Node": {
               "version": "u32",
@@ -263,7 +293,10 @@
           }
         },
         {
-          "minmax": [9, 25],
+          "minmax": [
+            9,
+            25
+          ],
           "types": {
             "Contract": {
               "version": " u32",
@@ -282,7 +315,10 @@
           }
         },
         {
-          "minmax": [25, null],
+          "minmax": [
+            25,
+            null
+          ],
           "types": {
             "Contract": {
               "version": " u32",
@@ -298,12 +334,18 @@
               }
             },
             "Cause": {
-              "_enum": ["CanceledByUser", "OutOfFunds"]
+              "_enum": [
+                "CanceledByUser",
+                "OutOfFunds"
+              ]
             }
           }
         },
         {
-          "minmax": [28, 42],
+          "minmax": [
+            28,
+            42
+          ],
           "types": {
             "Node": {
               "version": "u32",
@@ -323,7 +365,10 @@
           }
         },
         {
-          "minmax": [43, null],
+          "minmax": [
+            43,
+            null
+          ],
           "types": {
             "Node": {
               "version": "u32",
@@ -346,7 +391,10 @@
           }
         },
         {
-          "minmax": [50, null],
+          "minmax": [
+            50,
+            null
+          ],
           "types": {
             "ContractData": {
               "_enum": {
@@ -371,7 +419,10 @@
           }
         },
         {
-          "minmax": [51, null],
+          "minmax": [
+            51,
+            null
+          ],
           "types": {
             "PricingPolicy": {
               "version": "u32",
@@ -390,7 +441,10 @@
           }
         },
         {
-          "minmax": [59, null],
+          "minmax": [
+            59,
+            null
+          ],
           "types": {
             "ContractState": {
               "_enum": {
@@ -403,7 +457,10 @@
           }
         },
         {
-          "minmax": [63, null],
+          "minmax": [
+            63,
+            null
+          ],
           "types": {
             "Farm": {
               "version": "u32",
@@ -444,10 +501,16 @@
               "connectionPrice": "u32"
             },
             "NodeCertification": {
-              "_enum": ["Diy", "Certified"]
+              "_enum": [
+                "Diy",
+                "Certified"
+              ]
             },
             "FarmCertification": {
-              "_enum": ["NotCertified", "Gold"]
+              "_enum": [
+                "NotCertified",
+                "Gold"
+              ]
             },
             "FarmingPolicy": {
               "version": "u32",
@@ -485,7 +548,10 @@
           }
         },
         {
-          "minmax": [105, null],
+          "minmax": [
+            105,
+            null
+          ],
           "types": {
             "Contract": {
               "version": " u32",
@@ -494,6 +560,39 @@
               "twinId": "u32",
               "contractType": "ContractData",
               "solutionProviderID": "Option<U64>"
+            }
+          }
+        },
+        {
+          "minmax": [
+            118,
+            null
+          ],
+          "types": {
+            "Node": {
+              "version": "u32",
+              "id": "u32",
+              "farmId": "u32",
+              "twinId": "u32",
+              "resources": "Resources",
+              "location": "Location",
+              "country": "Vec<u8>",
+              "city": "Vec<u8>",
+              "publicConfig": "Option<PublicConfig>",
+              "created": "u64",
+              "farmingPolicyId": "u32",
+              "interfaces": "Vec<Interface>",
+              "certification": "NodeCertification",
+              "secureBoot": "bool",
+              "virtualized": "bool",
+              "serialNumber": "Option<Vec<u8>>",
+              "connectionPrice": "u32"
+            },
+            "Location": {
+              "city": "Vec<u8>",
+              "country": "Vec<u8>",
+              "latitude": "Vec<u8>",
+              "longitude": "Vec<u8>"
             }
           }
         }
