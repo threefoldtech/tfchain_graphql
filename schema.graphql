@@ -286,14 +286,14 @@ type RefundTransaction @entity {
 
 type ServiceContract @entity {
   serviceContractID: BigInt!
-  twinID: Int!
+  serviceTwinID: Int!
   consumerTwinID: Int!
   baseFee: BigInt!
   variableFee: BigInt!
   metadata: String!
   acceptedByService: Boolean!
-  acceptedByConsmer: Boolean!
-  lastBilled: BigInt!
+  acceptedByConsumer: Boolean!
+  lastBill: BigInt!
   state: ServiceContractState!
 }
 

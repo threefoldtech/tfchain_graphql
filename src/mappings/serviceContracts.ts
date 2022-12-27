@@ -12,14 +12,14 @@ export async function serviceContractCreated(ctx: EventHandlerContext) {
 
     serviceContract.id = ctx.event.id
     serviceContract.serviceContractID = serviceContractCreatedEvent.serviceContractId
-    serviceContract.twinID = serviceContractCreatedEvent.serviceTwinId
+    serviceContract.serviceTwinID = serviceContractCreatedEvent.serviceTwinId
     serviceContract.consumerTwinID = serviceContractCreatedEvent.consumerTwinId
     serviceContract.baseFee = BigInt(0)
     serviceContract.variableFee = BigInt(0)
     serviceContract.metadata = ""
     serviceContract.acceptedByService = false
-    serviceContract.acceptedByConsmer = false
-    serviceContract.lastBilled = BigInt(0)
+    serviceContract.acceptedByConsumer = false
+    serviceContract.lastBill = BigInt(0)
     serviceContract.state = ServiceContractState.Created
 
     await ctx.store.save<ServiceContract>(serviceContract)
@@ -31,7 +31,7 @@ export async function serviceContractApproved(ctx: EventHandlerContext) {
     const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractId: serviceContractApprovedEvent.serviceContractId } })
     if (savedServiceContract) {
         savedServiceContract.acceptedByService = true
-        savedServiceContract.acceptedByConsmer = true
+        savedServiceContract.acceptedByConsumer = true
         savedServiceContract.state = ServiceContractState.ApprovedByBoth
 
         await ctx.store.save<ServiceContract>(savedServiceContract)

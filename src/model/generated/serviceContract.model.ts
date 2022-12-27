@@ -15,7 +15,7 @@ export class ServiceContract {
   serviceContractID!: bigint
 
   @Column_("integer", {nullable: false})
-  twinID!: number
+  serviceTwinID!: number
 
   @Column_("integer", {nullable: false})
   consumerTwinID!: number
@@ -33,10 +33,10 @@ export class ServiceContract {
   acceptedByService!: boolean
 
   @Column_("bool", {nullable: false})
-  acceptedByConsmer!: boolean
+  acceptedByConsumer!: boolean
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  lastBilled!: bigint
+  lastBill!: bigint
 
   @Column_("varchar", {length: 14, nullable: false})
   state!: ServiceContractState
