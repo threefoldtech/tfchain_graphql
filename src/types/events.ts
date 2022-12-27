@@ -12,6 +12,7 @@ import * as v59 from './v59'
 import * as v62 from './v63'
 import * as v105 from './v105'
 import * as v118 from './v118'
+import * as v122 from './v122'
 
 export type AccountId32 = Uint8Array
 
@@ -472,6 +473,132 @@ export class SmartContractModuleSolutionProviderCreatedEvent {
     return this.asV105
   }
 }
+
+
+export class SmartContractModuleServiceContractApprovedEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'smartContractModule.ServiceContractApproved')
+  }
+
+  /**
+   * A Service contract is approved
+   */
+  get isV122(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.ServiceContractApproved') === '00f6515829bfbe44983c54e0021bb8d6cdc3a70d2540c4c32c8b6f7e48a5689c'
+  }
+
+  /**
+   * A Service contract is approved
+   */
+  get asV122(): {serviceContractId: bigint} {
+    assert(this.isV122)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV122
+  }
+
+  get asLatest(): {serviceContractId: bigint} {
+    deprecateLatest()
+    return this.asV122
+  }
+}
+
+export class SmartContractModuleServiceContractBilledEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'smartContractModule.ServiceContractBilled')
+  }
+
+  /**
+   * A Service contract is billed
+   */
+  get isV122(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.ServiceContractBilled') === '1085881738293e9c9ac118a86170980f0660077707fad1c8826e08a408bc6a92'
+  }
+
+  /**
+   * A Service contract is billed
+   */
+  get asV122(): {serviceContractId: bigint, bill: v122.ServiceContractBill, amount: bigint} {
+    assert(this.isV122)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV122
+  }
+
+  get asLatest(): {serviceContractId: bigint, bill: v122.ServiceContractBill, amount: bigint} {
+    deprecateLatest()
+    return this.asV122
+  }
+}
+
+export class SmartContractModuleServiceContractCanceledEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'smartContractModule.ServiceContractCanceled')
+  }
+
+  /**
+   * A Service contract is canceled
+   */
+  get isV122(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.ServiceContractCanceled') === '5d9c761d54a2a85566da8e150a364cc6f59f363b1139be81f9993b7d62a74bb0'
+  }
+
+  /**
+   * A Service contract is canceled
+   */
+  get asV122(): {serviceContractId: bigint, cause: v122.Cause} {
+    assert(this.isV122)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV122
+  }
+
+  get asLatest(): {serviceContractId: bigint, cause: v122.Cause} {
+    deprecateLatest()
+    return this.asV122
+  }
+}
+
+export class SmartContractModuleServiceContractCreatedEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'smartContractModule.ServiceContractCreated')
+  }
+
+  /**
+   * A Service contract is created
+   */
+  get isV122(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.ServiceContractCreated') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+  }
+
+  /**
+   * A Service contract is created
+   */
+  get asV122(): v122.ServiceContract {
+    assert(this.isV122)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV122
+  }
+
+  get asLatest(): v122.ServiceContract {
+    deprecateLatest()
+    return this.asV122
+  }
+}
+
 
 export class SmartContractModuleUpdatedUsedResourcesEvent {
   constructor(private ctx: EventContext) {

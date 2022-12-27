@@ -607,6 +607,38 @@
           "longitude": "Vec<u8>"
         }
       }
+    },
+    {
+      "minmax": [
+        122,
+        null
+      ],
+      "types": {
+        "ServiceContract": {
+          "serviceContractId": "u64",
+          "serviceTwinId:": "u32",
+          "consumerTwinId": "u32",
+          "baseFee": "u64",
+          "variableFee": "u64",
+          "metadata": "Vec<u8>",
+          "acceptedByService": "bool",
+          "acceptedByConsumer": "bool",
+          "lastBill": "u64",
+          "state": "ServiceContractState"
+        },
+        "ServiceContractState": {
+          "_enum": {
+            "Created": null,
+            "AgreementReady": null,
+            "ApprovedByBoth": null
+          }
+        },
+        "ServiceContractBill": {
+          "variableAmount": "u64",
+          "window": "u64",
+          "metadata": "Vec<u8>"
+        }
+      }
     }
   ]
 }

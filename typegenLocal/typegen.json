@@ -40,6 +40,10 @@
     "smartContractModule.ContractGracePeriodEnded",
     "smartContractModule.SolutionProviderCreated",
     "smartContractModule.SolutionProviderApproved",
+    "smartContractModule.ServiceContractCreated",
+    "smartContractModule.ServiceContractApproved",
+    "smartContractModule.ServiceContractCanceled",
+    "smartContractModule.ServiceContractBilled",
     "tftBridgeModule.MintCompleted",
     "tftBridgeModule.BurnTransactionProcessed",
     "tftBridgeModule.RefundTransactionProcessed"
