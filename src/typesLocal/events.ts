@@ -315,13 +315,13 @@ export class SmartContractModuleServiceContractApprovedEvent {
    * A Service contract is approved
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ServiceContractApproved') === '00f6515829bfbe44983c54e0021bb8d6cdc3a70d2540c4c32c8b6f7e48a5689c'
+    return this.ctx._chain.getEventHash('smartContractModule.ServiceContractApproved') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
   }
 
   /**
    * A Service contract is approved
    */
-  get asV122(): {serviceContractId: bigint} {
+  get asV122(): v122.ServiceContract {
     assert(this.isV122)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
@@ -331,7 +331,7 @@ export class SmartContractModuleServiceContractApprovedEvent {
     return this.isV122
   }
 
-  get asLatest(): {serviceContractId: bigint} {
+  get asLatest(): v122.ServiceContract {
     deprecateLatest()
     return this.asV122
   }
@@ -346,13 +346,13 @@ export class SmartContractModuleServiceContractBilledEvent {
    * A Service contract is billed
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ServiceContractBilled') === '1085881738293e9c9ac118a86170980f0660077707fad1c8826e08a408bc6a92'
+    return this.ctx._chain.getEventHash('smartContractModule.ServiceContractBilled') === '7985d39a3e56b65ab2853980404ab7250260ef1f2f7395adf3092259fb9ddbc5'
   }
 
   /**
    * A Service contract is billed
    */
-  get asV122(): {serviceContractId: bigint, bill: v122.ServiceContractBill, amount: bigint} {
+  get asV122(): {serviceContract: v122.ServiceContract, bill: v122.ServiceContractBill, amount: bigint} {
     assert(this.isV122)
     return this.ctx._chain.decodeEvent(this.ctx.event)
   }
@@ -362,7 +362,7 @@ export class SmartContractModuleServiceContractBilledEvent {
     return this.isV122
   }
 
-  get asLatest(): {serviceContractId: bigint, bill: v122.ServiceContractBill, amount: bigint} {
+  get asLatest(): {serviceContract: v122.ServiceContract, bill: v122.ServiceContractBill, amount: bigint} {
     deprecateLatest()
     return this.asV122
   }
@@ -413,6 +413,68 @@ export class SmartContractModuleServiceContractCreatedEvent {
 
   /**
    * A Service contract is created
+   */
+  get asV122(): v122.ServiceContract {
+    assert(this.isV122)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV122
+  }
+
+  get asLatest(): v122.ServiceContract {
+    deprecateLatest()
+    return this.asV122
+  }
+}
+
+export class SmartContractModuleServiceContractFeesSetEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'smartContractModule.ServiceContractFeesSet')
+  }
+
+  /**
+   * A Service contract fees are set
+   */
+  get isV122(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.ServiceContractFeesSet') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+  }
+
+  /**
+   * A Service contract fees are set
+   */
+  get asV122(): v122.ServiceContract {
+    assert(this.isV122)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV122
+  }
+
+  get asLatest(): v122.ServiceContract {
+    deprecateLatest()
+    return this.asV122
+  }
+}
+
+export class SmartContractModuleServiceContractMetadataSetEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'smartContractModule.ServiceContractMetadataSet')
+  }
+
+  /**
+   * A Service contract metadata is set
+   */
+  get isV122(): boolean {
+    return this.ctx._chain.getEventHash('smartContractModule.ServiceContractMetadataSet') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+  }
+
+  /**
+   * A Service contract metadata is set
    */
   get asV122(): v122.ServiceContract {
     assert(this.isV122)

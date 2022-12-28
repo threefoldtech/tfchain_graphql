@@ -41,6 +41,8 @@
     "smartContractModule.SolutionProviderCreated",
     "smartContractModule.SolutionProviderApproved",
     "smartContractModule.ServiceContractCreated",
+    "smartContractModule.ServiceContractMetadataSet",
+    "smartContractModule.ServiceContractFeesSet",
     "smartContractModule.ServiceContractApproved",
     "smartContractModule.ServiceContractCanceled",
     "smartContractModule.ServiceContractBilled",

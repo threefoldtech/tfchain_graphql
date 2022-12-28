@@ -21,4 +21,7 @@ export class ServiceContractBill {
 
   @Column_("text", {nullable: true})
   metadata!: string | undefined | null
+
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  amount!: bigint
 }

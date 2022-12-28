@@ -308,4 +308,5 @@ type ServiceContractBill @entity {
   variableAmount: BigInt!
   window: BigInt!
   metadata: String
+  amount: BigInt!
 }

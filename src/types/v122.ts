@@ -1,10 +1,4 @@
-import type {Result} from './support'
-
-export interface ServiceContractBill {
-  variableAmount: bigint
-  window: bigint
-  metadata: Uint8Array
-}
+import type { Result } from './support'
 
 export interface ServiceContract {
   serviceContractId: bigint
@@ -17,6 +11,12 @@ export interface ServiceContract {
   acceptedByConsumer: boolean
   lastBill: bigint
   state: ServiceContractState
+}
+
+export interface ServiceContractBill {
+  variableAmount: bigint
+  window: bigint
+  metadata: Uint8Array
 }
 
 export type ServiceContractState = ServiceContractState_Created | ServiceContractState_AgreementReady | ServiceContractState_ApprovedByBoth

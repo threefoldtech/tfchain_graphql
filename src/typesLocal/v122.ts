@@ -25,6 +25,19 @@ export interface NruConsumption {
   nru: bigint
 }
 
+export interface ServiceContract {
+  serviceContractId: bigint
+  serviceTwinId: number
+  consumerTwinId: number
+  baseFee: bigint
+  variableFee: bigint
+  metadata: Uint8Array
+  acceptedByService: boolean
+  acceptedByConsumer: boolean
+  lastBill: bigint
+  state: ServiceContractState
+}
+
 export interface ServiceContractBill {
   variableAmount: bigint
   window: bigint
@@ -39,19 +52,6 @@ export interface Cause_CanceledByUser {
 
 export interface Cause_OutOfFunds {
   __kind: 'OutOfFunds'
-}
-
-export interface ServiceContract {
-  serviceContractId: bigint
-  serviceTwinId: number
-  consumerTwinId: number
-  baseFee: bigint
-  variableFee: bigint
-  metadata: Uint8Array
-  acceptedByService: boolean
-  acceptedByConsumer: boolean
-  lastBill: bigint
-  state: ServiceContractState
 }
 
 export interface SolutionProvider {
