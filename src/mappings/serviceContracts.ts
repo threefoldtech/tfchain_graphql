@@ -27,7 +27,7 @@ export async function serviceContractCreated(ctx: EventHandlerContext) {
 export async function serviceContractMetadataSet(ctx: EventHandlerContext) {
     let serviceContractMetadataSetEvent = new SmartContractModuleServiceContractMetadataSetEvent(ctx).asV122
 
-    const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractId: serviceContractMetadataSetEvent.serviceContractId } })
+    const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractID: serviceContractMetadataSetEvent.serviceContractId } })
     if (savedServiceContract) {
         savedServiceContract.metadata = serviceContractMetadataSetEvent.metadata.toString()
 
@@ -48,7 +48,7 @@ export async function serviceContractMetadataSet(ctx: EventHandlerContext) {
 export async function serviceContractFeesSet(ctx: EventHandlerContext) {
     let serviceContractFeesSetEvent = new SmartContractModuleServiceContractFeesSetEvent(ctx).asV122
 
-    const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractId: serviceContractFeesSetEvent.serviceContractId } })
+    const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractID: serviceContractFeesSetEvent.serviceContractId } })
     if (savedServiceContract) {
         savedServiceContract.baseFee = serviceContractFeesSetEvent.baseFee
         savedServiceContract.variableFee = serviceContractFeesSetEvent.variableFee
@@ -70,7 +70,7 @@ export async function serviceContractFeesSet(ctx: EventHandlerContext) {
 export async function serviceContractApproved(ctx: EventHandlerContext) {
     let serviceContractApprovedEvent = new SmartContractModuleServiceContractApprovedEvent(ctx).asV122
 
-    const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractId: serviceContractApprovedEvent.serviceContractId } })
+    const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractID: serviceContractApprovedEvent.serviceContractId } })
     if (savedServiceContract) {
         savedServiceContract.acceptedByService = serviceContractApprovedEvent.acceptedByService
         savedServiceContract.acceptedByConsumer = serviceContractApprovedEvent.acceptedByConsumer
@@ -93,7 +93,7 @@ export async function serviceContractApproved(ctx: EventHandlerContext) {
 export async function serviceContractCanceled(ctx: EventHandlerContext) {
     const serviceContractCanceledEvent = new SmartContractModuleServiceContractCanceledEvent(ctx).asV122
 
-    const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractId: serviceContractCanceledEvent.serviceContractId } })
+    const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractID: serviceContractCanceledEvent.serviceContractId } })
 
     if (savedServiceContract) {
         await ctx.store.remove(savedServiceContract)
@@ -113,7 +113,7 @@ export async function serviceContractBilled(ctx: EventHandlerContext) {
     serviceContractBill.amount = serviceContractBilledEvent.amount
     await ctx.store.save<ServiceContractBill>(serviceContractBill)
 
-    const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractId: serviceContractBilledEvent.serviceContract.serviceContractId } })
+    const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractID: serviceContractBilledEvent.serviceContract.serviceContractId } })
     if (savedServiceContract) {
         savedServiceContract.lastBill = serviceContractBilledEvent.serviceContract.lastBill
         await ctx.store.save<ServiceContract>(savedServiceContract)
