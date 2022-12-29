@@ -25,7 +25,7 @@ docker-compose up -d
 Indexer services should now be started, you can check if it's syncing properly by streaming the logs for the indexer:
 
 ```
-docker logs indexer-indexer-1 -f
+docker logs indexer_indexer_1 -f
 ```
 
 ### Run processor
