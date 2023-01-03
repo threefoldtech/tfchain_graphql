@@ -283,3 +283,30 @@ type RefundTransaction @entity {
   target: String!
   txHash: String!
 }
+
+type ServiceContract @entity {
+  serviceContractID: BigInt!
+  serviceTwinID: Int!
+  consumerTwinID: Int!
+  baseFee: BigInt!
+  variableFee: BigInt!
+  metadata: String!
+  acceptedByService: Boolean!
+  acceptedByConsumer: Boolean!
+  lastBill: BigInt!
+  state: ServiceContractState!
+}
+
+enum ServiceContractState {
+  Created
+  AgreementReady
+  ApprovedByBoth
+}
+
+type ServiceContractBill @entity {
+  serviceContractID: BigInt!
+  variableAmount: BigInt!
+  window: BigInt!
+  metadata: String
+  amount: BigInt!
+}

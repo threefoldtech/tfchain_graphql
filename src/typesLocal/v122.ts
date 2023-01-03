@@ -25,6 +25,35 @@ export interface NruConsumption {
   nru: bigint
 }
 
+export interface ServiceContract {
+  serviceContractId: bigint
+  serviceTwinId: number
+  consumerTwinId: number
+  baseFee: bigint
+  variableFee: bigint
+  metadata: Uint8Array
+  acceptedByService: boolean
+  acceptedByConsumer: boolean
+  lastBill: bigint
+  state: ServiceContractState
+}
+
+export interface ServiceContractBill {
+  variableAmount: bigint
+  window: bigint
+  metadata: Uint8Array
+}
+
+export type Cause = Cause_CanceledByUser | Cause_OutOfFunds
+
+export interface Cause_CanceledByUser {
+  __kind: 'CanceledByUser'
+}
+
+export interface Cause_OutOfFunds {
+  __kind: 'OutOfFunds'
+}
+
 export interface SolutionProvider {
   solutionProviderId: bigint
   providers: Provider[]
@@ -106,9 +135,9 @@ export interface NodeCertification_Certified {
 }
 
 export interface PublicConfig {
-  ip4: IP
-  ip6: (IP | undefined)
-  domain: (Domain | undefined)
+  ip4: IP4
+  ip6: (IP6 | undefined)
+  domain: (Uint8Array | undefined)
 }
 
 export interface Node {
@@ -231,6 +260,20 @@ export interface ContractData_RentContract {
   value: RentContract
 }
 
+export type ServiceContractState = ServiceContractState_Created | ServiceContractState_AgreementReady | ServiceContractState_ApprovedByBoth
+
+export interface ServiceContractState_Created {
+  __kind: 'Created'
+}
+
+export interface ServiceContractState_AgreementReady {
+  __kind: 'AgreementReady'
+}
+
+export interface ServiceContractState_ApprovedByBoth {
+  __kind: 'ApprovedByBoth'
+}
+
 export interface Provider {
   who: AccountId32
   take: number
@@ -251,16 +294,19 @@ export type FarmName = Uint8Array
 
 export interface PublicIP {
   ip: Uint8Array
-  gateway: GatewayIP
+  gateway: Uint8Array
   contractId: bigint
 }
 
-export interface IP {
-  ip: IP4
-  gw: GW4
+export interface IP4 {
+  ip: Uint8Array
+  gw: Uint8Array
 }
 
-export type Domain = Uint8Array
+export interface IP6 {
+  ip: Uint8Array
+  gw: Uint8Array
+}
 
 export interface Location {
   city: CityName
@@ -294,19 +340,9 @@ export interface StellarSignature {
   stellarPubKey: Uint8Array
 }
 
-export type Cause = Cause_CanceledByUser | Cause_OutOfFunds
-
-export interface Cause_CanceledByUser {
-  __kind: 'CanceledByUser'
-}
-
-export interface Cause_OutOfFunds {
-  __kind: 'OutOfFunds'
-}
-
 export interface NodeContract {
   nodeId: number
-  deploymentHash: H256
+  deploymentHash: Uint8Array
   deploymentData: Uint8Array
   publicIps: number
   publicIpsList: PublicIP[]
@@ -319,12 +355,6 @@ export interface NameContract {
 export interface RentContract {
   nodeId: number
 }
-
-export type GatewayIP = Uint8Array
-
-export type IP4 = Uint8Array
-
-export type GW4 = Uint8Array
 
 export type InterfaceName = Uint8Array
 
@@ -353,7 +383,5 @@ export interface Unit_Gigabytes {
 export interface Unit_Terrabytes {
   __kind: 'Terrabytes'
 }
-
-export type H256 = Uint8Array
 
 export type NameContractName = Uint8Array
