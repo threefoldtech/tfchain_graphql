@@ -1,6 +1,8 @@
+version: "3.4"
+
 services:
   db:
-    image: postgres:14 # CockroachDB cluster might be a better fit for production deployment
+    image: postgres:14
     restart: always
     volumes:
       - /var/lib/postgresql/data
@@ -20,11 +22,7 @@ services:
         "-e",
         "wss://tfchain.grid.tf",
         "-c",
-        "20", # allow up to 20 pending requests for the above endpoint (default is 5)
-        # add another endpoint to increase archiving speed and reliability.
-        #  "-e", "wss://kusama-rpc.dwellir.com",
-
-        #  "--start-block", "1000000", # uncomment to specify a non-zero start block
+        "20",
         "--out",
         "postgres://postgres:postgres@db:5432/squid-archive",
         "--types-bundle",
@@ -42,18 +40,15 @@ services:
         "--database-url",
         "postgres://postgres:postgres@db:5432/squid-archive",
         "--database-max-connections",
-        "3", # max number of concurrent database connections
+        "3",
       ]
     ports:
       - "8888:8000"
 
-  # Explorer service is optional.
-  # It provides rich GraphQL API for querying archived data.
-  # Many developers find it very useful for exploration and debugging.
   explorer:
     image: subsquid/substrate-explorer:firesquid
     environment:
-      DB_TYPE: postgres # set to `cockroach` for Cockroach DB
+      DB_TYPE: postgres
       DB_HOST: db
       DB_PORT: "5432"
       DB_NAME: "squid-archive"
@@ -61,8 +56,3 @@ services:
       DB_PASS: "postgres"
     ports:
       - "4444:3000"
-
-#networks:
-#  default:
-#    external:
-#      name: graphql

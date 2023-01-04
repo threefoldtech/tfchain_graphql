@@ -20,25 +20,15 @@ spec:
         io.kompose.service: indexer-gateway
     spec:
       containers:
-        - env:
-            - name: DB_HOST
-              value: db
-            - name: DB_NAME
-              value: indexer-db
-            - name: DB_PASS
-              value: postgres
-            - name: DB_PORT
-              value: "5432"
-            - name: DB_USER
-              value: postgres
-            - name: DEV_MODE
-              value: "true"
-            - name: HYDRA_INDEXER_STATUS_SERVICE
-              value: {{ .Values.indexer_status_service_url }}
-          image: subsquid/hydra-indexer-gateway:5
+        - args:
+          - --database-url
+          - postgres://postgres:postgres@db:5432/squid-archive
+          - --database-max-connections
+          - "3"
+          image: subsquid/subsquid-gateway:firesquid
           name: indexer-gateway
           ports:
-            - containerPort: 8080
+            - containerPort: 8000
           resources: {}
       restartPolicy: Always
 status: {}

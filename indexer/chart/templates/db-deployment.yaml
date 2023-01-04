@@ -22,7 +22,7 @@ spec:
               value: postgres
             - name: POSTGRES_USER
               value: postgres
-          image: postgres:12
+          image: postgres:14
           name: db
           resources: {}
           volumeMounts:

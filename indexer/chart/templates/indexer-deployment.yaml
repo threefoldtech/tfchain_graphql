@@ -22,31 +22,15 @@ spec:
     spec:
       containers:
         - args:
-            - sh
+            - -e
+            - {{ .Values.ws_endpoint }}
             - -c
-            - yarn db:bootstrap && yarn start:prod
-          env:
-            - name: BLOCK_HEIGHT
-              value: "0"
-            - name: DB_HOST
-              value: {{ .Values.db_endpoint }}
-            - name: DB_NAME
-              value: indexer-db
-            - name: DB_PASS
-              value: postgres
-            - name: DB_PORT
-              value: "5432"
-            - name: DB_USER
-              value: postgres
-            - name: REDIS_URI
-              value: "redis://redis:6379/1"
-            - name: BUNDLE_TYPES
-              value: /configs/typesBundle.json
-            - name: WORKERS_NUMBER
-              value: "1"
-            - name: WS_PROVIDER_ENDPOINT_URI
-              value: {{ .Values.ws_endpoint }}
-          image: subsquid/hydra-indexer:5
+            - "20"
+            - --out
+            - postgres://postgres:postgres@db:5432/squid-archive
+            - --types-bundle
+            - /configs/typesBundle.json
+          image: subsquid/substrate-ingest:firesquid
           name: indexer
           resources: {}
           volumeMounts:
