@@ -1,37 +1,78 @@
 import * as ss58 from "@subsquid/ss58";
-import { Transfer } from "../model";
+import { Transfer, Account } from "../model";
 import { BalancesTransferEvent } from "../types/events";
-import { Store } from '@subsquid/typeorm-store'
-import {
-  EventHandlerContext,
-} from "../types/context";
+import { Ctx } from '../processor'
+import { In } from "typeorm"
 
-export async function balancesTransfer(ctx: EventHandlerContext): Promise<void> {
-  const transferEvent = new BalancesTransferEvent(ctx)
+export async function processBalancesTransfer(ctx: Ctx): Promise<[Transfer[], Account[]]> {
+  let transfersData = getTransfers(ctx)
 
-  let from, to, amount
-  let transfer
-  if (transferEvent.isV49) {
-    transfer = transferEvent.asV49
-    from = transfer[0]
-    to = transfer[1]
-    amount = transfer[2]
-  } else if (transferEvent.isV101) {
-    transfer = transferEvent.asV101
-    from = transfer.from
-    to = transfer.to
-    amount = transfer.amount
-  } else { return }
+  let accountIds = new Set<string>()
+  for (let t of transfersData) {
+    accountIds.add(t.from)
+    accountIds.add(t.to)
+  }
 
-  const fromEncoded = ss58.codec("substrate").encode(from);
-  const toEncoded = ss58.codec("substrate").encode(to);
+  let accounts = await ctx.store.findBy(Account, {id: In([...accountIds])}).then(accounts => {
+    return new Map(accounts.map(a => [a.id, a]))
+  })
 
-  // save as a transfer as well
-  const t = new Transfer()
-  t.id = ctx.event.id
-  t.to = toEncoded
-  t.from = fromEncoded
-  t.amount = amount
-  t.timestamp = BigInt(0)
-  await ctx.store.save(t)
+  let transfers: Transfer[] = []
+
+  for (let t of transfersData) {
+    let {id, blockNumber, amount} = t
+
+    transfers.push(new Transfer({
+      id,
+      timestamp: BigInt(0),
+      from: t.from,
+      to: t.to,
+      amount,
+    }))
+  }
+
+  return [transfers, Array.from(accounts.values())]
+}
+
+function getTransfers(ctx: Ctx): TransferEvent[] {
+  let transfers: TransferEvent[] = []
+  for (let block of ctx.blocks) {
+    for (let item of block.items) {
+      if (item.name == "Balances.Transfer") {
+        let e = new BalancesTransferEvent(ctx, item.event)
+        let rec: {from: Uint8Array, to: Uint8Array, amount: bigint}
+        if (e.isV49) {
+          let [from, to, amount,] = e.asV49
+          rec = { from, to, amount }
+        } else if (e.isV101) {
+        let { from, to, amount }  = e.asV101
+          rec = {from, to, amount}
+        } else {
+          rec = e.asV101
+        }
+        transfers.push({
+          id: item.event.id,
+          blockNumber: block.header.height,
+          timestamp: new Date(block.header.timestamp),
+          extrinsicHash: item.event.extrinsic?.hash,
+          from: ss58.codec('substrate').encode(rec.from),
+          to: ss58.codec('substrate').encode(rec.to),
+          amount: rec.amount,
+          fee: item.event.extrinsic?.fee || 0n
+        })
+      }
+    }
+  }
+  return transfers
+}
+
+interface TransferEvent {
+  id: string
+  blockNumber: number
+  timestamp: Date
+  extrinsicHash?: string
+  from: string
+  to: string
+  amount: bigint
+  fee?: bigint
 }

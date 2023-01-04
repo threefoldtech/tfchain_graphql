@@ -2,6 +2,39 @@ import * as ss58 from "@subsquid/ss58";
 import { Twin } from "../model";
 import { TfgridModuleTwinStoredEvent, TfgridModuleTwinDeletedEvent, TfgridModuleTwinUpdatedEvent } from "../types/events";
 import { Ctx } from '../processor'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+
+export async function twinStored(
+  ctx: Ctx,
+  block: SubstrateBlock,
+  item: EventItem<'TfgridModule.TwinStored', { event: { args: true } }>
+) {
+  const twinEvent = new TfgridModuleTwinStoredEvent(ctx, item.event)
+  let twin
+  if (twinEvent.isV49) {
+    twin = twinEvent.asV49
+  } else if (twinEvent.isV101) {
+    twin = twinEvent.asV101
+  } else {
+    return
+  }
+
+  const newTwin = new Twin()
+      
+  newTwin.id = item.event.id
+
+  newTwin.gridVersion = twin.version
+  newTwin.twinID = twin.id
+
+  const accountID = ss58.codec("substrate").encode(twin.accountId);
+  newTwin.accountID = accountID
+  newTwin.ip = twin.ip.toString()
+
+  await ctx.store.save<Twin>(newTwin)
+
+  // newTwins.push(newTwin)
+}
 
 export async function twinCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Twin[], Twin[], Twin[]]> {
   let newTwins = []

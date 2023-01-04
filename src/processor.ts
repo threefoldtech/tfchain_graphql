@@ -1,5 +1,5 @@
-import { balancesTransfer } from './mappings/balances'
-import { twinCreateOrUpdateOrDelete } from './mappings/twins'
+import { processBalancesTransfer } from './mappings/balances'
+import { twinCreateOrUpdateOrDelete, twinStored } from './mappings/twins'
 import { nodeCreateUpdateOrDelete, nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported, nodePublicConfigStored, nodeCertificationSet } from './mappings/nodes'
 import { farmingPolicyStored, pricingPolicyStored, farmingPolicyUpdated } from './mappings/policies';
 import { farmCreateOrUpdateOrDelete, farmDeleted, farmPayoutV2AddressRegistered, farmCertificationSet } from './mappings/farms';
@@ -9,11 +9,10 @@ import { contractBilled, contractCreated, contractUpdated, contractUpdateUsedRes
 import { solutionProviderCreated, solutionProviderApproved } from './mappings/solutionProviders'
 
 import {
-  SubstrateProcessor
+  SubstrateBlock
 } from "@subsquid/substrate-processor";
 import { TypeormDatabase, Store } from '@subsquid/typeorm-store'
 import {BatchContext, BatchProcessorItem, SubstrateBatchProcessor } from "@subsquid/substrate-processor"
-import {In} from "typeorm"
 import { uniqBy } from 'lodash'
 
 // const db = new TypeormDatabase()
@@ -78,7 +77,14 @@ import { uniqBy } from 'lodash'
 
 // processor.run();
 
-import {Account, Transfer} from "./model"
+const eventOptions = {
+  data: {
+      event: {
+          args: true,
+          extrinsic: true,
+      },
+  } as const,
+} as const
 
 const processor = new SubstrateBatchProcessor()
     .setTypesBundle("typegen/typesBundle.json")
@@ -86,122 +92,35 @@ const processor = new SubstrateBatchProcessor()
       archive: process.env.INDEXER_ENDPOINT_URL || 'http://localhost:8888/graphql',
       chain: process.env.WS_URL || 'ws://localhost:9944'
     })
-    .addEvent('Balances.Transfer', {
-      data: {
-        event: {
-          args: true,
-          extrinsic: {
-            hash: true,
-            fee: true
-          }
-        }
-      }
-    } as const)
-    .addEvent('TfgridModule.TwinStored', {
-      data: {
-        event: {
-          args: true,
-        }
-      }
-    } as const)
-    .addEvent('TfgridModule.TwinUpdated', {
-      data: {
-        event: {
-          args: true,
-        }
-      }
-    } as const)
-    .addEvent('TfgridModule.TwinDeleted', {
-      data: {
-        event: {
-          args: true,
-        }
-      }
-    } as const)
-    .addEvent('TfgridModule.FarmStored', {
-      data: {
-        event: {
-          args: true,
-        }
-      }
-    } as const)
-    .addEvent('TfgridModule.FarmUpdated', {
-      data: {
-        event: {
-          args: true,
-        }
-      }
-    } as const)
-    .addEvent('TfgridModule.FarmDeleted', {
-      data: {
-        event: {
-          args: true,
-        }
-      }
-    } as const)
-    .addEvent('TfgridModule.NodeStored', {
-      data: {
-        event: {
-          args: true,
-        }
-      }
-    } as const)
-    .addEvent('TfgridModule.NodeUpdated', {
-      data: {
-        event: {
-          args: true,
-        }
-      }
-    } as const)
-    .addEvent('TfgridModule.NodeDeleted', {
-      data: {
-        event: {
-          args: true,
-        }
-      }
-    } as const)
-    .addEvent('TfgridModule.NodeUptimeReported', {
-      data: {
-        event: {
-          args: true,
-        }
-      }
-    } as const)
+    .addEvent('Balances.Transfer', eventOptions)
+    .addEvent('TfgridModule.TwinStored', eventOptions)
+    .addEvent('TfgridModule.TwinUpdated', eventOptions)
+    .addEvent('TfgridModule.TwinDeleted', eventOptions)
+    .addEvent('TfgridModule.FarmStored', eventOptions)
+    .addEvent('TfgridModule.FarmUpdated', eventOptions)
+    .addEvent('TfgridModule.FarmDeleted', eventOptions)
+    .addEvent('TfgridModule.NodeStored', eventOptions)
+    .addEvent('TfgridModule.NodeUpdated', eventOptions)
+    .addEvent('TfgridModule.NodeDeleted', eventOptions)
+    .addEvent('TfgridModule.NodeUptimeReported', eventOptions)
 
 export type Item = BatchProcessorItem<typeof processor>
 export type Ctx = BatchContext<Store, Item>
 
-import { BalancesTransferEvent } from "./types/events";
-import * as ss58 from "@subsquid/ss58";
+async function handleEvents(ctx: Ctx, block: SubstrateBlock, item: Item) {
+  switch (item.name) {
+    case 'TfgridModule.TwinStored': return twinStored(ctx, block, item)
+
+  }
+}
 
 processor.run(new TypeormDatabase(), async ctx => {
   let [newTwins, updatedTwin, deletedTwins] = await twinCreateOrUpdateOrDelete(ctx)
   let [newFarms, updatedFarms, deletedFarms, publicIps] = await farmCreateOrUpdateOrDelete(ctx)
-  let transfersData = getTransfers(ctx)
+  let [transfers, accounts] = await processBalancesTransfer(ctx)
 
-  let accountIds = new Set<string>()
-  for (let t of transfersData) {
-    accountIds.add(t.from)
-    accountIds.add(t.to)
-  }
-
-  let accounts = await ctx.store.findBy(Account, {id: In([...accountIds])}).then(accounts => {
-    return new Map(accounts.map(a => [a.id, a]))
-  })
-
-  let transfers: Transfer[] = []
-
-  for (let t of transfersData) {
-    let {id, blockNumber, amount} = t
-
-    transfers.push(new Transfer({
-      id,
-      timestamp: BigInt(0),
-      from: t.from,
-      to: t.to,
-      amount,
-    }))
-  }
+  await ctx.store.save(accounts)
+  await ctx.store.insert(transfers)
 
   // Insert new twins
   await ctx.store.insert(newTwins)
@@ -240,50 +159,4 @@ processor.run(new TypeormDatabase(), async ctx => {
   await ctx.store.save(updatedFarms)
   // Delete Farm
   await ctx.store.remove(deletedFarms)
-
-  await ctx.store.save(Array.from(accounts.values()))
-  await ctx.store.insert(transfers)
 })
-
-interface TransferEvent {
-  id: string
-  blockNumber: number
-  timestamp: Date
-  extrinsicHash?: string
-  from: string
-  to: string
-  amount: bigint
-  fee?: bigint
-}
-
-function getTransfers(ctx: Ctx): TransferEvent[] {
-  let transfers: TransferEvent[] = []
-  for (let block of ctx.blocks) {
-    for (let item of block.items) {
-      if (item.name == "Balances.Transfer") {
-        let e = new BalancesTransferEvent(ctx, item.event)
-        let rec: {from: Uint8Array, to: Uint8Array, amount: bigint}
-        if (e.isV49) {
-          let [from, to, amount,] = e.asV49
-          rec = { from, to, amount }
-        } else if (e.isV101) {
-        let { from, to, amount }  = e.asV101
-          rec = {from, to, amount}
-        } else {
-          rec = e.asV101
-        }
-        transfers.push({
-          id: item.event.id,
-          blockNumber: block.header.height,
-          timestamp: new Date(block.header.timestamp),
-          extrinsicHash: item.event.extrinsic?.hash,
-          from: ss58.codec('substrate').encode(rec.from),
-          to: ss58.codec('substrate').encode(rec.to),
-          amount: rec.amount,
-          fee: item.event.extrinsic?.fee || 0n
-        })
-      }
-    }
-  }
-  return transfers
-}
