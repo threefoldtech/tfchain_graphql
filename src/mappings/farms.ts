@@ -23,12 +23,20 @@ export class FarmWithIPs {
 export async function farmCreateOrUpdateOrDeleteNoBatch(ctx: Ctx) {
   for (let block of ctx.blocks) {
     for (let item of block.items) { 
-      switch(item.name) {
-        case 'TfgridModule.FarmStored': await farmStored(ctx, item)
-        case 'TfgridModule.FarmUpdated': await farmUpdated(ctx, item)
-        case 'TfgridModule.FarmDeleted': await farmDeleted(ctx, item)
-        case 'TfgridModule.FarmPayoutV2AddressRegistered': return
-        case 'TfgridModule.FarmCerficiationSet': return
+      if (item.name === 'TfgridModule.FarmStored') {
+        await farmStored(ctx, item)
+      }
+      if (item.name === 'TfgridModule.FarmUpdated') {
+        await farmUpdated(ctx, item)
+      }
+      if (item.name === 'TfgridModule.FarmDeleted') { 
+        await farmDeleted(ctx, item)
+      }
+      if (item.name === 'TfgridModule.FarmPayoutV2AddressRegistered') {
+        await farmPayoutV2AddressRegistered(ctx, item)
+      }
+      if (item.name === 'TfgridModule.FarmCertificationSet') {
+        await farmCertificationSet(ctx, item)
       }
     }
   }
@@ -48,9 +56,9 @@ export async function farmStored(
   } else if (farmStoredEvent.isV63) {
     farmStoredEventParsed = farmStoredEvent.asV63
   } else if (farmStoredEvent.isV101) {
-    // let eventValue = item.event as v63.Farm
-    // eventValue.dedicatedFarm = false
-    // farmStoredEventParsed = farmStoredEvent.asV101
+    let eventValue = item.event.args as v63.Farm
+    eventValue.dedicatedFarm = false
+    farmStoredEventParsed = farmStoredEvent.asV101
   }
 
   if (!farmStoredEventParsed) return
@@ -98,7 +106,7 @@ export async function farmStored(
 
 export async function farmUpdated(
   ctx: Ctx,
-  item: EventItem<'TfgridModule.FarmUpdated', { event: { args: true } }>
+  item: EventItem<'TfgridModule.FarmUpdated', { event: { args: true, extrinsic: true } }>
 ) {
   const farmUpdatedEvent = new TfgridModuleFarmUpdatedEvent(ctx, item.event)
 
@@ -144,7 +152,7 @@ export async function farmUpdated(
     if (ip.ip.toString().indexOf('\x00') >= 0) {
       return
     }
-    const savedIP = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() } })
+    const savedIP = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() }, relations: { farm: true } })
     // ip is already there in storage, don't save it again
     if (savedIP) {
       savedIP.ip = ip.ip.toString()
@@ -197,8 +205,11 @@ export async function farmDeleted(
   }
 }
 
-export async function farmPayoutV2AddressRegistered(ctx: EventHandlerContext) {
-  const [farmID, stellarAddress] = new TfgridModuleFarmPayoutV2AddressRegisteredEvent(ctx).asV49
+export async function farmPayoutV2AddressRegistered(
+  ctx: Ctx,
+  item: EventItem<'TfgridModule.FarmPayoutV2AddressRegistered', { event: { args: true } }>
+) {
+  const [farmID, stellarAddress] = new TfgridModuleFarmPayoutV2AddressRegisteredEvent(ctx, item.event).asV49
 
   const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmID } })
 
@@ -213,8 +224,11 @@ export async function farmPayoutV2AddressRegistered(ctx: EventHandlerContext) {
   }
 }
 
-export async function farmCertificationSet(ctx: EventHandlerContext) {
-  const [farmID, certification] = new TfgridModuleFarmCertificationSetEvent(ctx).asV63
+export async function farmCertificationSet(
+  ctx: Ctx,
+  item: EventItem<'TfgridModule.FarmCertificationSet', { event: { args: true } }>
+) {
+  const [farmID, certification] = new TfgridModuleFarmCertificationSetEvent(ctx, item.event).asV63
 
   const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmID } })
 
