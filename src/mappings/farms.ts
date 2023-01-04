@@ -23,14 +23,12 @@ export class FarmWithIPs {
 export async function farmCreateOrUpdateOrDeleteNoBatch(ctx: Ctx) {
   for (let block of ctx.blocks) {
     for (let item of block.items) { 
-      if (item.name === "TfgridModule.FarmStored") {
-        await farmStored(ctx, item)
-      }
-      if (item.name === "TfgridModule.FarmUpdated") {
-       await farmUpdated(ctx, item)
-      }
-      if (item.name === "TfgridModule.FarmDeleted") { 
-        await farmDeleted(ctx, item)
+      switch(item.name) {
+        case 'TfgridModule.FarmStored': await farmStored(ctx, item)
+        case 'TfgridModule.FarmUpdated': await farmUpdated(ctx, item)
+        case 'TfgridModule.FarmDeleted': await farmDeleted(ctx, item)
+        case 'TfgridModule.FarmPayoutV2AddressRegistered': return
+        case 'TfgridModule.FarmCerficiationSet': return
       }
     }
   }

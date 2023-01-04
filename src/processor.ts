@@ -99,6 +99,8 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('TfgridModule.FarmStored', eventOptions)
     .addEvent('TfgridModule.FarmUpdated', eventOptions)
     .addEvent('TfgridModule.FarmDeleted', eventOptions)
+    .addEvent('TfgridModule.FarmPayoutV2AddressRegistered', eventOptions)
+    .addEvent('TfgridModule.FarmCertificationSet', eventOptions)
     .addEvent('TfgridModule.NodeStored', eventOptions)
     .addEvent('TfgridModule.NodeUpdated', eventOptions)
     .addEvent('TfgridModule.NodeDeleted', eventOptions)
@@ -110,7 +112,6 @@ export type Ctx = BatchContext<Store, Item>
 async function handleEvents(ctx: Ctx, block: SubstrateBlock, item: Item) {
   switch (item.name) {
     case 'TfgridModule.TwinStored': return twinStored(ctx, block, item)
-
   }
 }
 
