@@ -1,9 +1,5 @@
 import { Farm, FarmCertification, PublicIp } from "../model"
 import { TfgridModuleFarmStoredEvent, TfgridModuleFarmDeletedEvent, TfgridModuleFarmUpdatedEvent, TfgridModuleFarmPayoutV2AddressRegisteredEvent, TfgridModuleFarmCertificationSetEvent } from "../types/events"
-import { Store } from '@subsquid/typeorm-store'
-import {
-  EventHandlerContext,
-} from "../types/context"
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 
 import { Ctx } from '../processor'

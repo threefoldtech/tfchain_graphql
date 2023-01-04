@@ -105,6 +105,8 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('TfgridModule.NodeUpdated', eventOptions)
     .addEvent('TfgridModule.NodeDeleted', eventOptions)
     .addEvent('TfgridModule.NodeUptimeReported', eventOptions)
+    .addEvent('TfgridModule.NodePublicConfigStored', eventOptions)
+    .addEvent('TfgridModule.NodeCertificationSet', eventOptions)
 
 export type Item = BatchProcessorItem<typeof processor>
 export type Ctx = BatchContext<Store, Item>
