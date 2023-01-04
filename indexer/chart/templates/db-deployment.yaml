@@ -22,6 +22,8 @@ spec:
               value: postgres
             - name: POSTGRES_USER
               value: postgres
+            - name: POSTGRES_DB
+              value: squid-archive
           image: postgres:14
           name: db
           resources: {}
