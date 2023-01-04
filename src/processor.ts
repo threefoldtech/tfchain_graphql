@@ -2,7 +2,7 @@ import { processBalancesTransfer } from './mappings/balances'
 import { twinCreateOrUpdateOrDelete, twinStored } from './mappings/twins'
 import { nodeCreateUpdateOrDelete, nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported, nodePublicConfigStored, nodeCertificationSet } from './mappings/nodes'
 import { farmingPolicyStored, pricingPolicyStored, farmingPolicyUpdated } from './mappings/policies';
-import { farmCreateOrUpdateOrDelete, farmDeleted, farmPayoutV2AddressRegistered, farmCertificationSet } from './mappings/farms';
+import { farmCreateOrUpdateOrDelete, farmCreateOrUpdateOrDeleteNoBatch, farmDeleted, farmPayoutV2AddressRegistered, farmCertificationSet } from './mappings/farms';
 import { entityDeleted, entityStored, entityUpdated } from './mappings/entity';
 import { contractBilled, contractCreated, contractUpdated, contractUpdateUsedResources, nameContractCanceled, nodeContractCanceled, nruConsumptionReportReceived, rentContractCanceled, contractGracePeriodStarted, contractGracePeriodEnded } from './mappings/contracts';
 // import { burnProcessed, mintCompleted, refundProcessed } from './mappings/bridge';
@@ -114,11 +114,44 @@ async function handleEvents(ctx: Ctx, block: SubstrateBlock, item: Item) {
   }
 }
 
+let batchFarms = false
+
 processor.run(new TypeormDatabase(), async ctx => {
   let [newTwins, updatedTwin, deletedTwins] = await twinCreateOrUpdateOrDelete(ctx)
-  let [newFarms, updatedFarms, deletedFarms, publicIps] = await farmCreateOrUpdateOrDelete(ctx)
   let [transfers, accounts] = await processBalancesTransfer(ctx)
-
+  
+  if (batchFarms) {
+    let [newFarms, updatedFarms, deletedFarms, publicIps] = await farmCreateOrUpdateOrDelete(ctx)
+    // // Insert new farms
+    let newFarmPromises = newFarms.map(f => {
+      return ctx.store.insert(f)
+    })
+    await Promise.all(newFarmPromises)
+  
+    let updatedFarmsPromises = updatedFarms.map(f => {
+      return ctx.store.save(f)
+    })
+    await Promise.all(updatedFarmsPromises)
+  
+    let deletedFarmsPromises = deletedFarms.map(f => {
+      return ctx.store.remove(f)
+    })
+    await Promise.all(deletedFarmsPromises)
+  
+    let newPublicIpsPromises = publicIps.map(ip => {
+      if (ip.publicIPs) {
+        return ctx.store.save(uniqBy(ip.publicIPs, 'ip'))
+      }
+    })
+    await Promise.all(newPublicIpsPromises)
+    // Save updated farms
+    await ctx.store.save(updatedFarms)
+    // Delete Farm
+    await ctx.store.remove(deletedFarms)  
+  } else {
+    await farmCreateOrUpdateOrDeleteNoBatch(ctx)
+  }
+  
   await ctx.store.save(accounts)
   await ctx.store.insert(transfers)
 
@@ -129,34 +162,7 @@ processor.run(new TypeormDatabase(), async ctx => {
   // Delete twins
   await ctx.store.remove(deletedTwins)
 
-  // // Insert new farms
-  let newFarmPromises = newFarms.map(f => {
-    return ctx.store.insert(f)
-  })
-  await Promise.all(newFarmPromises)
-
-  let updatedFarmsPromises = updatedFarms.map(f => {
-    return ctx.store.save(f)
-  })
-  await Promise.all(updatedFarmsPromises)
-
-  let deletedFarmsPromises = deletedFarms.map(f => {
-    return ctx.store.remove(f)
-  })
-  await Promise.all(deletedFarmsPromises)
-
-  let newPublicIpsPromises = publicIps.map(ip => {
-    if (ip.publicIPs) {
-      return ctx.store.save(uniqBy(ip.publicIPs, 'ip'))
-    }
-  })
-  await Promise.all(newPublicIpsPromises)
-
   await nodeCreateUpdateOrDelete(ctx)
 
   await nodeUptimeReported(ctx)
-  // Save updated farms
-  await ctx.store.save(updatedFarms)
-  // Delete Farm
-  await ctx.store.remove(deletedFarms)
 })
