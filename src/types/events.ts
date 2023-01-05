@@ -470,7 +470,7 @@ export class SmartContractModuleServiceContractApprovedEvent {
    * A Service contract is approved
    */
   get isV122(): boolean {
-    return this._chain.getEventHash('smartContractModule.ServiceContractApproved') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+    return this._chain.getEventHash('SmartContractModule.ServiceContractApproved') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
   }
 
   /**
@@ -499,7 +499,7 @@ export class SmartContractModuleServiceContractBilledEvent {
    * A Service contract is billed
    */
   get isV122(): boolean {
-    return this._chain.getEventHash('smartContractModule.ServiceContractBilled') === '7985d39a3e56b65ab2853980404ab7250260ef1f2f7395adf3092259fb9ddbc5'
+    return this._chain.getEventHash('SmartContractModule.ServiceContractBilled') === '7985d39a3e56b65ab2853980404ab7250260ef1f2f7395adf3092259fb9ddbc5'
   }
 
   /**
@@ -528,7 +528,7 @@ export class SmartContractModuleServiceContractCanceledEvent {
    * A Service contract is canceled
    */
   get isV122(): boolean {
-    return this._chain.getEventHash('smartContractModule.ServiceContractCanceled') === '5d9c761d54a2a85566da8e150a364cc6f59f363b1139be81f9993b7d62a74bb0'
+    return this._chain.getEventHash('SmartContractModule.ServiceContractCanceled') === '5d9c761d54a2a85566da8e150a364cc6f59f363b1139be81f9993b7d62a74bb0'
   }
 
   /**
@@ -557,7 +557,7 @@ export class SmartContractModuleServiceContractCreatedEvent {
    * A Service contract is created
    */
   get isV122(): boolean {
-    return this._chain.getEventHash('smartContractModule.ServiceContractCreated') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+    return this._chain.getEventHash('SmartContractModule.ServiceContractCreated') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
   }
 
   /**
@@ -585,7 +585,7 @@ export class SmartContractModuleServiceContractFeesSetEvent {
    * A Service contract fees are set
    */
   get isV122(): boolean {
-    return this._chain.getEventHash('smartContractModule.ServiceContractFeesSet') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+    return this._chain.getEventHash('SmartContractModule.ServiceContractFeesSet') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
   }
 
   /**
@@ -614,7 +614,7 @@ export class SmartContractModuleServiceContractMetadataSetEvent {
    * A Service contract metadata is set
    */
   get isV122(): boolean {
-    return this._chain.getEventHash('smartContractModule.ServiceContractMetadataSet') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+    return this._chain.getEventHash('SmartContractModule.ServiceContractMetadataSet') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
   }
 
   /**
@@ -1034,7 +1034,7 @@ export class TfgridModuleNodeStoredEvent {
   }
 
   get isV105(): boolean {
-    return this._chain.getEventHash('tfgridModule.NodeStored') === '050dcf105bd6f9b530372be57813e46ed54da9003777956afde8cea580623abf'
+    return this._chain.getEventHash('TfgridModule.NodeStored') === '050dcf105bd6f9b530372be57813e46ed54da9003777956afde8cea580623abf'
   }
 
   get asV105(): v105.Node {
@@ -1043,7 +1043,7 @@ export class TfgridModuleNodeStoredEvent {
   }
 
   get isV118(): boolean {
-    return this._chain.getEventHash('tfgridModule.NodeStored') === 'f41f098c82aee52660133d1fb75d350fab4d99e9a67ba251b35e04ee4c292fb3'
+    return this._chain.getEventHash('TfgridModule.NodeStored') === 'f41f098c82aee52660133d1fb75d350fab4d99e9a67ba251b35e04ee4c292fb3'
   }
 
   get asV118(): v118.Node {
@@ -1111,7 +1111,7 @@ export class TfgridModuleNodeUpdatedEvent {
   }
 
   get isV105(): boolean {
-    return this._chain.getEventHash('tfgridModule.NodeStored') === '050dcf105bd6f9b530372be57813e46ed54da9003777956afde8cea580623abf'
+    return this._chain.getEventHash('TfgridModule.NodeStored') === '050dcf105bd6f9b530372be57813e46ed54da9003777956afde8cea580623abf'
   }
 
   get asV105(): v105.Node {
@@ -1120,7 +1120,7 @@ export class TfgridModuleNodeUpdatedEvent {
   }
 
   get isV118(): boolean {
-    return this._chain.getEventHash('tfgridModule.NodeUpdated') === 'f41f098c82aee52660133d1fb75d350fab4d99e9a67ba251b35e04ee4c292fb3'
+    return this._chain.getEventHash('TfgridModule.NodeUpdated') === 'f41f098c82aee52660133d1fb75d350fab4d99e9a67ba251b35e04ee4c292fb3'
   }
 
   get asV118(): v118.Node {
