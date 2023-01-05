@@ -379,10 +379,10 @@ export async function contractUpdateUsedResources(
 
   const savedContractResources = await ctx.store.get(ContractResources, { where: { contract: Equal(savedContract) }, relations: { contract: true } })
   if (savedContractResources) {
-    contractUsedResources.cru = usedResources.used.cru
-    contractUsedResources.sru = usedResources.used.sru
-    contractUsedResources.hru = usedResources.used.hru
-    contractUsedResources.mru = usedResources.used.mru
+    savedContractResources.cru = usedResources.used.cru
+    savedContractResources.sru = usedResources.used.sru
+    savedContractResources.hru = usedResources.used.hru
+    savedContractResources.mru = usedResources.used.mru
     await ctx.store.save<ContractResources>(savedContractResources)
 
     savedContract.resourcesUsed = savedContractResources
@@ -422,27 +422,34 @@ export async function contractGracePeriodStarted(
   ctx: Ctx,
   item: EventItem<'SmartContractModule.ContractGracePeriodStarted', { event: { args: true } }>,
 ) {
-  const contractGracePeriodStartedEvent = new SmartContractModuleContractGracePeriodStartedEvent(ctx, item.event).asV59
+  const contractGracePeriodStartedEvent = new SmartContractModuleContractGracePeriodStartedEvent(ctx, item.event)
+  let contractID
 
-  let savedContract
-  savedContract = await ctx.store.get(NodeContract, { where: { contractID: contractGracePeriodStartedEvent[0] } })
+  if (contractGracePeriodStartedEvent.isV59) {
+    contractID = contractGracePeriodStartedEvent.asV59[0]
+  } else if (contractGracePeriodStartedEvent.isV105) {
+    contractID = contractGracePeriodStartedEvent.asV105.contractId
+  }
 
-  if (!savedContract) {
-    savedContract = await ctx.store.get(RentContract, { where: { contractID: contractGracePeriodStartedEvent[0] } })
-    if (!savedContract) {
-      savedContract = await ctx.store.get(NameContract, { where: { contractID: contractGracePeriodStartedEvent[0] } })
-      if (!savedContract) return
-      else {
-        savedContract.state = ContractState.GracePeriod
-        await ctx.store.save<NameContract>(savedContract)
-      }
-    } else {
-      savedContract.state = ContractState.GracePeriod
-      await ctx.store.save<RentContract>(savedContract)
-    }
-  } else {
-    savedContract.state = ContractState.GracePeriod
-    await ctx.store.save<NodeContract>(savedContract)
+  const savedNodeContract = await ctx.store.get(NodeContract, { where: { contractID } })
+  if (savedNodeContract) {
+    savedNodeContract.state = ContractState.GracePeriod
+    await ctx.store.save<NodeContract>(savedNodeContract)
+    return
+  }
+
+  const savedRentContract = await ctx.store.get(RentContract, { where: { contractID } })
+  if (savedRentContract) {
+    savedRentContract.state = ContractState.GracePeriod
+    await ctx.store.save<RentContract>(savedRentContract)
+    return
+  }
+
+  const savedNameContract = await ctx.store.get(NameContract, { where: { contractID } })
+  if (savedNameContract) {
+    savedNameContract.state = ContractState.GracePeriod
+    await ctx.store.save<NameContract>(savedNameContract)
+    return
   }
 }
 
@@ -451,26 +458,33 @@ export async function contractGracePeriodEnded(
   ctx: Ctx,
   item: EventItem<'SmartContractModule.ContractGracePeriodEnded', { event: { args: true } }>,
 ) {
-  const contractGracePeriodEnded = new SmartContractModuleContractGracePeriodEndedEvent(ctx, item.event).asV59
+  const contractGracePeriodEnded = new SmartContractModuleContractGracePeriodEndedEvent(ctx, item.event)
+  let contractID
 
-  let savedContract
-  savedContract = await ctx.store.get(NodeContract, { where: { contractID: contractGracePeriodEnded[0] } })
+  if (contractGracePeriodEnded.isV59) {
+    contractID = contractGracePeriodEnded.asV59[0]
+  } else if (contractGracePeriodEnded.isV105) {
+    contractID = contractGracePeriodEnded.asV105.contractId
+  }
 
-  if (!savedContract) {
-    savedContract = await ctx.store.get(RentContract, { where: { contractID: contractGracePeriodEnded[0] } })
-    if (!savedContract) {
-      savedContract = await ctx.store.get(NameContract, { where: { contractID: contractGracePeriodEnded[0] } })
-      if (!savedContract) return
-      else {
-        savedContract.state = ContractState.GracePeriod
-        await ctx.store.save<NameContract>(savedContract)
-      }
-    } else {
-      savedContract.state = ContractState.GracePeriod
-      await ctx.store.save<RentContract>(savedContract)
-    }
-  } else {
-    savedContract.state = ContractState.GracePeriod
-    await ctx.store.save<NodeContract>(savedContract)
+  const savedNodeContract = await ctx.store.get(NodeContract, { where: { contractID } })
+  if (savedNodeContract) {
+    savedNodeContract.state = ContractState.Created
+    await ctx.store.save<NodeContract>(savedNodeContract)
+    return
+  }
+
+  const savedRentContract = await ctx.store.get(RentContract, { where: { contractID } })
+  if (savedRentContract) {
+    savedRentContract.state = ContractState.Created
+    await ctx.store.save<RentContract>(savedRentContract)
+    return
+  }
+
+  const savedNameContract = await ctx.store.get(NameContract, { where: { contractID } })
+  if (savedNameContract) {
+    savedNameContract.state = ContractState.Created
+    await ctx.store.save<NameContract>(savedNameContract)
+    return
   }
 }

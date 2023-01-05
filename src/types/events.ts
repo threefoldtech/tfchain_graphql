@@ -12,6 +12,8 @@ import * as v59 from './v59'
 import * as v63 from './v63'
 import * as v101 from './v101'
 import * as v105 from './v105'
+import * as v118 from './v118'
+import * as v122 from './v122'
 
 export type AccountId32 = Uint8Array
 
@@ -451,6 +453,179 @@ export class SmartContractModuleSolutionProviderCreatedEvent {
   }
 }
 
+export class SmartContractModuleServiceContractApprovedEvent {
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'SmartContractModule.ServiceContractApproved')
+    this._chain = ctx._chain
+    this.event = event
+  }
+
+  /**
+   * A Service contract is approved
+   */
+  get isV122(): boolean {
+    return this._chain.getEventHash('smartContractModule.ServiceContractApproved') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+  }
+
+  /**
+   * A Service contract is approved
+   */
+  get asV122(): v122.ServiceContract {
+    assert(this.isV122)
+    return this._chain.decodeEvent(this.event)
+  }
+}
+
+export class SmartContractModuleServiceContractBilledEvent {
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'SmartContractModule.ServiceContractBilled')
+    this._chain = ctx._chain
+    this.event = event
+  }
+
+  /**
+   * A Service contract is billed
+   */
+  get isV122(): boolean {
+    return this._chain.getEventHash('smartContractModule.ServiceContractBilled') === '7985d39a3e56b65ab2853980404ab7250260ef1f2f7395adf3092259fb9ddbc5'
+  }
+
+  /**
+   * A Service contract is billed
+   */
+  get asV122(): { serviceContract: v122.ServiceContract, bill: v122.ServiceContractBill, amount: bigint } {
+    assert(this.isV122)
+    return this._chain.decodeEvent(this.event)
+  }
+}
+
+export class SmartContractModuleServiceContractCanceledEvent {
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'SmartContractModule.ServiceContractCanceled')
+    this._chain = ctx._chain
+    this.event = event
+  }
+
+  /**
+   * A Service contract is canceled
+   */
+  get isV122(): boolean {
+    return this._chain.getEventHash('smartContractModule.ServiceContractCanceled') === '5d9c761d54a2a85566da8e150a364cc6f59f363b1139be81f9993b7d62a74bb0'
+  }
+
+  /**
+   * A Service contract is canceled
+   */
+  get asV122(): { serviceContractId: bigint, cause: v122.Cause } {
+    assert(this.isV122)
+    return this._chain.decodeEvent(this.event)
+  }
+}
+
+export class SmartContractModuleServiceContractCreatedEvent {
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'SmartContractModule.ServiceContractCreated')
+    this._chain = ctx._chain
+    this.event = event
+  }
+
+  /**
+   * A Service contract is created
+   */
+  get isV122(): boolean {
+    return this._chain.getEventHash('smartContractModule.ServiceContractCreated') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+  }
+
+  /**
+   * A Service contract is created
+   */
+  get asV122(): v122.ServiceContract {
+    assert(this.isV122)
+    return this._chain.decodeEvent(this.event)
+  }
+}
+
+export class SmartContractModuleServiceContractFeesSetEvent {
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'SmartContractModule.ServiceContractFeesSet')
+    this._chain = ctx._chain
+    this.event = event
+  }
+  /**
+   * A Service contract fees are set
+   */
+  get isV122(): boolean {
+    return this._chain.getEventHash('smartContractModule.ServiceContractFeesSet') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+  }
+
+  /**
+   * A Service contract fees are set
+   */
+  get asV122(): v122.ServiceContract {
+    assert(this.isV122)
+    return this._chain.decodeEvent(this.event)
+  }
+}
+
+export class SmartContractModuleServiceContractMetadataSetEvent {
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'SmartContractModule.ServiceContractMetadataSet')
+    this._chain = ctx._chain
+    this.event = event
+  }
+
+  /**
+   * A Service contract metadata is set
+   */
+  get isV122(): boolean {
+    return this._chain.getEventHash('smartContractModule.ServiceContractMetadataSet') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+  }
+
+  /**
+   * A Service contract metadata is set
+   */
+  get asV122(): v122.ServiceContract {
+    assert(this.isV122)
+    return this._chain.decodeEvent(this.event)
+  }
+}
+
 export class SmartContractModuleUpdatedUsedResourcesEvent {
   private readonly _chain: Chain
   private readonly event: Event
@@ -857,6 +1032,24 @@ export class TfgridModuleNodeStoredEvent {
     assert(this.isV101)
     return this._chain.decodeEvent(this.event)
   }
+
+  get isV105(): boolean {
+    return this._chain.getEventHash('tfgridModule.NodeStored') === '050dcf105bd6f9b530372be57813e46ed54da9003777956afde8cea580623abf'
+  }
+
+  get asV105(): v105.Node {
+    assert(this.isV105)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  get isV118(): boolean {
+    return this._chain.getEventHash('tfgridModule.NodeStored') === 'f41f098c82aee52660133d1fb75d350fab4d99e9a67ba251b35e04ee4c292fb3'
+  }
+
+  get asV118(): v118.Node {
+    assert(this.isV118)
+    return this._chain.decodeEvent(this.event)
+  }
 }
 
 export class TfgridModuleNodeUpdatedEvent {
@@ -914,6 +1107,24 @@ export class TfgridModuleNodeUpdatedEvent {
 
   get asV101(): v101.Node {
     assert(this.isV101)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  get isV105(): boolean {
+    return this._chain.getEventHash('tfgridModule.NodeStored') === '050dcf105bd6f9b530372be57813e46ed54da9003777956afde8cea580623abf'
+  }
+
+  get asV105(): v105.Node {
+    assert(this.isV105)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  get isV118(): boolean {
+    return this._chain.getEventHash('tfgridModule.NodeUpdated') === 'f41f098c82aee52660133d1fb75d350fab4d99e9a67ba251b35e04ee4c292fb3'
+  }
+
+  get asV118(): v118.Node {
+    assert(this.isV118)
     return this._chain.decodeEvent(this.event)
   }
 }

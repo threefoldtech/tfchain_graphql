@@ -25,9 +25,15 @@ export async function nodeStored(
     nodeEvent = node.asV63
   } else if (node.isV101) {
     nodeEvent = node.asV101
+  } else if (node.isV105) {
+    nodeEvent = node.asV105
+  } else if (node.isV118) {
+    nodeEvent = node.asV118
   }
 
-  if (!nodeEvent) return
+  if (!nodeEvent) {
+    return
+  }
 
   const newNode = new Node()
   newNode.id = item.event.id
@@ -39,11 +45,20 @@ export async function nodeStored(
   newNode.createdAt = BigInt(timestamp)
   newNode.updatedAt = BigInt(timestamp)
 
-  newNode.country = nodeEvent.country.toString()
-  newNode.city = nodeEvent.city.toString()
+  if (node.isV9) {
+    nodeEvent = node.asV9
+    newNode.country = nodeEvent.country.toString()
+    newNode.city = nodeEvent.city.toString()
+  }
+  if (node.isV28) {
+    nodeEvent = node.asV28
+    newNode.country = nodeEvent.country.toString()
+    newNode.city = nodeEvent.city.toString()
+  }
 
   newNode.created = Number(nodeEvent.created)
   newNode.farmingPolicyId = nodeEvent.farmingPolicyId
+  newNode.certification = NodeCertification.Diy
 
   const newLocation = new Location()
   newLocation.id = item.event.id
@@ -55,75 +70,51 @@ export async function nodeStored(
 
   await ctx.store.save<Node>(newNode)
 
-  if (node.isV28) {
-    const nodeAsV28 = node.asV28
-    if (nodeAsV28.certificationType) {
-      const certificationTypeAsString = nodeAsV28.certificationType.__kind.toString()
-      let certType = NodeCertification.Diy
-      switch (certificationTypeAsString) {
-        case 'Diy':
-          certType = NodeCertification.Diy
-          break
-        case 'Certified':
-          certType = NodeCertification.Certified
-          break
-      }
-      newNode.certification = certType
-    } else {
-      newNode.certification = NodeCertification.Diy
-    }
-  }
+  const pubConfig = getNodePublicConfig(node)
+  const newPubConfig = new PublicConfig()
+  newPubConfig.id = item.event.id
+  newPubConfig.ipv4 = pubConfig?.ip4
+  newPubConfig.gw4 = pubConfig?.gw4
+  newPubConfig.ipv6 = pubConfig?.ip6
+  newPubConfig.gw6 = pubConfig?.gw6
+  newPubConfig.node = newNode
 
   if (node.isV43) {
     const nodeAsV43 = node.asV43
+    newNode.country = nodeAsV43.country.toString()
+    newNode.city = nodeAsV43.city.toString()
     newNode.secure = nodeAsV43.secureBoot ? true : false
     newNode.virtualized = nodeAsV43.virtualized ? true : false
     newNode.serialNumber = nodeAsV43.serialNumber.toString()
-    if (nodeAsV43.certificationType) {
-      const certificationTypeAsString = nodeAsV43.certificationType.__kind.toString()
-      let certType = NodeCertification.Diy
-      switch (certificationTypeAsString) {
-        case 'Diy':
-          certType = NodeCertification.Diy
-          break
-        case 'Certified':
-          certType = NodeCertification.Certified
-          break
-      }
-      newNode.certification = certType
-    } else {
-      newNode.certification = NodeCertification.Diy
-    }
   }
 
-  if (node.isV101 || node.isV63) {
+  if (node.isV105 || node.isV101 || node.isV63) {
     let nodeEvent
     if (node.isV101) {
       nodeEvent = node.asV101
     } else if (node.isV63) {
       nodeEvent = node.asV63
+    } else if (node.isV105) {
+      nodeEvent = node.asV105
     } else {
       return
     }
+    newNode.country = nodeEvent.country.toString()
+    newNode.city = nodeEvent.city.toString()
     newNode.secure = nodeEvent.secureBoot ? true : false
     newNode.virtualized = nodeEvent.virtualized ? true : false
     newNode.serialNumber = nodeEvent.serialNumber.toString()
     newNode.connectionPrice = nodeEvent.connectionPrice
-    if (nodeEvent.certification) {
-      const certificationTypeAsString = nodeEvent.certification.__kind.toString()
-      let certType = NodeCertification.Diy
-      switch (certificationTypeAsString) {
-        case 'Diy':
-          certType = NodeCertification.Diy
-          break
-        case 'Certified':
-          certType = NodeCertification.Certified
-          break
-      }
-      newNode.certification = certType
-    } else {
-      newNode.certification = NodeCertification.Diy
-    }
+  }
+
+  if (node.isV118) {
+    let nodeEvent = node.asV118
+    newNode.country = nodeEvent.location.country.toString()
+    newNode.city = nodeEvent.location.city.toString()
+    newNode.secure = nodeEvent.secureBoot ? true : false
+    newNode.virtualized = nodeEvent.virtualized ? true : false
+    newNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
+    newNode.connectionPrice = nodeEvent.connectionPrice
   }
 
   await ctx.store.save<Node>(newNode)
@@ -137,20 +128,6 @@ export async function nodeStored(
   resourcesTotal.cru = nodeEvent.resources.cru
 
   await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
-
-  if (nodeEvent.publicConfig) {
-    const pubConfig = new PublicConfig()
-    pubConfig.node = newNode
-    pubConfig.id = item.event.id
-    pubConfig.ipv4 = nodeEvent.publicConfig.ipv4.toString()
-    pubConfig.ipv6 = nodeEvent.publicConfig.ipv6.toString()
-    pubConfig.gw4 = nodeEvent.publicConfig.gw4.toString()
-    pubConfig.gw6 = nodeEvent.publicConfig.gw6.toString()
-    pubConfig.domain = nodeEvent.publicConfig.domain.toString() || ''
-
-    await ctx.store.save<PublicConfig>(pubConfig)
-    newNode.publicConfig = pubConfig
-  }
 
   newNode.interfaces = []
 
@@ -187,6 +164,10 @@ export async function nodeUpdated(
     nodeEvent = node.asV63
   } else if (node.isV101) {
     nodeEvent = node.asV101
+  } else if (node.isV105) {
+    nodeEvent = node.asV105
+  } else if (node.isV118) {
+    nodeEvent = node.asV118
   }
 
   if (!nodeEvent) return
@@ -200,6 +181,7 @@ export async function nodeUpdated(
   savedNode.nodeID = nodeEvent.id
   savedNode.twinID = nodeEvent.twinId
   savedNode.updatedAt = BigInt(timestamp)
+  savedNode.farmingPolicyId = nodeEvent.farmingPolicyId
 
   // Recalculate total / free resoures when a node get's updated
   let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: Equal(savedNode) }, relations: { node: true } })
@@ -211,8 +193,17 @@ export async function nodeUpdated(
     await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
   }
 
-  savedNode.country = nodeEvent.country.toString()
-  savedNode.city = nodeEvent.city.toString()
+  if (node.isV9) {
+    nodeEvent = node.asV9
+    savedNode.country = nodeEvent.country.toString()
+    savedNode.city = nodeEvent.city.toString()
+  }
+
+  if (node.isV118) {
+    nodeEvent = node.asV118
+    savedNode.country = nodeEvent.location.country.toString()
+    savedNode.city = nodeEvent.location.city.toString()
+  }
 
   if (savedNode.location) {
     savedNode.location.latitude = nodeEvent.location.latitude.toString()
@@ -224,6 +215,9 @@ export async function nodeUpdated(
 
   if (node.isV28) {
     const nodeAsV28 = node.asV28
+    savedNode.country = nodeAsV28.country.toString()
+    savedNode.city = nodeAsV28.city.toString()
+
     if (nodeAsV28.certificationType) {
       const certificationTypeAsString = nodeAsV28.certificationType.__kind.toString()
       let certType = NodeCertification.Diy
@@ -243,6 +237,8 @@ export async function nodeUpdated(
 
   if (node.isV43) {
     const nodeAsV43 = node.asV43
+    savedNode.country = nodeAsV43.country.toString()
+    savedNode.city = nodeAsV43.city.toString()
     savedNode.secure = nodeAsV43.secureBoot ? true : false
     savedNode.virtualized = nodeAsV43.virtualized ? true : false
     savedNode.serialNumber = nodeAsV43.serialNumber.toString()
@@ -263,15 +259,19 @@ export async function nodeUpdated(
     }
   }
 
-  if (node.isV101 || node.isV63) {
+  if (node.isV105 || node.isV101 || node.isV63) {
     let nodeEvent
     if (node.isV101) {
       nodeEvent = node.asV101
     } else if (node.isV63) {
       nodeEvent = node.asV63
+    } else if (node.isV105) {
+      nodeEvent = node.asV105
     } else {
       return
     }
+    savedNode.country = nodeEvent.country.toString()
+    savedNode.city = nodeEvent.city.toString()
     savedNode.secure = nodeEvent.secureBoot ? true : false
     savedNode.virtualized = nodeEvent.virtualized ? true : false
     savedNode.serialNumber = nodeEvent.serialNumber.toString()
@@ -291,6 +291,32 @@ export async function nodeUpdated(
       savedNode.certification = NodeCertification.Diy
     }
   }
+
+  if (node.isV118) {
+    const nodeEvent = node.asV118
+
+    savedNode.country = nodeEvent.location.country.toString()
+    savedNode.city = nodeEvent.location.city.toString()
+    savedNode.secure = nodeEvent.secureBoot ? true : false
+    savedNode.virtualized = nodeEvent.virtualized ? true : false
+    savedNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
+    if (nodeEvent.certification) {
+      const certificationTypeAsString = nodeEvent.certification.__kind.toString()
+      let certType = NodeCertification.Diy
+      switch (certificationTypeAsString) {
+        case 'Diy':
+          certType = NodeCertification.Diy
+          break
+        case 'Certified':
+          certType = NodeCertification.Certified
+          break
+      }
+      savedNode.certification = certType
+    } else {
+      savedNode.certification = NodeCertification.Diy
+    }
+  }
+
 
 
   await ctx.store.save<Node>(savedNode)
@@ -469,4 +495,92 @@ export async function nodeCertificationSet(
   savedNode.certification = certType
 
   await ctx.store.save<Node>(savedNode)
+}
+
+
+interface NodePublicConfig {
+  ip4: string
+  gw4: string
+  ip6: string
+  gw6: string
+  domain: string
+}
+
+function getNodePublicConfig(node: TfgridModuleNodeStoredEvent): NodePublicConfig | null | undefined {
+  let nodeEvent
+  if (node.isV9) {
+    nodeEvent = node.asV9
+    if (nodeEvent.publicConfig) {
+      return {
+        ip4: nodeEvent.publicConfig?.ipv4.toString(),
+        gw4: nodeEvent.publicConfig?.gw4.toString(),
+        ip6: nodeEvent.publicConfig?.ipv6.toString(),
+        gw6: nodeEvent.publicConfig?.gw6.toString(),
+        domain: nodeEvent.publicConfig?.domain.toString()
+      }
+    }
+  } else if (node.isV28) {
+    nodeEvent = node.asV28
+    if (nodeEvent.publicConfig) {
+      return {
+        ip4: nodeEvent.publicConfig?.ipv4.toString(),
+        gw4: nodeEvent.publicConfig?.gw4.toString(),
+        ip6: nodeEvent.publicConfig?.ipv6.toString(),
+        gw6: nodeEvent.publicConfig?.gw6.toString(),
+        domain: nodeEvent.publicConfig?.domain.toString()
+      }
+    }
+  } else if (node.isV43) {
+    nodeEvent = node.asV43
+    if (nodeEvent.publicConfig) {
+      return {
+        ip4: nodeEvent.publicConfig?.ipv4.toString(),
+        gw4: nodeEvent.publicConfig?.gw4.toString(),
+        ip6: nodeEvent.publicConfig?.ipv6.toString(),
+        gw6: nodeEvent.publicConfig?.gw6.toString(),
+        domain: nodeEvent.publicConfig?.domain.toString()
+      }
+    }
+  } else if (node.isV63) {
+    nodeEvent = node.asV63
+    if (nodeEvent.publicConfig) {
+      return {
+        ip4: nodeEvent.publicConfig?.ipv4.toString(),
+        gw4: nodeEvent.publicConfig?.gw4.toString(),
+        ip6: nodeEvent.publicConfig?.ipv6.toString(),
+        gw6: nodeEvent.publicConfig?.gw6.toString(),
+        domain: nodeEvent.publicConfig?.domain.toString()
+      }
+    }
+  } else if (node.isV101) {
+    nodeEvent = node.asV101
+    if (nodeEvent.publicConfig) {
+      return {
+        ip4: nodeEvent.publicConfig?.ipv4.toString(),
+        gw4: nodeEvent.publicConfig?.gw4.toString(),
+        ip6: nodeEvent.publicConfig?.ipv6.toString(),
+        gw6: nodeEvent.publicConfig?.gw6.toString(),
+        domain: nodeEvent.publicConfig?.domain.toString()
+      }
+    }
+  } else if (node.isV105) {
+    nodeEvent = node.asV105
+    if (nodeEvent.publicConfig) {
+      let domain = ''
+      if (nodeEvent.publicConfig.domain) {
+        domain = nodeEvent.publicConfig.domain.toString()
+      }
+      return {
+        ip4: nodeEvent.publicConfig?.ip4.ip.toString(),
+        gw4: nodeEvent.publicConfig?.ip4.gw.toString(),
+        ip6: nodeEvent.publicConfig?.ip6?.ip.toString() || '',
+        gw6: nodeEvent.publicConfig?.ip6?.gw.toString() || '',
+        domain
+      }
+    }
+  } else {
+    return null
+  }
+
+  return null
 }

@@ -21,6 +21,11 @@ import {
 } from './mappings/contracts';
 // import { burnProcessed, mintCompleted, refundProcessed } from './mappings/bridge';
 import { solutionProviderApproved, solutionProviderCreated } from './mappings/solutionProviders'
+import { 
+  serviceContractCreated, serviceContractMetadataSet, 
+  serviceContractFeesSet, serviceContractApproved, 
+  serviceContractCanceled, serviceContractBilled 
+} from './mappings/serviceContracts';
 
 import {
   SubstrateBlock
@@ -70,18 +75,24 @@ import { uniqBy } from 'lodash'
 // processor.addEventHandler('TfgridModule.EntityUpdated', ctx => entityUpdated(ctx));
 // processor.addEventHandler('TfgridModule.EntityDeleted', ctx => entityDeleted(ctx));
 
-// processor.addEventHandler('SmartContractModule.ContractCreated', ctx => contractCreated(ctx));
-// processor.addEventHandler('SmartContractModule.ContractUpdated', ctx => contractUpdated(ctx));
-// processor.addEventHandler('SmartContractModule.NodeContractCanceled', ctx => nodeContractCanceled(ctx));
-// processor.addEventHandler('SmartContractModule.NameContractCanceled', ctx => nameContractCanceled(ctx));
-// processor.addEventHandler('SmartContractModule.RentContractCanceled', ctx => rentContractCanceled(ctx));
-// processor.addEventHandler('SmartContractModule.ContractBilled', ctx => contractBilled(ctx));
-// processor.addEventHandler('SmartContractModule.UpdatedUsedResources', ctx => contractUpdateUsedResources(ctx));
-// processor.addEventHandler('SmartContractModule.NruConsumptionReportReceived', ctx => nruConsumptionReportReceived(ctx))
-// processor.addEventHandler('SmartContractModule.ContractGracePeriodStarted', ctx => contractGracePeriodStarted(ctx))
-// processor.addEventHandler('SmartContractModule.ContractGracePeriodEnded', ctx => contractGracePeriodEnded(ctx))
-// processor.addEventHandler('SmartContractModule.SolutionProviderCreated', ctx => solutionProviderCreated(ctx))
-// processor.addEventHandler('SmartContractModule.SolutionProviderApproved', ctx => solutionProviderApproved(ctx))
+// processor.addEventHandler('smartContractModule.ContractCreated', ctx => contractCreated(ctx));
+// processor.addEventHandler('smartContractModule.ContractUpdated', ctx => contractUpdated(ctx));
+// processor.addEventHandler('smartContractModule.NodeContractCanceled', ctx => nodeContractCanceled(ctx));
+// processor.addEventHandler('smartContractModule.NameContractCanceled', ctx => nameContractCanceled(ctx));
+// processor.addEventHandler('smartContractModule.RentContractCanceled', ctx => rentContractCanceled(ctx));
+// processor.addEventHandler('smartContractModule.ContractBilled', ctx => contractBilled(ctx));
+// processor.addEventHandler('smartContractModule.UpdatedUsedResources', ctx => contractUpdateUsedResources(ctx));
+// processor.addEventHandler('smartContractModule.NruConsumptionReportReceived', ctx => nruConsumptionReportReceived(ctx))
+// processor.addEventHandler('smartContractModule.ContractGracePeriodStarted', ctx => contractGracePeriodStarted(ctx))
+// processor.addEventHandler('smartContractModule.ContractGracePeriodEnded', ctx => contractGracePeriodEnded(ctx))
+// processor.addEventHandler('smartContractModule.SolutionProviderCreated', ctx => solutionProviderCreated(ctx))
+// processor.addEventHandler('smartContractModule.SolutionProviderApproved', ctx => solutionProviderApproved(ctx))
+// processor.addEventHandler('smartContractModule.ServiceContractCreated', ctx => serviceContractCreated(ctx))
+// processor.addEventHandler('smartContractModule.ServiceContractMetadataSet', ctx => serviceContractMetadataSet(ctx))
+// processor.addEventHandler('smartContractModule.ServiceContractFeesSet', ctx => serviceContractFeesSet(ctx))
+// processor.addEventHandler('smartContractModule.ServiceContractApproved', ctx => serviceContractApproved(ctx))
+// processor.addEventHandler('smartContractModule.ServiceContractCanceled', ctx => serviceContractCanceled(ctx))
+// processor.addEventHandler('smartContractModule.ServiceContractBilled', ctx => serviceContractBilled(ctx))
 
 // processor.addEventHandler('smartContractModule.NodeMarkedAsDedicated', ctx => nodeMarkedAsDedicated(ctx));
 
