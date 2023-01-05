@@ -1,9 +1,10 @@
 import * as ss58 from "@subsquid/ss58";
-import { Twin } from "../model";
-import { TfgridModuleTwinStoredEvent, TfgridModuleTwinDeletedEvent, TfgridModuleTwinUpdatedEvent } from "../types/events";
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { Ctx } from '../processor'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+
+import { Twin } from "../model";
+import { TfgridModuleTwinStoredEvent, TfgridModuleTwinDeletedEvent, TfgridModuleTwinUpdatedEvent } from "../types/events";
 
 export async function twinStored(
   ctx: Ctx,
@@ -116,30 +117,3 @@ export async function twinCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Twin[], Twi
 
   return [newTwins, updatedTwins, deletedTwins]
 }
-
-// export async function twinEntityStored(ctx: EventHandlerContext) {
-//   const twinEntityStoredEvents = new TfgridModuleTwinEntityStoredEvent(ctx).asV49
-
-//   let savedTwin = await ctx.store.get(Twin, { where: { twinID: twinEntityStoredEvents[0] } })
-
-//   if (savedTwin) {
-//     const entityProof = new EntityProof()
-//     entityProof.id = ctx.event.id
-//     entityProof.entityID = twinEntityStoredEvents[1]
-//     entityProof.signature = Buffer.from(twinEntityStoredEvents[2]).toString()
-    
-//     // and the twin foreign key to entityproof
-//     entityProof.twinRel = savedTwin
-
-//     await ctx.store.save<EntityProof>(entityProof)
-//   }
-// }
-
-// export async function twinEntityRemoved(ctx: EventHandlerContext) {
-//   const [twinID, entityID] = new TfgridModuleTwinEntityRemovedEvent(ctx).asV49
-
-//   let savedTwinEntity = await ctx.store.get(EntityProof, { where: { entityID: entityID }})
-//   if (savedTwinEntity) {
-//     await ctx.store.remove(savedTwinEntity)
-//   }
-// }

@@ -4,7 +4,6 @@ import { Ctx } from '../processor'
 import { ServiceContract, ServiceContractState, ServiceContractBill } from "../model";
 import { SmartContractModuleServiceContractCreatedEvent, SmartContractModuleServiceContractMetadataSetEvent, SmartContractModuleServiceContractFeesSetEvent, SmartContractModuleServiceContractApprovedEvent, SmartContractModuleServiceContractCanceledEvent, SmartContractModuleServiceContractBilledEvent } from "../types/events";
 
-
 export async function serviceContractCreated(
     ctx: Ctx,
     item: EventItem<'SmartContractModule.ServiceContractCreated', { event: { args: true } }>,

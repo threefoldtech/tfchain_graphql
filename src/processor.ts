@@ -10,8 +10,6 @@ import {
   farmDeleted, farmPayoutV2AddressRegistered, 
   farmStored, farmUpdated, farmCertificationSet
 } from './mappings/farms';
-
-// import { entityDeleted, entityStored, entityUpdated } from './mappings/entity';
 import { 
   collectContractBillReports,
   contractCreated, contractGracePeriodEnded, 
@@ -19,7 +17,6 @@ import {
   nameContractCanceled, nodeContractCanceled, 
   contractUpdated, nruConsumptionReportReceived, rentContractCanceled
 } from './mappings/contracts';
-// import { burnProcessed, mintCompleted, refundProcessed } from './mappings/bridge';
 import { solutionProviderApproved, solutionProviderCreated } from './mappings/solutionProviders'
 import { 
   serviceContractCreated, serviceContractMetadataSet, 
