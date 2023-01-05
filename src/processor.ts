@@ -48,6 +48,7 @@ const processor = new SubstrateBatchProcessor()
       archive: process.env.INDEXER_ENDPOINT_URL || 'http://localhost:8888/graphql',
       chain: process.env.WS_URL || 'ws://localhost:9944'
     })
+    // Balances
     .addEvent('Balances.Transfer', eventOptions)
     // Twins
     .addEvent('TfgridModule.TwinStored', eventOptions)
@@ -96,7 +97,6 @@ export type Ctx = BatchContext<Store, Item>
 
 async function handleEvents(ctx: Ctx, block: SubstrateBlock, item: Item) {
   switch (item.name) {
-    // case 'TfgridModule.TwinStored': return twinStored(ctx, block, item)
     // Contracts
     case 'SmartContractModule.ContractCreated': return contractCreated(ctx, item, block.timestamp)
     case 'SmartContractModule.ContractUpdated': return contractUpdated(ctx, item, block.timestamp)
@@ -144,7 +144,7 @@ processor.run(new TypeormDatabase(), async ctx => {
     }
   }
 
-  // Process twins
+  // Process twins in batch
   let [newTwins, updatedTwin, deletedTwins] = await twinCreateOrUpdateOrDelete(ctx)
   // Insert new twins
   await ctx.store.insert(newTwins)
@@ -164,43 +164,4 @@ processor.run(new TypeormDatabase(), async ctx => {
 
   // Batch node uptime reports
   await nodeUptimeReported(ctx)
-  
-  
-  // Todo: batch
-  // await nodeCreateUpdateOrDelete(ctx)
-  
-  // Todo: batch
-  // await processContractEvents(ctx)
-  
-  // if (batchFarms) {
-  //   let [newFarms, updatedFarms, deletedFarms, publicIps] = await farmCreateOrUpdateOrDelete(ctx)
-  //   // // Insert new farms
-  //   let newFarmPromises = newFarms.map(f => {
-  //     return ctx.store.insert(f)
-  //   })
-  //   await Promise.all(newFarmPromises)
-  
-  //   let updatedFarmsPromises = updatedFarms.map(f => {
-  //     return ctx.store.save(f)
-  //   })
-  //   await Promise.all(updatedFarmsPromises)
-  
-  //   let deletedFarmsPromises = deletedFarms.map(f => {
-  //     return ctx.store.remove(f)
-  //   })
-  //   await Promise.all(deletedFarmsPromises)
-  
-  //   let newPublicIpsPromises = publicIps.map(ip => {
-  //     if (ip.publicIPs) {
-  //       return ctx.store.save(uniqBy(ip.publicIPs, 'ip'))
-  //     }
-  //   })
-  //   await Promise.all(newPublicIpsPromises)
-  //   // Save updated farms
-  //   await ctx.store.save(updatedFarms)
-  //   // Delete Farm
-  //   await ctx.store.remove(deletedFarms)  
-  // } else {
-  //   await farmCreateOrUpdateOrDeleteNoBatch(ctx)
-  // }
 })
