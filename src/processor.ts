@@ -4,7 +4,7 @@ import { nodeCreateUpdateOrDelete, nodeStored, nodeUpdated, nodeDeleted, nodeUpt
 import { farmingPolicyStored, pricingPolicyStored, farmingPolicyUpdated } from './mappings/policies';
 import { farmCreateOrUpdateOrDelete, farmCreateOrUpdateOrDeleteNoBatch, farmDeleted, farmPayoutV2AddressRegistered, farmCertificationSet } from './mappings/farms';
 import { entityDeleted, entityStored, entityUpdated } from './mappings/entity';
-import { contractBilled, contractCreated, contractUpdated, contractUpdateUsedResources, nameContractCanceled, nodeContractCanceled, nruConsumptionReportReceived, rentContractCanceled, contractGracePeriodStarted, contractGracePeriodEnded } from './mappings/contracts';
+import { processContractEvents } from './mappings/contracts';
 // import { burnProcessed, mintCompleted, refundProcessed } from './mappings/bridge';
 import { solutionProviderCreated, solutionProviderApproved } from './mappings/solutionProviders'
 
@@ -93,20 +93,40 @@ const processor = new SubstrateBatchProcessor()
       chain: process.env.WS_URL || 'ws://localhost:9944'
     })
     .addEvent('Balances.Transfer', eventOptions)
+    // Twins
     .addEvent('TfgridModule.TwinStored', eventOptions)
     .addEvent('TfgridModule.TwinUpdated', eventOptions)
     .addEvent('TfgridModule.TwinDeleted', eventOptions)
+    // Farms
     .addEvent('TfgridModule.FarmStored', eventOptions)
     .addEvent('TfgridModule.FarmUpdated', eventOptions)
     .addEvent('TfgridModule.FarmDeleted', eventOptions)
     .addEvent('TfgridModule.FarmPayoutV2AddressRegistered', eventOptions)
     .addEvent('TfgridModule.FarmCertificationSet', eventOptions)
+    // Nodes
     .addEvent('TfgridModule.NodeStored', eventOptions)
     .addEvent('TfgridModule.NodeUpdated', eventOptions)
     .addEvent('TfgridModule.NodeDeleted', eventOptions)
     .addEvent('TfgridModule.NodeUptimeReported', eventOptions)
     .addEvent('TfgridModule.NodePublicConfigStored', eventOptions)
     .addEvent('TfgridModule.NodeCertificationSet', eventOptions)
+    // Contracts
+    .addEvent('SmartContractModule.ContractCreated', eventOptions)
+    .addEvent('SmartContractModule.ContractUpdated', eventOptions)
+    .addEvent('SmartContractModule.NodeContractCanceled', eventOptions)
+    .addEvent('SmartContractModule.NameContractCanceled', eventOptions)
+    .addEvent('SmartContractModule.RentContractCanceled', eventOptions)
+    .addEvent('SmartContractModule.ContractBilled', eventOptions)
+    .addEvent('SmartContractModule.UpdatedUsedResources', eventOptions)
+    .addEvent('SmartContractModule.NruConsumptionReportReceived', eventOptions)
+    .addEvent('SmartContractModule.ContractGracePeriodStarted', eventOptions)
+    .addEvent('SmartContractModule.ContractGracePeriodEnded', eventOptions)
+    .addEvent('SmartContractModule.SolutionProviderCreated', eventOptions)
+    .addEvent('SmartContractModule.SolutionProviderApproved', eventOptions)
+    // Farming Policies
+    .addEvent('TfgridModule.PricingPolicyStored', eventOptions)
+    .addEvent('TfgridModule.FarmingPolicyStored', eventOptions)
+    .addEvent('TfgridModule.FarmingPolicyUpdated', eventOptions)
 
 export type Item = BatchProcessorItem<typeof processor>
 export type Ctx = BatchContext<Store, Item>
@@ -166,6 +186,8 @@ processor.run(new TypeormDatabase(), async ctx => {
   await ctx.store.remove(deletedTwins)
 
   await nodeCreateUpdateOrDelete(ctx)
+
+  await processContractEvents(ctx)
 
   await nodeUptimeReported(ctx)
 })

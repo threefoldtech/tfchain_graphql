@@ -1,14 +1,64 @@
 import { Store } from '@subsquid/typeorm-store'
 import { Equal } from 'typeorm';
+import { Ctx } from '../processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 
-import { ContractState, PublicIp, NameContract, NodeContract, ContractBillReport, DiscountLevel, ContractResources, NodeResourcesTotal, Node, RentContract, Farm, NruConsumption } from "../model";
-import { SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent, SmartContractModuleNodeContractCanceledEvent, SmartContractModuleNameContractCanceledEvent, SmartContractModuleContractBilledEvent, SmartContractModuleUpdatedUsedResourcesEvent, SmartContractModuleNruConsumptionReportReceivedEvent, SmartContractModuleRentContractCanceledEvent, SmartContractModuleContractGracePeriodStartedEvent, SmartContractModuleContractGracePeriodEndedEvent } from "../types/events";
-import {
-  EventHandlerContext,
-} from "../types/context";
+import { 
+  ContractState, PublicIp, NameContract, 
+  NodeContract, ContractBillReport, DiscountLevel, 
+  ContractResources, Node, RentContract, NruConsumption 
+} from "../model";
+import { 
+  SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent, 
+  SmartContractModuleNodeContractCanceledEvent, SmartContractModuleNameContractCanceledEvent, 
+  SmartContractModuleContractBilledEvent, SmartContractModuleUpdatedUsedResourcesEvent, 
+  SmartContractModuleNruConsumptionReportReceivedEvent, SmartContractModuleRentContractCanceledEvent, 
+  SmartContractModuleContractGracePeriodStartedEvent, SmartContractModuleContractGracePeriodEndedEvent 
+} from "../types/events";
 
-export async function contractCreated(ctx: EventHandlerContext): Promise<void> {
-  let contractCreatedEvent = new SmartContractModuleContractCreatedEvent(ctx)
+export async function processContractEvents(ctx: Ctx) {
+  for (let block of ctx.blocks) {
+    for (let item of block.items) {
+      if (item.name === 'SmartContractModule.ContractCreated') {
+        await contractCreated(ctx, item, block.header.timestamp)
+      }
+      if (item.name === 'SmartContractModule.ContractUpdated') {
+        await contractUpdated(ctx, item, block.header.timestamp)
+      }
+      if (item.name === 'SmartContractModule.NodeContractCanceled') {
+        await nodeContractCanceled(ctx, item)
+      }
+      if (item.name === 'SmartContractModule.NameContractCanceled') {
+        await nameContractCanceled(ctx, item)
+      }
+      if (item.name === 'SmartContractModule.RentContractCanceled') {
+        await rentContractCanceled(ctx, item)
+      }
+      if (item.name === 'SmartContractModule.ContractBilled') {
+        await contractBilled(ctx, item)
+      }
+      if (item.name === 'SmartContractModule.UpdatedUsedResources') {
+        await contractUpdateUsedResources(ctx, item)
+      }
+      if (item.name === 'SmartContractModule.NruConsumptionReportReceived') {
+        await nruConsumptionReportReceived(ctx, item)
+      }
+      if (item.name === 'SmartContractModule.ContractGracePeriodStarted') {
+        await contractGracePeriodStarted(ctx, item)
+      }
+      if (item.name === 'SmartContractModule.ContractGracePeriodEnded') {
+        await contractGracePeriodEnded(ctx, item)
+      }
+    }
+  }
+}
+
+export async function contractCreated(
+  ctx: Ctx,
+  item: EventItem<'SmartContractModule.ContractCreated', { event: { args: true } }>,
+  timestamp: number
+): Promise<void> {
+  let contractCreatedEvent = new SmartContractModuleContractCreatedEvent(ctx, item.event)
 
   let contractEvent
   if (contractCreatedEvent.isV9) {
@@ -32,14 +82,14 @@ export async function contractCreated(ctx: EventHandlerContext): Promise<void> {
   let contract
   if (contractEvent.contractType.__kind === "NameContract") {
     let newNameContract = new NameContract()
-    newNameContract.id = ctx.event.id
+    newNameContract.id = item.event.id
     contract = contractEvent.contractType.value
     newNameContract.name = contract.name.toString()
     newNameContract.contractID = contractEvent.contractId
     newNameContract.gridVersion = contractEvent.version
     newNameContract.twinID = contractEvent.twinId
     newNameContract.state = state
-    newNameContract.createdAt = BigInt(ctx.block.timestamp)
+    newNameContract.createdAt = BigInt(timestamp)
     if (contractCreatedEvent.isV105) {
       contractEvent = contractCreatedEvent.asV105
       newNameContract.solutionProviderID = Number(contractEvent.solutionProviderId) || 0
@@ -48,7 +98,7 @@ export async function contractCreated(ctx: EventHandlerContext): Promise<void> {
   }
   else if (contractEvent.contractType.__kind === "NodeContract") {
     let newNodeContract = new NodeContract()
-    newNodeContract.id = ctx.event.id
+    newNodeContract.id = item.event.id
 
     contract = contractEvent.contractType.value
 
@@ -71,7 +121,7 @@ export async function contractCreated(ctx: EventHandlerContext): Promise<void> {
 
     // newNodeContract.deploymentHash = contract.deploymentHash.toString()
     newNodeContract.state = state
-    newNodeContract.createdAt = BigInt(ctx.block.timestamp)
+    newNodeContract.createdAt = BigInt(timestamp)
     if (contractCreatedEvent.isV105) {
       contractEvent = contractCreatedEvent.asV105
       newNodeContract.solutionProviderID = Number(contractEvent.solutionProviderId) || 0
@@ -94,7 +144,7 @@ export async function contractCreated(ctx: EventHandlerContext): Promise<void> {
     await ctx.store.save<NodeContract>(newNodeContract)
   } else if (contractEvent.contractType.__kind === "RentContract") {
     let newRentContract = new RentContract()
-    newRentContract.id = ctx.event.id
+    newRentContract.id = item.event.id
 
     contract = contractEvent.contractType.value
 
@@ -103,7 +153,7 @@ export async function contractCreated(ctx: EventHandlerContext): Promise<void> {
     newRentContract.twinID = contractEvent.twinId
     newRentContract.nodeID = contract.nodeId
     newRentContract.state = state
-    newRentContract.createdAt = BigInt(ctx.block.timestamp)
+    newRentContract.createdAt = BigInt(timestamp)
     if (contractCreatedEvent.isV105) {
       contractEvent = contractCreatedEvent.asV105
       newRentContract.solutionProviderID = Number(contractEvent.solutionProviderId) || 0
@@ -112,8 +162,12 @@ export async function contractCreated(ctx: EventHandlerContext): Promise<void> {
   }
 }
 
-export async function contractUpdated(ctx: EventHandlerContext) {
-  const contractUpdatedEvent = new SmartContractModuleContractUpdatedEvent(ctx)
+export async function contractUpdated(
+  ctx: Ctx,
+  item: EventItem<'SmartContractModule.ContractUpdated', { event: { args: true } }>,
+  timestamp: number
+) {
+  const contractUpdatedEvent = new SmartContractModuleContractUpdatedEvent(ctx, item.event)
 
   let contractEvent
   if (contractUpdatedEvent.isV9) {
@@ -199,8 +253,11 @@ async function updateNameContract(ctr: any, contract: NameContract, store: Store
   await store.save<NameContract>(contract)
 }
 
-export async function nodeContractCanceled(ctx: EventHandlerContext) {
-  let cancel = new SmartContractModuleNodeContractCanceledEvent(ctx)
+export async function nodeContractCanceled(
+  ctx: Ctx,
+  item: EventItem<'SmartContractModule.NodeContractCanceled', { event: { args: true } }>,
+) {
+  let cancel = new SmartContractModuleNodeContractCanceledEvent(ctx, item.event)
 
   let contractID = BigInt(0)
   if (cancel.isV49) {
@@ -228,8 +285,11 @@ export async function nodeContractCanceled(ctx: EventHandlerContext) {
   }
 }
 
-export async function nameContractCanceled(ctx: EventHandlerContext) {
-  const cancel = new SmartContractModuleNameContractCanceledEvent(ctx)
+export async function nameContractCanceled(
+  ctx: Ctx,
+  item: EventItem<'SmartContractModule.NameContractCanceled', { event: { args: true } }>,
+) {
+  const cancel = new SmartContractModuleNameContractCanceledEvent(ctx, item.event)
 
   let contractID = BigInt(0)
   if (cancel.isV49) {
@@ -249,8 +309,11 @@ export async function nameContractCanceled(ctx: EventHandlerContext) {
   await ctx.store.save<NameContract>(savedContract)
 }
 
-export async function rentContractCanceled(ctx: EventHandlerContext) {
-  const cancel = new SmartContractModuleRentContractCanceledEvent(ctx)
+export async function rentContractCanceled(
+  ctx: Ctx,
+  item: EventItem<'SmartContractModule.RentContractCanceled', { event: { args: true } }>,
+) {
+  const cancel = new SmartContractModuleRentContractCanceledEvent(ctx, item.event)
 
   let contractID = BigInt(0)
   if (cancel.isV50) {
@@ -270,12 +333,15 @@ export async function rentContractCanceled(ctx: EventHandlerContext) {
   await ctx.store.save<RentContract>(savedContract)
 }
 
-export async function contractBilled(ctx: EventHandlerContext) {
-  const contract_billed_event = new SmartContractModuleContractBilledEvent(ctx).asV9
+export async function contractBilled(
+  ctx: Ctx,
+  item: EventItem<'SmartContractModule.ContractBilled', { event: { args: true } }>,
+) {
+  const contract_billed_event = new SmartContractModuleContractBilledEvent(ctx, item.event).asV9
 
   const newContractBilledReport = new ContractBillReport()
 
-  newContractBilledReport.id = ctx.event.id
+  newContractBilledReport.id = item.event.id
   newContractBilledReport.contractID = contract_billed_event.contractId
 
   let level = DiscountLevel.None
@@ -299,8 +365,11 @@ export async function contractBilled(ctx: EventHandlerContext) {
   await ctx.store.save<ContractBillReport>(newContractBilledReport)
 }
 
-export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
-  const usedResources = new SmartContractModuleUpdatedUsedResourcesEvent(ctx).asV49
+export async function contractUpdateUsedResources(
+  ctx: Ctx,
+  item: EventItem<'SmartContractModule.UpdatedUsedResources', { event: { args: true } }>,
+) {
+  const usedResources = new SmartContractModuleUpdatedUsedResourcesEvent(ctx, item.event).asV49
 
   const contractUsedResources = new ContractResources()
 
@@ -318,7 +387,7 @@ export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
     savedContract.resourcesUsed = savedContractResources
     await ctx.store.save<NodeContract>(savedContract)
   } else {
-    contractUsedResources.id = ctx.event.id
+    contractUsedResources.id = item.event.id
     contractUsedResources.cru = usedResources.used.cru
     contractUsedResources.sru = usedResources.used.sru
     contractUsedResources.hru = usedResources.used.hru
@@ -331,12 +400,15 @@ export async function contractUpdateUsedResources(ctx: EventHandlerContext) {
   }
 }
 
-export async function nruConsumptionReportReceived(ctx: EventHandlerContext) {
-  const nruConsumptionReportEvent = new SmartContractModuleNruConsumptionReportReceivedEvent(ctx).asV49
+export async function nruConsumptionReportReceived(
+  ctx: Ctx,
+  item: EventItem<'SmartContractModule.NruConsumptionReportReceived', { event: { args: true } }>,
+) {
+  const nruConsumptionReportEvent = new SmartContractModuleNruConsumptionReportReceivedEvent(ctx, item.event).asV49
 
   const nruConsumption = new NruConsumption()
 
-  nruConsumption.id = ctx.event.id
+  nruConsumption.id = item.event.id
   nruConsumption.contractID = nruConsumptionReportEvent.contractId
   nruConsumption.nru = nruConsumptionReportEvent.nru
   nruConsumption.timestamp = nruConsumptionReportEvent.timestamp
@@ -345,8 +417,11 @@ export async function nruConsumptionReportReceived(ctx: EventHandlerContext) {
   await ctx.store.save<NruConsumption>(nruConsumption)
 }
 
-export async function contractGracePeriodStarted(ctx: EventHandlerContext) {
-  const contractGracePeriodStartedEvent = new SmartContractModuleContractGracePeriodStartedEvent(ctx).asV59
+export async function contractGracePeriodStarted(
+  ctx: Ctx,
+  item: EventItem<'SmartContractModule.ContractGracePeriodStarted', { event: { args: true } }>,
+) {
+  const contractGracePeriodStartedEvent = new SmartContractModuleContractGracePeriodStartedEvent(ctx, item.event).asV59
 
   let savedContract
   savedContract = await ctx.store.get(NodeContract, { where: { contractID: contractGracePeriodStartedEvent[0] } })
@@ -371,8 +446,11 @@ export async function contractGracePeriodStarted(ctx: EventHandlerContext) {
 }
 
 
-export async function contractGracePeriodEnded(ctx: EventHandlerContext) {
-  const contractGracePeriodEnded = new SmartContractModuleContractGracePeriodEndedEvent(ctx).asV59
+export async function contractGracePeriodEnded(
+  ctx: Ctx,
+  item: EventItem<'SmartContractModule.ContractGracePeriodEnded', { event: { args: true } }>,
+) {
+  const contractGracePeriodEnded = new SmartContractModuleContractGracePeriodEndedEvent(ctx, item.event).asV59
 
   let savedContract
   savedContract = await ctx.store.get(NodeContract, { where: { contractID: contractGracePeriodEnded[0] } })
