@@ -7,28 +7,6 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 
 import { Ctx } from '../processor'
 
-export async function nodeCreateUpdateOrDelete(ctx: Ctx) {
-  for (let block of ctx.blocks) {
-    for (let item of block.items) {
-      if (item.name === "TfgridModule.NodeStored") {
-        await nodeStored(ctx, item, block.header.timestamp)
-      }
-      if (item.name === "TfgridModule.NodeUpdated") {
-        await nodeUpdated(ctx, item, block.header.timestamp)
-      }
-      if (item.name === "TfgridModule.NodeDeleted") {
-        await nodeDeleted(ctx, item)
-      }
-      if (item.name === 'TfgridModule.NodePublicConfigStored') {
-        await nodePublicConfigStored(ctx, item)
-      }
-      if (item.name === 'TfgridModule.NodeCertificationSet') {
-        await nodeCertificationSet(ctx, item)
-      }
-    }
-  }
-}
-
 export async function nodeStored(
   ctx: Ctx,
   item: EventItem<'TfgridModule.NodeStored', { event: { args: true } }>,
@@ -429,52 +407,44 @@ export async function nodePublicConfigStored(
   const storedEvent = new TfgridModuleNodePublicConfigStoredEvent(ctx, item.event)
 
   let nodeID, config
+  let ipv4, ipv6, gw4, gw6, domain
+
   if (storedEvent.isV49) {
-    nodeID = storedEvent.asV49[0]
-    config = storedEvent.asV49[1]
-
-    const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
-    if (!savedNode) return
-
-    let publicConfig = await ctx.store.get(PublicConfig, { where: { node: Equal(savedNode) }, relations: { node: true } })
-
-    if (!publicConfig) {
-      publicConfig = new PublicConfig()
-      publicConfig.id = item.event.id
-      publicConfig.node = savedNode
-    }
-
-    publicConfig.ipv4 = config.ipv4.toString()
-    publicConfig.ipv6 = config.ipv6.toString()
-    publicConfig.gw4 = config.gw4.toString()
-    publicConfig.gw6 = config.gw6.toString()
-    publicConfig.domain = config.domain.toString() || ''
-
-    await ctx.store.save<PublicConfig>(publicConfig)
-
+    [nodeID, config] = storedEvent.asV49
+    ipv4 = config.ipv4.toString()
+    ipv6 = config.ipv6.toString()
+    gw4 = config.gw4.toString()
+    gw6 = config.gw6.toString()
+    domain = config.domain.toString()
   } else if (storedEvent.isV105) {
-    nodeID = storedEvent.asV105[0]
-    config = storedEvent.asV105[1]
-
-    const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
-    if (!savedNode) return
-
-    let publicConfig = await ctx.store.get(PublicConfig, { where: { node: Equal(savedNode) }, relations: { node: true } })
-
-    if (!publicConfig) {
-      publicConfig = new PublicConfig()
-      publicConfig.id = item.event.id
-      publicConfig.node = savedNode
-    }
-
-    publicConfig.ipv4 = config?.ip4.ip.toString()
-    publicConfig.ipv6 = config?.ip6?.ip.toString()
-    publicConfig.gw4 = config?.ip4.gw.toString()
-    publicConfig.gw6 = config?.ip6?.gw.toString()
-    publicConfig.domain = config?.domain ? config.domain.toString() : ''
-
-    await ctx.store.save<PublicConfig>(publicConfig)
+    [nodeID, config] = storedEvent.asV105
+    ipv4 = config?.ip4.ip.toString()
+    ipv6 = config?.ip6?.ip.toString()
+    gw4 = config?.ip4.gw.toString()
+    gw6 = config?.ip6?.gw.toString()
+    domain = config?.domain ? config.domain.toString() : ''
+  } else {
+    return
   }
+
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
+  if (!savedNode) return
+
+  let publicConfig = await ctx.store.get(PublicConfig, { where: { node: Equal(savedNode) }, relations: { node: true } })
+
+  if (!publicConfig) {
+    publicConfig = new PublicConfig()
+    publicConfig.id = item.event.id
+    publicConfig.node = savedNode
+  }
+
+  publicConfig.ipv4 = ipv4
+  publicConfig.ipv6 = ipv6
+  publicConfig.gw4 = gw4
+  publicConfig.gw6 = gw6
+  publicConfig.domain = domain || ''
+
+  await ctx.store.save<PublicConfig>(publicConfig)
 }
 
 export async function nodeCertificationSet(

@@ -1,12 +1,26 @@
 import { processBalancesTransfer } from './mappings/balances'
-import { twinCreateOrUpdateOrDelete, twinStored } from './mappings/twins'
-import { nodeCreateUpdateOrDelete, nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported, nodePublicConfigStored, nodeCertificationSet } from './mappings/nodes'
-import { farmingPolicyStored, pricingPolicyStored, farmingPolicyUpdated } from './mappings/policies';
-import { farmCreateOrUpdateOrDelete, farmCreateOrUpdateOrDeleteNoBatch, farmDeleted, farmPayoutV2AddressRegistered, farmCertificationSet } from './mappings/farms';
-import { entityDeleted, entityStored, entityUpdated } from './mappings/entity';
-import { processContractEvents } from './mappings/contracts';
+import { twinCreateOrUpdateOrDelete } from './mappings/twins'
+import {
+  nodeUptimeReported, 
+  nodeCertificationSet, nodeDeleted, nodePublicConfigStored,
+  nodeStored, nodeUpdated
+ } from './mappings/nodes'
+ import { farmingPolicyStored, pricingPolicyStored, farmingPolicyUpdated } from './mappings/policies';
+ import { 
+  farmDeleted, farmPayoutV2AddressRegistered, 
+  farmStored, farmUpdated, farmCertificationSet
+} from './mappings/farms';
+
+// import { entityDeleted, entityStored, entityUpdated } from './mappings/entity';
+import { 
+  collectContractBillReports,
+  contractCreated, contractGracePeriodEnded, 
+  contractGracePeriodStarted, contractUpdateUsedResources,
+  nameContractCanceled, nodeContractCanceled, 
+  contractUpdated, nruConsumptionReportReceived, rentContractCanceled
+} from './mappings/contracts';
 // import { burnProcessed, mintCompleted, refundProcessed } from './mappings/bridge';
-import { solutionProviderCreated, solutionProviderApproved } from './mappings/solutionProviders'
+import { solutionProviderApproved, solutionProviderCreated } from './mappings/solutionProviders'
 
 import {
   SubstrateBlock
@@ -133,51 +147,49 @@ export type Ctx = BatchContext<Store, Item>
 
 async function handleEvents(ctx: Ctx, block: SubstrateBlock, item: Item) {
   switch (item.name) {
-    case 'TfgridModule.TwinStored': return twinStored(ctx, block, item)
+    // case 'TfgridModule.TwinStored': return twinStored(ctx, block, item)
+    // Contracts
+    case 'SmartContractModule.ContractCreated': return contractCreated(ctx, item, block.timestamp)
+    case 'SmartContractModule.ContractUpdated': return contractUpdated(ctx, item, block.timestamp)
+    case 'SmartContractModule.NodeContractCanceled': return nodeContractCanceled(ctx, item)
+    case 'SmartContractModule.NameContractCanceled': return nameContractCanceled(ctx, item)
+    case 'SmartContractModule.RentContractCanceled': return rentContractCanceled(ctx, item)
+    case 'SmartContractModule.UpdatedUsedResources': return contractUpdateUsedResources(ctx, item)
+    case 'SmartContractModule.NruConsumptionReportReceived': return nruConsumptionReportReceived(ctx, item)
+    case 'SmartContractModule.ContractGracePeriodStarted': return contractGracePeriodStarted(ctx, item)
+    case 'SmartContractModule.ContractGracePeriodEnded': return contractGracePeriodEnded(ctx, item)
+    // Farms
+    case 'TfgridModule.FarmStored': return farmStored(ctx, item)
+    case 'TfgridModule.FarmUpdated': return farmUpdated(ctx, item)
+    case 'TfgridModule.FarmDeleted':  return farmDeleted(ctx, item)
+    case 'TfgridModule.FarmPayoutV2AddressRegistered': return farmPayoutV2AddressRegistered(ctx, item)
+    case 'TfgridModule.FarmCertificationSet': return farmCertificationSet(ctx, item)
+    // Nodes
+    case "TfgridModule.NodeStored": return nodeStored(ctx, item, block.timestamp)
+    case "TfgridModule.NodeUpdated": return nodeUpdated(ctx, item, block.timestamp)
+    case "TfgridModule.NodeDeleted": return nodeDeleted(ctx, item)
+    case 'TfgridModule.NodePublicConfigStored': return nodePublicConfigStored(ctx, item)
+    case 'TfgridModule.NodeCertificationSet': return nodeCertificationSet(ctx, item)
+    // Policies
+    case 'TfgridModule.PricingPolicyStored': return pricingPolicyStored(ctx, item)
+    case 'TfgridModule.FarmingPolicyStored': return farmingPolicyStored(ctx, item)
+    case 'TfgridModule.FarmingPolicyUpdated': return farmingPolicyUpdated(ctx, item)
+    // Solutions
+    case 'SmartContractModule.SolutionProviderCreated': return solutionProviderCreated(ctx, item)
+    case 'SmartContractModule.SolutionProviderApproved': return solutionProviderApproved(ctx, item)
   }
 }
 
-let batchFarms = false
-
 processor.run(new TypeormDatabase(), async ctx => {
-  let [newTwins, updatedTwin, deletedTwins] = await twinCreateOrUpdateOrDelete(ctx)
-  let [transfers, accounts] = await processBalancesTransfer(ctx)
-  
-  if (batchFarms) {
-    let [newFarms, updatedFarms, deletedFarms, publicIps] = await farmCreateOrUpdateOrDelete(ctx)
-    // // Insert new farms
-    let newFarmPromises = newFarms.map(f => {
-      return ctx.store.insert(f)
-    })
-    await Promise.all(newFarmPromises)
-  
-    let updatedFarmsPromises = updatedFarms.map(f => {
-      return ctx.store.save(f)
-    })
-    await Promise.all(updatedFarmsPromises)
-  
-    let deletedFarmsPromises = deletedFarms.map(f => {
-      return ctx.store.remove(f)
-    })
-    await Promise.all(deletedFarmsPromises)
-  
-    let newPublicIpsPromises = publicIps.map(ip => {
-      if (ip.publicIPs) {
-        return ctx.store.save(uniqBy(ip.publicIPs, 'ip'))
-      }
-    })
-    await Promise.all(newPublicIpsPromises)
-    // Save updated farms
-    await ctx.store.save(updatedFarms)
-    // Delete Farm
-    await ctx.store.remove(deletedFarms)  
-  } else {
-    await farmCreateOrUpdateOrDeleteNoBatch(ctx)
+  // Process all non-batch events
+  for (let block of ctx.blocks) {
+    for (let item of block.items) {
+      await handleEvents(ctx, block.header, item)
+    }
   }
-  
-  await ctx.store.save(accounts)
-  await ctx.store.insert(transfers)
 
+  // Process twins
+  let [newTwins, updatedTwin, deletedTwins] = await twinCreateOrUpdateOrDelete(ctx)
   // Insert new twins
   await ctx.store.insert(newTwins)
   // Save updated twins
@@ -185,9 +197,54 @@ processor.run(new TypeormDatabase(), async ctx => {
   // Delete twins
   await ctx.store.remove(deletedTwins)
 
-  await nodeCreateUpdateOrDelete(ctx)
+  // Process transfers
+  let [transfers, accounts] = await processBalancesTransfer(ctx)
+  await ctx.store.save(accounts)
+  await ctx.store.insert(transfers)
 
-  await processContractEvents(ctx)
+  // Process bill reports
+  let contractBillReports = collectContractBillReports(ctx)
+  await ctx.store.save(contractBillReports)
 
+  // Batch node uptime reports
   await nodeUptimeReported(ctx)
+  
+  
+  // Todo: batch
+  // await nodeCreateUpdateOrDelete(ctx)
+  
+  // Todo: batch
+  // await processContractEvents(ctx)
+  
+  // if (batchFarms) {
+  //   let [newFarms, updatedFarms, deletedFarms, publicIps] = await farmCreateOrUpdateOrDelete(ctx)
+  //   // // Insert new farms
+  //   let newFarmPromises = newFarms.map(f => {
+  //     return ctx.store.insert(f)
+  //   })
+  //   await Promise.all(newFarmPromises)
+  
+  //   let updatedFarmsPromises = updatedFarms.map(f => {
+  //     return ctx.store.save(f)
+  //   })
+  //   await Promise.all(updatedFarmsPromises)
+  
+  //   let deletedFarmsPromises = deletedFarms.map(f => {
+  //     return ctx.store.remove(f)
+  //   })
+  //   await Promise.all(deletedFarmsPromises)
+  
+  //   let newPublicIpsPromises = publicIps.map(ip => {
+  //     if (ip.publicIPs) {
+  //       return ctx.store.save(uniqBy(ip.publicIPs, 'ip'))
+  //     }
+  //   })
+  //   await Promise.all(newPublicIpsPromises)
+  //   // Save updated farms
+  //   await ctx.store.save(updatedFarms)
+  //   // Delete Farm
+  //   await ctx.store.remove(deletedFarms)  
+  // } else {
+  //   await farmCreateOrUpdateOrDeleteNoBatch(ctx)
+  // }
 })

@@ -16,43 +16,6 @@ import {
   SmartContractModuleContractGracePeriodStartedEvent, SmartContractModuleContractGracePeriodEndedEvent 
 } from "../types/events";
 
-export async function processContractEvents(ctx: Ctx) {
-  for (let block of ctx.blocks) {
-    for (let item of block.items) {
-      if (item.name === 'SmartContractModule.ContractCreated') {
-        await contractCreated(ctx, item, block.header.timestamp)
-      }
-      if (item.name === 'SmartContractModule.ContractUpdated') {
-        await contractUpdated(ctx, item, block.header.timestamp)
-      }
-      if (item.name === 'SmartContractModule.NodeContractCanceled') {
-        await nodeContractCanceled(ctx, item)
-      }
-      if (item.name === 'SmartContractModule.NameContractCanceled') {
-        await nameContractCanceled(ctx, item)
-      }
-      if (item.name === 'SmartContractModule.RentContractCanceled') {
-        await rentContractCanceled(ctx, item)
-      }
-      if (item.name === 'SmartContractModule.ContractBilled') {
-        await contractBilled(ctx, item)
-      }
-      if (item.name === 'SmartContractModule.UpdatedUsedResources') {
-        await contractUpdateUsedResources(ctx, item)
-      }
-      if (item.name === 'SmartContractModule.NruConsumptionReportReceived') {
-        await nruConsumptionReportReceived(ctx, item)
-      }
-      if (item.name === 'SmartContractModule.ContractGracePeriodStarted') {
-        await contractGracePeriodStarted(ctx, item)
-      }
-      if (item.name === 'SmartContractModule.ContractGracePeriodEnded') {
-        await contractGracePeriodEnded(ctx, item)
-      }
-    }
-  }
-}
-
 export async function contractCreated(
   ctx: Ctx,
   item: EventItem<'SmartContractModule.ContractCreated', { event: { args: true } }>,
@@ -331,6 +294,44 @@ export async function rentContractCanceled(
   savedContract.state = ContractState.Deleted
 
   await ctx.store.save<RentContract>(savedContract)
+}
+
+export function collectContractBillReports (ctx: Ctx): ContractBillReport[] {
+  let list: ContractBillReport[] = []
+  for (let block of ctx.blocks) {
+    for (let item of block.items) {
+      if (item.name === "SmartContractModule.ContractBilled") {
+        const contractBilledEvent = new SmartContractModuleContractBilledEvent(ctx, item.event).asV9
+
+        const newContractBilledReport = new ContractBillReport()
+
+        newContractBilledReport.id = item.event.id
+        newContractBilledReport.contractID = contractBilledEvent.contractId
+      
+        let level = DiscountLevel.None
+        switch (contractBilledEvent.discountLevel.__kind) {
+          case 'None': break
+          case 'Default':
+            level = DiscountLevel.Default
+            break
+          case 'Bronze':
+            level = DiscountLevel.Bronze
+            break
+          case 'Silver':
+            level = DiscountLevel.Silver
+            break
+          case 'Gold': level = DiscountLevel.Gold
+        }
+        newContractBilledReport.discountReceived = level
+        newContractBilledReport.amountBilled = contractBilledEvent.amountBilled
+        newContractBilledReport.timestamp = contractBilledEvent.timestamp
+
+        list.push(newContractBilledReport)
+      }
+    }
+  }
+
+  return list
 }
 
 export async function contractBilled(

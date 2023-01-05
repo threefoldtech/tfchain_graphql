@@ -15,29 +15,6 @@ export class FarmWithIPs {
   publicIPs: PublicIp[];
 }
 
-// Should handle batch in the future
-export async function farmCreateOrUpdateOrDeleteNoBatch(ctx: Ctx) {
-  for (let block of ctx.blocks) {
-    for (let item of block.items) { 
-      if (item.name === 'TfgridModule.FarmStored') {
-        await farmStored(ctx, item)
-      }
-      if (item.name === 'TfgridModule.FarmUpdated') {
-        await farmUpdated(ctx, item)
-      }
-      if (item.name === 'TfgridModule.FarmDeleted') { 
-        await farmDeleted(ctx, item)
-      }
-      if (item.name === 'TfgridModule.FarmPayoutV2AddressRegistered') {
-        await farmPayoutV2AddressRegistered(ctx, item)
-      }
-      if (item.name === 'TfgridModule.FarmCertificationSet') {
-        await farmCertificationSet(ctx, item)
-      }
-    }
-  }
-}
-
 export async function farmStored(
   ctx: Ctx,
   item: EventItem<'TfgridModule.FarmStored', { event: { args: true } }>
