@@ -40,54 +40,54 @@ const eventOptions = {
 } as const
 
 const processor = new SubstrateBatchProcessor()
-    .setTypesBundle("typegen/typesBundle.json")
-    .setDataSource({
-      archive: process.env.INDEXER_ENDPOINT_URL || 'http://localhost:8888/graphql',
-      chain: process.env.WS_URL || 'ws://localhost:9944'
-    })
-    // Balances
-    .addEvent('Balances.Transfer', eventOptions)
-    // Twins
-    .addEvent('TfgridModule.TwinStored', eventOptions)
-    .addEvent('TfgridModule.TwinUpdated', eventOptions)
-    .addEvent('TfgridModule.TwinDeleted', eventOptions)
-    // Farms
-    .addEvent('TfgridModule.FarmStored', eventOptions)
-    .addEvent('TfgridModule.FarmUpdated', eventOptions)
-    .addEvent('TfgridModule.FarmDeleted', eventOptions)
-    .addEvent('TfgridModule.FarmPayoutV2AddressRegistered', eventOptions)
-    .addEvent('TfgridModule.FarmCertificationSet', eventOptions)
-    // Nodes
-    .addEvent('TfgridModule.NodeStored', eventOptions)
-    .addEvent('TfgridModule.NodeUpdated', eventOptions)
-    .addEvent('TfgridModule.NodeDeleted', eventOptions)
-    .addEvent('TfgridModule.NodeUptimeReported', eventOptions)
-    .addEvent('TfgridModule.NodePublicConfigStored', eventOptions)
-    .addEvent('TfgridModule.NodeCertificationSet', eventOptions)
-    // Contracts
-    .addEvent('SmartContractModule.ContractCreated', eventOptions)
-    .addEvent('SmartContractModule.ContractUpdated', eventOptions)
-    .addEvent('SmartContractModule.NodeContractCanceled', eventOptions)
-    .addEvent('SmartContractModule.NameContractCanceled', eventOptions)
-    .addEvent('SmartContractModule.RentContractCanceled', eventOptions)
-    .addEvent('SmartContractModule.ContractBilled', eventOptions)
-    .addEvent('SmartContractModule.UpdatedUsedResources', eventOptions)
-    .addEvent('SmartContractModule.NruConsumptionReportReceived', eventOptions)
-    .addEvent('SmartContractModule.ContractGracePeriodStarted', eventOptions)
-    .addEvent('SmartContractModule.ContractGracePeriodEnded', eventOptions)
-    .addEvent('SmartContractModule.SolutionProviderCreated', eventOptions)
-    .addEvent('SmartContractModule.SolutionProviderApproved', eventOptions)
-    // Farming Policies
-    .addEvent('TfgridModule.PricingPolicyStored', eventOptions)
-    .addEvent('TfgridModule.FarmingPolicyStored', eventOptions)
-    .addEvent('TfgridModule.FarmingPolicyUpdated', eventOptions)
-    // Service Contracts
-    .addEvent('SmartContractModule.ServiceContractCreated', eventOptions)
-    .addEvent('SmartContractModule.ServiceContractMetadataSet', eventOptions)
-    .addEvent('SmartContractModule.ServiceContractFeesSet', eventOptions)
-    .addEvent('SmartContractModule.ServiceContractApproved', eventOptions)
-    .addEvent('SmartContractModule.ServiceContractCanceled', eventOptions)
-    .addEvent('SmartContractModule.ServiceContractBilled', eventOptions)
+  .setTypesBundle("typegen/typesBundle.json")
+  .setDataSource({
+    archive: process.env.INDEXER_ENDPOINT_URL || 'http://localhost:8888/graphql',
+    chain: process.env.WS_URL || 'ws://localhost:9944'
+  })
+  // Balances
+  .addEvent('Balances.Transfer', eventOptions)
+  // Twins
+  .addEvent('TfgridModule.TwinStored', eventOptions)
+  .addEvent('TfgridModule.TwinUpdated', eventOptions)
+  .addEvent('TfgridModule.TwinDeleted', eventOptions)
+  // Farms
+  .addEvent('TfgridModule.FarmStored', eventOptions)
+  .addEvent('TfgridModule.FarmUpdated', eventOptions)
+  .addEvent('TfgridModule.FarmDeleted', eventOptions)
+  .addEvent('TfgridModule.FarmPayoutV2AddressRegistered', eventOptions)
+  .addEvent('TfgridModule.FarmCertificationSet', eventOptions)
+  // Nodes
+  .addEvent('TfgridModule.NodeStored', eventOptions)
+  .addEvent('TfgridModule.NodeUpdated', eventOptions)
+  .addEvent('TfgridModule.NodeDeleted', eventOptions)
+  .addEvent('TfgridModule.NodeUptimeReported', eventOptions)
+  .addEvent('TfgridModule.NodePublicConfigStored', eventOptions)
+  .addEvent('TfgridModule.NodeCertificationSet', eventOptions)
+  // Contracts
+  .addEvent('SmartContractModule.ContractCreated', eventOptions)
+  .addEvent('SmartContractModule.ContractUpdated', eventOptions)
+  .addEvent('SmartContractModule.NodeContractCanceled', eventOptions)
+  .addEvent('SmartContractModule.NameContractCanceled', eventOptions)
+  .addEvent('SmartContractModule.RentContractCanceled', eventOptions)
+  .addEvent('SmartContractModule.ContractBilled', eventOptions)
+  .addEvent('SmartContractModule.UpdatedUsedResources', eventOptions)
+  .addEvent('SmartContractModule.NruConsumptionReportReceived', eventOptions)
+  .addEvent('SmartContractModule.ContractGracePeriodStarted', eventOptions)
+  .addEvent('SmartContractModule.ContractGracePeriodEnded', eventOptions)
+  .addEvent('SmartContractModule.SolutionProviderCreated', eventOptions)
+  .addEvent('SmartContractModule.SolutionProviderApproved', eventOptions)
+  // Farming Policies
+  .addEvent('TfgridModule.PricingPolicyStored', eventOptions)
+  .addEvent('TfgridModule.FarmingPolicyStored', eventOptions)
+  .addEvent('TfgridModule.FarmingPolicyUpdated', eventOptions)
+  // Service Contracts
+  .addEvent('SmartContractModule.ServiceContractCreated', eventOptions)
+  .addEvent('SmartContractModule.ServiceContractMetadataSet', eventOptions)
+  .addEvent('SmartContractModule.ServiceContractFeesSet', eventOptions)
+  .addEvent('SmartContractModule.ServiceContractApproved', eventOptions)
+  .addEvent('SmartContractModule.ServiceContractCanceled', eventOptions)
+  .addEvent('SmartContractModule.ServiceContractBilled', eventOptions)
 
 export type Item = BatchProcessorItem<typeof processor>
 export type Ctx = BatchContext<Store, Item>
