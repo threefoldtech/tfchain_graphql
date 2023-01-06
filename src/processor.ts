@@ -40,6 +40,7 @@ const eventOptions = {
 } as const
 
 const processor = new SubstrateBatchProcessor()
+  .includeAllBlocks()
   .setTypesBundle("typegen/typesBundle.json")
   .setDataSource({
     archive: process.env.INDEXER_ENDPOINT_URL || 'http://localhost:8888/graphql',
