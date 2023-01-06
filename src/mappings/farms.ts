@@ -79,7 +79,7 @@ export async function farmStored(
 
 export async function farmUpdated(
   ctx: Ctx,
-  item: EventItem<'TfgridModule.FarmUpdated', { event: { args: true, extrinsic: true } }>
+  item: EventItem<'TfgridModule.FarmUpdated', { event: { args: true } }>
 ) {
   const farmUpdatedEvent = new TfgridModuleFarmUpdatedEvent(ctx, item.event)
 

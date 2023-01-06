@@ -34,7 +34,7 @@ const eventOptions = {
   data: {
     event: {
       args: true,
-      extrinsic: true
+      // extrinsic: true
     },
   } as const,
 } as const

@@ -54,11 +54,11 @@ function getTransfers(ctx: Ctx): TransferEvent[] {
           id: item.event.id,
           blockNumber: block.header.height,
           timestamp: new Date(block.header.timestamp),
-          extrinsicHash: item.event.extrinsic?.hash,
+          // extrinsicHash: item.event.extrinsic?.hash,
           from: ss58.codec('substrate').encode(rec.from),
           to: ss58.codec('substrate').encode(rec.to),
           amount: rec.amount,
-          fee: item.event.extrinsic?.fee || 0n
+          // fee: item.event.extrinsic?.fee || 0n
         })
       }
     }
@@ -70,9 +70,9 @@ interface TransferEvent {
   id: string
   blockNumber: number
   timestamp: Date
-  extrinsicHash?: string
+  // extrinsicHash?: string
   from: string
   to: string
   amount: bigint
-  fee?: bigint
+  // fee?: bigint
 }
