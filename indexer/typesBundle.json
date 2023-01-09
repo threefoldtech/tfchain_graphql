@@ -528,6 +528,11 @@
               "nodeCertification": "NodeCertification",
               "farmCertification": "FarmCertification"
             },
+            "ContractLock": {
+              "amount_locked": "Balance",
+              "lock_updated": "u64",
+              "cycles": "u16"
+            },
             "DaoProposal": {
               "index": "u32",
               "description": "Vec<u8>",
