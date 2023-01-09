@@ -27,8 +27,10 @@ spec:
           - mountPath: /var/lib/cockroach/data
             name: db-claim0
         ports:
-          - containerPort: 8080
-          - containerPort: 26257
+          - name: dashboard
+            targetPort: 8080
+          - name: db
+            targetPort: 26257
       restartPolicy: Always
       volumes:
         - name: db-claim0
