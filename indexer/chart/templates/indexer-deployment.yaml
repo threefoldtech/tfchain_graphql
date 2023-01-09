@@ -23,11 +23,11 @@ spec:
       containers:
         - args:
             - -e
-            - {{ .Values.ws_endpoint }}
+            - { { .Values.ws_endpoint } }
             - -c
-            - "20"
+            - '20'
             - --out
-            - postgres://postgres:postgres@db:5432/squid-archive
+            - postgres://root@db:26257/defaultdb
             - --types-bundle
             - /configs/typesBundle.json
           image: subsquid/substrate-ingest:firesquid

@@ -22,10 +22,10 @@ spec:
       containers:
         - args:
             - --database-url
-            - postgres://postgres:postgres@db:5432/squid-archive
+            - postgres://root@db:26257/defaultdb
             - --database-max-connections
             - '3'
-          image: tmcgroul/substrate-gateway:16
+          image: subsquid/substrate-gateway:2.5.0
           name: indexer-gateway
           ports:
             - containerPort: 8000
