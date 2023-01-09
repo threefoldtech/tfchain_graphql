@@ -8,6 +8,11 @@
             null
           ],
           "types": {
+            "ContractLock": {
+              "amount_locked": "Balance",
+              "lock_updated": "u64",
+              "cycles": "u16"
+            },
             "Farm": {
               "version": "u32",
               "id": "u32",
