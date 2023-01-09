@@ -206,12 +206,14 @@ export async function nodeUpdated(
   }
 
   if (savedNode.location) {
-    savedNode.location.latitude = nodeEvent.location.latitude.toString()
-    savedNode.location.longitude = nodeEvent.location.longitude.toString()
-    await ctx.store.save<Location>(savedNode.location)
+    const location = await ctx.store.get(Location, { where: { id: savedNode.location.id }})
+    if (location) {
+      location.latitude = nodeEvent.location.latitude.toString()
+      location.longitude = nodeEvent.location.longitude.toString()
+      await ctx.store.save<Location>(location)
+      savedNode.location = location
+    }
   }
-
-  await ctx.store.save<Node>(savedNode)
 
   if (node.isV28) {
     const nodeAsV28 = node.asV28
@@ -317,12 +319,6 @@ export async function nodeUpdated(
     }
   }
 
-
-
-  await ctx.store.save<Node>(savedNode)
-
-  // savedNode.interfaces = []
-
   const interfacesPromisses = nodeEvent.interfaces.map(async intf => {
     let newInterface
 
@@ -357,7 +353,7 @@ export async function nodeDeleted(
 ) {
   const nodeID = new TfgridModuleNodeDeletedEvent(ctx, item.event).asV49
 
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } , relations: { location: true }})
 
   if (savedNode) {
     const resourcesTotal = await ctx.store.find(NodeResourcesTotal, { where: { node: Equal(savedNode) }, relations: { node: true } })
@@ -453,7 +449,7 @@ export async function nodePublicConfigStored(
     return
   }
 
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } , relations: { location: true }})
   if (!savedNode) return
 
   let publicConfig = await ctx.store.get(PublicConfig, { where: { node: Equal(savedNode) }, relations: { node: true } })
@@ -479,7 +475,7 @@ export async function nodeCertificationSet(
 ) {
   const [nodeID, certification] = new TfgridModuleNodeCertificationSetEvent(ctx, item.event).asV63
 
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } })
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } , relations: { location: true }})
   if (!savedNode) return
 
   let certType = NodeCertification.Diy
