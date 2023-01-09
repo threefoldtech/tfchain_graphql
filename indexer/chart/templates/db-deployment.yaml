@@ -21,7 +21,7 @@ spec:
             - --insecure
           image: cockroachdb/cockroach:v22.2.2
           name: db
-          command: ["start-single-node"]
+          command: ["cockroach start-single-node"]
           resources: {}
           volumeMounts:
             - mountPath: /var/lib/cockroach/data
