@@ -17,20 +17,24 @@ spec:
         io.kompose.service: db
     spec:
       containers:
-        image: cockroachdb/cockroach:v22.2.2
-        name: db
-        command: ["start-single-node"]
-        args:
-          - --insecure
-        resources: {}
-        volumeMounts:
-          - mountPath: /var/lib/cockroach/data
-            name: db-claim0
-        ports:
-          - name: dashboard
-            targetPort: 8080
-          - name: db
-            targetPort: 26257
+        - args:
+            - --insecure
+          image: cockroachdb/cockroach:v22.2.2
+          name: db
+          command: ["start-single-node"]
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/cockroach/data
+              name: db-claim0
+          ports:
+            - name: dash
+              containerPort: 8080
+              protocol: TCP
+              targetPort: 8080
+            - name: db
+              containerPort: 26257
+              protocol: TCP
+              targetPort: 26257
       restartPolicy: Always
       volumes:
         - name: db-claim0
