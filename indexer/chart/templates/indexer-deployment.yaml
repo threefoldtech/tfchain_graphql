@@ -23,7 +23,7 @@ spec:
       containers:
         - args:
             - -e
-            - { { .Values.ws_endpoint } }
+            - {{ .Values.ws_endpoint }}
             - -c
             - '20'
             - --out
