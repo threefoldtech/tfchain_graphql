@@ -9,7 +9,7 @@ services:
       - "8080:8080"
     command: start-single-node --insecure
     volumes:
-      - /var/lib/cockroach/data
+      - /cockroach
 
   ingest:
     depends_on:
