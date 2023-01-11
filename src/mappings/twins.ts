@@ -22,7 +22,7 @@ export async function twinStored(
   }
 
   const newTwin = new Twin()
-      
+
   newTwin.id = item.event.id
 
   newTwin.gridVersion = twin.version
@@ -53,23 +53,23 @@ export async function twinCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Twin[], Twi
         } else {
           continue
         }
-      
+
         const newTwin = new Twin()
-      
+
         newTwin.id = item.event.id
-      
+
         newTwin.gridVersion = twin.version
         newTwin.twinID = twin.id
-      
+
         const accountID = ss58.codec("substrate").encode(twin.accountId);
         newTwin.accountID = accountID
         newTwin.ip = twin.ip.toString()
-      
+
         newTwins.push(newTwin)
       }
       if (item.name === "TfgridModule.TwinUpdated") {
         const twinEvent = new TfgridModuleTwinUpdatedEvent(ctx, item.event)
-      
+
         let twin: any
         if (twinEvent.isV49) {
           twin = twinEvent.asV49
@@ -78,7 +78,7 @@ export async function twinCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Twin[], Twi
         } else {
           continue
         }
-    
+
         const foundInNewListIndex: number = newTwins.findIndex(t => t.twinID == twin.id);
         if (foundInNewListIndex != -1) {
           const savedTwin: Twin = newTwins[foundInNewListIndex]
@@ -87,7 +87,7 @@ export async function twinCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Twin[], Twi
           newTwins[foundInNewListIndex] = savedTwin
           continue
         }
-        
+
         const foundInUpdatedListIndex: number = updatedTwins.findIndex(t => t.twinID == twin.id);
         if (foundInUpdatedListIndex != -1) {
           let savedTwin: Twin = updatedTwins[foundInUpdatedListIndex]
@@ -95,7 +95,7 @@ export async function twinCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Twin[], Twi
           savedTwin.gridVersion = twin.version
           updatedTwins[foundInUpdatedListIndex] = savedTwin
           continue
-        } 
+        }
 
         const savedTwin: any = await ctx.store.get(Twin, { where: { twinID: twin.id } })
         if (!savedTwin) continue
@@ -108,11 +108,10 @@ export async function twinCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Twin[], Twi
 
         const savedTwin = await ctx.store.get(Twin, { where: { twinID: twinDeletedEvent } })
         if (savedTwin) {
-          ctx.log.info("deleting twin")
           deletedTwins.push(savedTwin)
         }
       }
-     }
+    }
   }
 
   return [newTwins, updatedTwins, deletedTwins]

@@ -172,7 +172,7 @@ export async function nodeUpdated(
 
   if (!nodeEvent) return
 
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeEvent.id } , relations: { location: true }})
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeEvent.id }, relations: { location: true, interfaces: true } })
 
   if (!savedNode) return
 
@@ -206,7 +206,7 @@ export async function nodeUpdated(
   }
 
   if (savedNode.location) {
-    const location = await ctx.store.get(Location, { where: { id: savedNode.location.id }})
+    const location = await ctx.store.get(Location, { where: { id: savedNode.location.id } })
     if (location) {
       location.latitude = nodeEvent.location.latitude.toString()
       location.longitude = nodeEvent.location.longitude.toString()
@@ -353,7 +353,7 @@ export async function nodeDeleted(
 ) {
   const nodeID = new TfgridModuleNodeDeletedEvent(ctx, item.event).asV49
 
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } , relations: { location: true }})
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID }, relations: { location: true } })
 
   if (savedNode) {
     const resourcesTotal = await ctx.store.find(NodeResourcesTotal, { where: { node: Equal(savedNode) }, relations: { node: true } })
@@ -381,11 +381,11 @@ export async function nodeUptimeReported(ctx: Ctx): Promise<void> {
   let uptimes = collectUptimeEvents(ctx)
 
   let touchedNodes = new Map(
-      (await ctx.store.find(Node, {
-        where: {
-          id: In([...new Set(uptimes.map(up => up.event.nodeID)).keys()])
-        }
-      })).map(n => [n.id, n])
+    (await ctx.store.find(Node, {
+      where: {
+        id: In([...new Set(uptimes.map(up => up.event.nodeID)).keys()])
+      }
+    })).map(n => [n.id, n])
   )
 
   for (let up of uptimes) {
@@ -395,14 +395,14 @@ export async function nodeUptimeReported(ctx: Ctx): Promise<void> {
       node.updatedAt = BigInt(up.block.timestamp)
     }
   }
-  
+
   await ctx.store.save(uptimes.map(up => up.event))
   await ctx.store.save([...touchedNodes.values()])
 }
 
 
-function collectUptimeEvents(ctx: Ctx): {block: SubstrateBlock, event: UptimeEvent}[] {
-  let list: {block: SubstrateBlock, event: UptimeEvent}[] = []
+function collectUptimeEvents(ctx: Ctx): { block: SubstrateBlock, event: UptimeEvent }[] {
+  let list: { block: SubstrateBlock, event: UptimeEvent }[] = []
   for (let block of ctx.blocks) {
     for (let item of block.items) {
       if (item.name === "TfgridModule.NodeUptimeReported") {
@@ -449,7 +449,7 @@ export async function nodePublicConfigStored(
     return
   }
 
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } , relations: { location: true }})
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID }, relations: { location: true } })
   if (!savedNode) return
 
   let publicConfig = await ctx.store.get(PublicConfig, { where: { node: Equal(savedNode) }, relations: { node: true } })
@@ -475,7 +475,7 @@ export async function nodeCertificationSet(
 ) {
   const [nodeID, certification] = new TfgridModuleNodeCertificationSetEvent(ctx, item.event).asV63
 
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID } , relations: { location: true }})
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID }, relations: { location: true } })
   if (!savedNode) return
 
   let certType = NodeCertification.Diy
