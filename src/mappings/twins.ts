@@ -80,7 +80,6 @@ export async function twinCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Twin[], Twi
 
         const savedTwin = await ctx.store.get(Twin, { where: { twinID: twinDeletedEvent } })
         if (savedTwin) {
-          ctx.log.info("deleting twin")
           deletedTwins.push(savedTwin)
         }
       }
