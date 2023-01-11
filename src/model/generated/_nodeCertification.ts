@@ -1,4 +1,4 @@
 export enum NodeCertification {
-  Diy = "Diy",
-  Certified = "Certified",
+    Diy = "Diy",
+    Certified = "Certified",
 }

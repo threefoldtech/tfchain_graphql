@@ -1,1249 +1,1088 @@
 import assert from 'assert'
-import {EventContext, Result, deprecateLatest} from './support'
-import * as v122 from './v122'
+import {Chain, ChainContext, EventContext, Event, Result, Option} from './support'
+import * as v124 from './v124'
 
 export class BalancesTransferEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'balances.Transfer')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  /**
-   * Transfer succeeded.
-   */
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('balances.Transfer') === '0ffdf35c495114c2d42a8bf6c241483fd5334ca0198662e14480ad040f1e3a66'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Balances.Transfer')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  /**
-   * Transfer succeeded.
-   */
-  get asV122(): {from: v122.AccountId32, to: v122.AccountId32, amount: bigint} {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    /**
+     * Transfer succeeded.
+     */
+    get isV124(): boolean {
+        return this._chain.getEventHash('Balances.Transfer') === '0ffdf35c495114c2d42a8bf6c241483fd5334ca0198662e14480ad040f1e3a66'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): {from: v122.AccountId32, to: v122.AccountId32, amount: bigint} {
-    deprecateLatest()
-    return this.asV122
-  }
+    /**
+     * Transfer succeeded.
+     */
+    get asV124(): {from: Uint8Array, to: Uint8Array, amount: bigint} {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleContractBilledEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.ContractBilled')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.ContractBilled') === '80f35d404149c70acbd173262c31ae49812dbb6c9f279954678dd758bb5aa239'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.ContractBilled')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): v122.ContractBill {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.ContractBilled') === '80f35d404149c70acbd173262c31ae49812dbb6c9f279954678dd758bb5aa239'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.ContractBill {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): v124.ContractBill {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleContractCreatedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.ContractCreated')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  /**
-   * A contract got created
-   */
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.ContractCreated') === 'bc600595215d0331e91aaeff45059fe6383f3362d537b936e491fe1154d3a842'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.ContractCreated')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  /**
-   * A contract got created
-   */
-  get asV122(): v122.Contract {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    /**
+     * A contract got created
+     */
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.ContractCreated') === 'bc600595215d0331e91aaeff45059fe6383f3362d537b936e491fe1154d3a842'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.Contract {
-    deprecateLatest()
-    return this.asV122
-  }
+    /**
+     * A contract got created
+     */
+    get asV124(): v124.Contract {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleContractGracePeriodEndedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.ContractGracePeriodEnded')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  /**
-   * A Contract grace period was ended
-   */
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.ContractGracePeriodEnded') === '2a451998845cc7fbb5269823cda637a7f9805f49123c343665bb37cbbf9cfbe4'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.ContractGracePeriodEnded')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  /**
-   * A Contract grace period was ended
-   */
-  get asV122(): {contractId: bigint, nodeId: number, twinId: number} {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    /**
+     * A Contract grace period was ended
+     */
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.ContractGracePeriodEnded') === '2a451998845cc7fbb5269823cda637a7f9805f49123c343665bb37cbbf9cfbe4'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): {contractId: bigint, nodeId: number, twinId: number} {
-    deprecateLatest()
-    return this.asV122
-  }
+    /**
+     * A Contract grace period was ended
+     */
+    get asV124(): {contractId: bigint, nodeId: number, twinId: number} {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleContractGracePeriodStartedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.ContractGracePeriodStarted')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  /**
-   * A Contract grace period is triggered
-   */
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.ContractGracePeriodStarted') === '5c4b7518ed686396094c34c59a2f5d1cd0da102a76c852ec194b5c72a0faf79e'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.ContractGracePeriodStarted')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  /**
-   * A Contract grace period is triggered
-   */
-  get asV122(): {contractId: bigint, nodeId: number, twinId: number, blockNumber: bigint} {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    /**
+     * A Contract grace period is triggered
+     */
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.ContractGracePeriodStarted') === '5c4b7518ed686396094c34c59a2f5d1cd0da102a76c852ec194b5c72a0faf79e'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): {contractId: bigint, nodeId: number, twinId: number, blockNumber: bigint} {
-    deprecateLatest()
-    return this.asV122
-  }
+    /**
+     * A Contract grace period is triggered
+     */
+    get asV124(): {contractId: bigint, nodeId: number, twinId: number, blockNumber: bigint} {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleContractUpdatedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.ContractUpdated')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  /**
-   * A contract was updated
-   */
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.ContractUpdated') === 'bc600595215d0331e91aaeff45059fe6383f3362d537b936e491fe1154d3a842'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.ContractUpdated')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  /**
-   * A contract was updated
-   */
-  get asV122(): v122.Contract {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    /**
+     * A contract was updated
+     */
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.ContractUpdated') === 'bc600595215d0331e91aaeff45059fe6383f3362d537b936e491fe1154d3a842'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.Contract {
-    deprecateLatest()
-    return this.asV122
-  }
+    /**
+     * A contract was updated
+     */
+    get asV124(): v124.Contract {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleNameContractCanceledEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.NameContractCanceled')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  /**
-   * A Name contract is canceled
-   */
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.NameContractCanceled') === '28d75d7f6a405072b1337c49414e7c89805fbab702800c1a4b653076bd2dc4db'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.NameContractCanceled')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  /**
-   * A Name contract is canceled
-   */
-  get asV122(): {contractId: bigint} {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    /**
+     * A Name contract is canceled
+     */
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.NameContractCanceled') === '28d75d7f6a405072b1337c49414e7c89805fbab702800c1a4b653076bd2dc4db'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): {contractId: bigint} {
-    deprecateLatest()
-    return this.asV122
-  }
+    /**
+     * A Name contract is canceled
+     */
+    get asV124(): {contractId: bigint} {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleNodeContractCanceledEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.NodeContractCanceled')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  /**
-   * A Node contract is canceled
-   */
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.NodeContractCanceled') === '2a451998845cc7fbb5269823cda637a7f9805f49123c343665bb37cbbf9cfbe4'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.NodeContractCanceled')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  /**
-   * A Node contract is canceled
-   */
-  get asV122(): {contractId: bigint, nodeId: number, twinId: number} {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    /**
+     * A Node contract is canceled
+     */
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.NodeContractCanceled') === '2a451998845cc7fbb5269823cda637a7f9805f49123c343665bb37cbbf9cfbe4'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): {contractId: bigint, nodeId: number, twinId: number} {
-    deprecateLatest()
-    return this.asV122
-  }
+    /**
+     * A Node contract is canceled
+     */
+    get asV124(): {contractId: bigint, nodeId: number, twinId: number} {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleNruConsumptionReportReceivedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.NruConsumptionReportReceived')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  /**
-   * Network resources report received for contract
-   */
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.NruConsumptionReportReceived') === '8fb8781273a0957437746af773ed15577fcddcf30727d6027f1651e65345eaf8'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.NruConsumptionReportReceived')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  /**
-   * Network resources report received for contract
-   */
-  get asV122(): v122.NruConsumption {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    /**
+     * Network resources report received for contract
+     */
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.NruConsumptionReportReceived') === '8fb8781273a0957437746af773ed15577fcddcf30727d6027f1651e65345eaf8'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.NruConsumption {
-    deprecateLatest()
-    return this.asV122
-  }
+    /**
+     * Network resources report received for contract
+     */
+    get asV124(): v124.NruConsumption {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleRentContractCanceledEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.RentContractCanceled')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  /**
-   * a Rent contract is canceled
-   */
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.RentContractCanceled') === '28d75d7f6a405072b1337c49414e7c89805fbab702800c1a4b653076bd2dc4db'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.RentContractCanceled')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  /**
-   * a Rent contract is canceled
-   */
-  get asV122(): {contractId: bigint} {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    /**
+     * a Rent contract is canceled
+     */
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.RentContractCanceled') === '28d75d7f6a405072b1337c49414e7c89805fbab702800c1a4b653076bd2dc4db'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): {contractId: bigint} {
-    deprecateLatest()
-    return this.asV122
-  }
+    /**
+     * a Rent contract is canceled
+     */
+    get asV124(): {contractId: bigint} {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleServiceContractApprovedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.ServiceContractApproved')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  /**
-   * A Service contract is approved
-   */
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.ServiceContractApproved') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.ServiceContractApproved')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  /**
-   * A Service contract is approved
-   */
-  get asV122(): v122.ServiceContract {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    /**
+     * A Service contract is approved
+     */
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.ServiceContractApproved') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.ServiceContract {
-    deprecateLatest()
-    return this.asV122
-  }
+    /**
+     * A Service contract is approved
+     */
+    get asV124(): v124.ServiceContract {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleServiceContractBilledEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.ServiceContractBilled')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  /**
-   * A Service contract is billed
-   */
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.ServiceContractBilled') === '7985d39a3e56b65ab2853980404ab7250260ef1f2f7395adf3092259fb9ddbc5'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.ServiceContractBilled')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  /**
-   * A Service contract is billed
-   */
-  get asV122(): {serviceContract: v122.ServiceContract, bill: v122.ServiceContractBill, amount: bigint} {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    /**
+     * A Service contract is billed
+     */
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.ServiceContractBilled') === '7985d39a3e56b65ab2853980404ab7250260ef1f2f7395adf3092259fb9ddbc5'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): {serviceContract: v122.ServiceContract, bill: v122.ServiceContractBill, amount: bigint} {
-    deprecateLatest()
-    return this.asV122
-  }
+    /**
+     * A Service contract is billed
+     */
+    get asV124(): {serviceContract: v124.ServiceContract, bill: v124.ServiceContractBill, amount: bigint} {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleServiceContractCanceledEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.ServiceContractCanceled')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  /**
-   * A Service contract is canceled
-   */
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.ServiceContractCanceled') === '5d9c761d54a2a85566da8e150a364cc6f59f363b1139be81f9993b7d62a74bb0'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.ServiceContractCanceled')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  /**
-   * A Service contract is canceled
-   */
-  get asV122(): {serviceContractId: bigint, cause: v122.Cause} {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    /**
+     * A Service contract is canceled
+     */
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.ServiceContractCanceled') === '5d9c761d54a2a85566da8e150a364cc6f59f363b1139be81f9993b7d62a74bb0'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): {serviceContractId: bigint, cause: v122.Cause} {
-    deprecateLatest()
-    return this.asV122
-  }
+    /**
+     * A Service contract is canceled
+     */
+    get asV124(): {serviceContractId: bigint, cause: v124.Cause} {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleServiceContractCreatedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.ServiceContractCreated')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  /**
-   * A Service contract is created
-   */
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.ServiceContractCreated') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.ServiceContractCreated')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  /**
-   * A Service contract is created
-   */
-  get asV122(): v122.ServiceContract {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    /**
+     * A Service contract is created
+     */
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.ServiceContractCreated') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.ServiceContract {
-    deprecateLatest()
-    return this.asV122
-  }
+    /**
+     * A Service contract is created
+     */
+    get asV124(): v124.ServiceContract {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleServiceContractFeesSetEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.ServiceContractFeesSet')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  /**
-   * A Service contract fees are set
-   */
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.ServiceContractFeesSet') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.ServiceContractFeesSet')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  /**
-   * A Service contract fees are set
-   */
-  get asV122(): v122.ServiceContract {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    /**
+     * A Service contract fees are set
+     */
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.ServiceContractFeesSet') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.ServiceContract {
-    deprecateLatest()
-    return this.asV122
-  }
+    /**
+     * A Service contract fees are set
+     */
+    get asV124(): v124.ServiceContract {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleServiceContractMetadataSetEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.ServiceContractMetadataSet')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  /**
-   * A Service contract metadata is set
-   */
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.ServiceContractMetadataSet') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.ServiceContractMetadataSet')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  /**
-   * A Service contract metadata is set
-   */
-  get asV122(): v122.ServiceContract {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    /**
+     * A Service contract metadata is set
+     */
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.ServiceContractMetadataSet') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.ServiceContract {
-    deprecateLatest()
-    return this.asV122
-  }
+    /**
+     * A Service contract metadata is set
+     */
+    get asV124(): v124.ServiceContract {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleSolutionProviderApprovedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.SolutionProviderApproved')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.SolutionProviderApproved') === '840ac8d292e1374dbb168d73165f148f05f011c240521661b812cf877cec0614'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.SolutionProviderApproved')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): [bigint, boolean] {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.SolutionProviderApproved') === '840ac8d292e1374dbb168d73165f148f05f011c240521661b812cf877cec0614'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): [bigint, boolean] {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): [bigint, boolean] {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleSolutionProviderCreatedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.SolutionProviderCreated')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.SolutionProviderCreated') === 'd32a4b80af4fcacbe96dc685f8a21488024fe716bdb4ea57ff9ddee85e29bc26'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.SolutionProviderCreated')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): v122.SolutionProvider {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.SolutionProviderCreated') === 'd32a4b80af4fcacbe96dc685f8a21488024fe716bdb4ea57ff9ddee85e29bc26'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.SolutionProvider {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): v124.SolutionProvider {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleUpdatedUsedResourcesEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'SmartContractModule.UpdatedUsedResources')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  /**
-   * Contract resources got updated
-   */
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('SmartContractModule.UpdatedUsedResources') === 'a2596f7d808ddd9ac668241df18cffb93329f10e334b13b87782cc828372795a'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'SmartContractModule.UpdatedUsedResources')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  /**
-   * Contract resources got updated
-   */
-  get asV122(): v122.ContractResources {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    /**
+     * Contract resources got updated
+     */
+    get isV124(): boolean {
+        return this._chain.getEventHash('SmartContractModule.UpdatedUsedResources') === 'a2596f7d808ddd9ac668241df18cffb93329f10e334b13b87782cc828372795a'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.ContractResources {
-    deprecateLatest()
-    return this.asV122
-  }
+    /**
+     * Contract resources got updated
+     */
+    get asV124(): v124.ContractResources {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleConnectionPriceSetEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.ConnectionPriceSet')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.ConnectionPriceSet') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.ConnectionPriceSet')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): number {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.ConnectionPriceSet') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): number {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): number {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleEntityDeletedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.EntityDeleted')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.EntityDeleted') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.EntityDeleted')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): number {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.EntityDeleted') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): number {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): number {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleEntityStoredEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.EntityStored')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.EntityStored') === '9d6387c93300e77d2fc96af3ccb27b7eddb14f3768bdf0cf045995fc0be93d47'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.EntityStored')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): v122.Entity {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.EntityStored') === '9d6387c93300e77d2fc96af3ccb27b7eddb14f3768bdf0cf045995fc0be93d47'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.Entity {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): v124.Entity {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleEntityUpdatedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.EntityUpdated')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.EntityUpdated') === '9d6387c93300e77d2fc96af3ccb27b7eddb14f3768bdf0cf045995fc0be93d47'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.EntityUpdated')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): v122.Entity {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.EntityUpdated') === '9d6387c93300e77d2fc96af3ccb27b7eddb14f3768bdf0cf045995fc0be93d47'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.Entity {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): v124.Entity {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleFarmCertificationSetEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.FarmCertificationSet')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.FarmCertificationSet') === 'ffe62c890927616bc9d5af190bd4a3b2c69e29097ebc6ea5ee6a2e1e87ceb759'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.FarmCertificationSet')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): [number, v122.FarmCertification] {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.FarmCertificationSet') === 'ffe62c890927616bc9d5af190bd4a3b2c69e29097ebc6ea5ee6a2e1e87ceb759'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): [number, v122.FarmCertification] {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): [number, v124.FarmCertification] {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleFarmDeletedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.FarmDeleted')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.FarmDeleted') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.FarmDeleted')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): number {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.FarmDeleted') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): number {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): number {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleFarmPayoutV2AddressRegisteredEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.FarmPayoutV2AddressRegistered')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.FarmPayoutV2AddressRegistered') === 'a0d19821e09bcebcf8e5acfe4b5eca3681c180d4c05c2f647fff4efbae5ffac9'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.FarmPayoutV2AddressRegistered')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): [number, Uint8Array] {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.FarmPayoutV2AddressRegistered') === 'a0d19821e09bcebcf8e5acfe4b5eca3681c180d4c05c2f647fff4efbae5ffac9'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): [number, Uint8Array] {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): [number, Uint8Array] {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleFarmStoredEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.FarmStored')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.FarmStored') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.FarmStored')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): v122.Farm {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.FarmStored') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.Farm {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): v124.Farm {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleFarmUpdatedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.FarmUpdated')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.FarmUpdated') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.FarmUpdated')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): v122.Farm {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.FarmUpdated') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.Farm {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): v124.Farm {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleFarmingPolicySetEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.FarmingPolicySet')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.FarmingPolicySet') === 'd64e52200384d2b2a6378823d0e0b9eba44abc0a9fc1b82114ef18b71937324c'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.FarmingPolicySet')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): [number, (v122.FarmingPolicyLimit | undefined)] {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.FarmingPolicySet') === 'd64e52200384d2b2a6378823d0e0b9eba44abc0a9fc1b82114ef18b71937324c'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): [number, (v122.FarmingPolicyLimit | undefined)] {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): [number, (v124.FarmingPolicyLimit | undefined)] {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleFarmingPolicyStoredEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.FarmingPolicyStored')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.FarmingPolicyStored') === 'e45f1ccb50e73b0f9a65c63399730f27041aa3b5c8347272bbbe01c3b66f5712'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.FarmingPolicyStored')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): v122.FarmingPolicy {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.FarmingPolicyStored') === 'e45f1ccb50e73b0f9a65c63399730f27041aa3b5c8347272bbbe01c3b66f5712'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.FarmingPolicy {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): v124.FarmingPolicy {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleFarmingPolicyUpdatedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.FarmingPolicyUpdated')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.FarmingPolicyUpdated') === 'e45f1ccb50e73b0f9a65c63399730f27041aa3b5c8347272bbbe01c3b66f5712'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.FarmingPolicyUpdated')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): v122.FarmingPolicy {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.FarmingPolicyUpdated') === 'e45f1ccb50e73b0f9a65c63399730f27041aa3b5c8347272bbbe01c3b66f5712'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.FarmingPolicy {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): v124.FarmingPolicy {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleNodeCertificationSetEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.NodeCertificationSet')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.NodeCertificationSet') === 'd4945d9aee3a9679b5626ad868873cd15d01a6eafb319306d7528643c7ab38d2'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.NodeCertificationSet')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): [number, v122.NodeCertification] {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.NodeCertificationSet') === 'd4945d9aee3a9679b5626ad868873cd15d01a6eafb319306d7528643c7ab38d2'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): [number, v122.NodeCertification] {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): [number, v124.NodeCertification] {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleNodeDeletedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.NodeDeleted')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.NodeDeleted') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.NodeDeleted')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): number {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.NodeDeleted') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): number {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): number {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleNodePublicConfigStoredEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.NodePublicConfigStored')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.NodePublicConfigStored') === '3280822d064c517c372255a87e0f164783d75d41adc342fe0475179b687a0ad8'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.NodePublicConfigStored')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): [number, (v122.PublicConfig | undefined)] {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.NodePublicConfigStored') === '3280822d064c517c372255a87e0f164783d75d41adc342fe0475179b687a0ad8'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): [number, (v122.PublicConfig | undefined)] {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): [number, (v124.PublicConfig | undefined)] {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleNodeStoredEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.NodeStored')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.NodeStored') === 'f41f098c82aee52660133d1fb75d350fab4d99e9a67ba251b35e04ee4c292fb3'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.NodeStored')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): v122.Node {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.NodeStored') === 'f41f098c82aee52660133d1fb75d350fab4d99e9a67ba251b35e04ee4c292fb3'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.Node {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): v124.Node {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleNodeUpdatedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.NodeUpdated')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.NodeUpdated') === 'f41f098c82aee52660133d1fb75d350fab4d99e9a67ba251b35e04ee4c292fb3'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.NodeUpdated')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): v122.Node {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.NodeUpdated') === 'f41f098c82aee52660133d1fb75d350fab4d99e9a67ba251b35e04ee4c292fb3'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.Node {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): v124.Node {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleNodeUptimeReportedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.NodeUptimeReported')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.NodeUptimeReported') === '4a0c168b038c7fd8096026ff00cc3456827e0f2c507248ecfbcf2c4c07367288'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.NodeUptimeReported')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): [number, bigint, bigint] {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.NodeUptimeReported') === '4a0c168b038c7fd8096026ff00cc3456827e0f2c507248ecfbcf2c4c07367288'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): [number, bigint, bigint] {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): [number, bigint, bigint] {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModulePricingPolicyStoredEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.PricingPolicyStored')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.PricingPolicyStored') === '088c108804351450f3ff89c4217a7450b4d211e3f833d8ab4746d27624010cc0'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.PricingPolicyStored')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): v122.PricingPolicy {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.PricingPolicyStored') === '088c108804351450f3ff89c4217a7450b4d211e3f833d8ab4746d27624010cc0'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.PricingPolicy {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): v124.PricingPolicy {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleTwinDeletedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.TwinDeleted')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.TwinDeleted') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.TwinDeleted')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): number {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.TwinDeleted') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): number {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): number {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleTwinEntityRemovedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.TwinEntityRemoved')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.TwinEntityRemoved') === 'a09602e40984745a7411a1855af06d133893a422fd68f7bdc4fb6a56bf1a3645'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.TwinEntityRemoved')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): [number, number] {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.TwinEntityRemoved') === 'a09602e40984745a7411a1855af06d133893a422fd68f7bdc4fb6a56bf1a3645'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): [number, number] {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): [number, number] {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleTwinEntityStoredEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.TwinEntityStored')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.TwinEntityStored') === 'f41c776f2baf981d5a0d5e9d89f98858c2cdd7ea515b3d32a99e45dcb2c7a185'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.TwinEntityStored')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): [number, number, Uint8Array] {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.TwinEntityStored') === 'f41c776f2baf981d5a0d5e9d89f98858c2cdd7ea515b3d32a99e45dcb2c7a185'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): [number, number, Uint8Array] {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): [number, number, Uint8Array] {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleTwinStoredEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.TwinStored')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.TwinStored') === '5b6f435dfe1514ae00c046d4634f4246d82542de8da2b6937732aec521f3408a'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.TwinStored')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): v122.Twin {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.TwinStored') === '5edc8ade70c90628071f6464e86d2592c5071cc8193049c2612ab70de6613b7a'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.Twin {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): v124.Twin {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TfgridModuleTwinUpdatedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'TfgridModule.TwinUpdated')
-  }
+    private readonly _chain: Chain
+    private readonly event: Event
 
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('TfgridModule.TwinUpdated') === '5b6f435dfe1514ae00c046d4634f4246d82542de8da2b6937732aec521f3408a'
-  }
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TfgridModule.TwinUpdated')
+        this._chain = ctx._chain
+        this.event = event
+    }
 
-  get asV122(): v122.Twin {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
+    get isV124(): boolean {
+        return this._chain.getEventHash('TfgridModule.TwinUpdated') === '5edc8ade70c90628071f6464e86d2592c5071cc8193049c2612ab70de6613b7a'
+    }
 
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.Twin {
-    deprecateLatest()
-    return this.asV122
-  }
-}
-
-export class TftBridgeModuleBurnTransactionProcessedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tftBridgeModule.BurnTransactionProcessed')
-  }
-
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tftBridgeModule.BurnTransactionProcessed') === '554a047c1ffa468c18106c4c9c346a7b03d75e25de542329ef60cf60d44206c9'
-  }
-
-  get asV122(): v122.BurnTransaction {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.BurnTransaction {
-    deprecateLatest()
-    return this.asV122
-  }
-}
-
-export class TftBridgeModuleMintCompletedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tftBridgeModule.MintCompleted')
-  }
-
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tftBridgeModule.MintCompleted') === '7484d8a69c745c46e51d9cf158387d67ab42730f0da3184b219d6240b1b537d7'
-  }
-
-  get asV122(): v122.MintTransaction {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.MintTransaction {
-    deprecateLatest()
-    return this.asV122
-  }
-}
-
-export class TftBridgeModuleRefundTransactionProcessedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tftBridgeModule.RefundTransactionProcessed')
-  }
-
-  get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tftBridgeModule.RefundTransactionProcessed') === 'b8b1f1dc54430185acf4dfda7337f6b320da504654d541cc5260613d3ec89062'
-  }
-
-  get asV122(): v122.RefundTransaction {
-    assert(this.isV122)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV122
-  }
-
-  get asLatest(): v122.RefundTransaction {
-    deprecateLatest()
-    return this.asV122
-  }
+    get asV124(): v124.Twin {
+        assert(this.isV124)
+        return this._chain.decodeEvent(this.event)
+    }
 }

@@ -1,9 +1,9 @@
 {
   "outDir": "../src/typesLocal",
-  "chainVersions": "./tfchainVersions.json",
+  "specVersions": "./tfchainVersions.json",
   "typesBundle": "./typesBundle.json",
   "events": [
-    "balances.Transfer",
+    "Balances.Transfer",
     "TfgridModule.EntityStored",
     "TfgridModule.EntityUpdated",
     "TfgridModule.EntityDeleted",
@@ -45,9 +45,6 @@
     "SmartContractModule.ServiceContractFeesSet",
     "SmartContractModule.ServiceContractApproved",
     "SmartContractModule.ServiceContractCanceled",
-    "SmartContractModule.ServiceContractBilled",
-    "tftBridgeModule.MintCompleted",
-    "tftBridgeModule.BurnTransactionProcessed",
-    "tftBridgeModule.RefundTransactionProcessed"
+    "SmartContractModule.ServiceContractBilled"
   ]
 }

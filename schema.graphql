@@ -34,7 +34,8 @@ type Twin @entity {
   gridVersion: Int!
   twinID: Int!
   accountID: String!
-  ip: String!
+  relay: String
+  publicKey: String
 }
 
 type EntityProof @entity {

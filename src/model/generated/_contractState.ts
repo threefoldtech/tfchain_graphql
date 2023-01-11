@@ -1,6 +1,6 @@
 export enum ContractState {
-  Created = "Created",
-  Deleted = "Deleted",
-  OutOfFunds = "OutOfFunds",
-  GracePeriod = "GracePeriod",
+    Created = "Created",
+    Deleted = "Deleted",
+    OutOfFunds = "OutOfFunds",
+    GracePeriod = "GracePeriod",
 }

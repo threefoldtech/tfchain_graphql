@@ -8,57 +8,124 @@ export type Result<T, E> = {
 }
 
 
-interface Event {
-    name: string
-    params: {value: unknown}[]
+export type Option<T> = {
+    __kind: 'Some',
+    value: T
+} | {
+    __kind: 'None'
 }
 
 
-export interface EventContext {
-    _chain: {
-        getEventHash(eventName: string): string
-        decodeEvent(event: Event): any
-    }
-    block: {
-        height: number
-    }
+export interface Chain {
+    getEventHash(eventName: string): string
+    decodeEvent(event: Event): any
+    getCallHash(name: string): string
+    decodeCall(call: Call): any
+    getStorageItemTypeHash(prefix: string, name: string): string | undefined
+    getStorage(blockHash: string, prefix: string, name: string, ...args: any[]): Promise<any>
+    queryStorage2(blockHash: string, prefix: string, name: string, keyList?: any[]): Promise<any[]>
+    getKeys(blockHash: string, prefix: string, name: string, ...args: any[]): Promise<any[]>
+    getPairs(blockHash: string, prefix: string, name: string, ...args: any[]): Promise<any[]>
+    getKeysPaged(pageSize: number, blockHash: string, prefix: string, name: string, ...args: any[]): AsyncIterable<any[]>
+    getPairsPaged(pageSize: number, blockHash: string, prefix: string, name: string, ...args: any[]): AsyncIterable<[key: any, value: any][]>
+    getConstantTypeHash(pallet: string, name: string): string | undefined
+    getConstant(pallet: string, name: string): any
+}
+
+
+export interface ChainContext {
+    _chain: Chain
+}
+
+
+export interface Event {
+    name: string
+    args: any
+}
+
+
+export interface EventContext extends ChainContext {
     event: Event
 }
 
 
-interface Call {
+export interface Call {
     name: string
-    args: {value: unknown}[]
+    args: any
 }
 
 
-export interface CallContext {
-    _chain: {
-        getCallHash(name: string): string
-        decodeCall(call: Call): any
-    }
-    block: {
-        height: number
-    }
-    extrinsic: Call
+export interface CallContext extends ChainContext {
+    call: Call
 }
 
 
-let showLatestWarning = true
-export function deprecateLatest(): void {
-    if (showLatestWarning) {
-        showLatestWarning = false
-        console.warn(`.isLatest, .asLatest properties are deprecated, if you believe this is a mistake, please leave a comment at https://github.com/subsquid/squid/issues/9`)
-    }
+export interface BlockContext extends ChainContext {
+    block: Block
 }
 
 
-export interface StorageContext {
-    _chain: {
-        getStorageItemTypeHash(prefix: string, name: string): string | undefined
-        getStorage(blockHash: string, prefix: string, name: string, ...args: any[]): Promise<any>
+export interface Block {
+    hash: string
+}
+
+
+export class StorageBase {
+    protected readonly _chain: Chain
+    protected readonly blockHash: string
+
+    constructor(ctx: BlockContext)
+    constructor(ctx: ChainContext, block: Block)
+    constructor(ctx: BlockContext, block?: Block) {
+        block = block || ctx.block
+        this.blockHash = block.hash
+        this._chain = ctx._chain
     }
-    block: {
-        hash: string
+
+    protected getPrefix(): string {
+        throw new Error('Not implemented')
+    }
+
+    protected getName(): string {
+        throw new Error('Not implemented')
+    }
+
+    protected getTypeHash(): string | undefined {
+        return this._chain.getStorageItemTypeHash(this.getPrefix(), this.getName())
+    }
+
+    /**
+     * Checks whether the storage item is defined for the current chain version.
+     */
+    get isExists(): boolean {
+        return this.getTypeHash() != null
+    }
+
+    protected get(...args: any[]): Promise<any> {
+        return this._chain.getStorage(this.blockHash, this.getPrefix(), this.getName(), ...args)
+    }
+
+    protected getMany(keyList: any[]): Promise<any[]> {
+        return this._chain.queryStorage2(this.blockHash, this.getPrefix(), this.getName(), keyList)
+    }
+
+    protected getAll(): Promise<any[]> {
+        return this._chain.queryStorage2(this.blockHash, this.getPrefix(), this.getName())
+    }
+
+    protected getKeys(...args: any[]): Promise<any[]> {
+        return this._chain.getKeys(this.blockHash, this.getPrefix(), this.getName(), ...args)
+    }
+
+    protected getKeysPaged(pageSize: number, ...args: any[]): AsyncIterable<any[]> {
+        return this._chain.getKeysPaged(pageSize, this.blockHash, this.getPrefix(), this.getName(), ...args)
+    }
+
+    protected getPairs(...args: any[]): Promise<[k: any, v: any][]> {
+        return this._chain.getPairs(this.blockHash, this.getPrefix(), this.getName(), ...args)
+    }
+
+    protected getPairsPaged(pageSize: number, ...args: any[]): AsyncIterable<[k: any, v: any][]> {
+        return this._chain.getPairsPaged(pageSize, this.blockHash, this.getPrefix(), this.getName(), ...args)
     }
 }

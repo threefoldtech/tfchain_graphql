@@ -3,19 +3,19 @@ import * as marshal from "./marshal"
 
 @Entity_()
 export class BurnTransaction {
-  constructor(props?: Partial<BurnTransaction>) {
-    Object.assign(this, props)
-  }
+    constructor(props?: Partial<BurnTransaction>) {
+        Object.assign(this, props)
+    }
 
-  @PrimaryColumn_()
-  id!: string
+    @PrimaryColumn_()
+    id!: string
 
-  @Column_("int4", {nullable: false})
-  block!: number
+    @Column_("int4", {nullable: false})
+    block!: number
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  amount!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    amount!: bigint
 
-  @Column_("text", {nullable: false})
-  target!: string
+    @Column_("text", {nullable: false})
+    target!: string
 }

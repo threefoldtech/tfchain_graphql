@@ -1,5 +1,5 @@
 export enum ServiceContractState {
-  Created = "Created",
-  AgreementReady = "AgreementReady",
-  ApprovedByBoth = "ApprovedByBoth",
+    Created = "Created",
+    AgreementReady = "AgreementReady",
+    ApprovedByBoth = "ApprovedByBoth",
 }

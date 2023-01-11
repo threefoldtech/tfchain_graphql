@@ -3,20 +3,20 @@ import {Twin} from "./twin.model"
 
 @Entity_()
 export class EntityProof {
-  constructor(props?: Partial<EntityProof>) {
-    Object.assign(this, props)
-  }
+    constructor(props?: Partial<EntityProof>) {
+        Object.assign(this, props)
+    }
 
-  @PrimaryColumn_()
-  id!: string
+    @PrimaryColumn_()
+    id!: string
 
-  @Column_("int4", {nullable: false})
-  entityID!: number
+    @Column_("int4", {nullable: false})
+    entityID!: number
 
-  @Column_("text", {nullable: false})
-  signature!: string
+    @Column_("text", {nullable: false})
+    signature!: string
 
-  @Index_()
-  @ManyToOne_(() => Twin, {nullable: false})
-  twinRel!: Twin
+    @Index_()
+    @ManyToOne_(() => Twin, {nullable: true})
+    twinRel!: Twin
 }
