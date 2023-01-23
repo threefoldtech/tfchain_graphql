@@ -383,16 +383,16 @@ export async function nodeUptimeReported(ctx: Ctx): Promise<void> {
   let touchedNodes = new Map(
     (await ctx.store.find(Node, {
       where: {
-        id: In([...new Set(uptimes.map(up => up.event.nodeID)).keys()])
-      }
-    })).map(n => [n.id, n])
+        nodeID: In([...new Set(uptimes.map(up => up.event.nodeID)).keys()])
+      }, relations: { location: true, interfaces: true }
+    })).map(n => [n.nodeID, n])
   )
 
   for (let up of uptimes) {
-    let node = touchedNodes.get(up.event.nodeID.toString())
+    let node = touchedNodes.get(up.event.nodeID)
     if (node) {
       node.uptime = up.event.uptime
-      node.updatedAt = BigInt(up.block.timestamp)
+      node.updatedAt = BigInt(up.block.timestamp) / BigInt(1000)
     }
   }
 
