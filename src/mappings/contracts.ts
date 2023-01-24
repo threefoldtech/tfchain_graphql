@@ -1,5 +1,4 @@
 import { Store } from '@subsquid/typeorm-store'
-import { Equal } from 'typeorm';
 import { Ctx } from '../processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 
@@ -377,7 +376,7 @@ export async function contractUpdateUsedResources(
   const savedContract = await ctx.store.get(NodeContract, { where: { contractID: usedResources.contractId } })
   if (!savedContract) return
 
-  const savedContractResources = await ctx.store.get(ContractResources, { where: { contract: Equal(savedContract) }, relations: { contract: true } })
+  const savedContractResources = await ctx.store.get(ContractResources, { where: { contract: { contractID: savedContract.contractID } }, relations: { contract: true } })
   if (savedContractResources) {
     savedContractResources.cru = usedResources.used.cru
     savedContractResources.sru = usedResources.used.sru
