@@ -1,6 +1,5 @@
 import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal } from "../model";
 import { TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
-import { Equal } from 'typeorm';
 import { SubstrateBlock } from '@subsquid/substrate-processor';
 import { In } from 'typeorm'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
@@ -126,7 +125,6 @@ export async function nodeStored(
   resourcesTotal.hru = nodeEvent.resources.hru
   resourcesTotal.mru = nodeEvent.resources.mru
   resourcesTotal.cru = nodeEvent.resources.cru
-
   await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
 
   newNode.interfaces = []
@@ -184,7 +182,7 @@ export async function nodeUpdated(
   savedNode.farmingPolicyId = nodeEvent.farmingPolicyId
 
   // Recalculate total / free resoures when a node get's updated
-  let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: Equal(savedNode) }, relations: { node: true } })
+  let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: { nodeID: savedNode.nodeID } }, relations: { node: true } })
   if (resourcesTotal) {
     resourcesTotal.sru = nodeEvent.resources.sru
     resourcesTotal.hru = nodeEvent.resources.hru
@@ -353,21 +351,21 @@ export async function nodeDeleted(
 ) {
   const nodeID = new TfgridModuleNodeDeletedEvent(ctx, item.event).asV49
 
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID }, relations: { location: true } })
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID }, relations: { location: true, interfaces: true } })
 
   if (savedNode) {
-    const resourcesTotal = await ctx.store.find(NodeResourcesTotal, { where: { node: Equal(savedNode) }, relations: { node: true } })
+    const resourcesTotal = await ctx.store.find(NodeResourcesTotal, { where: { node: { nodeID: savedNode.nodeID } }, relations: { node: true } })
     if (resourcesTotal) {
       const p = resourcesTotal.map(r => ctx.store.remove(r))
       await Promise.all(p)
     }
 
-    const pubConfig = await ctx.store.get(PublicConfig, { where: { node: Equal(savedNode) }, relations: { node: true } })
+    const pubConfig = await ctx.store.get(PublicConfig, { where: { node: { nodeID: savedNode.nodeID } }, relations: { node: true } })
     if (pubConfig) {
       await ctx.store.remove(pubConfig)
     }
 
-    const intfs = await ctx.store.find(Interfaces, { where: { node: Equal(savedNode) }, relations: { node: true } })
+    const intfs = await ctx.store.find(Interfaces, { where: { node: { nodeID: savedNode.nodeID } }, relations: { node: true } })
     const promises = intfs.map(intf => {
       return ctx.store.remove(intf)
     })
@@ -449,10 +447,10 @@ export async function nodePublicConfigStored(
     return
   }
 
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID }, relations: { location: true } })
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID }, relations: { location: true, interfaces: true } })
   if (!savedNode) return
 
-  let publicConfig = await ctx.store.get(PublicConfig, { where: { node: Equal(savedNode) }, relations: { node: true } })
+  let publicConfig = await ctx.store.get(PublicConfig, { where: { node: { nodeID: savedNode.nodeID } }, relations: { node: true } })
 
   if (!publicConfig) {
     publicConfig = new PublicConfig()
@@ -475,7 +473,7 @@ export async function nodeCertificationSet(
 ) {
   const [nodeID, certification] = new TfgridModuleNodeCertificationSetEvent(ctx, item.event).asV63
 
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID }, relations: { location: true } })
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID }, relations: { location: true, interfaces: true } })
   if (!savedNode) return
 
   let certType = NodeCertification.Diy
