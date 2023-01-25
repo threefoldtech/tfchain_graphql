@@ -1,34 +1,34 @@
 import { processBalancesTransfer } from './mappings/balances'
 import { twinCreateOrUpdateOrDelete } from './mappings/twins'
 import {
-  nodeUptimeReported, 
+  nodeUptimeReported,
   nodeCertificationSet, nodeDeleted, nodePublicConfigStored,
   nodeStored, nodeUpdated
- } from './mappings/nodes'
- import { farmingPolicyStored, pricingPolicyStored, farmingPolicyUpdated } from './mappings/policies';
- import { 
-  farmDeleted, farmPayoutV2AddressRegistered, 
+} from './mappings/nodes'
+import { farmingPolicyStored, pricingPolicyStored, farmingPolicyUpdated } from './mappings/policies';
+import {
+  farmDeleted, farmPayoutV2AddressRegistered,
   farmStored, farmUpdated, farmCertificationSet
 } from './mappings/farms';
-import { 
+import {
   collectContractBillReports,
-  contractCreated, contractGracePeriodEnded, 
+  contractCreated, contractGracePeriodEnded,
   contractGracePeriodStarted, contractUpdateUsedResources,
-  nameContractCanceled, nodeContractCanceled, 
+  nameContractCanceled, nodeContractCanceled,
   contractUpdated, nruConsumptionReportReceived, rentContractCanceled
 } from './mappings/contracts';
 import { solutionProviderApproved, solutionProviderCreated } from './mappings/solutionProviders'
-import { 
-  serviceContractCreated, serviceContractMetadataSet, 
-  serviceContractFeesSet, serviceContractApproved, 
-  serviceContractCanceled, serviceContractBilled 
+import {
+  serviceContractCreated, serviceContractMetadataSet,
+  serviceContractFeesSet, serviceContractApproved,
+  serviceContractCanceled, serviceContractBilled
 } from './mappings/serviceContracts';
 
 import {
   SubstrateBlock
 } from "@subsquid/substrate-processor";
 import { TypeormDatabase, Store } from '@subsquid/typeorm-store'
-import {BatchContext, BatchProcessorItem, SubstrateBatchProcessor } from "@subsquid/substrate-processor"
+import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor } from "@subsquid/substrate-processor"
 
 const eventOptions = {
   data: {
@@ -94,10 +94,11 @@ export type Item = BatchProcessorItem<typeof processor>
 export type Ctx = BatchContext<Store, Item>
 
 async function handleEvents(ctx: Ctx, block: SubstrateBlock, item: Item) {
+  let timestamp = block.timestamp / 1000 // unix seconds
   switch (item.name) {
     // Contracts
-    case 'SmartContractModule.ContractCreated': return contractCreated(ctx, item, block.timestamp)
-    case 'SmartContractModule.ContractUpdated': return contractUpdated(ctx, item, block.timestamp)
+    case 'SmartContractModule.ContractCreated': return contractCreated(ctx, item, timestamp)
+    case 'SmartContractModule.ContractUpdated': return contractUpdated(ctx, item, timestamp)
     case 'SmartContractModule.NodeContractCanceled': return nodeContractCanceled(ctx, item)
     case 'SmartContractModule.NameContractCanceled': return nameContractCanceled(ctx, item)
     case 'SmartContractModule.RentContractCanceled': return rentContractCanceled(ctx, item)
@@ -108,12 +109,12 @@ async function handleEvents(ctx: Ctx, block: SubstrateBlock, item: Item) {
     // Farms
     case 'TfgridModule.FarmStored': return farmStored(ctx, item)
     case 'TfgridModule.FarmUpdated': return farmUpdated(ctx, item)
-    case 'TfgridModule.FarmDeleted':  return farmDeleted(ctx, item)
+    case 'TfgridModule.FarmDeleted': return farmDeleted(ctx, item)
     case 'TfgridModule.FarmPayoutV2AddressRegistered': return farmPayoutV2AddressRegistered(ctx, item)
     case 'TfgridModule.FarmCertificationSet': return farmCertificationSet(ctx, item)
     // Nodes
-    case "TfgridModule.NodeStored": return nodeStored(ctx, item, block.timestamp)
-    case "TfgridModule.NodeUpdated": return nodeUpdated(ctx, item, block.timestamp)
+    case "TfgridModule.NodeStored": return nodeStored(ctx, item, timestamp)
+    case "TfgridModule.NodeUpdated": return nodeUpdated(ctx, item, timestamp)
     case "TfgridModule.NodeDeleted": return nodeDeleted(ctx, item)
     case 'TfgridModule.NodePublicConfigStored': return nodePublicConfigStored(ctx, item)
     case 'TfgridModule.NodeCertificationSet': return nodeCertificationSet(ctx, item)
