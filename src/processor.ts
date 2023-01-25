@@ -46,6 +46,7 @@ const processor = new SubstrateBatchProcessor()
     archive: process.env.INDEXER_ENDPOINT_URL || 'http://localhost:8888/graphql',
     chain: process.env.WS_URL || 'ws://localhost:9944'
   })
+  .setPrometheusPort(44233)
   // Balances
   .addEvent('Balances.Transfer', eventOptions)
   // Twins
