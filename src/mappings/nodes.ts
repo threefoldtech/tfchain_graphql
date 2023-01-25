@@ -9,7 +9,7 @@ import { Ctx } from '../processor'
 export async function nodeStored(
   ctx: Ctx,
   item: EventItem<'TfgridModule.NodeStored', { event: { args: true } }>,
-  timestamp: number
+  timestamp: bigint
 ) {
   const node = new TfgridModuleNodeStoredEvent(ctx, item.event)
 
@@ -41,8 +41,8 @@ export async function nodeStored(
   newNode.nodeID = nodeEvent.id
   newNode.twinID = nodeEvent.twinId
 
-  newNode.createdAt = BigInt(timestamp)
-  newNode.updatedAt = BigInt(timestamp)
+  newNode.createdAt = timestamp
+  newNode.updatedAt = timestamp
 
   if (node.isV9) {
     nodeEvent = node.asV9
@@ -147,7 +147,7 @@ export async function nodeStored(
 export async function nodeUpdated(
   ctx: Ctx,
   item: EventItem<'TfgridModule.NodeUpdated', { event: { args: true } }>,
-  timestamp: number
+  timestamp: bigint
 ) {
   const node = new TfgridModuleNodeUpdatedEvent(ctx, item.event)
 
@@ -178,7 +178,7 @@ export async function nodeUpdated(
   savedNode.farmID = nodeEvent.farmId
   savedNode.nodeID = nodeEvent.id
   savedNode.twinID = nodeEvent.twinId
-  savedNode.updatedAt = BigInt(timestamp)
+  savedNode.updatedAt = timestamp
   savedNode.farmingPolicyId = nodeEvent.farmingPolicyId
 
   // Recalculate total / free resoures when a node get's updated

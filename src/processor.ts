@@ -94,11 +94,11 @@ export type Item = BatchProcessorItem<typeof processor>
 export type Ctx = BatchContext<Store, Item>
 
 async function handleEvents(ctx: Ctx, block: SubstrateBlock, item: Item) {
-  let timestamp = block.timestamp / 1000 // unix seconds
+  let timestamp = BigInt(block.timestamp) / BigInt(1000) // unix seconds
   switch (item.name) {
     // Contracts
     case 'SmartContractModule.ContractCreated': return contractCreated(ctx, item, timestamp)
-    case 'SmartContractModule.ContractUpdated': return contractUpdated(ctx, item, timestamp)
+    case 'SmartContractModule.ContractUpdated': return contractUpdated(ctx, item)
     case 'SmartContractModule.NodeContractCanceled': return nodeContractCanceled(ctx, item)
     case 'SmartContractModule.NameContractCanceled': return nameContractCanceled(ctx, item)
     case 'SmartContractModule.RentContractCanceled': return rentContractCanceled(ctx, item)
