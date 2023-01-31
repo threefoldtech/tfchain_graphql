@@ -1,8 +1,9 @@
 import {
   EventHandlerContext,
 } from "@subsquid/substrate-processor";
-import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal } from "../model";
-import { TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent } from "../types/events";
+import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal, NodePower, PowerState, Power } from "../model";
+import { TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent, TfgridModulePowerTargetChangedEvent, TfgridModulePowerStateChangedEvent } from "../types/events";
+import assert from 'assert'
 
 export async function nodeStored(ctx: EventHandlerContext) {
   const node = new TfgridModuleNodeStoredEvent(ctx)
@@ -458,6 +459,65 @@ export async function nodeCertificationSet(ctx: EventHandlerContext) {
   await ctx.store.save<Node>(savedNode)
 }
 
+export async function powerTargetChanged(ctx: EventHandlerContext) {
+  let { nodeId, farmId, powerTarget } = new TfgridModulePowerTargetChangedEvent(ctx).asV123
+
+  let target = Power.Up
+  switch (powerTarget.__kind) {
+    case 'Up':
+      target = Power.Up
+      break
+    case 'Down':
+      target = Power.Down
+      break
+  }
+
+  const savedNodePower = await ctx.store.get(NodePower, { where: { nodeID: nodeId } })
+  if (savedNodePower) {
+    assert(savedNodePower.farmID === farmId)
+    assert(savedNodePower.nodeID === nodeId)
+    savedNodePower.target = target
+    await ctx.store.save<NodePower>(savedNodePower)
+  } else {
+    let newNodePower = new NodePower()
+    newNodePower.id = ctx.event.id
+    newNodePower.farmID = farmId
+    newNodePower.nodeID = nodeId
+    newNodePower.state = PowerState.Up
+    newNodePower.target = target
+    await ctx.store.save<NodePower>(newNodePower)
+  }
+}
+
+export async function powerStateChanged(ctx: EventHandlerContext) {
+  let { nodeId, farmId, powerState } = new TfgridModulePowerStateChangedEvent(ctx).asV123
+
+  let state = PowerState.Up
+  switch (powerState.__kind) {
+    case 'Up':
+      state = PowerState.Up
+      break
+    case 'Down':
+      state = PowerState.Down
+      break
+  }
+
+  const savedNodePower = await ctx.store.get(NodePower, { where: { nodeID: nodeId } })
+  if (savedNodePower) {
+    assert(savedNodePower.farmID === farmId)
+    assert(savedNodePower.nodeID === nodeId)
+    savedNodePower.state = state
+    await ctx.store.save<NodePower>(savedNodePower)
+  } else {
+    let newNodePower = new NodePower()
+    newNodePower.id = ctx.event.id
+    newNodePower.farmID = farmId
+    newNodePower.nodeID = nodeId
+    newNodePower.state = state
+    newNodePower.target = Power.Up
+    await ctx.store.save<NodePower>(newNodePower)
+  }
+}
 
 interface NodePublicConfig {
   ip4: string

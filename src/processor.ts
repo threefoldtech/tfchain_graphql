@@ -1,6 +1,6 @@
 import { balancesTransfer } from './mappings/balances'
 import { twinStored, twinDeleted, twinEntityStored, twinEntityRemoved, twinUpdated } from './mappings/twins'
-import { nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported, nodePublicConfigStored, nodeCertificationSet } from './mappings/nodes'
+import { nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported, nodePublicConfigStored, nodeCertificationSet, powerTargetChanged, powerStateChanged } from './mappings/nodes'
 import { farmingPolicyStored, pricingPolicyStored, farmingPolicyUpdated } from './mappings/policies';
 import { farmDeleted, farmPayoutV2AddressRegistered, farmStored, farmUpdated, farmCertificationSet } from './mappings/farms';
 import { entityDeleted, entityStored, entityUpdated } from './mappings/entity';
@@ -8,7 +8,6 @@ import { contractBilled, contractCreated, contractUpdated, contractUpdateUsedRes
 import { burnProcessed, mintCompleted, refundProcessed } from './mappings/bridge';
 import { solutionProviderCreated, solutionProviderApproved } from './mappings/solutionProviders'
 import { serviceContractCreated, serviceContractMetadataSet, serviceContractFeesSet, serviceContractApproved, serviceContractCanceled, serviceContractBilled } from './mappings/serviceContracts';
-import { powerTargetChanged, powerStateChanged } from './mappings/power';
 
 import {
   SubstrateProcessor,
