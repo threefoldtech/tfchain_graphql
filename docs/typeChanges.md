@@ -104,8 +104,8 @@ npx squid-substrate-typegen typegen.json
 
 Notice it will re-generate following files:
 
-- src/typesLocal/events.js
-- src/typesLocal/$SPECVERSION.js
+- src/typesLocal/events.ts
+- src/typesLocal/$SPECVERSION.ts
 
 ### 4: Add new types / event to the main events definitions
 
@@ -132,7 +132,7 @@ yarn process
 
 The process will likely crash or stop but the db is initialised with the current schema. Now we can edit the graphql schema file: `schema.graphql`.
 
-Once changes are done to the schema, you can create a database migration:
+Once changes are done to the schema (see details about GraphQL schema language [here](https://graphql.org/learn/schema/)), you can create a database migration:
 
 ```
 yarn codegen

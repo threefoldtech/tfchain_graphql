@@ -28,6 +28,8 @@
     "tfgridModule.FarmingPolicyUpdated",
     "tfgridModule.FarmingPolicySet",
     "tfgridModule.FarmCertificationSet",
+    "tfgridModule.PowerTargetChanged",
+    "tfgridModule.PowerStateChanged",
     "smartContractModule.NruConsumptionReportReceived",
     "smartContractModule.ContractCreated",
     "smartContractModule.ContractUpdated",

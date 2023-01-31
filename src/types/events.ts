@@ -13,6 +13,7 @@ import * as v62 from './v63'
 import * as v105 from './v105'
 import * as v118 from './v118'
 import * as v122 from './v122'
+import * as v123 from './v123'
 
 export type AccountId32 = Uint8Array
 
@@ -1212,6 +1213,62 @@ export class TfgridModuleNodeUptimeReportedEvent {
   get asLatest(): [number, bigint, bigint] {
     deprecateLatest()
     return this.asV9
+  }
+}
+
+export class TfgridModulePowerStateChangedEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'tfgridModule.PowerStateChanged')
+  }
+
+  get isV123(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.PowerStateChanged') === 'd5322b23c8c357b4efd50099056dcfba214b94466b72d863ffc1ee8dbd90f80c'
+  }
+
+  get asV123(): { farmId: number, nodeId: number, powerState: v123.PowerState } {
+    assert(this.isV123)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV123
+  }
+
+  get asLatest(): { farmId: number, nodeId: number, powerState: v123.PowerState } {
+    deprecateLatest()
+    return this.asV123
+  }
+}
+
+export class TfgridModulePowerTargetChangedEvent {
+  constructor(private ctx: EventContext) {
+    assert(this.ctx.event.name === 'tfgridModule.PowerTargetChanged')
+  }
+
+  /**
+   * Send an event to zero os to change its state
+   */
+  get isV123(): boolean {
+    return this.ctx._chain.getEventHash('tfgridModule.PowerTargetChanged') === 'c1d738baed628d197d192e6970ff592c9dc24c34f8aebc19303672d3d54dec89'
+  }
+
+  /**
+   * Send an event to zero os to change its state
+   */
+  get asV123(): { farmId: number, nodeId: number, powerTarget: v123.Power } {
+    assert(this.isV123)
+    return this.ctx._chain.decodeEvent(this.ctx.event)
+  }
+
+  get isLatest(): boolean {
+    deprecateLatest()
+    return this.isV123
+  }
+
+  get asLatest(): { farmId: number, nodeId: number, powerTarget: v123.Power } {
+    deprecateLatest()
+    return this.asV123
   }
 }
 

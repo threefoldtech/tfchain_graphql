@@ -310,3 +310,20 @@ type ServiceContractBill @entity {
   metadata: String
   amount: BigInt!
 }
+
+type NodePower @entity {
+  farmID: Int!
+  nodeID: Int!
+  state: PowerState!
+  target: Power!
+}
+
+enum PowerState {
+  Up
+  Down
+}
+
+enum Power {
+  Up
+  Down
+}

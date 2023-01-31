@@ -627,6 +627,30 @@
               "metadata": "Vec<u8>"
             }
           }
+        },
+        {
+          "minmax": [
+            123,
+            null
+          ],
+          "types": {
+            "NodePower": {
+              "state": "PowerState",
+              "target": "Power"
+            },
+            "PowerState": {
+              "_enum": {
+                "Up": null,
+                "Down": "BlockNumber"
+              }
+            },
+            "Power": {
+              "_enum": [
+                "Up",
+                "Down"
+              ]
+            }
+          }
         }
       ]
     }

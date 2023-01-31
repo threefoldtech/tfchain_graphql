@@ -8,6 +8,7 @@ import { contractBilled, contractCreated, contractUpdated, contractUpdateUsedRes
 import { burnProcessed, mintCompleted, refundProcessed } from './mappings/bridge';
 import { solutionProviderCreated, solutionProviderApproved } from './mappings/solutionProviders'
 import { serviceContractCreated, serviceContractMetadataSet, serviceContractFeesSet, serviceContractApproved, serviceContractCanceled, serviceContractBilled } from './mappings/serviceContracts';
+import { powerTargetChanged, powerStateChanged } from './mappings/power';
 
 import {
   SubstrateProcessor,
@@ -52,6 +53,9 @@ processor.addEventHandler('tfgridModule.FarmCertificationSet', ctx => farmCertif
 processor.addEventHandler('tfgridModule.EntityStored', ctx => entityStored(ctx));
 processor.addEventHandler('tfgridModule.EntityUpdated', ctx => entityUpdated(ctx));
 processor.addEventHandler('tfgridModule.EntityDeleted', ctx => entityDeleted(ctx));
+
+processor.addEventHandler('tfgridModule.PowerTargetChanged', ctx => powerTargetChanged(ctx));
+processor.addEventHandler('tfgridModule.PowerStateChanged', ctx => powerStateChanged(ctx));
 
 processor.addEventHandler('smartContractModule.ContractCreated', ctx => contractCreated(ctx));
 processor.addEventHandler('smartContractModule.ContractUpdated', ctx => contractUpdated(ctx));
