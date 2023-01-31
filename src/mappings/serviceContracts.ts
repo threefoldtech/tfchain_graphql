@@ -1,16 +1,18 @@
-import {
-    EventHandlerContext,
-    Store
-} from "@subsquid/substrate-processor";
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { Ctx } from '../processor'
+
 import { ServiceContract, ServiceContractState, ServiceContractBill } from "../model";
 import { SmartContractModuleServiceContractCreatedEvent, SmartContractModuleServiceContractMetadataSetEvent, SmartContractModuleServiceContractFeesSetEvent, SmartContractModuleServiceContractApprovedEvent, SmartContractModuleServiceContractCanceledEvent, SmartContractModuleServiceContractBilledEvent } from "../types/events";
 
-export async function serviceContractCreated(ctx: EventHandlerContext) {
-    let serviceContractCreatedEvent = new SmartContractModuleServiceContractCreatedEvent(ctx).asV122
+export async function serviceContractCreated(
+    ctx: Ctx,
+    item: EventItem<'SmartContractModule.ServiceContractCreated', { event: { args: true } }>,
+) {
+    let serviceContractCreatedEvent = new SmartContractModuleServiceContractCreatedEvent(ctx, item.event).asV122
 
     let serviceContract = new ServiceContract()
 
-    serviceContract.id = ctx.event.id
+    serviceContract.id = item.event.id
     serviceContract.serviceContractID = serviceContractCreatedEvent.serviceContractId
     serviceContract.serviceTwinID = serviceContractCreatedEvent.serviceTwinId
     serviceContract.consumerTwinID = serviceContractCreatedEvent.consumerTwinId
@@ -24,8 +26,11 @@ export async function serviceContractCreated(ctx: EventHandlerContext) {
     await ctx.store.save<ServiceContract>(serviceContract)
 }
 
-export async function serviceContractMetadataSet(ctx: EventHandlerContext) {
-    let serviceContractMetadataSetEvent = new SmartContractModuleServiceContractMetadataSetEvent(ctx).asV122
+export async function serviceContractMetadataSet(
+    ctx: Ctx,
+    item: EventItem<'SmartContractModule.ServiceContractMetadataSet', { event: { args: true } }>,
+) {
+    let serviceContractMetadataSetEvent = new SmartContractModuleServiceContractMetadataSetEvent(ctx, item.event).asV122
 
     const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractID: serviceContractMetadataSetEvent.serviceContractId } })
     if (savedServiceContract) {
@@ -45,8 +50,11 @@ export async function serviceContractMetadataSet(ctx: EventHandlerContext) {
     }
 }
 
-export async function serviceContractFeesSet(ctx: EventHandlerContext) {
-    let serviceContractFeesSetEvent = new SmartContractModuleServiceContractFeesSetEvent(ctx).asV122
+export async function serviceContractFeesSet(
+    ctx: Ctx,
+    item: EventItem<'SmartContractModule.ServiceContractFeesSet', { event: { args: true } }>,
+) {
+    let serviceContractFeesSetEvent = new SmartContractModuleServiceContractFeesSetEvent(ctx, item.event).asV122
 
     const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractID: serviceContractFeesSetEvent.serviceContractId } })
     if (savedServiceContract) {
@@ -67,8 +75,11 @@ export async function serviceContractFeesSet(ctx: EventHandlerContext) {
     }
 }
 
-export async function serviceContractApproved(ctx: EventHandlerContext) {
-    let serviceContractApprovedEvent = new SmartContractModuleServiceContractApprovedEvent(ctx).asV122
+export async function serviceContractApproved(
+    ctx: Ctx,
+    item: EventItem<'SmartContractModule.ServiceContractApproved', { event: { args: true } }>,
+) {
+    let serviceContractApprovedEvent = new SmartContractModuleServiceContractApprovedEvent(ctx, item.event).asV122
 
     const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractID: serviceContractApprovedEvent.serviceContractId } })
     if (savedServiceContract) {
@@ -90,8 +101,11 @@ export async function serviceContractApproved(ctx: EventHandlerContext) {
     }
 }
 
-export async function serviceContractCanceled(ctx: EventHandlerContext) {
-    const serviceContractCanceledEvent = new SmartContractModuleServiceContractCanceledEvent(ctx).asV122
+export async function serviceContractCanceled(
+    ctx: Ctx,
+    item: EventItem<'SmartContractModule.ServiceContractCanceled', { event: { args: true } }>,
+) {
+    const serviceContractCanceledEvent = new SmartContractModuleServiceContractCanceledEvent(ctx, item.event).asV122
 
     const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractID: serviceContractCanceledEvent.serviceContractId } })
 
@@ -100,12 +114,15 @@ export async function serviceContractCanceled(ctx: EventHandlerContext) {
     }
 }
 
-export async function serviceContractBilled(ctx: EventHandlerContext) {
-    const serviceContractBilledEvent = new SmartContractModuleServiceContractBilledEvent(ctx).asV122
+export async function serviceContractBilled(
+    ctx: Ctx,
+    item: EventItem<'SmartContractModule.ServiceContractBilled', { event: { args: true } }>,
+) {
+    const serviceContractBilledEvent = new SmartContractModuleServiceContractBilledEvent(ctx, item.event).asV122
 
     const serviceContractBill = new ServiceContractBill()
 
-    serviceContractBill.id = ctx.event.id
+    serviceContractBill.id = item.event.id
     serviceContractBill.serviceContractID = serviceContractBilledEvent.serviceContract.serviceContractId
     serviceContractBill.variableAmount = serviceContractBilledEvent.bill.variableAmount
     serviceContractBill.window = serviceContractBilledEvent.bill.window

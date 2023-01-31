@@ -6,9 +6,12 @@ metadata:
   name: db
 spec:
   ports:
-    - name: "5432"
-      port: 5432
-      targetPort: 5432
+    - name: '26257'
+      port: 26257
+      targetPort: 26257
+    - name: '8080'
+      port: 8080
+      targetPort: 8080
   selector:
     io.kompose.service: db
 status:

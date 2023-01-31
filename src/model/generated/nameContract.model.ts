@@ -11,13 +11,13 @@ export class NameContract {
   @PrimaryColumn_()
   id!: string
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   gridVersion!: number
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   contractID!: bigint
 
-  @Column_("integer", {nullable: false})
+  @Column_("int4", {nullable: false})
   twinID!: number
 
   @Column_("text", {nullable: false})
@@ -29,6 +29,6 @@ export class NameContract {
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   createdAt!: bigint
 
-  @Column_("integer", {nullable: true})
+  @Column_("int4", {nullable: true})
   solutionProviderID!: number | undefined | null
 }

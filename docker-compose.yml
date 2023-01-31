@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   db:
-    image: postgres:12
+    image: postgres:14
     restart: always
     ports:
       - "${DB_PORT}:5432"
@@ -29,7 +29,7 @@ services:
       - TYPEORM_LOGGING=error
     ports:
       - 44233:44233
-    command: [ "yarn", "process" ]
+    command: ["yarn", "process"]
 
   query-node:
     image: query-node:latest
@@ -45,3 +45,8 @@ services:
       - 4000:4000
     depends_on:
       - db
+
+#networks:
+#  default:
+#    external:
+#      name: graphql

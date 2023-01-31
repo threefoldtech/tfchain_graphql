@@ -1,17 +1,27 @@
-import {
-    EventHandlerContext,
-  } from "@subsquid/substrate-processor";
-import { PricingPolicy, FarmingPolicy, Policy, FarmCertification, NodeCertification, Farm } from "../model";
-import { TfgridModulePricingPolicyStoredEvent, TfgridModuleFarmingPolicyStoredEvent, TfgridModuleFarmingPolicyUpdatedEvent, TfgridModuleFarmingPolicySetEvent, TfgridModuleFarmCertificationSetEvent } from "../types/events";
 import * as ss58 from "@subsquid/ss58";
+import { Ctx } from "../processor";
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 
-export async function pricingPolicyStored(ctx: EventHandlerContext) {
-  let pricingPolicyEvent = new TfgridModulePricingPolicyStoredEvent(ctx)
+import { 
+  PricingPolicy, FarmingPolicy,
+  Policy, FarmCertification, 
+  NodeCertification
+} from "../model";
+import { 
+  TfgridModulePricingPolicyStoredEvent, TfgridModuleFarmingPolicyStoredEvent, 
+  TfgridModuleFarmingPolicyUpdatedEvent
+} from "../types/events";
+
+export async function pricingPolicyStored(
+  ctx: Ctx,
+  item: EventItem<'TfgridModule.PricingPolicyStored', { event: { args: true } }>,
+) {
+  let pricingPolicyEvent = new TfgridModulePricingPolicyStoredEvent(ctx, item.event)
 
   let pricingPolicyEventParsed
 
-  if (pricingPolicyEvent.isV9) {
-    pricingPolicyEventParsed = pricingPolicyEvent.asV9
+  if (pricingPolicyEvent.isV49) {
+    pricingPolicyEventParsed = pricingPolicyEvent.asV49
   } else if (pricingPolicyEvent.isV51) {
     pricingPolicyEventParsed = pricingPolicyEvent.asV51
   } else if (pricingPolicyEvent.isV101) {
@@ -21,7 +31,7 @@ export async function pricingPolicyStored(ctx: EventHandlerContext) {
   if (!pricingPolicyEventParsed) return
   
   let pricingPolicy = new PricingPolicy()
-  pricingPolicy.id = ctx.event.id
+  pricingPolicy.id = item.event.id
 
   const savedPolicy = await ctx.store.get(PricingPolicy, { where: { pricingPolicyID: pricingPolicyEventParsed.id }})
   if (savedPolicy) {
@@ -68,8 +78,11 @@ export async function pricingPolicyStored(ctx: EventHandlerContext) {
   await ctx.store.save<PricingPolicy>(pricingPolicy)
 }
 
-export async function farmingPolicyStored(ctx: EventHandlerContext) {
-  const farmingPolicyEvent = new TfgridModuleFarmingPolicyStoredEvent(ctx)
+export async function farmingPolicyStored(
+  ctx: Ctx,
+  item: EventItem<'TfgridModule.FarmingPolicyStored', { event: { args: true } }>,
+) {
+  const farmingPolicyEvent = new TfgridModuleFarmingPolicyStoredEvent(ctx, item.event)
 
   if (!farmingPolicyEvent.isV63) {
     return
@@ -78,7 +91,7 @@ export async function farmingPolicyStored(ctx: EventHandlerContext) {
   const farmingPolicyStoredEvent = farmingPolicyEvent.asV63
 
   const newFarmingPolicy = new FarmingPolicy()
-  newFarmingPolicy.id = ctx.event.id
+  newFarmingPolicy.id = item.event.id
   newFarmingPolicy.gridVersion = farmingPolicyStoredEvent.version
   newFarmingPolicy.farmingPolicyID = farmingPolicyStoredEvent.id
   newFarmingPolicy.name = farmingPolicyStoredEvent.name.toString()
@@ -119,8 +132,11 @@ export async function farmingPolicyStored(ctx: EventHandlerContext) {
   await ctx.store.save<FarmingPolicy>(newFarmingPolicy)
 }
 
-export async function farmingPolicyUpdated(ctx: EventHandlerContext) {
-  const farmingPolicyEvent = new TfgridModuleFarmingPolicyUpdatedEvent(ctx)
+export async function farmingPolicyUpdated(
+  ctx: Ctx,
+  item: EventItem<'TfgridModule.FarmingPolicyUpdated', { event: { args: true } }>,
+) {
+  const farmingPolicyEvent = new TfgridModuleFarmingPolicyUpdatedEvent(ctx, item.event)
 
   if (!farmingPolicyEvent.isV63) {
     return

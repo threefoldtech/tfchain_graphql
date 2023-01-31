@@ -1,17 +1,22 @@
 import * as ss58 from "@subsquid/ss58"
-import {
-  EventHandlerContext,
-  Store
-} from "@subsquid/substrate-processor"
-import { Provider, SolutionProvider } from "../model"
-import { SmartContractModuleSolutionProviderApprovedEvent, SmartContractModuleSolutionProviderCreatedEvent } from "../types/events"
+import { Ctx } from '../processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 
-export async function solutionProviderCreated(ctx: EventHandlerContext) {
-  let providerCreatedEvent = new SmartContractModuleSolutionProviderCreatedEvent(ctx).asV105
+import { Provider, SolutionProvider } from "../model"
+import { 
+  SmartContractModuleSolutionProviderApprovedEvent, 
+  SmartContractModuleSolutionProviderCreatedEvent 
+} from "../types/events"
+
+export async function solutionProviderCreated(
+  ctx: Ctx,
+  item: EventItem<'SmartContractModule.SolutionProviderCreated', { event: { args: true } }>,
+) {
+  let providerCreatedEvent = new SmartContractModuleSolutionProviderCreatedEvent(ctx, item.event).asV105
 
   let provider = new SolutionProvider()
 
-  provider.id = ctx.event.id
+  provider.id = item.event.id
   provider.solutionProviderID = providerCreatedEvent.solutionProviderId
   provider.description = providerCreatedEvent.description.toString()
   provider.link = providerCreatedEvent.link.toString()
@@ -30,8 +35,11 @@ export async function solutionProviderCreated(ctx: EventHandlerContext) {
   await ctx.store.save<SolutionProvider>(provider)
 }
 
-export async function solutionProviderApproved(ctx: EventHandlerContext) {
-  let providerApprovedEvent = new SmartContractModuleSolutionProviderApprovedEvent(ctx).asV105
+export async function solutionProviderApproved(
+  ctx: Ctx,
+  item: EventItem<'SmartContractModule.SolutionProviderApproved', { event: { args: true } }>,
+) {
+  let providerApprovedEvent = new SmartContractModuleSolutionProviderApprovedEvent(ctx, item.event).asV105
 
   const savedProvider = await ctx.store.get(SolutionProvider, { where: { solutionProviderID: providerApprovedEvent[0] } })
   if (savedProvider) {

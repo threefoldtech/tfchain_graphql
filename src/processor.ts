@@ -1,81 +1,167 @@
-import { balancesTransfer } from './mappings/balances'
-import { twinStored, twinDeleted, twinEntityStored, twinEntityRemoved, twinUpdated } from './mappings/twins'
-import { nodeStored, nodeUpdated, nodeDeleted, nodeUptimeReported, nodePublicConfigStored, nodeCertificationSet } from './mappings/nodes'
+import { processBalancesTransfer } from './mappings/balances'
+import { twinCreateOrUpdateOrDelete } from './mappings/twins'
+import {
+  nodeUptimeReported,
+  nodeCertificationSet, nodeDeleted, nodePublicConfigStored,
+  nodeStored, nodeUpdated
+} from './mappings/nodes'
 import { farmingPolicyStored, pricingPolicyStored, farmingPolicyUpdated } from './mappings/policies';
-import { farmDeleted, farmPayoutV2AddressRegistered, farmStored, farmUpdated, farmCertificationSet } from './mappings/farms';
-import { entityDeleted, entityStored, entityUpdated } from './mappings/entity';
-import { contractBilled, contractCreated, contractUpdated, contractUpdateUsedResources, nameContractCanceled, nodeContractCanceled, nruConsumptionReportReceived, rentContractCanceled, contractGracePeriodStarted, contractGracePeriodEnded } from './mappings/contracts';
-import { burnProcessed, mintCompleted, refundProcessed } from './mappings/bridge';
-import { solutionProviderCreated, solutionProviderApproved } from './mappings/solutionProviders'
-import { serviceContractCreated, serviceContractMetadataSet, serviceContractFeesSet, serviceContractApproved, serviceContractCanceled, serviceContractBilled } from './mappings/serviceContracts';
+import {
+  farmDeleted, farmPayoutV2AddressRegistered,
+  farmStored, farmUpdated, farmCertificationSet
+} from './mappings/farms';
+import {
+  collectContractBillReports,
+  contractCreated, contractGracePeriodEnded,
+  contractGracePeriodStarted, contractUpdateUsedResources,
+  nameContractCanceled, nodeContractCanceled,
+  contractUpdated, nruConsumptionReportReceived, rentContractCanceled
+} from './mappings/contracts';
+import { solutionProviderApproved, solutionProviderCreated } from './mappings/solutionProviders'
+import {
+  serviceContractCreated, serviceContractMetadataSet,
+  serviceContractFeesSet, serviceContractApproved,
+  serviceContractCanceled, serviceContractBilled
+} from './mappings/serviceContracts';
 
 import {
-  SubstrateProcessor,
+  SubstrateBlock
 } from "@subsquid/substrate-processor";
+import { TypeormDatabase, Store } from '@subsquid/typeorm-store'
+import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor } from "@subsquid/substrate-processor"
 
-const processor = new SubstrateProcessor("substrate_threefold");
+const eventOptions = {
+  data: {
+    event: {
+      args: true,
+      // extrinsic: true
+    },
+  } as const,
+} as const
 
-processor.setTypesBundle("typegen/typesBundle.json");
-processor.setBatchSize(500);
-processor.setPrometheusPort(44233)
+const processor = new SubstrateBatchProcessor()
+  .includeAllBlocks()
+  .setTypesBundle("typegen/typesBundle.json")
+  .setDataSource({
+    archive: process.env.INDEXER_ENDPOINT_URL || 'http://localhost:8888/graphql',
+    chain: process.env.WS_URL || 'ws://localhost:9944'
+  })
+  .setPrometheusPort(44233)
+  // Balances
+  .addEvent('Balances.Transfer', eventOptions)
+  // Twins
+  .addEvent('TfgridModule.TwinStored', eventOptions)
+  .addEvent('TfgridModule.TwinUpdated', eventOptions)
+  .addEvent('TfgridModule.TwinDeleted', eventOptions)
+  // Farms
+  .addEvent('TfgridModule.FarmStored', eventOptions)
+  .addEvent('TfgridModule.FarmUpdated', eventOptions)
+  .addEvent('TfgridModule.FarmDeleted', eventOptions)
+  .addEvent('TfgridModule.FarmPayoutV2AddressRegistered', eventOptions)
+  .addEvent('TfgridModule.FarmCertificationSet', eventOptions)
+  // Nodes
+  .addEvent('TfgridModule.NodeStored', eventOptions)
+  .addEvent('TfgridModule.NodeUpdated', eventOptions)
+  .addEvent('TfgridModule.NodeDeleted', eventOptions)
+  .addEvent('TfgridModule.NodeUptimeReported', eventOptions)
+  .addEvent('TfgridModule.NodePublicConfigStored', eventOptions)
+  .addEvent('TfgridModule.NodeCertificationSet', eventOptions)
+  // Contracts
+  .addEvent('SmartContractModule.ContractCreated', eventOptions)
+  .addEvent('SmartContractModule.ContractUpdated', eventOptions)
+  .addEvent('SmartContractModule.NodeContractCanceled', eventOptions)
+  .addEvent('SmartContractModule.NameContractCanceled', eventOptions)
+  .addEvent('SmartContractModule.RentContractCanceled', eventOptions)
+  .addEvent('SmartContractModule.ContractBilled', eventOptions)
+  .addEvent('SmartContractModule.UpdatedUsedResources', eventOptions)
+  .addEvent('SmartContractModule.NruConsumptionReportReceived', eventOptions)
+  .addEvent('SmartContractModule.ContractGracePeriodStarted', eventOptions)
+  .addEvent('SmartContractModule.ContractGracePeriodEnded', eventOptions)
+  .addEvent('SmartContractModule.SolutionProviderCreated', eventOptions)
+  .addEvent('SmartContractModule.SolutionProviderApproved', eventOptions)
+  // Farming Policies
+  .addEvent('TfgridModule.PricingPolicyStored', eventOptions)
+  .addEvent('TfgridModule.FarmingPolicyStored', eventOptions)
+  .addEvent('TfgridModule.FarmingPolicyUpdated', eventOptions)
+  // Service Contracts
+  .addEvent('SmartContractModule.ServiceContractCreated', eventOptions)
+  .addEvent('SmartContractModule.ServiceContractMetadataSet', eventOptions)
+  .addEvent('SmartContractModule.ServiceContractFeesSet', eventOptions)
+  .addEvent('SmartContractModule.ServiceContractApproved', eventOptions)
+  .addEvent('SmartContractModule.ServiceContractCanceled', eventOptions)
+  .addEvent('SmartContractModule.ServiceContractBilled', eventOptions)
 
-processor.setDataSource({
-  archive: process.env.INDEXER_ENDPOINT_URL || 'http://localhost:4010/v1/graphql',
-  chain: process.env.WS_URL || 'ws://localhost:9944'
-});
+export type Item = BatchProcessorItem<typeof processor>
+export type Ctx = BatchContext<Store, Item>
 
-processor.addEventHandler('balances.Transfer', ctx => balancesTransfer(ctx));
+async function handleEvents(ctx: Ctx, block: SubstrateBlock, item: Item) {
+  let timestamp = BigInt(block.timestamp) / BigInt(1000) // unix seconds
+  switch (item.name) {
+    // Contracts
+    case 'SmartContractModule.ContractCreated': return contractCreated(ctx, item, timestamp)
+    case 'SmartContractModule.ContractUpdated': return contractUpdated(ctx, item)
+    case 'SmartContractModule.NodeContractCanceled': return nodeContractCanceled(ctx, item)
+    case 'SmartContractModule.NameContractCanceled': return nameContractCanceled(ctx, item)
+    case 'SmartContractModule.RentContractCanceled': return rentContractCanceled(ctx, item)
+    case 'SmartContractModule.UpdatedUsedResources': return contractUpdateUsedResources(ctx, item)
+    case 'SmartContractModule.NruConsumptionReportReceived': return nruConsumptionReportReceived(ctx, item)
+    case 'SmartContractModule.ContractGracePeriodStarted': return contractGracePeriodStarted(ctx, item)
+    case 'SmartContractModule.ContractGracePeriodEnded': return contractGracePeriodEnded(ctx, item)
+    // Farms
+    case 'TfgridModule.FarmStored': return farmStored(ctx, item)
+    case 'TfgridModule.FarmUpdated': return farmUpdated(ctx, item)
+    case 'TfgridModule.FarmDeleted': return farmDeleted(ctx, item)
+    case 'TfgridModule.FarmPayoutV2AddressRegistered': return farmPayoutV2AddressRegistered(ctx, item)
+    case 'TfgridModule.FarmCertificationSet': return farmCertificationSet(ctx, item)
+    // Nodes
+    case "TfgridModule.NodeStored": return nodeStored(ctx, item, timestamp)
+    case "TfgridModule.NodeUpdated": return nodeUpdated(ctx, item, timestamp)
+    case "TfgridModule.NodeDeleted": return nodeDeleted(ctx, item)
+    case 'TfgridModule.NodePublicConfigStored': return nodePublicConfigStored(ctx, item)
+    case 'TfgridModule.NodeCertificationSet': return nodeCertificationSet(ctx, item)
+    // Policies
+    case 'TfgridModule.PricingPolicyStored': return pricingPolicyStored(ctx, item)
+    case 'TfgridModule.FarmingPolicyStored': return farmingPolicyStored(ctx, item)
+    case 'TfgridModule.FarmingPolicyUpdated': return farmingPolicyUpdated(ctx, item)
+    // Solutions
+    case 'SmartContractModule.SolutionProviderCreated': return solutionProviderCreated(ctx, item)
+    case 'SmartContractModule.SolutionProviderApproved': return solutionProviderApproved(ctx, item)
+    // Service Contracts
+    case 'SmartContractModule.ServiceContractCreated': return serviceContractCreated(ctx, item)
+    case 'SmartContractModule.ServiceContractMetadataSet': return serviceContractMetadataSet(ctx, item)
+    case 'SmartContractModule.ServiceContractFeesSet': return serviceContractFeesSet(ctx, item)
+    case 'SmartContractModule.ServiceContractApproved': return serviceContractApproved(ctx, item)
+    case 'SmartContractModule.ServiceContractCanceled': return serviceContractCanceled(ctx, item)
+    case 'SmartContractModule.ServiceContractBilled': return serviceContractBilled(ctx, item)
+  }
+}
 
-processor.addEventHandler('tfgridModule.TwinStored', ctx => twinStored(ctx));
-processor.addEventHandler('tfgridModule.TwinUpdated', ctx => twinUpdated(ctx));
-processor.addEventHandler('tfgridModule.TwinDeleted', ctx => twinDeleted(ctx));
-processor.addEventHandler('tfgridModule.TwinEntityStored', ctx => twinEntityStored(ctx));
-processor.addEventHandler('tfgridModule.TwinEntityDeleted', ctx => twinEntityRemoved(ctx));
+processor.run(new TypeormDatabase(), async ctx => {
+  // Process all non-batch events
+  for (let block of ctx.blocks) {
+    for (let item of block.items) {
+      await handleEvents(ctx, block.header, item)
+    }
+  }
 
-processor.addEventHandler('tfgridModule.NodeStored', ctx => nodeStored(ctx));
-processor.addEventHandler('tfgridModule.NodeUptimeReported', ctx => nodeUptimeReported(ctx));
-processor.addEventHandler('tfgridModule.NodeDeleted', ctx => nodeDeleted(ctx));
-processor.addEventHandler('tfgridModule.NodePublicConfigStored', ctx => nodePublicConfigStored(ctx));
-processor.addEventHandler('tfgridModule.NodeUpdated', ctx => nodeUpdated(ctx));
-processor.addEventHandler('tfgridModule.NodeCertificationSet', ctx => nodeCertificationSet(ctx));
+  // Process twins in batch
+  let [newTwins, updatedTwin, deletedTwins] = await twinCreateOrUpdateOrDelete(ctx)
+  // Insert new twins
+  await ctx.store.insert(newTwins)
+  // Save updated twins
+  await ctx.store.save(updatedTwin)
+  // Delete twins
+  await ctx.store.remove(deletedTwins)
 
-processor.addEventHandler('tfgridModule.PricingPolicyStored', ctx => pricingPolicyStored(ctx));
-processor.addEventHandler('tfgridModule.FarmingPolicyStored', ctx => farmingPolicyStored(ctx));
-processor.addEventHandler('tfgridModule.FarmingPolicyUpdated', ctx => farmingPolicyUpdated(ctx));
+  // Process transfers
+  let [transfers, accounts] = await processBalancesTransfer(ctx)
+  await ctx.store.save(accounts)
+  await ctx.store.insert(transfers)
 
-processor.addEventHandler('tfgridModule.FarmStored', ctx => farmStored(ctx));
-processor.addEventHandler('tfgridModule.FarmUpdated', ctx => farmUpdated(ctx));
-processor.addEventHandler('tfgridModule.FarmDeleted', ctx => farmDeleted(ctx));
-processor.addEventHandler('tfgridModule.FarmPayoutV2AddressRegistered', ctx => farmPayoutV2AddressRegistered(ctx));
-processor.addEventHandler('tfgridModule.FarmCertificationSet', ctx => farmCertificationSet(ctx));
+  // Process bill reports
+  let contractBillReports = collectContractBillReports(ctx)
+  await ctx.store.save(contractBillReports)
 
-processor.addEventHandler('tfgridModule.EntityStored', ctx => entityStored(ctx));
-processor.addEventHandler('tfgridModule.EntityUpdated', ctx => entityUpdated(ctx));
-processor.addEventHandler('tfgridModule.EntityDeleted', ctx => entityDeleted(ctx));
-
-processor.addEventHandler('smartContractModule.ContractCreated', ctx => contractCreated(ctx));
-processor.addEventHandler('smartContractModule.ContractUpdated', ctx => contractUpdated(ctx));
-processor.addEventHandler('smartContractModule.NodeContractCanceled', ctx => nodeContractCanceled(ctx));
-processor.addEventHandler('smartContractModule.NameContractCanceled', ctx => nameContractCanceled(ctx));
-processor.addEventHandler('smartContractModule.RentContractCanceled', ctx => rentContractCanceled(ctx));
-processor.addEventHandler('smartContractModule.ContractBilled', ctx => contractBilled(ctx));
-processor.addEventHandler('smartContractModule.UpdatedUsedResources', ctx => contractUpdateUsedResources(ctx));
-processor.addEventHandler('smartContractModule.NruConsumptionReportReceived', ctx => nruConsumptionReportReceived(ctx))
-processor.addEventHandler('smartContractModule.ContractGracePeriodStarted', ctx => contractGracePeriodStarted(ctx))
-processor.addEventHandler('smartContractModule.ContractGracePeriodEnded', ctx => contractGracePeriodEnded(ctx))
-processor.addEventHandler('smartContractModule.SolutionProviderCreated', ctx => solutionProviderCreated(ctx))
-processor.addEventHandler('smartContractModule.SolutionProviderApproved', ctx => solutionProviderApproved(ctx))
-processor.addEventHandler('smartContractModule.ServiceContractCreated', ctx => serviceContractCreated(ctx))
-processor.addEventHandler('smartContractModule.ServiceContractMetadataSet', ctx => serviceContractMetadataSet(ctx))
-processor.addEventHandler('smartContractModule.ServiceContractFeesSet', ctx => serviceContractFeesSet(ctx))
-processor.addEventHandler('smartContractModule.ServiceContractApproved', ctx => serviceContractApproved(ctx))
-processor.addEventHandler('smartContractModule.ServiceContractCanceled', ctx => serviceContractCanceled(ctx))
-processor.addEventHandler('smartContractModule.ServiceContractBilled', ctx => serviceContractBilled(ctx))
-
-// processor.addEventHandler('smartContractModule.NodeMarkedAsDedicated', ctx => nodeMarkedAsDedicated(ctx));
-
-processor.addEventHandler('tftBridgeModule.MintCompleted', ctx => mintCompleted(ctx));
-processor.addEventHandler('tfgridModule.BurnTransactionProcessed', ctx => burnProcessed(ctx));
-processor.addEventHandler('tfgridModule.RefundTransactionProcessed', ctx => refundProcessed(ctx));
-
-processor.run();
+  // Batch node uptime reports
+  await nodeUptimeReported(ctx)
+})

@@ -17,17 +17,18 @@ spec:
         io.kompose.service: db
     spec:
       containers:
-        - env:
-            - name: POSTGRES_PASSWORD
-              value: postgres
-            - name: POSTGRES_USER
-              value: postgres
-          image: postgres:12
+        - args:
+            - start-single-node
+            - --insecure
+          image: cockroachdb/cockroach:v22.2.2
           name: db
           resources: {}
           volumeMounts:
-            - mountPath: /var/lib/postgresql/data
+            - mountPath: /cockroach/cockroach-data
               name: db-claim0
+          ports:
+            - containerPort: 26257
+            - containerPort: 8080
       restartPolicy: Always
       volumes:
         - name: db-claim0

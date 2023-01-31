@@ -74,9 +74,9 @@ If you for example need to track a new event you need to edit the events declara
 ```json
   "events": [
     "balances.Transfer",
-    "tfgridModule.EntityStored",
-    "tfgridModule.EntityUpdated",
-    "tfgridModule.EntityDeleted",
+    "TfgridModule.EntityStored",
+    "TfgridModule.EntityUpdated",
+    "TfgridModule.EntityDeleted",
     ...
     "someModule.newEvent"
     ...

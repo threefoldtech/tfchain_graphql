@@ -35,11 +35,11 @@ export class BalancesTransferEvent {
 
 export class SmartContractModuleContractBilledEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.ContractBilled')
+    assert(this.ctx.event.name === 'SmartContractModule.ContractBilled')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ContractBilled') === '80f35d404149c70acbd173262c31ae49812dbb6c9f279954678dd758bb5aa239'
+    return this.ctx._chain.getEventHash('SmartContractModule.ContractBilled') === '80f35d404149c70acbd173262c31ae49812dbb6c9f279954678dd758bb5aa239'
   }
 
   get asV122(): v122.ContractBill {
@@ -60,14 +60,14 @@ export class SmartContractModuleContractBilledEvent {
 
 export class SmartContractModuleContractCreatedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.ContractCreated')
+    assert(this.ctx.event.name === 'SmartContractModule.ContractCreated')
   }
 
   /**
    * A contract got created
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ContractCreated') === 'bc600595215d0331e91aaeff45059fe6383f3362d537b936e491fe1154d3a842'
+    return this.ctx._chain.getEventHash('SmartContractModule.ContractCreated') === 'bc600595215d0331e91aaeff45059fe6383f3362d537b936e491fe1154d3a842'
   }
 
   /**
@@ -91,14 +91,14 @@ export class SmartContractModuleContractCreatedEvent {
 
 export class SmartContractModuleContractGracePeriodEndedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.ContractGracePeriodEnded')
+    assert(this.ctx.event.name === 'SmartContractModule.ContractGracePeriodEnded')
   }
 
   /**
    * A Contract grace period was ended
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ContractGracePeriodEnded') === '2a451998845cc7fbb5269823cda637a7f9805f49123c343665bb37cbbf9cfbe4'
+    return this.ctx._chain.getEventHash('SmartContractModule.ContractGracePeriodEnded') === '2a451998845cc7fbb5269823cda637a7f9805f49123c343665bb37cbbf9cfbe4'
   }
 
   /**
@@ -122,14 +122,14 @@ export class SmartContractModuleContractGracePeriodEndedEvent {
 
 export class SmartContractModuleContractGracePeriodStartedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.ContractGracePeriodStarted')
+    assert(this.ctx.event.name === 'SmartContractModule.ContractGracePeriodStarted')
   }
 
   /**
    * A Contract grace period is triggered
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ContractGracePeriodStarted') === '5c4b7518ed686396094c34c59a2f5d1cd0da102a76c852ec194b5c72a0faf79e'
+    return this.ctx._chain.getEventHash('SmartContractModule.ContractGracePeriodStarted') === '5c4b7518ed686396094c34c59a2f5d1cd0da102a76c852ec194b5c72a0faf79e'
   }
 
   /**
@@ -153,14 +153,14 @@ export class SmartContractModuleContractGracePeriodStartedEvent {
 
 export class SmartContractModuleContractUpdatedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.ContractUpdated')
+    assert(this.ctx.event.name === 'SmartContractModule.ContractUpdated')
   }
 
   /**
    * A contract was updated
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ContractUpdated') === 'bc600595215d0331e91aaeff45059fe6383f3362d537b936e491fe1154d3a842'
+    return this.ctx._chain.getEventHash('SmartContractModule.ContractUpdated') === 'bc600595215d0331e91aaeff45059fe6383f3362d537b936e491fe1154d3a842'
   }
 
   /**
@@ -184,14 +184,14 @@ export class SmartContractModuleContractUpdatedEvent {
 
 export class SmartContractModuleNameContractCanceledEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.NameContractCanceled')
+    assert(this.ctx.event.name === 'SmartContractModule.NameContractCanceled')
   }
 
   /**
    * A Name contract is canceled
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.NameContractCanceled') === '28d75d7f6a405072b1337c49414e7c89805fbab702800c1a4b653076bd2dc4db'
+    return this.ctx._chain.getEventHash('SmartContractModule.NameContractCanceled') === '28d75d7f6a405072b1337c49414e7c89805fbab702800c1a4b653076bd2dc4db'
   }
 
   /**
@@ -215,14 +215,14 @@ export class SmartContractModuleNameContractCanceledEvent {
 
 export class SmartContractModuleNodeContractCanceledEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.NodeContractCanceled')
+    assert(this.ctx.event.name === 'SmartContractModule.NodeContractCanceled')
   }
 
   /**
    * A Node contract is canceled
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.NodeContractCanceled') === '2a451998845cc7fbb5269823cda637a7f9805f49123c343665bb37cbbf9cfbe4'
+    return this.ctx._chain.getEventHash('SmartContractModule.NodeContractCanceled') === '2a451998845cc7fbb5269823cda637a7f9805f49123c343665bb37cbbf9cfbe4'
   }
 
   /**
@@ -246,14 +246,14 @@ export class SmartContractModuleNodeContractCanceledEvent {
 
 export class SmartContractModuleNruConsumptionReportReceivedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.NruConsumptionReportReceived')
+    assert(this.ctx.event.name === 'SmartContractModule.NruConsumptionReportReceived')
   }
 
   /**
    * Network resources report received for contract
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.NruConsumptionReportReceived') === '8fb8781273a0957437746af773ed15577fcddcf30727d6027f1651e65345eaf8'
+    return this.ctx._chain.getEventHash('SmartContractModule.NruConsumptionReportReceived') === '8fb8781273a0957437746af773ed15577fcddcf30727d6027f1651e65345eaf8'
   }
 
   /**
@@ -277,14 +277,14 @@ export class SmartContractModuleNruConsumptionReportReceivedEvent {
 
 export class SmartContractModuleRentContractCanceledEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.RentContractCanceled')
+    assert(this.ctx.event.name === 'SmartContractModule.RentContractCanceled')
   }
 
   /**
    * a Rent contract is canceled
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.RentContractCanceled') === '28d75d7f6a405072b1337c49414e7c89805fbab702800c1a4b653076bd2dc4db'
+    return this.ctx._chain.getEventHash('SmartContractModule.RentContractCanceled') === '28d75d7f6a405072b1337c49414e7c89805fbab702800c1a4b653076bd2dc4db'
   }
 
   /**
@@ -308,14 +308,14 @@ export class SmartContractModuleRentContractCanceledEvent {
 
 export class SmartContractModuleServiceContractApprovedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.ServiceContractApproved')
+    assert(this.ctx.event.name === 'SmartContractModule.ServiceContractApproved')
   }
 
   /**
    * A Service contract is approved
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ServiceContractApproved') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+    return this.ctx._chain.getEventHash('SmartContractModule.ServiceContractApproved') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
   }
 
   /**
@@ -339,14 +339,14 @@ export class SmartContractModuleServiceContractApprovedEvent {
 
 export class SmartContractModuleServiceContractBilledEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.ServiceContractBilled')
+    assert(this.ctx.event.name === 'SmartContractModule.ServiceContractBilled')
   }
 
   /**
    * A Service contract is billed
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ServiceContractBilled') === '7985d39a3e56b65ab2853980404ab7250260ef1f2f7395adf3092259fb9ddbc5'
+    return this.ctx._chain.getEventHash('SmartContractModule.ServiceContractBilled') === '7985d39a3e56b65ab2853980404ab7250260ef1f2f7395adf3092259fb9ddbc5'
   }
 
   /**
@@ -370,14 +370,14 @@ export class SmartContractModuleServiceContractBilledEvent {
 
 export class SmartContractModuleServiceContractCanceledEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.ServiceContractCanceled')
+    assert(this.ctx.event.name === 'SmartContractModule.ServiceContractCanceled')
   }
 
   /**
    * A Service contract is canceled
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ServiceContractCanceled') === '5d9c761d54a2a85566da8e150a364cc6f59f363b1139be81f9993b7d62a74bb0'
+    return this.ctx._chain.getEventHash('SmartContractModule.ServiceContractCanceled') === '5d9c761d54a2a85566da8e150a364cc6f59f363b1139be81f9993b7d62a74bb0'
   }
 
   /**
@@ -401,14 +401,14 @@ export class SmartContractModuleServiceContractCanceledEvent {
 
 export class SmartContractModuleServiceContractCreatedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.ServiceContractCreated')
+    assert(this.ctx.event.name === 'SmartContractModule.ServiceContractCreated')
   }
 
   /**
    * A Service contract is created
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ServiceContractCreated') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+    return this.ctx._chain.getEventHash('SmartContractModule.ServiceContractCreated') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
   }
 
   /**
@@ -432,14 +432,14 @@ export class SmartContractModuleServiceContractCreatedEvent {
 
 export class SmartContractModuleServiceContractFeesSetEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.ServiceContractFeesSet')
+    assert(this.ctx.event.name === 'SmartContractModule.ServiceContractFeesSet')
   }
 
   /**
    * A Service contract fees are set
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ServiceContractFeesSet') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+    return this.ctx._chain.getEventHash('SmartContractModule.ServiceContractFeesSet') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
   }
 
   /**
@@ -463,14 +463,14 @@ export class SmartContractModuleServiceContractFeesSetEvent {
 
 export class SmartContractModuleServiceContractMetadataSetEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.ServiceContractMetadataSet')
+    assert(this.ctx.event.name === 'SmartContractModule.ServiceContractMetadataSet')
   }
 
   /**
    * A Service contract metadata is set
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.ServiceContractMetadataSet') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
+    return this.ctx._chain.getEventHash('SmartContractModule.ServiceContractMetadataSet') === '31b80feead37363efd85ab0f302bd2d559a9275d61d4642185d79b006d0ddc52'
   }
 
   /**
@@ -494,11 +494,11 @@ export class SmartContractModuleServiceContractMetadataSetEvent {
 
 export class SmartContractModuleSolutionProviderApprovedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.SolutionProviderApproved')
+    assert(this.ctx.event.name === 'SmartContractModule.SolutionProviderApproved')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.SolutionProviderApproved') === '840ac8d292e1374dbb168d73165f148f05f011c240521661b812cf877cec0614'
+    return this.ctx._chain.getEventHash('SmartContractModule.SolutionProviderApproved') === '840ac8d292e1374dbb168d73165f148f05f011c240521661b812cf877cec0614'
   }
 
   get asV122(): [bigint, boolean] {
@@ -519,11 +519,11 @@ export class SmartContractModuleSolutionProviderApprovedEvent {
 
 export class SmartContractModuleSolutionProviderCreatedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.SolutionProviderCreated')
+    assert(this.ctx.event.name === 'SmartContractModule.SolutionProviderCreated')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.SolutionProviderCreated') === 'd32a4b80af4fcacbe96dc685f8a21488024fe716bdb4ea57ff9ddee85e29bc26'
+    return this.ctx._chain.getEventHash('SmartContractModule.SolutionProviderCreated') === 'd32a4b80af4fcacbe96dc685f8a21488024fe716bdb4ea57ff9ddee85e29bc26'
   }
 
   get asV122(): v122.SolutionProvider {
@@ -544,14 +544,14 @@ export class SmartContractModuleSolutionProviderCreatedEvent {
 
 export class SmartContractModuleUpdatedUsedResourcesEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'smartContractModule.UpdatedUsedResources')
+    assert(this.ctx.event.name === 'SmartContractModule.UpdatedUsedResources')
   }
 
   /**
    * Contract resources got updated
    */
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('smartContractModule.UpdatedUsedResources') === 'a2596f7d808ddd9ac668241df18cffb93329f10e334b13b87782cc828372795a'
+    return this.ctx._chain.getEventHash('SmartContractModule.UpdatedUsedResources') === 'a2596f7d808ddd9ac668241df18cffb93329f10e334b13b87782cc828372795a'
   }
 
   /**
@@ -575,11 +575,11 @@ export class SmartContractModuleUpdatedUsedResourcesEvent {
 
 export class TfgridModuleConnectionPriceSetEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.ConnectionPriceSet')
+    assert(this.ctx.event.name === 'TfgridModule.ConnectionPriceSet')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.ConnectionPriceSet') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    return this.ctx._chain.getEventHash('TfgridModule.ConnectionPriceSet') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
   }
 
   get asV122(): number {
@@ -600,11 +600,11 @@ export class TfgridModuleConnectionPriceSetEvent {
 
 export class TfgridModuleEntityDeletedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.EntityDeleted')
+    assert(this.ctx.event.name === 'TfgridModule.EntityDeleted')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.EntityDeleted') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    return this.ctx._chain.getEventHash('TfgridModule.EntityDeleted') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
   }
 
   get asV122(): number {
@@ -625,11 +625,11 @@ export class TfgridModuleEntityDeletedEvent {
 
 export class TfgridModuleEntityStoredEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.EntityStored')
+    assert(this.ctx.event.name === 'TfgridModule.EntityStored')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.EntityStored') === '9d6387c93300e77d2fc96af3ccb27b7eddb14f3768bdf0cf045995fc0be93d47'
+    return this.ctx._chain.getEventHash('TfgridModule.EntityStored') === '9d6387c93300e77d2fc96af3ccb27b7eddb14f3768bdf0cf045995fc0be93d47'
   }
 
   get asV122(): v122.Entity {
@@ -650,11 +650,11 @@ export class TfgridModuleEntityStoredEvent {
 
 export class TfgridModuleEntityUpdatedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.EntityUpdated')
+    assert(this.ctx.event.name === 'TfgridModule.EntityUpdated')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.EntityUpdated') === '9d6387c93300e77d2fc96af3ccb27b7eddb14f3768bdf0cf045995fc0be93d47'
+    return this.ctx._chain.getEventHash('TfgridModule.EntityUpdated') === '9d6387c93300e77d2fc96af3ccb27b7eddb14f3768bdf0cf045995fc0be93d47'
   }
 
   get asV122(): v122.Entity {
@@ -675,11 +675,11 @@ export class TfgridModuleEntityUpdatedEvent {
 
 export class TfgridModuleFarmCertificationSetEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.FarmCertificationSet')
+    assert(this.ctx.event.name === 'TfgridModule.FarmCertificationSet')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmCertificationSet') === 'ffe62c890927616bc9d5af190bd4a3b2c69e29097ebc6ea5ee6a2e1e87ceb759'
+    return this.ctx._chain.getEventHash('TfgridModule.FarmCertificationSet') === 'ffe62c890927616bc9d5af190bd4a3b2c69e29097ebc6ea5ee6a2e1e87ceb759'
   }
 
   get asV122(): [number, v122.FarmCertification] {
@@ -700,11 +700,11 @@ export class TfgridModuleFarmCertificationSetEvent {
 
 export class TfgridModuleFarmDeletedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.FarmDeleted')
+    assert(this.ctx.event.name === 'TfgridModule.FarmDeleted')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmDeleted') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    return this.ctx._chain.getEventHash('TfgridModule.FarmDeleted') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
   }
 
   get asV122(): number {
@@ -725,11 +725,11 @@ export class TfgridModuleFarmDeletedEvent {
 
 export class TfgridModuleFarmPayoutV2AddressRegisteredEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.FarmPayoutV2AddressRegistered')
+    assert(this.ctx.event.name === 'TfgridModule.FarmPayoutV2AddressRegistered')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmPayoutV2AddressRegistered') === 'a0d19821e09bcebcf8e5acfe4b5eca3681c180d4c05c2f647fff4efbae5ffac9'
+    return this.ctx._chain.getEventHash('TfgridModule.FarmPayoutV2AddressRegistered') === 'a0d19821e09bcebcf8e5acfe4b5eca3681c180d4c05c2f647fff4efbae5ffac9'
   }
 
   get asV122(): [number, Uint8Array] {
@@ -750,11 +750,11 @@ export class TfgridModuleFarmPayoutV2AddressRegisteredEvent {
 
 export class TfgridModuleFarmStoredEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.FarmStored')
+    assert(this.ctx.event.name === 'TfgridModule.FarmStored')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmStored') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
+    return this.ctx._chain.getEventHash('TfgridModule.FarmStored') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
   }
 
   get asV122(): v122.Farm {
@@ -775,11 +775,11 @@ export class TfgridModuleFarmStoredEvent {
 
 export class TfgridModuleFarmUpdatedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.FarmUpdated')
+    assert(this.ctx.event.name === 'TfgridModule.FarmUpdated')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmUpdated') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
+    return this.ctx._chain.getEventHash('TfgridModule.FarmUpdated') === '74b71e5fe3d2ea0881a33f99511ab05ec0233a16d23bc46f38fa69f638b7abe8'
   }
 
   get asV122(): v122.Farm {
@@ -800,11 +800,11 @@ export class TfgridModuleFarmUpdatedEvent {
 
 export class TfgridModuleFarmingPolicySetEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.FarmingPolicySet')
+    assert(this.ctx.event.name === 'TfgridModule.FarmingPolicySet')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmingPolicySet') === 'd64e52200384d2b2a6378823d0e0b9eba44abc0a9fc1b82114ef18b71937324c'
+    return this.ctx._chain.getEventHash('TfgridModule.FarmingPolicySet') === 'd64e52200384d2b2a6378823d0e0b9eba44abc0a9fc1b82114ef18b71937324c'
   }
 
   get asV122(): [number, (v122.FarmingPolicyLimit | undefined)] {
@@ -825,11 +825,11 @@ export class TfgridModuleFarmingPolicySetEvent {
 
 export class TfgridModuleFarmingPolicyStoredEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.FarmingPolicyStored')
+    assert(this.ctx.event.name === 'TfgridModule.FarmingPolicyStored')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmingPolicyStored') === 'e45f1ccb50e73b0f9a65c63399730f27041aa3b5c8347272bbbe01c3b66f5712'
+    return this.ctx._chain.getEventHash('TfgridModule.FarmingPolicyStored') === 'e45f1ccb50e73b0f9a65c63399730f27041aa3b5c8347272bbbe01c3b66f5712'
   }
 
   get asV122(): v122.FarmingPolicy {
@@ -850,11 +850,11 @@ export class TfgridModuleFarmingPolicyStoredEvent {
 
 export class TfgridModuleFarmingPolicyUpdatedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.FarmingPolicyUpdated')
+    assert(this.ctx.event.name === 'TfgridModule.FarmingPolicyUpdated')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.FarmingPolicyUpdated') === 'e45f1ccb50e73b0f9a65c63399730f27041aa3b5c8347272bbbe01c3b66f5712'
+    return this.ctx._chain.getEventHash('TfgridModule.FarmingPolicyUpdated') === 'e45f1ccb50e73b0f9a65c63399730f27041aa3b5c8347272bbbe01c3b66f5712'
   }
 
   get asV122(): v122.FarmingPolicy {
@@ -875,11 +875,11 @@ export class TfgridModuleFarmingPolicyUpdatedEvent {
 
 export class TfgridModuleNodeCertificationSetEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.NodeCertificationSet')
+    assert(this.ctx.event.name === 'TfgridModule.NodeCertificationSet')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.NodeCertificationSet') === 'd4945d9aee3a9679b5626ad868873cd15d01a6eafb319306d7528643c7ab38d2'
+    return this.ctx._chain.getEventHash('TfgridModule.NodeCertificationSet') === 'd4945d9aee3a9679b5626ad868873cd15d01a6eafb319306d7528643c7ab38d2'
   }
 
   get asV122(): [number, v122.NodeCertification] {
@@ -900,11 +900,11 @@ export class TfgridModuleNodeCertificationSetEvent {
 
 export class TfgridModuleNodeDeletedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.NodeDeleted')
+    assert(this.ctx.event.name === 'TfgridModule.NodeDeleted')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.NodeDeleted') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    return this.ctx._chain.getEventHash('TfgridModule.NodeDeleted') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
   }
 
   get asV122(): number {
@@ -925,11 +925,11 @@ export class TfgridModuleNodeDeletedEvent {
 
 export class TfgridModuleNodePublicConfigStoredEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.NodePublicConfigStored')
+    assert(this.ctx.event.name === 'TfgridModule.NodePublicConfigStored')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.NodePublicConfigStored') === '3280822d064c517c372255a87e0f164783d75d41adc342fe0475179b687a0ad8'
+    return this.ctx._chain.getEventHash('TfgridModule.NodePublicConfigStored') === '3280822d064c517c372255a87e0f164783d75d41adc342fe0475179b687a0ad8'
   }
 
   get asV122(): [number, (v122.PublicConfig | undefined)] {
@@ -950,11 +950,11 @@ export class TfgridModuleNodePublicConfigStoredEvent {
 
 export class TfgridModuleNodeStoredEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.NodeStored')
+    assert(this.ctx.event.name === 'TfgridModule.NodeStored')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.NodeStored') === 'f41f098c82aee52660133d1fb75d350fab4d99e9a67ba251b35e04ee4c292fb3'
+    return this.ctx._chain.getEventHash('TfgridModule.NodeStored') === 'f41f098c82aee52660133d1fb75d350fab4d99e9a67ba251b35e04ee4c292fb3'
   }
 
   get asV122(): v122.Node {
@@ -975,11 +975,11 @@ export class TfgridModuleNodeStoredEvent {
 
 export class TfgridModuleNodeUpdatedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.NodeUpdated')
+    assert(this.ctx.event.name === 'TfgridModule.NodeUpdated')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.NodeUpdated') === 'f41f098c82aee52660133d1fb75d350fab4d99e9a67ba251b35e04ee4c292fb3'
+    return this.ctx._chain.getEventHash('TfgridModule.NodeUpdated') === 'f41f098c82aee52660133d1fb75d350fab4d99e9a67ba251b35e04ee4c292fb3'
   }
 
   get asV122(): v122.Node {
@@ -1000,11 +1000,11 @@ export class TfgridModuleNodeUpdatedEvent {
 
 export class TfgridModuleNodeUptimeReportedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.NodeUptimeReported')
+    assert(this.ctx.event.name === 'TfgridModule.NodeUptimeReported')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.NodeUptimeReported') === '4a0c168b038c7fd8096026ff00cc3456827e0f2c507248ecfbcf2c4c07367288'
+    return this.ctx._chain.getEventHash('TfgridModule.NodeUptimeReported') === '4a0c168b038c7fd8096026ff00cc3456827e0f2c507248ecfbcf2c4c07367288'
   }
 
   get asV122(): [number, bigint, bigint] {
@@ -1025,11 +1025,11 @@ export class TfgridModuleNodeUptimeReportedEvent {
 
 export class TfgridModulePricingPolicyStoredEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.PricingPolicyStored')
+    assert(this.ctx.event.name === 'TfgridModule.PricingPolicyStored')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.PricingPolicyStored') === '088c108804351450f3ff89c4217a7450b4d211e3f833d8ab4746d27624010cc0'
+    return this.ctx._chain.getEventHash('TfgridModule.PricingPolicyStored') === '088c108804351450f3ff89c4217a7450b4d211e3f833d8ab4746d27624010cc0'
   }
 
   get asV122(): v122.PricingPolicy {
@@ -1050,11 +1050,11 @@ export class TfgridModulePricingPolicyStoredEvent {
 
 export class TfgridModuleTwinDeletedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.TwinDeleted')
+    assert(this.ctx.event.name === 'TfgridModule.TwinDeleted')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.TwinDeleted') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    return this.ctx._chain.getEventHash('TfgridModule.TwinDeleted') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
   }
 
   get asV122(): number {
@@ -1075,11 +1075,11 @@ export class TfgridModuleTwinDeletedEvent {
 
 export class TfgridModuleTwinEntityRemovedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.TwinEntityRemoved')
+    assert(this.ctx.event.name === 'TfgridModule.TwinEntityRemoved')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.TwinEntityRemoved') === 'a09602e40984745a7411a1855af06d133893a422fd68f7bdc4fb6a56bf1a3645'
+    return this.ctx._chain.getEventHash('TfgridModule.TwinEntityRemoved') === 'a09602e40984745a7411a1855af06d133893a422fd68f7bdc4fb6a56bf1a3645'
   }
 
   get asV122(): [number, number] {
@@ -1100,11 +1100,11 @@ export class TfgridModuleTwinEntityRemovedEvent {
 
 export class TfgridModuleTwinEntityStoredEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.TwinEntityStored')
+    assert(this.ctx.event.name === 'TfgridModule.TwinEntityStored')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.TwinEntityStored') === 'f41c776f2baf981d5a0d5e9d89f98858c2cdd7ea515b3d32a99e45dcb2c7a185'
+    return this.ctx._chain.getEventHash('TfgridModule.TwinEntityStored') === 'f41c776f2baf981d5a0d5e9d89f98858c2cdd7ea515b3d32a99e45dcb2c7a185'
   }
 
   get asV122(): [number, number, Uint8Array] {
@@ -1125,11 +1125,11 @@ export class TfgridModuleTwinEntityStoredEvent {
 
 export class TfgridModuleTwinStoredEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.TwinStored')
+    assert(this.ctx.event.name === 'TfgridModule.TwinStored')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.TwinStored') === '5b6f435dfe1514ae00c046d4634f4246d82542de8da2b6937732aec521f3408a'
+    return this.ctx._chain.getEventHash('TfgridModule.TwinStored') === '5b6f435dfe1514ae00c046d4634f4246d82542de8da2b6937732aec521f3408a'
   }
 
   get asV122(): v122.Twin {
@@ -1150,11 +1150,11 @@ export class TfgridModuleTwinStoredEvent {
 
 export class TfgridModuleTwinUpdatedEvent {
   constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'tfgridModule.TwinUpdated')
+    assert(this.ctx.event.name === 'TfgridModule.TwinUpdated')
   }
 
   get isV122(): boolean {
-    return this.ctx._chain.getEventHash('tfgridModule.TwinUpdated') === '5b6f435dfe1514ae00c046d4634f4246d82542de8da2b6937732aec521f3408a'
+    return this.ctx._chain.getEventHash('TfgridModule.TwinUpdated') === '5b6f435dfe1514ae00c046d4634f4246d82542de8da2b6937732aec521f3408a'
   }
 
   get asV122(): v122.Twin {

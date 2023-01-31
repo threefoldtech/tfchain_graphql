@@ -9,10 +9,18 @@ export interface Contract {
   solutionProviderId: (bigint | undefined)
 }
 
+export interface SolutionProvider {
+  solutionProviderId: bigint
+  providers: Provider[]
+  description: Uint8Array
+  link: Uint8Array
+  approved: boolean
+}
+
 export interface PublicConfig {
   ip4: IP
   ip6: (IP | undefined)
-  domain: (Domain | undefined)
+  domain: (Uint8Array | undefined)
 }
 
 export interface Node {
@@ -68,12 +76,15 @@ export interface ContractData_RentContract {
   value: RentContract
 }
 
-export interface IP {
-  ip: IP4
-  gw: GW4
+export interface Provider {
+  who: Uint8Array
+  take: number
 }
 
-export type Domain = Uint8Array
+export interface IP {
+  ip: Uint8Array
+  gw: Uint8Array
+}
 
 export interface Resources {
   hru: bigint
@@ -88,9 +99,9 @@ export interface Location {
 }
 
 export interface Interface {
-  name: InterfaceName
-  mac: InterfaceMac
-  ips: InterfaceIp[]
+  name: Uint8Array
+  mac: Uint8Array
+  ips: Uint8Array[]
 }
 
 export type NodeCertification = NodeCertification_Diy | NodeCertification_Certified
@@ -115,38 +126,22 @@ export interface Cause_OutOfFunds {
 
 export interface NodeContract {
   nodeId: number
-  deploymentHash: H256
+  deploymentHash: Uint8Array
   deploymentData: Uint8Array
   publicIps: number
   publicIpsList: PublicIP[]
 }
 
 export interface NameContract {
-  name: NameContractName
+  name: Uint8Array
 }
 
 export interface RentContract {
   nodeId: number
 }
 
-export type IP4 = Uint8Array
-
-export type GW4 = Uint8Array
-
-export type InterfaceName = Uint8Array
-
-export type InterfaceMac = Uint8Array
-
-export type InterfaceIp = Uint8Array
-
-export type H256 = Uint8Array
-
 export interface PublicIP {
   ip: Uint8Array
-  gateway: GatewayIP
+  gateway: Uint8Array
   contractId: bigint
 }
-
-export type NameContractName = Uint8Array
-
-export type GatewayIP = Uint8Array

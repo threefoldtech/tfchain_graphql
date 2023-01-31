@@ -56,14 +56,14 @@ ingress:
 
 # substrate websocket endpoint
 # ws_endpoint: "ws://192.168.8.60:9944"
-ws_endpoint:
+ws_endpoint: wss://tfchain.grid.tf
 
 # db_endpoint: "10.101.127.50" # internal db-service ip
-db_endpoint:
+# db_endpoint:
 
 # internal ip for the status service service
 # indexer_status_service_url: http://10.97.12.24:8081/status
-indexer_status_service_url:
+# indexer_status_service_url:
 
 resources: {}
 

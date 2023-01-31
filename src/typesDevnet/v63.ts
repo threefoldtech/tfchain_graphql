@@ -1,5 +1,15 @@
 import type {Result} from './support'
 
+export type FarmCertification = FarmCertification_NotCertified | FarmCertification_Gold
+
+export interface FarmCertification_NotCertified {
+  __kind: 'NotCertified'
+}
+
+export interface FarmCertification_Gold {
+  __kind: 'Gold'
+}
+
 export interface Farm {
   version: number
   id: number
@@ -10,6 +20,15 @@ export interface Farm {
   publicIps: PublicIP[]
   dedicatedFarm: boolean
   farmingPolicyLimits: (FarmingPolicyLimit | undefined)
+}
+
+export interface FarmingPolicyLimit {
+  farmingPolicyId: number
+  cu: (bigint | undefined)
+  su: (bigint | undefined)
+  end: (bigint | undefined)
+  nodeCount: (number | undefined)
+  nodeCertification: boolean
 }
 
 export interface FarmingPolicy {
@@ -27,6 +46,16 @@ export interface FarmingPolicy {
   default: boolean
   nodeCertification: NodeCertification
   farmCertification: FarmCertification
+}
+
+export type NodeCertification = NodeCertification_Diy | NodeCertification_Certified
+
+export interface NodeCertification_Diy {
+  __kind: 'Diy'
+}
+
+export interface NodeCertification_Certified {
+  __kind: 'Certified'
 }
 
 export interface Node {
@@ -50,39 +79,10 @@ export interface Node {
   connectionPrice: number
 }
 
-export type FarmCertification = FarmCertification_NotCertified | FarmCertification_Gold
-
-export interface FarmCertification_NotCertified {
-  __kind: 'NotCertified'
-}
-
-export interface FarmCertification_Gold {
-  __kind: 'Gold'
-}
-
 export interface PublicIP {
   ip: Uint8Array
   gateway: Uint8Array
   contractId: bigint
-}
-
-export interface FarmingPolicyLimit {
-  farmingPolicyId: number
-  cu: (bigint | undefined)
-  su: (bigint | undefined)
-  end: (bigint | undefined)
-  nodeCount: (number | undefined)
-  nodeCertification: boolean
-}
-
-export type NodeCertification = NodeCertification_Diy | NodeCertification_Certified
-
-export interface NodeCertification_Diy {
-  __kind: 'Diy'
-}
-
-export interface NodeCertification_Certified {
-  __kind: 'Certified'
 }
 
 export interface Resources {

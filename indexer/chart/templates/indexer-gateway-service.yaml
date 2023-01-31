@@ -6,9 +6,9 @@ metadata:
   name: indexer-gateway
 spec:
   ports:
-    - name: "4010"
-      port: 4010
-      targetPort: 8080
+    - name: "8880"
+      port: 8880
+      targetPort: 8000
   selector:
     io.kompose.service: indexer-gateway
 status:

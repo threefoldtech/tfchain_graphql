@@ -11,6 +11,11 @@ data:
                 null
               ],
               "types": {
+                "ContractLock": {
+                  "amount_locked": "Balance",
+                  "lock_updated": "u64",
+                  "cycles": "u16"
+                },
                 "Farm": {
                   "version": "u32",
                   "id": "u32",
@@ -530,6 +535,11 @@ data:
                   "default": "bool",
                   "nodeCertification": "NodeCertification",
                   "farmCertification": "FarmCertification"
+                },
+                "ContractLock": {
+                  "amount_locked": "Balance",
+                  "lock_updated": "u64",
+                  "cycles": "u16"
                 },
                 "DaoProposal": {
                   "index": "u32",
