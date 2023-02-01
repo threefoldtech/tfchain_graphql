@@ -5,44 +5,44 @@ import {ContractResources} from "./contractResources.model"
 
 @Entity_()
 export class NodeContract {
-  constructor(props?: Partial<NodeContract>) {
-    Object.assign(this, props)
-  }
+    constructor(props?: Partial<NodeContract>) {
+        Object.assign(this, props)
+    }
 
-  @PrimaryColumn_()
-  id!: string
+    @PrimaryColumn_()
+    id!: string
 
-  @Column_("int4", {nullable: false})
-  gridVersion!: number
+    @Column_("int4", {nullable: false})
+    gridVersion!: number
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  contractID!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    contractID!: bigint
 
-  @Column_("int4", {nullable: false})
-  twinID!: number
+    @Column_("int4", {nullable: false})
+    twinID!: number
 
-  @Column_("int4", {nullable: false})
-  nodeID!: number
+    @Column_("int4", {nullable: false})
+    nodeID!: number
 
-  @Column_("text", {nullable: false})
-  deploymentData!: string
+    @Column_("text", {nullable: false})
+    deploymentData!: string
 
-  @Column_("text", {nullable: false})
-  deploymentHash!: string
+    @Column_("text", {nullable: false})
+    deploymentHash!: string
 
-  @Column_("int4", {nullable: false})
-  numberOfPublicIPs!: number
+    @Column_("int4", {nullable: false})
+    numberOfPublicIPs!: number
 
-  @Column_("varchar", {length: 11, nullable: false})
-  state!: ContractState
+    @Column_("varchar", {length: 11, nullable: false})
+    state!: ContractState
 
-  @Index_()
-  @ManyToOne_(() => ContractResources, {nullable: true})
-  resourcesUsed!: ContractResources | undefined | null
+    @Index_()
+    @ManyToOne_(() => ContractResources, {nullable: true})
+    resourcesUsed!: ContractResources | undefined | null
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  createdAt!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    createdAt!: bigint
 
-  @Column_("int4", {nullable: true})
-  solutionProviderID!: number | undefined | null
+    @Column_("int4", {nullable: true})
+    solutionProviderID!: number | undefined | null
 }

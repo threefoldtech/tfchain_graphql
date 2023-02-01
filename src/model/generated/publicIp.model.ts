@@ -4,23 +4,23 @@ import {Farm} from "./farm.model"
 
 @Entity_()
 export class PublicIp {
-  constructor(props?: Partial<PublicIp>) {
-    Object.assign(this, props)
-  }
+    constructor(props?: Partial<PublicIp>) {
+        Object.assign(this, props)
+    }
 
-  @PrimaryColumn_()
-  id!: string
+    @PrimaryColumn_()
+    id!: string
 
-  @Index_()
-  @ManyToOne_(() => Farm, {nullable: false})
-  farm!: Farm
+    @Index_()
+    @ManyToOne_(() => Farm, {nullable: true})
+    farm!: Farm
 
-  @Column_("text", {nullable: false})
-  gateway!: string
+    @Column_("text", {nullable: false})
+    gateway!: string
 
-  @Column_("text", {nullable: false})
-  ip!: string
+    @Column_("text", {nullable: false})
+    ip!: string
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  contractId!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    contractId!: bigint
 }

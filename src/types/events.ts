@@ -14,6 +14,7 @@ import * as v101 from './v101'
 import * as v105 from './v105'
 import * as v118 from './v118'
 import * as v122 from './v122'
+import * as v124 from './v124'
 
 export type AccountId32 = Uint8Array
 
@@ -1292,6 +1293,15 @@ export class TfgridModuleTwinStoredEvent {
     assert(this.isV101)
     return this._chain.decodeEvent(this.event)
   }
+
+  get isV124(): boolean {
+    return this._chain.getEventHash('TfgridModule.TwinStored') === '5edc8ade70c90628071f6464e86d2592c5071cc8193049c2612ab70de6613b7a'
+  }
+
+  get asV124(): v124.Twin {
+    assert(this.isV124)
+    return this._chain.decodeEvent(this.event)
+  }
 }
 
 export class SmartContractModuleRentContractCanceledEvent {
@@ -1361,6 +1371,15 @@ export class TfgridModuleTwinUpdatedEvent {
 
   get asV101(): v101.Twin {
     assert(this.isV101)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  get isV124(): boolean {
+    return this._chain.getEventHash('TfgridModule.TwinUpdated') === '5edc8ade70c90628071f6464e86d2592c5071cc8193049c2612ab70de6613b7a'
+  }
+
+  get asV124(): v124.Twin {
+    assert(this.isV124)
     return this._chain.decodeEvent(this.event)
   }
 }

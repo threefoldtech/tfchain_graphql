@@ -1,4 +1,4 @@
 export enum FarmCertification {
-  NotCertified = "NotCertified",
-  Gold = "Gold",
+    NotCertified = "NotCertified",
+    Gold = "Gold",
 }

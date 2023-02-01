@@ -4,27 +4,27 @@ import {Node} from "./node.model"
 
 @Entity_()
 export class NodeResourcesTotal {
-  constructor(props?: Partial<NodeResourcesTotal>) {
-    Object.assign(this, props)
-  }
+    constructor(props?: Partial<NodeResourcesTotal>) {
+        Object.assign(this, props)
+    }
 
-  @PrimaryColumn_()
-  id!: string
+    @PrimaryColumn_()
+    id!: string
 
-  @Index_({unique: true})
-  @OneToOne_(() => Node, {nullable: false})
-  @JoinColumn_()
-  node!: Node
+    @Index_({unique: true})
+    @OneToOne_(() => Node, {nullable: false})
+    @JoinColumn_()
+    node!: Node
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  hru!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    hru!: bigint
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  sru!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    sru!: bigint
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  cru!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    cru!: bigint
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  mru!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    mru!: bigint
 }
