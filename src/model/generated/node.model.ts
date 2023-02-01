@@ -5,6 +5,7 @@ import {PublicConfig} from "./publicConfig.model"
 import {NodeResourcesTotal} from "./nodeResourcesTotal.model"
 import {Interfaces} from "./interfaces.model"
 import {NodeCertification} from "./_nodeCertification"
+import {NodePower} from "./_nodePower"
 
 @Entity_()
 export class Node {
@@ -71,4 +72,7 @@ export class Node {
 
     @Column_("int4", {nullable: true})
     connectionPrice!: number | undefined | null
+
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new NodePower(undefined, obj)}, nullable: true})
+    power!: NodePower | undefined | null
 }

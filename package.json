@@ -8,12 +8,13 @@
   "scripts": {
     "update": "npx npm-check-updates --filter /subsquid/ --upgrade && npm i -f",
     "build": "rm -rf lib && tsc",
-    "db:create-migration": "sqd db create-migration",
+    "db:migrate": "npx squid-typeorm-migration apply",
+    "db:create-migration": "npx squid-typeorm-migration generate",
     "db:init": "node init-countries.js",
     "db:up": "docker-compose up -d db",
     "process": "node db/init.js && node init-countries.js && node -r dotenv/config lib/processor.js",
     "api": "squid-graphql-server",
-    "codegen": "sqd codegen",
+    "codegen": "npx squid-typeorm-codegen",
     "typegen": "squid-substrate-typegen typegen/typegen.json",
     "lint": "npm run lint:prod -- --fix",
     "lint:prod": "eslint . --ext .ts --ignore-path .gitignore --max-warnings 0"

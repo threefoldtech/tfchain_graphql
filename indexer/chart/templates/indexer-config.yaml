@@ -640,6 +640,45 @@ data:
                   "metadata": "Vec<u8>"
                 }
               }
+            },
+            {
+              "minmax": [
+                124,
+                null
+              ],
+              "types": {
+                "Twin": {
+                  "id": "u32",
+                  "accountId": "AccountId",
+                  "relay": "Vec<u8>",
+                  "entities": "Vec<EntityProof>",
+                  "pk": "Vec<u8>"
+                }
+              }
+            },
+            {
+              "minmax": [
+                125,
+                null
+              ],
+              "types": {
+                "NodePower": {
+                  "state": "PowerState",
+                  "target": "Power"
+                },
+                "PowerState": {
+                  "_enum": {
+                    "Up": null,
+                    "Down": "BlockNumber"
+                  }
+                },
+                "Power": {
+                  "_enum": [
+                    "Up",
+                    "Down"
+                  ]
+                }
+              }
             }
           ]
         }
