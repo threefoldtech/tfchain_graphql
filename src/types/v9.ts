@@ -1,5 +1,3 @@
-import type {Result} from './support'
-
 export interface ContractBill {
   contractId: bigint
   timestamp: bigint

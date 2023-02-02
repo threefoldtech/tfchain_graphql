@@ -118,7 +118,7 @@ So we need to extend the generated src/types with incremental type changes we ma
 
 Steps:
 
-- move new $specVersion.ts file to `src/types`
+- copy new $specVersion.ts file to `src/types` and only keep the changes required for the new types 
 - copy changes from `src/typesLocal/events.ts` to `src/types/events.ts` (see which events were added / modified and only copy those over)
 
 ### 5: Modify graphql schema

@@ -1,5 +1,3 @@
-import type { Result } from './support'
-
 export type NodeCertification = NodeCertification_Diy | NodeCertification_Certified
 
 export interface NodeCertification_Diy {

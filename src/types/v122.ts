@@ -1,5 +1,3 @@
-import type { Result } from './support'
-
 export interface ServiceContract {
   serviceContractId: bigint
   serviceTwinId: number

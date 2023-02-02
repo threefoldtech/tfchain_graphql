@@ -1,5 +1,3 @@
-import type { Result } from './support'
-
 export interface Twin {
     id: number
     accountId: Uint8Array

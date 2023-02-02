@@ -1,5 +1,3 @@
-import type { Result } from './support'
-
 export interface Contract {
   version: number
   state: ContractState

@@ -1,5 +1,3 @@
-import type {Result} from './support'
-
 export interface PricingPolicy {
   version: number
   id: number
