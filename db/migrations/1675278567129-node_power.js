@@ -1,5 +1,5 @@
-module.exports = class Data1675278567129 {
-    name = 'Data1675278567129'
+module.exports = class node_power1675278567129 {
+    name = 'node_power1675278567129'
 
     async up(db) {
         await db.query(`ALTER TABLE "node" ADD "power" jsonb`)

@@ -1,5 +1,5 @@
-module.exports = class Data1673510995256 {
-    name = 'Data1673510995256'
+module.exports = class relay_support1673510995256 {
+    name = 'relay_support1673510995256'
 
     async up(db) {
         await db.query(`ALTER TABLE "twin" DROP COLUMN "ip"`)

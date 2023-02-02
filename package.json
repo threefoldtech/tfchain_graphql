@@ -8,8 +8,6 @@
   "scripts": {
     "update": "npx npm-check-updates --filter /subsquid/ --upgrade && npm i -f",
     "build": "rm -rf lib && tsc",
-    "db:migrate": "npx squid-typeorm-migration apply",
-    "db:create-migration": "npx squid-typeorm-migration generate",
     "db:create-migration": "npx squid-typeorm-migration generate",
     "db:migrate": "npx squid-typeorm-migration apply",
     "db:init": "node init-countries.js",
