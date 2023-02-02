@@ -1,19 +1,20 @@
 {
   "name": "graphql_tfgrid",
   "private": "true",
-  "version": "2.9.0-rc1",
+  "version": "2.9.0-rc2",
   "description": "GraphQL server and Substrate indexer. Generated with ♥ by Hydra-CLI",
   "author": "",
   "license": "ISC",
   "scripts": {
     "update": "npx npm-check-updates --filter /subsquid/ --upgrade && npm i -f",
     "build": "rm -rf lib && tsc",
-    "db:create-migration": "sqd db create-migration",
+    "db:create-migration": "npx squid-typeorm-migration generate",
+    "db:migrate": "npx squid-typeorm-migration apply",
     "db:init": "node init-countries.js",
     "db:up": "docker-compose up -d db",
     "process": "node db/init.js && node init-countries.js && node -r dotenv/config lib/processor.js",
     "api": "squid-graphql-server",
-    "codegen": "sqd codegen",
+    "codegen": "npx squid-typeorm-codegen",
     "typegen": "squid-substrate-typegen typegen/typegen.json",
     "lint": "npm run lint:prod -- --fix",
     "lint:prod": "eslint . --ext .ts --ignore-path .gitignore --max-warnings 0"

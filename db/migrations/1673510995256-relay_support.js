@@ -2,8 +2,8 @@ module.exports = class Data1673510995256 {
     name = 'Data1673510995256'
 
     async up(db) {
-        await db.query(`ALTER TABLE "twin" RENAME COLUMN "ip" TO "relay"`)
-        await db.query(`ALTER TABLE "twin" ALTER COLUMN "relay" DROP NOT NULL`)
+        await db.query(`ALTER TABLE "twin" DROP COLUMN "ip"`)
+        await db.query(`ALTER TABLE "twin" ADD "relay" text`)
         await db.query(`ALTER TABLE "twin" ADD "public_key" text`)
         await db.query(`ALTER TABLE "historical_balance" DROP CONSTRAINT "FK_383ff006e4b59db91d32cb891e9"`)
         await db.query(`ALTER TABLE "historical_balance" ALTER COLUMN "account_id" DROP NOT NULL`)
@@ -26,8 +26,8 @@ module.exports = class Data1673510995256 {
     }
 
     async down(db) {
-        await db.query(`ALTER TABLE "twin" RENAME COLUMN "relay" TO "ip"`)
-        await db.query(`ALTER TABLE "twin" ALTER COLUMN "ip" SET NOT NULL`)
+        await db.query(`ALTER TABLE "twin" DROP COLUMN "relay"`)
+        await db.query(`ALTER TABLE "twin" ADD "ip" text`)
         await db.query(`ALTER TABLE "twin" DROP COLUMN "public_key"`)
         await db.query(`ALTER TABLE "historical_balance" ADD CONSTRAINT "FK_383ff006e4b59db91d32cb891e9" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "historical_balance" ALTER COLUMN "account_id" SET NOT NULL`)
