@@ -1,6 +1,6 @@
 {
   "outDir": "../src/typesLocal",
-  "specVersions": "./tfchainVersions.json",
+  "specVersions": "./tfchainVersions.jsonl",
   "typesBundle": "./typesBundle.json",
   "events": [
     "Balances.Transfer",
@@ -28,6 +28,8 @@
     "TfgridModule.FarmingPolicyUpdated",
     "TfgridModule.FarmingPolicySet",
     "TfgridModule.FarmCertificationSet",
+    "TfgridModule.PowerTargetChanged",
+    "TfgridModule.PowerStateChanged",
     "SmartContractModule.NruConsumptionReportReceived",
     "SmartContractModule.ContractCreated",
     "SmartContractModule.ContractUpdated",

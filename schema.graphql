@@ -84,6 +84,22 @@ type Node @entity {
   createdAt: BigInt!
   updatedAt: BigInt!
   connectionPrice: Int
+  power: NodePower
+}
+
+type NodePower {
+  state: PowerState!
+  target: Power!
+}
+
+enum PowerState {
+  Up
+  Down
+}
+
+enum Power {
+  Up
+  Down
 }
 
 type NodeResourcesTotal @entity {

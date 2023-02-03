@@ -85,7 +85,7 @@ If you for example need to track a new event you need to edit the events declara
 Once you have done this, it's time to generate the types.
 
 ```
-rm tfchainVersions.json
+rm tfchainVersions.jsonl
 ```
 
 First, explore new types from the metadata:
@@ -93,7 +93,7 @@ First, explore new types from the metadata:
 ```
 npx squid-substrate-metadata-explorer \
                 --chain ws://localhost:9944 \
-                --out tfchainVersions.json
+                --out tfchainVersions.jsonl
 ```
 
 Then, run the type generation:
@@ -104,8 +104,8 @@ npx squid-substrate-typegen typegen.json
 
 Notice it will re-generate following files:
 
-- src/typesLocal/events.js
-- src/typesLocal/$SPECVERSION.js
+- src/typesLocal/events.ts
+- src/typesLocal/$specVersion.ts
 
 ### 4: Add new types / event to the main events definitions
 
@@ -118,7 +118,7 @@ So we need to extend the generated src/types with incremental type changes we ma
 
 Steps:
 
-- move new $specVersion.ts file to `src/types`
+- copy new $specVersion.ts file to `src/types` and only keep the changes required for the new types 
 - copy changes from `src/typesLocal/events.ts` to `src/types/events.ts` (see which events were added / modified and only copy those over)
 
 ### 5: Modify graphql schema
@@ -132,7 +132,7 @@ yarn process
 
 The process will likely crash or stop but the db is initialised with the current schema. Now we can edit the graphql schema file: `schema.graphql`.
 
-Once changes are done to the schema, you can create a database migration:
+Once changes are done to the schema (see details about GraphQL schema language [here](https://graphql.org/learn/schema/)), you can create a database migration:
 
 ```
 yarn codegen

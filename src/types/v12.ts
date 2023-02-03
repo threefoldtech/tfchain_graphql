@@ -1,5 +1,3 @@
-import type {Result} from './support'
-
 export interface PublicConfig {
   ipv4: Uint8Array
   ipv6: Uint8Array

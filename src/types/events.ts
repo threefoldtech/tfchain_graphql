@@ -1,5 +1,5 @@
 import assert from 'assert'
-import {Chain, ChainContext, EventContext, Event, Result} from './support'
+import { Chain, ChainContext, EventContext, Event, Result } from './support'
 import * as v9 from './v9'
 import * as v12 from './v12'
 import * as v25 from './v25'
@@ -15,6 +15,7 @@ import * as v105 from './v105'
 import * as v118 from './v118'
 import * as v122 from './v122'
 import * as v124 from './v124'
+import * as v125 from './v125'
 
 export type AccountId32 = Uint8Array
 
@@ -56,7 +57,7 @@ export class BalancesTransferEvent {
   /**
    * Transfer succeeded.
    */
-  get asV101(): {from: Uint8Array, to: Uint8Array, amount: bigint} {
+  get asV101(): { from: Uint8Array, to: Uint8Array, amount: bigint } {
     assert(this.isV101)
     return this._chain.decodeEvent(this.event)
   }
@@ -303,7 +304,7 @@ export class SmartContractModuleContractGracePeriodStartedEvent {
   /**
    * A Contract grace period is triggered
    */
-  get asV105(): {contractId: bigint, nodeId: number, twinId: number, blockNumber: bigint} {
+  get asV105(): { contractId: bigint, nodeId: number, twinId: number, blockNumber: bigint } {
     assert(this.isV105)
     return this._chain.decodeEvent(this.event)
   }
@@ -341,7 +342,7 @@ export class SmartContractModuleNameContractCanceledEvent {
   /**
    * A Name contract is canceled
    */
-  get asV105(): {contractId: bigint} {
+  get asV105(): { contractId: bigint } {
     assert(this.isV105)
     return this._chain.decodeEvent(this.event)
   }
@@ -379,7 +380,7 @@ export class SmartContractModuleNodeContractCanceledEvent {
   /**
    * A Node contract is canceled
    */
-  get asV105(): {contractId: bigint, nodeId: number, twinId: number} {
+  get asV105(): { contractId: bigint, nodeId: number, twinId: number } {
     assert(this.isV105)
     return this._chain.decodeEvent(this.event)
   }
@@ -1153,6 +1154,58 @@ export class TfgridModuleNodeUptimeReportedEvent {
   }
 }
 
+export class TfgridModulePowerStateChangedEvent {
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'TfgridModule.PowerStateChanged')
+    this._chain = ctx._chain
+    this.event = event
+  }
+
+  get isV125(): boolean {
+    return this._chain.getEventHash('TfgridModule.PowerStateChanged') === 'd5322b23c8c357b4efd50099056dcfba214b94466b72d863ffc1ee8dbd90f80c'
+  }
+
+  get asV125(): { farmId: number, nodeId: number, powerState: v125.PowerState } {
+    assert(this.isV125)
+    return this._chain.decodeEvent(this.event)
+  }
+}
+
+export class TfgridModulePowerTargetChangedEvent {
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'TfgridModule.PowerTargetChanged')
+    this._chain = ctx._chain
+    this.event = event
+  }
+
+  /**
+   * Send an event to zero os to change its state
+   */
+  get isV125(): boolean {
+    return this._chain.getEventHash('TfgridModule.PowerTargetChanged') === 'c1d738baed628d197d192e6970ff592c9dc24c34f8aebc19303672d3d54dec89'
+  }
+
+  /**
+   * Send an event to zero os to change its state
+   */
+  get asV125(): { farmId: number, nodeId: number, powerTarget: v125.Power } {
+    assert(this.isV125)
+    return this._chain.decodeEvent(this.event)
+  }
+}
+
 export class TfgridModulePricingPolicyStoredEvent {
   private readonly _chain: Chain
   private readonly event: Event
@@ -1336,7 +1389,7 @@ export class SmartContractModuleRentContractCanceledEvent {
   /**
    * a Rent contract is canceled
    */
-  get asV105(): {contractId: bigint} {
+  get asV105(): { contractId: bigint } {
     assert(this.isV105)
     return this._chain.decodeEvent(this.event)
   }

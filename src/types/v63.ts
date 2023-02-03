@@ -1,5 +1,3 @@
-import type {Result} from './support'
-
 export type FarmCertification = FarmCertification_NotCertified | FarmCertification_Gold
 
 export interface FarmCertification_NotCertified {

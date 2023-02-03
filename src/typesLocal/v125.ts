@@ -156,6 +156,27 @@ export interface Node {
     connectionPrice: number
 }
 
+export type PowerState = PowerState_Up | PowerState_Down
+
+export interface PowerState_Up {
+    __kind: 'Up'
+}
+
+export interface PowerState_Down {
+    __kind: 'Down'
+    value: number
+}
+
+export type Power = Power_Up | Power_Down
+
+export interface Power_Up {
+    __kind: 'Up'
+}
+
+export interface Power_Down {
+    __kind: 'Down'
+}
+
 export interface PricingPolicy {
     version: number
     id: number
@@ -172,11 +193,11 @@ export interface PricingPolicy {
 }
 
 export interface Twin {
+    version: number
     id: number
     accountId: Uint8Array
-    relay: (Uint8Array | undefined)
+    ip: Uint8Array
     entities: EntityProof[]
-    pk: (Uint8Array | undefined)
 }
 
 export type DiscountLevel = DiscountLevel_None | DiscountLevel_Default | DiscountLevel_Bronze | DiscountLevel_Silver | DiscountLevel_Gold
