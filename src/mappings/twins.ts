@@ -125,7 +125,7 @@ function getTwinCreate(
     }
     accountID = ss58.codec("substrate").encode(twin.accountId)
     if (twin.pk) {
-      pk = twin.pk?.toString()
+      pk = '0x' + Buffer.from(twin.pk).toString('hex');
     }
   }
 
@@ -175,7 +175,7 @@ function getTwinUpdate(
     }
     accountID = ss58.codec("substrate").encode(twin.accountId)
     if (twin.pk) {
-      pk = twin.pk?.toString()
+      pk = '0x' + Buffer.from(twin.pk).toString('hex');
     }
   }
 
