@@ -3,6 +3,7 @@ import { TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, Tf
 import { SubstrateBlock } from '@subsquid/substrate-processor';
 import { In } from 'typeorm'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { PublicConfig as V105PublicConfig } from '../types/v105'
 
 import { Ctx } from '../processor'
 
@@ -438,11 +439,7 @@ export async function nodePublicConfigStored(
     domain = config.domain.toString()
   } else if (storedEvent.isV105) {
     [nodeID, config] = storedEvent.asV105
-    ipv4 = config?.ip4.ip.toString()
-    ipv6 = config?.ip6?.ip.toString()
-    gw4 = config?.ip4.gw.toString()
-    gw6 = config?.ip6?.gw.toString()
-    domain = config?.domain ? config.domain.toString() : ''
+    return await handlePublicConfigV105(ctx, item.event.id, nodeID, config)
   } else {
     return
   }
@@ -463,6 +460,34 @@ export async function nodePublicConfigStored(
   publicConfig.gw4 = gw4
   publicConfig.gw6 = gw6
   publicConfig.domain = domain || ''
+
+  await ctx.store.save<PublicConfig>(publicConfig)
+}
+
+async function handlePublicConfigV105(ctx: Ctx, eventID: string, nodeID: number, config: V105PublicConfig | undefined) {
+  if (!config) {
+    const pubConfig = await ctx.store.get(PublicConfig, { where: { node: { nodeID } }, relations: { node: true } })
+    if (pubConfig) {
+      return await ctx.store.remove(pubConfig)
+    }
+  }
+
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID }, relations: { location: true, interfaces: true } })
+  if (!savedNode) return
+
+  let publicConfig = await ctx.store.get(PublicConfig, { where: { node: { nodeID } }, relations: { node: true } })
+
+  if (!publicConfig) {
+    publicConfig = new PublicConfig()
+    publicConfig.id = eventID
+    publicConfig.node = savedNode
+  }
+
+  publicConfig.ipv4 = config?.ip4.ip ? config?.ip4.ip.toString() : null
+  publicConfig.gw4 = config?.ip4.gw ? config?.ip4.gw.toString() : null
+  publicConfig.ipv6 = config?.ip6?.ip ? config?.ip6?.ip.toString() : null
+  publicConfig.gw6 = config?.ip6?.gw ? config?.ip6?.gw.toString() : null
+  publicConfig.domain = config?.domain ? config.domain.toString() : null
 
   await ctx.store.save<PublicConfig>(publicConfig)
 }
