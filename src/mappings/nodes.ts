@@ -7,6 +7,7 @@ import { PublicConfig as V105PublicConfig } from '../types/v105'
 
 import { Ctx } from '../processor'
 import assert from "assert";
+import { allowedNodeEnvironmentFlags } from "process";
 
 export async function nodeStored(
   ctx: Ctx,
@@ -139,11 +140,9 @@ export async function nodeStored(
     newInterface.mac = intf.mac.toString()
     newInterface.ips = intf.ips.map(ip => ip.toString()).join(',')
     await ctx.store.save<Interfaces>(newInterface)
-    newNode.interfaces.push(newInterface)
   })
 
   await Promise.all(interfacesPromisses)
-  await ctx.store.save<Node>(newNode)
 }
 
 export async function nodeUpdated(
@@ -319,31 +318,23 @@ export async function nodeUpdated(
     }
   }
 
-  const interfacesPromisses = nodeEvent.interfaces.map(async intf => {
-    let newInterface
+  // First remove all ifs
+  const nodeIfs = await ctx.store.find(Interfaces, { where: { node: { nodeID: savedNode.nodeID } } })
+  await ctx.store.remove(nodeIfs)
 
-    if (savedNode.interfaces) {
-      // if an interface with same name exists
-      const found = savedNode.interfaces.findIndex(interf => interf.name === intf.name.toString())
-      if (found > 0) {
-        newInterface = savedNode.interfaces[found]
-      } else {
-        newInterface = new Interfaces()
-        newInterface.id = item.event.id
-        newInterface.node = savedNode
-      }
-    }
-
-    if (!newInterface) return
-
+  // Save ones from update event
+  await Promise.all(nodeEvent.interfaces.map(async intf => {
+    const newInterface = new Interfaces()
+    newInterface.id = item.event.id + intf.name.toString()
     newInterface.name = intf.name.toString()
     newInterface.mac = intf.mac.toString()
     newInterface.ips = intf.ips.map(ip => ip.toString()).join(',')
-
+    newInterface.node = savedNode
     await ctx.store.save<Interfaces>(newInterface)
+
     savedNode.interfaces.push(newInterface)
-  })
-  await Promise.all(interfacesPromisses)
+  }))
+
   await ctx.store.save<Node>(savedNode)
 }
 
