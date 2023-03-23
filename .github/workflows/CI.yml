@@ -1,0 +1,22 @@
+name: CI pipeline
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v3
+      - name: Node install
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          cache: "yarn"
+          cache-dependency-path: "**/yarn.lock"
+      - name: Install dependencies
+        run: yarn install
+      - name: Build
+        run: yarn build
