@@ -129,7 +129,6 @@ export async function farmUpdated(
     // ip is already there in storage, don't save it again
     if (savedIP) {
       savedIP.ip = ip.ip.toString()
-      // savedIP.contractId = ip.contractId
       savedIP.gateway = ip.gateway.toString()
       await ctx.store.save<PublicIp>(savedIP)
     } else {
