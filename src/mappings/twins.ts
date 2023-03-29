@@ -8,7 +8,6 @@ import { TfgridModuleTwinStoredEvent, TfgridModuleTwinDeletedEvent, TfgridModule
 
 export async function twinStored(
   ctx: Ctx,
-  block: SubstrateBlock,
   item: EventItem<'TfgridModule.TwinStored', { event: { args: true } }>
 ) {
   const twin = getTwinCreate(ctx, item)
@@ -23,6 +22,34 @@ export async function twinStored(
   newTwin.publicKey = twin.pk
 
   await ctx.store.save<Twin>(newTwin)
+}
+
+export async function twinUpdated(
+  ctx: Ctx,
+  item: EventItem<'TfgridModule.TwinUpdated', { event: { args: true } }>
+) {
+  const twin = getTwinUpdate(ctx, item)
+
+  const savedTwin: any = await ctx.store.get(Twin, { where: { twinID: twin.twinID } })
+  if (!savedTwin) return
+
+  savedTwin.relay = twin.relay
+  savedTwin.publicKey = twin.pk
+  savedTwin.gridVersion = twin.version
+
+  await ctx.store.save<Twin>(savedTwin)
+}
+
+export async function twinDeleted(
+  ctx: Ctx,
+  item: EventItem<'TfgridModule.TwinDeleted', { event: { args: true } }>
+) {
+  const twinDeletedEvent = new TfgridModuleTwinDeletedEvent(ctx, item.event).asV49
+
+  const savedTwin: any = await ctx.store.get(Twin, { where: { twinID: twinDeletedEvent } })
+  if (!savedTwin) return
+
+  await ctx.store.remove<Twin>(savedTwin)
 }
 
 export async function twinCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Twin[], Twin[], Twin[]]> {

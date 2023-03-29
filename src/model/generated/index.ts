@@ -1,6 +1,3 @@
-export * from "./account.model"
-export * from "./historicalBalance.model"
-export * from "./transfer.model"
 export * from "./entity.model"
 export * from "./twin.model"
 export * from "./entityProof.model"
