@@ -1,5 +1,4 @@
-import { processBalancesTransfer } from './mappings/balances'
-import { twinCreateOrUpdateOrDelete } from './mappings/twins'
+import { twinStored, twinUpdated, twinDeleted } from './mappings/twins'
 import {
   nodeUptimeReported,
   nodeCertificationSet, nodeDeleted, nodePublicConfigStored,
@@ -109,6 +108,10 @@ async function handleEvents(ctx: Ctx, block: SubstrateBlock, item: Item) {
     case 'SmartContractModule.NruConsumptionReportReceived': return nruConsumptionReportReceived(ctx, item)
     case 'SmartContractModule.ContractGracePeriodStarted': return contractGracePeriodStarted(ctx, item)
     case 'SmartContractModule.ContractGracePeriodEnded': return contractGracePeriodEnded(ctx, item)
+    // Twins
+    case 'TfgridModule.TwinStored': return twinStored(ctx, item)
+    case 'TfgridModule.TwinUpdated': return twinUpdated(ctx, item)
+    case 'TfgridModule.TwinDeleted': return twinDeleted(ctx, item)
     // Farms
     case 'TfgridModule.FarmStored': return farmStored(ctx, item)
     case 'TfgridModule.FarmUpdated': return farmUpdated(ctx, item)
@@ -147,20 +150,6 @@ processor.run(new TypeormDatabase(), async ctx => {
       await handleEvents(ctx, block.header, item)
     }
   }
-
-  // Process twins in batch
-  let [newTwins, updatedTwin, deletedTwins] = await twinCreateOrUpdateOrDelete(ctx)
-  // Insert new twins
-  await ctx.store.insert(newTwins)
-  // Save updated twins
-  await ctx.store.save(updatedTwin)
-  // Delete twins
-  await ctx.store.remove(deletedTwins)
-
-  // Process transfers
-  let [transfers, accounts] = await processBalancesTransfer(ctx)
-  await ctx.store.save(accounts)
-  await ctx.store.insert(transfers)
 
   // Process bill reports
   let contractBillReports = collectContractBillReports(ctx)

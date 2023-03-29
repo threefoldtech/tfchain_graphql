@@ -1,6 +1,7 @@
 import { Store } from '@subsquid/typeorm-store'
 import { Ctx } from '../processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { In } from 'typeorm'
 
 import {
   ContractState, PublicIp, NameContract,
@@ -89,20 +90,29 @@ export async function contractCreated(
       newNodeContract.solutionProviderID = Number(contractEvent.solutionProviderId) || 0
     }
 
-    const ipPromises = contract.publicIpsList.map(async ip => {
-      if (ip.ip.toString().indexOf('\x00') >= 0) {
-        return
-      }
-      const savedIp = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() }, relations: { farm: true } })
-
-      if (savedIp) {
-        savedIp.contractId = newNodeContract.contractID
-        return ctx.store.save<PublicIp>(savedIp)
-      }
+    // Gather IPS and update them
+    let touchedIps: PublicIp[] = await ctx.store.find(PublicIp, {
+      where: {
+        ip: In([...new Set(contract.publicIpsList.map(ip => ip.ip.toString())).keys()])
+      }, relations: { farm: true }
     })
 
-    await Promise.all(ipPromises)
+    touchedIps = touchedIps.map(ip => {
+      ip.contractId = newNodeContract.contractID
+      return ip
+    })
 
+    if (contract.publicIps > 0 && touchedIps.length == 0) {
+      console.log(`something went wrong with contract ${contractEvent.contractId}`)
+      console.log(`ips: ${contract.publicIpsList}`)
+    }
+
+    if (newNodeContract.contractID === BigInt(17661)) {
+      console.log('contract found')
+      console.log(touchedIps)
+    }
+
+    await ctx.store.save(touchedIps)
     await ctx.store.save<NodeContract>(newNodeContract)
   } else if (contractEvent.contractType.__kind === "RentContract") {
     let newRentContract = new RentContract()
@@ -230,16 +240,12 @@ export async function nodeContractCanceled(
   if (contractID === BigInt(0)) return
 
   const savedContract = await ctx.store.get(NodeContract, { where: { contractID } })
-
   if (!savedContract) return
 
   savedContract.state = ContractState.Deleted
   await ctx.store.save<NodeContract>(savedContract)
 
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: savedContract.nodeID } })
-  if (!savedNode) return
-
-  const savedPublicIP = await ctx.store.get(PublicIp, { where: { contractId: savedContract.contractID }, relations: { farm: true } })
+  const savedPublicIP = await ctx.store.get(PublicIp, { where: { contractId: contractID }, relations: { farm: true } })
   if (savedPublicIP) {
     savedPublicIP.contractId = BigInt(0)
     await ctx.store.save<PublicIp>(savedPublicIP)

@@ -129,7 +129,6 @@ export async function farmUpdated(
     // ip is already there in storage, don't save it again
     if (savedIP) {
       savedIP.ip = ip.ip.toString()
-      savedIP.contractId = ip.contractId
       savedIP.gateway = ip.gateway.toString()
       await ctx.store.save<PublicIp>(savedIP)
     } else {
@@ -166,7 +165,7 @@ export async function farmUpdated(
 }
 
 export async function farmDeleted(
-  ctx: Ctx, 
+  ctx: Ctx,
   item: EventItem<'TfgridModule.FarmDeleted', { event: { args: true } }>
 ) {
   const farmID = new TfgridModuleFarmDeletedEvent(ctx, item.event).asV49
@@ -174,7 +173,7 @@ export async function farmDeleted(
   const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmID } })
 
   if (savedFarm) {
-    ctx.store.remove(savedFarm)
+    await ctx.store.remove(savedFarm)
   }
 }
 
@@ -230,7 +229,7 @@ export async function farmCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Farm[], Far
   let publicIPs: FarmWithIPs[] = []
 
   for (let block of ctx.blocks) {
-    for (let item of block.items) { 
+    for (let item of block.items) {
       if (item.name === "TfgridModule.FarmStored") {
         const farmStoredEvent = new TfgridModuleFarmStoredEvent(ctx, item.event)
         let farmStoredEventParsed
@@ -319,12 +318,12 @@ export async function farmCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Farm[], Far
           savedFarm.pricingPolicyID = farmUpdatedEventParsed.pricingPolicyId
           // const pubIps = updatePublicIPs(ctx, farmUpdatedEventParsed.publicIps, eventID, savedFarm)
           newFarms[foundInNewListIndex] = savedFarm
-          
+
           publicIPs = getPublicIPs(ctx, savedFarm, publicIPs, farmUpdatedEventParsed.publicIps, eventID)
-          
+
           continue
         }
-        
+
         const foundInUpdatedListIndex: number = updatedFarms.findIndex(t => t.farmID == farmUpdatedEventParsed.id)
         if (foundInUpdatedListIndex != -1) {
           let savedFarm: Farm = updatedFarms[foundInUpdatedListIndex]
@@ -337,7 +336,7 @@ export async function farmCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Farm[], Far
           publicIPs = getPublicIPs(ctx, savedFarm, publicIPs, farmUpdatedEventParsed.publicIps, eventID)
 
           continue
-        } 
+        }
 
         const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmUpdatedEventParsed.id } })
         if (!savedFarm) continue
@@ -353,7 +352,7 @@ export async function farmCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Farm[], Far
 
         updatedFarms.push(savedFarm)
       }
-      if (item.name === "TfgridModule.FarmDeleted") { 
+      if (item.name === "TfgridModule.FarmDeleted") {
         const farmID = new TfgridModuleFarmDeletedEvent(ctx, item.event).asV49
         const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmID } })
         if (savedFarm) {

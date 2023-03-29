@@ -1,26 +1,3 @@
-type Account @entity {
-  "Account address"
-  id: ID!
-  wallet: String!
-  balance: BigInt!
-  historicalBalances: [HistoricalBalance!] @derivedFrom(field: "account")
-}
-
-type HistoricalBalance @entity {
-  id: ID!
-  account: Account!
-  balance: BigInt!
-  timestamp: BigInt!
-}
-
-type Transfer @entity {
-  id: ID!
-  from: String!
-  to: String!
-  amount: BigInt!
-  timestamp: BigInt!
-}
-
 type Entity @entity {
   gridVersion: Int!
   entityID: Int!
