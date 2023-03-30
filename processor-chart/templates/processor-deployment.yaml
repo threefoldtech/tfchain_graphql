@@ -101,8 +101,8 @@ spec:
           - sh
           - -c
           - npm run api
-          image: "{{ .Values.image.query-node.repository }}:{{ .Values.image.query-node.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.query-node.pullPolicy }}
+          image: "{{ .Values.image.querynode.repository }}:{{ .Values.image.querynode.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.querynode.pullPolicy }}
           name: query-node
           ports:
             - containerPort: 4000
