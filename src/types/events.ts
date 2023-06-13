@@ -1531,3 +1531,26 @@ export class TfgridModuleNodeCertificationSetEvent {
     return this._chain.decodeEvent(this.event)
   }
 }
+
+export class TfgridModuleNodeGpuStatusChangedEvent {
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'TfgridModule.NodeGpuStatusChanged')
+    this._chain = ctx._chain
+    this.event = event
+  }
+
+  get isV134(): boolean {
+    return this._chain.getEventHash('TfgridModule.NodeGpuStatusChanged') === '6ebeadeee023f5adb0f5d3d7d7ba0f98f4f9e335e422d6e55ea2fb819763721b'
+  }
+
+  get asV134(): {nodeId: number, gpuStatus: boolean} {
+    assert(this.isV134)
+    return this._chain.decodeEvent(this.event)
+  }
+}
