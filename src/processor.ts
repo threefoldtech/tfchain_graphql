@@ -2,7 +2,8 @@ import { twinStored, twinUpdated, twinDeleted } from './mappings/twins'
 import {
   nodeUptimeReported,
   nodeCertificationSet, nodeDeleted, nodePublicConfigStored,
-  nodeStored, nodeUpdated, powerStateChanged, powerTargetChanged, nodeGpuStatusChanged
+  nodeStored, nodeUpdated, powerStateChanged, powerTargetChanged,
+  nodeGpuStatusChanged, nodeExtraFeeSet
 } from './mappings/nodes'
 import { farmingPolicyStored, pricingPolicyStored, farmingPolicyUpdated } from './mappings/policies';
 import {
@@ -92,6 +93,8 @@ const processor = new SubstrateBatchProcessor()
   .addEvent('SmartContractModule.ServiceContractApproved', eventOptions)
   .addEvent('SmartContractModule.ServiceContractCanceled', eventOptions)
   .addEvent('SmartContractModule.ServiceContractBilled', eventOptions)
+  // Extra Fee For nodes
+  .addEvent('SmartContractModule.NodeExtraFeeSet', eventOptions)
 
 export type Item = BatchProcessorItem<typeof processor>
 export type Ctx = BatchContext<Store, Item>
@@ -142,6 +145,8 @@ async function handleEvents(ctx: Ctx, block: SubstrateBlock, item: Item) {
     case 'SmartContractModule.ServiceContractApproved': return serviceContractApproved(ctx, item)
     case 'SmartContractModule.ServiceContractCanceled': return serviceContractCanceled(ctx, item)
     case 'SmartContractModule.ServiceContractBilled': return serviceContractBilled(ctx, item)
+    // Extra Fee For nodes
+    case 'SmartContractModule.NodeExtraFeeSet': return nodeExtraFeeSet(ctx, item)
   }
 }
 

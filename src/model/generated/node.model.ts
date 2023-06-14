@@ -78,4 +78,10 @@ export class Node {
 
     @Column_("bool", {nullable: false})
     hasGpu!: boolean
+
+    @Column_("bool", {nullable: false})
+    dedicated!: boolean
+
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
+    extraFee!: bigint | undefined | null
 }
