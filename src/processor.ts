@@ -2,7 +2,7 @@ import { twinStored, twinUpdated, twinDeleted } from './mappings/twins'
 import {
   nodeUptimeReported,
   nodeCertificationSet, nodeDeleted, nodePublicConfigStored,
-  nodeStored, nodeUpdated, powerStateChanged, powerTargetChanged
+  nodeStored, nodeUpdated, powerStateChanged, powerTargetChanged, nodeGpuStatusChanged
 } from './mappings/nodes'
 import { farmingPolicyStored, pricingPolicyStored, farmingPolicyUpdated } from './mappings/policies';
 import {
@@ -67,6 +67,7 @@ const processor = new SubstrateBatchProcessor()
   .addEvent('TfgridModule.NodeCertificationSet', eventOptions)
   .addEvent('TfgridModule.PowerTargetChanged', eventOptions)
   .addEvent('TfgridModule.PowerStateChanged', eventOptions)
+  .addEvent('TfgridModule.NodeGpuStatusChanged', eventOptions)
   // Contracts
   .addEvent('SmartContractModule.ContractCreated', eventOptions)
   .addEvent('SmartContractModule.ContractUpdated', eventOptions)
@@ -126,6 +127,7 @@ async function handleEvents(ctx: Ctx, block: SubstrateBlock, item: Item) {
     case 'TfgridModule.NodeCertificationSet': return nodeCertificationSet(ctx, item)
     case 'TfgridModule.PowerTargetChanged': return powerTargetChanged(ctx, item)
     case 'TfgridModule.PowerStateChanged': return powerStateChanged(ctx, item)
+    case 'TfgridModule.NodeGpuStatusChanged': return nodeGpuStatusChanged(ctx, item)
     // Policies
     case 'TfgridModule.PricingPolicyStored': return pricingPolicyStored(ctx, item)
     case 'TfgridModule.FarmingPolicyStored': return farmingPolicyStored(ctx, item)

@@ -1,5 +1,11 @@
 import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal, NodePower, PowerState, Power } from "../model";
-import { TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent, TfgridModulePowerStateChangedEvent, TfgridModulePowerTargetChangedEvent } from "../types/events";
+import { 
+  TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, 
+  TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, 
+  TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent, 
+  TfgridModulePowerStateChangedEvent, TfgridModulePowerTargetChangedEvent,
+  TfgridModuleNodeGpuStatusChangedEvent
+} from "../types/events";
 import { SubstrateBlock } from '@subsquid/substrate-processor';
 import { In } from 'typeorm'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
@@ -562,6 +568,19 @@ export async function powerStateChanged(
     savedNode.power.target = Power.Up
   }
   savedNode.power.state = state
+  await ctx.store.save<Node>(savedNode)
+}
+
+export async function nodeGpuStatusChanged(
+  ctx: Ctx,
+  item: EventItem<'TfgridModule.NodeGpuStatusChanged', { event: { args: true } }>
+) {
+  const { nodeId, gpuStatus } = new TfgridModuleNodeGpuStatusChangedEvent(ctx, item.event).asV134
+
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeId }, relations: { location: true, interfaces: true } })
+  if (!savedNode) return
+
+  savedNode.hasGpu = gpuStatus
   await ctx.store.save<Node>(savedNode)
 }
 

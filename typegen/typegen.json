@@ -1,9 +1,9 @@
 {
-  "outDir": "../src/types",
-  "chainVersions": "./tfchainVersions.json",
+  "outDir": "../src/typesDevnet",
+  "specVersions": "./tfchainVersions.jsonl",
   "typesBundle": "./typesBundle.json",
   "events": [
-    "balances.Transfer",
+    "Balances.Transfer",
     "TfgridModule.EntityStored",
     "TfgridModule.EntityUpdated",
     "TfgridModule.EntityDeleted",
@@ -23,15 +23,13 @@
     "TfgridModule.FarmingPolicyStored",
     "TfgridModule.FarmPayoutV2AddressRegistered",
     "TfgridModule.NodePublicConfigStored",
+    "TfgridModule.NodeGpuStatusChanged",
     "SmartContractModule.NruConsumptionReportReceived",
     "SmartContractModule.ContractCreated",
     "SmartContractModule.ContractUpdated",
     "SmartContractModule.NodeContractCanceled",
     "SmartContractModule.NameContractCanceled",
     "SmartContractModule.ContractBilled",
-    "SmartContractModule.UpdatedUsedResources",
-    "tftBridgeModule.MintCompleted",
-    "tftBridgeModule.BurnTransactionProcessed",
-    "tftBridgeModule.RefundTransactionProcessed"
+    "SmartContractModule.UpdatedUsedResources"
   ]
 }

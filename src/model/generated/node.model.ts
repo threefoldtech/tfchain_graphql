@@ -75,4 +75,7 @@ export class Node {
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new NodePower(undefined, obj)}, nullable: true})
     power!: NodePower | undefined | null
+
+    @Column_("bool", {nullable: false})
+    hasGpu!: boolean
 }
