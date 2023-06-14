@@ -2,4 +2,4 @@ name: tfchainindexer
 description: Helm Chart for the tfchain hydra indexer
 version: 2.7.7
 apiVersion: v2
-appVersion: '2.9.2'
+appVersion: '2.10.0'

@@ -3846,7 +3846,6 @@
   "resolved" "https://registry.npmjs.org/minipass-fetch/-/minipass-fetch-1.4.1.tgz"
   "version" "1.4.1"
   dependencies:
-    "encoding" "^0.1.12"
     "minipass" "^3.1.0"
     "minipass-sized" "^1.0.3"
     "minizlib" "^2.0.0"
@@ -3858,7 +3857,6 @@
   "resolved" "https://registry.npmjs.org/minipass-fetch/-/minipass-fetch-2.1.2.tgz"
   "version" "2.1.2"
   dependencies:
-    "encoding" "^0.1.13"
     "minipass" "^3.1.6"
     "minipass-sized" "^1.0.3"
     "minizlib" "^2.1.2"
