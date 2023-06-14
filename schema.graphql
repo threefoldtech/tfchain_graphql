@@ -63,6 +63,8 @@ type Node @entity {
   connectionPrice: Int
   power: NodePower
   hasGpu: Boolean!
+  dedicated: Boolean!
+  extraFee: BigInt
 }
 
 type NodePower {

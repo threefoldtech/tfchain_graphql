@@ -30,6 +30,7 @@
     "SmartContractModule.NodeContractCanceled",
     "SmartContractModule.NameContractCanceled",
     "SmartContractModule.ContractBilled",
-    "SmartContractModule.UpdatedUsedResources"
+    "SmartContractModule.UpdatedUsedResources",
+    "SmartContractModule.NodeExtraFeeSet"
   ]
 }

@@ -1554,3 +1554,26 @@ export class TfgridModuleNodeGpuStatusChangedEvent {
     return this._chain.decodeEvent(this.event)
   }
 }
+
+export class SmartContractModuleNodeExtraFeeSetEvent {
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+      event = event || ctx.event
+      assert(event.name === 'SmartContractModule.NodeExtraFeeSet')
+      this._chain = ctx._chain
+      this.event = event
+  }
+
+  get isV134(): boolean {
+      return this._chain.getEventHash('SmartContractModule.NodeExtraFeeSet') === '965d5bd144bf08240df0df2baab4138d23a994cd48c75be6d98818238ceb0161'
+  }
+
+  get asV134(): {nodeId: number, extraFee: bigint} {
+      assert(this.isV134)
+      return this._chain.decodeEvent(this.event)
+  }
+}

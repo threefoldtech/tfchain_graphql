@@ -4,7 +4,7 @@ import {
   TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, 
   TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent, 
   TfgridModulePowerStateChangedEvent, TfgridModulePowerTargetChangedEvent,
-  TfgridModuleNodeGpuStatusChangedEvent
+  TfgridModuleNodeGpuStatusChangedEvent, SmartContractModuleNodeExtraFeeSetEvent
 } from "../types/events";
 import { SubstrateBlock } from '@subsquid/substrate-processor';
 import { In } from 'typeorm'
@@ -581,6 +581,22 @@ export async function nodeGpuStatusChanged(
   if (!savedNode) return
 
   savedNode.hasGpu = gpuStatus
+  await ctx.store.save<Node>(savedNode)
+}
+
+export async function nodeExtraFeeSet(
+  ctx: Ctx,
+  item: EventItem<'SmartContractModule.NodeExtraFeeSet', { event: { args: true } }>
+) {
+  const { nodeId, extraFee } = new SmartContractModuleNodeExtraFeeSetEvent(ctx, item.event).asV134
+
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeId }, relations: { location: true, interfaces: true } })
+  if (!savedNode) return
+
+  savedNode.extraFee = extraFee
+  // Also mark the node as dedicated if the fee is not 0
+  savedNode.dedicated = extraFee > 0
+
   await ctx.store.save<Node>(savedNode)
 }
 
