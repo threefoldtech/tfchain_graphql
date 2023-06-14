@@ -595,9 +595,7 @@ export async function nodeExtraFeeSet(
 
   savedNode.extraFee = extraFee
   // Also mark the node as dedicated if the fee is not 0
-  if (extraFee > 0) {
-    savedNode.dedicated = true
-  }
+  savedNode.dedicated = extraFee > 0
 
   await ctx.store.save<Node>(savedNode)
 }
