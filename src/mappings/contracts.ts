@@ -131,6 +131,13 @@ export async function contractCreated(
       newRentContract.solutionProviderID = Number(contractEvent.solutionProviderId) || 0
     }
     await ctx.store.save<RentContract>(newRentContract)
+
+    // Update node to dedicated if it is rented
+    const savedNode = await ctx.store.get(Node, { where: { nodeID: contract.nodeId }, relations: { location: true, interfaces: true } })
+    if (savedNode) {
+      savedNode.dedicated = true
+      await ctx.store.save<Node>(savedNode)
+    }
   }
 }
 
@@ -298,6 +305,13 @@ export async function rentContractCanceled(
   savedContract.state = ContractState.Deleted
 
   await ctx.store.save<RentContract>(savedContract)
+
+  // Update node dedicated status, if the node has an extra fee set, it means it's dedicated
+  const savedNode = await ctx.store.get(Node, { where: { nodeID: savedContract.nodeID }, relations: { location: true, interfaces: true } })
+  if (savedNode) {
+    savedNode.dedicated = savedNode.extraFee !== null
+    await ctx.store.save<Node>(savedNode)
+  }
 }
 
 export function collectContractBillReports(ctx: Ctx): ContractBillReport[] {
