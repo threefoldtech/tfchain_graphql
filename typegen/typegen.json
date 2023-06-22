@@ -23,7 +23,6 @@
     "TfgridModule.FarmingPolicyStored",
     "TfgridModule.FarmPayoutV2AddressRegistered",
     "TfgridModule.NodePublicConfigStored",
-    "TfgridModule.NodeGpuStatusChanged",
     "SmartContractModule.NruConsumptionReportReceived",
     "SmartContractModule.ContractCreated",
     "SmartContractModule.ContractUpdated",
