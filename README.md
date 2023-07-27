@@ -12,10 +12,26 @@ The substrate events are processed in a multi-step pipeline:
 
 ## Prerequisites
 
-* Node v14x
+* Node v16x
 * Docker
 * Docker-compose
 
 ## Running
 
 see [docs](./docs/readme.md)
+
+## Project layout
+
+- `indexer` - docker-compose setup for the indexer
+- `db` - Processor db migration files
+- `scripts` - Scripts for generating initial state and development scripts
+- `src` - Source
+    - `mappings` - Mapper functions for the indexer data
+    - `model` - Generated models from the `schema.graphql` file
+    - `types` - Type files that require manual edit if the schema changes / or chain types change
+    - `processor.ts` - Processor entrypoint
+- `typegen` - Where the declaration files are generated from (used for development)
+    - `tfchainVersions.jsonl` - Generated tfchain runtime versions and their data
+    - `typegen.json` - Typegen config
+    - `typesBundle.json` - Typegen bundle config
+- `schema.graphql` - The graphql schema file, changes to this file will results in changes to the models (`src/models`)
