@@ -146,4 +146,9 @@ Make the corresponding changes in `src/processor.ts` and mappers `src/mappings/.
 
 ### 7: Build and test
 
-TODO
+Start an indexer and test if the new types are indexed correctly.
+
+```
+yarn build
+yarn process
+```
