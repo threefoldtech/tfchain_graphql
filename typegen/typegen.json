@@ -1,5 +1,5 @@
 {
-  "outDir": "../src/typesDevnet",
+  "outDir": "../src/typesDevelopment",
   "specVersions": "./tfchainVersions.jsonl",
   "typesBundle": "./typesBundle.json",
   "events": [

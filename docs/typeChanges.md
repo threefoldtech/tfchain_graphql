@@ -63,9 +63,9 @@ Also increment the indexer chart version `indexer/chart/chart.yaml`
 
 ### 3: Run typegen exploration
 
-`cd typegenLocal`
+`cd typegen`
 
-Copy over the typesBundle.json changes to `typegenLocal/typesBundle.json`.
+Copy over the typesBundle.json changes to `typegen/typesBundle.json`.
 
 Once the typesBundle is modified, check if changes are required for generating types in `typegen.json`
 
@@ -104,8 +104,8 @@ npx squid-substrate-typegen typegen.json
 
 Notice it will re-generate following files:
 
-- src/typesLocal/events.ts
-- src/typesLocal/$specVersion.ts
+- src/typesDevelopment/events.ts
+- src/typesDevelopment/$specVersion.ts
 
 ### 4: Add new types / event to the main events definitions
 
@@ -119,7 +119,7 @@ So we need to extend the generated src/types with incremental type changes we ma
 Steps:
 
 - copy new $specVersion.ts file to `src/types` and only keep the changes required for the new types 
-- copy changes from `src/typesLocal/events.ts` to `src/types/events.ts` (see which events were added / modified and only copy those over)
+- copy changes from `src/typesDevelopment/events.ts` to `src/types/events.ts` (see which events were added / modified and only copy those over)
 
 ### 5: Modify graphql schema
 
@@ -146,4 +146,9 @@ Make the corresponding changes in `src/processor.ts` and mappers `src/mappings/.
 
 ### 7: Build and test
 
-TODO
+Start an indexer and test if the new types are indexed correctly.
+
+```
+yarn build
+yarn process
+```
