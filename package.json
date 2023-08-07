@@ -12,7 +12,7 @@
     "db:migrate": "npx squid-typeorm-migration apply",
     "db:init": "node init-countries.js",
     "db:up": "docker-compose up -d db",
-    "process": "node db/init.js && node init-countries.js && node -r dotenv/config lib/processor.js",
+    "process": "node db/init.js && node scripts/init-countries.js && node -r dotenv/config lib/processor.js",
     "api": "squid-graphql-server",
     "codegen": "npx squid-typeorm-codegen",
     "typegen": "squid-substrate-typegen typegen/typegen.json",
