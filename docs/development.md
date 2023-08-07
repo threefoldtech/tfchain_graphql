@@ -63,7 +63,7 @@ docker ps
 
 it should display such list of running containers:
 
-![image](https://user-images.githubusercontent.com/73958772/210003731-6abd405f-f92a-440d-aa9a-40410e580109.png)
+![image](https://user-images.githubusercontent.com/42457449/258668686-cd331bd6-ed80-47ea-87a5-16f88d969025.png)
 
 Make sure indexer and processor are both listening to tfchain to be able to browse.
 

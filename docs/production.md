@@ -21,7 +21,7 @@ docker-compose up -d
 
 ### Processor
 
-Configure the `.env` file in `./processor`
+Configure the `.env` file in the root of this repository.
 
 Set the `WS_URL` to a tfchain network url.
 
