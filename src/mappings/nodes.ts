@@ -49,6 +49,7 @@ export async function nodeStored(
   newNode.farmID = nodeEvent.farmId
   newNode.nodeID = nodeEvent.id
   newNode.twinID = nodeEvent.twinId
+  newNode.dedicated = false
 
   newNode.createdAt = timestamp
   newNode.updatedAt = timestamp
