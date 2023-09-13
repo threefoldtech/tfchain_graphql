@@ -46,6 +46,8 @@ export async function farmStored(
   newFarm.pricingPolicyID = farmStoredEventParsed.pricingPolicyId
   newFarm.dedicatedFarm = false
   newFarm.certification = FarmCertification.NotCertified
+  newFarm.totalIps = 0
+  newFarm.freeIps = 0
 
   newFarm.publicIPs = []
 
@@ -70,9 +72,12 @@ export async function farmStored(
     newIP.farm = newFarm
 
     newFarm.publicIPs?.push(newIP)
-
+    newFarm.totalIps += 1
     return ctx.store.save<PublicIp>(newIP)
   })
+
+  newFarm.freeIps = newFarm.totalIps
+
   await Promise.all(ipPromises)
   await ctx.store.save<Farm>(newFarm)
 }
@@ -118,7 +123,8 @@ export async function farmUpdated(
   savedFarm.twinID = farmUpdatedEventParsed.twinId
   savedFarm.pricingPolicyID = farmUpdatedEventParsed.pricingPolicyId
   savedFarm.certification = certification
-
+  savedFarm.totalIps = 0
+  savedFarm.freeIps = 0
   let eventPublicIPs = farmUpdatedEventParsed.publicIps
 
   await farmUpdatedEventParsed.publicIps.forEach(async ip => {
@@ -127,9 +133,15 @@ export async function farmUpdated(
     }
     const savedIP = await ctx.store.get(PublicIp, { where: { ip: ip.ip.toString() }, relations: { farm: true } })
     // ip is already there in storage, don't save it again
+
+    savedFarm.totalIps += 1
     if (savedIP) {
       savedIP.ip = ip.ip.toString()
       savedIP.gateway = ip.gateway.toString()
+      if (savedIP.contractId === BigInt(0)) {
+        savedFarm.freeIps += 1
+      }
+
       await ctx.store.save<PublicIp>(savedIP)
     } else {
       const newIP = new PublicIp()
@@ -138,16 +150,14 @@ export async function farmUpdated(
       newIP.gateway = ip.gateway.toString()
       newIP.contractId = ip.contractId
       newIP.farm = savedFarm
-
       await ctx.store.save<PublicIp>(newIP)
       if (!savedFarm.publicIPs) {
         savedFarm.publicIPs = []
       }
       savedFarm.publicIPs.push(newIP)
+      savedFarm.freeIps += 1
     }
   })
-
-  await ctx.store.save<Farm>(savedFarm)
 
   const publicIPsOfFarm = await ctx.store.find<PublicIp>(PublicIp, { where: { farm: { id: savedFarm.id } }, relations: { farm: true } })
   publicIPsOfFarm.forEach(async ip => {
@@ -160,8 +170,9 @@ export async function farmUpdated(
   let farm = item.event.args as Farm
   if (farm.dedicatedFarm) {
     savedFarm.dedicatedFarm = farm.dedicatedFarm
-    await ctx.store.save<Farm>(savedFarm)
   }
+
+  await ctx.store.save<Farm>(savedFarm)
 }
 
 export async function farmDeleted(
