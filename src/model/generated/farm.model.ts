@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToMany as OneToMany_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
 import {FarmCertification} from "./_farmCertification"
 import {PublicIp} from "./publicIp.model"
 
@@ -14,6 +14,7 @@ export class Farm {
     @Column_("int4", {nullable: false})
     gridVersion!: number
 
+    @Index_()
     @Column_("int4", {nullable: false})
     farmID!: number
 
@@ -31,6 +32,12 @@ export class Farm {
 
     @OneToMany_(() => PublicIp, e => e.farm)
     publicIPs!: PublicIp[]
+
+    @Column_("int4", {nullable: false})
+    totalIps!: number
+
+    @Column_("int4", {nullable: false})
+    freeIps!: number
 
     @Column_("text", {nullable: true})
     stellarAddress!: string | undefined | null

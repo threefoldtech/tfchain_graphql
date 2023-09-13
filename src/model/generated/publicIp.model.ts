@@ -21,6 +21,7 @@ export class PublicIp {
     @Column_("text", {nullable: false})
     ip!: string
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-    contractId!: bigint
+    @Index_()
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
+    contractId!: bigint | undefined | null
 }
