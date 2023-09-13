@@ -194,15 +194,16 @@ export async function nodeUpdated(
   // calculate free resources difference
   let prevMRUPercentage = savedNode.totalMRU / BigInt(10)
   let prevZOSUsedMRU = savedNode.totalMRU - (prevMRUPercentage > BigInt(ZOSMinUsedMemory) ? prevMRUPercentage : BigInt(ZOSMinUsedMemory))
-
   let curMRUPercentage = nodeEvent.resources.mru / BigInt(10)
   let curZOSUsedMRU = nodeEvent.resources.mru - (curMRUPercentage > BigInt(ZOSMinUsedMemory) ? curMRUPercentage : BigInt(ZOSMinUsedMemory))
 
-  let mruDiff = curZOSUsedMRU - prevZOSUsedMRU
-  let hruDiff = nodeEvent.resources.hru - savedNode.totalHRU
-  let sruDiff = (nodeEvent.resources.sru - BigInt(ZOSUsedSRU)) - savedNode.totalSRU
+  let contractsUsedMRU = savedNode.totalMRU - savedNode.freeMRU - prevZOSUsedMRU
+  let newFreeMRU = nodeEvent.resources.mru - contractsUsedMRU - curZOSUsedMRU
 
-  savedNode.freeMRU += mruDiff
+  let hruDiff = nodeEvent.resources.hru - savedNode.totalHRU
+  let sruDiff = nodeEvent.resources.sru - savedNode.totalSRU
+
+  savedNode.freeMRU = newFreeMRU
   savedNode.freeHRU += hruDiff
   savedNode.freeSRU += sruDiff
 

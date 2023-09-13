@@ -255,15 +255,15 @@ export async function nodeContractCanceled(
   await ctx.store.save<Contract>(savedContract)
 
   let savedPublicIPs: PublicIp[] = await ctx.store.find(PublicIp, { where: { contractId: contractID }, relations: { farm: true } })
-  savedPublicIPs = await Promise.all(savedPublicIPs.map(async (ip) => {
-    ip.contractId = BigInt(0)
+  Promise.all(savedPublicIPs.map(async (ip) => {
+    ip.contractId = null
     const farm = await ctx.store.get(Farm, { where: { farmID: ip.farm.farmID } })
     if (farm) {
       farm.freeIps += 1
       await ctx.store.save<Farm>(farm)
     }
 
-    return ip
+    await ctx.store.save<PublicIp>(ip)
   }))
 
   if (savedContract.nodeID) {

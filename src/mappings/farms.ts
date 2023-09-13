@@ -76,9 +76,10 @@ export async function farmStored(
     return ctx.store.save<PublicIp>(newIP)
   })
 
-  newFarm.freeIps = newFarm.totalIps
 
   await Promise.all(ipPromises)
+
+  newFarm.freeIps = newFarm.totalIps
   await ctx.store.save<Farm>(newFarm)
 }
 
@@ -127,7 +128,7 @@ export async function farmUpdated(
   savedFarm.freeIps = 0
   let eventPublicIPs = farmUpdatedEventParsed.publicIps
 
-  await farmUpdatedEventParsed.publicIps.forEach(async ip => {
+  await Promise.all(farmUpdatedEventParsed.publicIps.map(async ip => {
     if (ip.ip.toString().indexOf('\x00') >= 0) {
       return
     }
@@ -157,7 +158,7 @@ export async function farmUpdated(
       savedFarm.publicIPs.push(newIP)
       savedFarm.freeIps += 1
     }
-  })
+  }))
 
   const publicIPsOfFarm = await ctx.store.find<PublicIp>(PublicIp, { where: { farm: { id: savedFarm.id } }, relations: { farm: true } })
   publicIPsOfFarm.forEach(async ip => {
