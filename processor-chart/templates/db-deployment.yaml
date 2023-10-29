@@ -33,7 +33,7 @@ spec:
                 configMapKeyRef:
                   key: DB_USER
                   name: env
-        image: postgres:12
+        image: postgres:16
         name: processor-db
         ports:
           - containerPort: 5432
