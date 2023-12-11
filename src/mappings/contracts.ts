@@ -4,9 +4,9 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { In } from 'typeorm'
 
 import {
-  ContractState, PublicIp, NameContract,
-  NodeContract, ContractBillReport, DiscountLevel,
-  ContractResources, Node, RentContract, NruConsumption
+  ContractState, PublicIp, Contract,
+  ContractBillReport, DiscountLevel,
+  Node, NruConsumption, ContractType, Farm
 } from "../model";
 import {
   SmartContractModuleContractCreatedEvent, SmartContractModuleContractUpdatedEvent,
@@ -44,8 +44,9 @@ export async function contractCreated(
 
   let contract
   if (contractEvent.contractType.__kind === "NameContract") {
-    let newNameContract = new NameContract()
+    let newNameContract = new Contract()
     newNameContract.id = item.event.id
+    newNameContract.type = ContractType.Name
     contract = contractEvent.contractType.value
     newNameContract.name = contract.name.toString()
     newNameContract.contractID = contractEvent.contractId
@@ -57,11 +58,13 @@ export async function contractCreated(
       contractEvent = contractCreatedEvent.asV105
       newNameContract.solutionProviderID = Number(contractEvent.solutionProviderId) || 0
     }
-    await ctx.store.save<NameContract>(newNameContract)
+
+    await ctx.store.save<Contract>(newNameContract)
   }
   else if (contractEvent.contractType.__kind === "NodeContract") {
-    let newNodeContract = new NodeContract()
+    let newNodeContract = new Contract()
     newNodeContract.id = item.event.id
+    newNodeContract.type = ContractType.Node
 
     contract = contractEvent.contractType.value
 
@@ -97,10 +100,15 @@ export async function contractCreated(
       }, relations: { farm: true }
     })
 
-    touchedIps = touchedIps.map(ip => {
+    touchedIps = await Promise.all(touchedIps.map(async (ip) => {
       ip.contractId = newNodeContract.contractID
+      let farm = await ctx.store.get(Farm, { where: { farmID: ip.farm.farmID } })
+      if (farm) {
+        farm.freeIps -= 1
+        await ctx.store.save<Farm>(farm)
+      }
       return ip
-    })
+    }))
 
     if (contract.publicIps > 0 && touchedIps.length == 0) {
       console.log(`something went wrong with contract ${contractEvent.contractId}`)
@@ -113,11 +121,11 @@ export async function contractCreated(
     }
 
     await ctx.store.save(touchedIps)
-    await ctx.store.save<NodeContract>(newNodeContract)
+    await ctx.store.save<Contract>(newNodeContract)
   } else if (contractEvent.contractType.__kind === "RentContract") {
-    let newRentContract = new RentContract()
+    let newRentContract = new Contract()
     newRentContract.id = item.event.id
-
+    newRentContract.type = ContractType.Rent
     contract = contractEvent.contractType.value
 
     newRentContract.contractID = contractEvent.contractId
@@ -130,12 +138,13 @@ export async function contractCreated(
       contractEvent = contractCreatedEvent.asV105
       newRentContract.solutionProviderID = Number(contractEvent.solutionProviderId) || 0
     }
-    await ctx.store.save<RentContract>(newRentContract)
+    await ctx.store.save<Contract>(newRentContract)
 
     // Update node to dedicated if it is rented
     const savedNode = await ctx.store.get(Node, { where: { nodeID: contract.nodeId }, relations: { location: true, interfaces: true } })
     if (savedNode) {
       savedNode.dedicated = true
+      savedNode.rentedBy = newRentContract.twinID
       await ctx.store.save<Node>(savedNode)
     }
   }
@@ -162,18 +171,20 @@ export async function contractUpdated(
 
   if (!contractEvent) return
 
-  const SavedNodeContract = await ctx.store.get(NodeContract, { where: { contractID: contractEvent.contractId } })
+  const SavedNodeContract = await ctx.store.get(Contract, { where: { contractID: contractEvent.contractId } })
   if (SavedNodeContract) {
     await updateNodeContract(contractEvent, SavedNodeContract, ctx.store)
+    return
   }
 
-  const SavedNameContract = await ctx.store.get(NameContract, { where: { contractID: contractEvent.contractId } })
+  const SavedNameContract = await ctx.store.get(Contract, { where: { contractID: contractEvent.contractId } })
   if (SavedNameContract) {
     await updateNameContract(contractEvent, SavedNameContract, ctx.store)
+    return
   }
 }
 
-async function updateNodeContract(ctr: any, contract: NodeContract, store: Store) {
+async function updateNodeContract(ctr: any, contract: Contract, store: Store) {
   if (ctr.contractType.__kind !== "NodeContract") return
 
   const parsedNodeContract = ctr.contractType.value
@@ -183,17 +194,8 @@ async function updateNodeContract(ctr: any, contract: NodeContract, store: Store
   contract.twinID = ctr.twinId
   contract.nodeID = parsedNodeContract.nodeId
   contract.numberOfPublicIPs = parsedNodeContract.publicIps
-
-  if (contract.deploymentData.toString().indexOf('\x00') >= 0) {
-    contract.deploymentData = ""
-  } else {
-    contract.deploymentData = contract.deploymentData.toString()
-  }
-  if (contract.deploymentHash.toString().indexOf('\x00') >= 0) {
-    contract.deploymentHash = ""
-  } else {
-    contract.deploymentHash = contract.deploymentHash.toString()
-  }
+  contract.deploymentData = parsedNodeContract.deploymentData
+  contract.deploymentHash = parsedNodeContract.deploymentHash
 
   let state = ContractState.OutOfFunds
   switch (ctr.state.__kind) {
@@ -205,10 +207,10 @@ async function updateNodeContract(ctr: any, contract: NodeContract, store: Store
       break
   }
   contract.state = state
-  await store.save<NodeContract>(contract)
+  await store.save<Contract>(contract)
 }
 
-async function updateNameContract(ctr: any, contract: NameContract, store: Store) {
+async function updateNameContract(ctr: any, contract: Contract, store: Store) {
   if (ctr.contractType.__kind !== "NameContract") return
 
   const parsedNameContract = ctr.contractType.value
@@ -228,7 +230,7 @@ async function updateNameContract(ctr: any, contract: NameContract, store: Store
       break
   }
   contract.state = state
-  await store.save<NameContract>(contract)
+  await store.save<Contract>(contract)
 }
 
 export async function nodeContractCanceled(
@@ -246,16 +248,32 @@ export async function nodeContractCanceled(
 
   if (contractID === BigInt(0)) return
 
-  const savedContract = await ctx.store.get(NodeContract, { where: { contractID } })
+  const savedContract = await ctx.store.get(Contract, { where: { contractID } })
   if (!savedContract) return
 
   savedContract.state = ContractState.Deleted
-  await ctx.store.save<NodeContract>(savedContract)
+  await ctx.store.save<Contract>(savedContract)
 
-  const savedPublicIP = await ctx.store.get(PublicIp, { where: { contractId: contractID }, relations: { farm: true } })
-  if (savedPublicIP) {
-    savedPublicIP.contractId = BigInt(0)
-    await ctx.store.save<PublicIp>(savedPublicIP)
+  let savedPublicIPs: PublicIp[] = await ctx.store.find(PublicIp, { where: { contractId: contractID }, relations: { farm: true } })
+  Promise.all(savedPublicIPs.map(async (ip) => {
+    ip.contractId = null
+    const farm = await ctx.store.get(Farm, { where: { farmID: ip.farm.farmID } })
+    if (farm) {
+      farm.freeIps += 1
+      await ctx.store.save<Farm>(farm)
+    }
+
+    await ctx.store.save<PublicIp>(ip)
+  }))
+
+  if (savedContract.nodeID) {
+    const savedNode = await ctx.store.get(Node, { where: { nodeID: savedContract.nodeID } })
+    if (!savedNode) return
+    savedNode.freeMRU += savedContract.usedMRU || BigInt(0)
+    savedNode.freeSRU += savedContract.usedSRU || BigInt(0)
+    savedNode.freeHRU += savedContract.usedHRU || BigInt(0)
+
+    await ctx.store.save<Node>(savedNode)
   }
 }
 
@@ -274,13 +292,13 @@ export async function nameContractCanceled(
 
   if (contractID === BigInt(0)) return
 
-  const savedContract = await ctx.store.get(NameContract, { where: { contractID } })
+  const savedContract = await ctx.store.get(Contract, { where: { contractID } })
 
   if (!savedContract) return
 
   savedContract.state = ContractState.Deleted
 
-  await ctx.store.save<NameContract>(savedContract)
+  await ctx.store.save<Contract>(savedContract)
 }
 
 export async function rentContractCanceled(
@@ -298,19 +316,22 @@ export async function rentContractCanceled(
 
   if (contractID === BigInt(0)) return
 
-  const savedContract = await ctx.store.get(RentContract, { where: { contractID } })
+  const savedContract = await ctx.store.get(Contract, { where: { contractID } })
 
   if (!savedContract) return
 
   savedContract.state = ContractState.Deleted
 
-  await ctx.store.save<RentContract>(savedContract)
+  await ctx.store.save<Contract>(savedContract)
 
   // Update node dedicated status, if the node has an extra fee set, it means it's dedicated
-  const savedNode = await ctx.store.get(Node, { where: { nodeID: savedContract.nodeID }, relations: { location: true, interfaces: true } })
-  if (savedNode) {
-    savedNode.dedicated = savedNode.extraFee !== null
-    await ctx.store.save<Node>(savedNode)
+  if (savedContract.nodeID) {
+    const savedNode = await ctx.store.get(Node, { where: { nodeID: savedContract.nodeID }, relations: { location: true, interfaces: true } })
+    if (savedNode) {
+      savedNode.dedicated = savedNode.extraFee !== null
+      savedNode.rentedBy = null
+      await ctx.store.save<Node>(savedNode)
+    }
   }
 }
 
@@ -390,33 +411,26 @@ export async function contractUpdateUsedResources(
 ) {
   const usedResources = new SmartContractModuleUpdatedUsedResourcesEvent(ctx, item.event).asV49
 
-  const contractUsedResources = new ContractResources()
-
-  const savedContract = await ctx.store.get(NodeContract, { where: { contractID: usedResources.contractId } })
+  const savedContract = await ctx.store.get(Contract, { where: { contractID: usedResources.contractId } })
   if (!savedContract) return
 
-  const savedContractResources = await ctx.store.get(ContractResources, { where: { contract: { contractID: savedContract.contractID } }, relations: { contract: true } })
-  if (savedContractResources) {
-    savedContractResources.cru = usedResources.used.cru
-    savedContractResources.sru = usedResources.used.sru
-    savedContractResources.hru = usedResources.used.hru
-    savedContractResources.mru = usedResources.used.mru
-    await ctx.store.save<ContractResources>(savedContractResources)
+  if (savedContract.nodeID) {
+    const savedNode = await ctx.store.get(Node, { where: { nodeID: savedContract.nodeID } })
+    if (!savedNode) return
 
-    savedContract.resourcesUsed = savedContractResources
-    await ctx.store.save<NodeContract>(savedContract)
-  } else {
-    contractUsedResources.id = item.event.id
-    contractUsedResources.cru = usedResources.used.cru
-    contractUsedResources.sru = usedResources.used.sru
-    contractUsedResources.hru = usedResources.used.hru
-    contractUsedResources.mru = usedResources.used.mru
-    contractUsedResources.contract = savedContract
-    await ctx.store.save<ContractResources>(contractUsedResources)
+    savedNode.freeMRU += (savedContract.usedMRU || BigInt(0)) - usedResources.used.mru
+    savedNode.freeHRU += (savedContract.usedHRU || BigInt(0)) - usedResources.used.hru
+    savedNode.freeSRU += (savedContract.usedSRU || BigInt(0)) - usedResources.used.sru
 
-    savedContract.resourcesUsed = contractUsedResources
-    await ctx.store.save<NodeContract>(savedContract)
+    await ctx.store.save<Node>(savedNode)
   }
+
+  savedContract.usedCRU = usedResources.used.cru
+  savedContract.usedHRU = usedResources.used.hru
+  savedContract.usedMRU = usedResources.used.mru
+  savedContract.usedSRU = usedResources.used.sru
+
+  await ctx.store.save<Contract>(savedContract)
 }
 
 export async function nruConsumptionReportReceived(
@@ -449,24 +463,10 @@ export async function contractGracePeriodStarted(
     contractID = contractGracePeriodStartedEvent.asV105.contractId
   }
 
-  const savedNodeContract = await ctx.store.get(NodeContract, { where: { contractID } })
+  const savedNodeContract = await ctx.store.get(Contract, { where: { contractID } })
   if (savedNodeContract) {
     savedNodeContract.state = ContractState.GracePeriod
-    await ctx.store.save<NodeContract>(savedNodeContract)
-    return
-  }
-
-  const savedRentContract = await ctx.store.get(RentContract, { where: { contractID } })
-  if (savedRentContract) {
-    savedRentContract.state = ContractState.GracePeriod
-    await ctx.store.save<RentContract>(savedRentContract)
-    return
-  }
-
-  const savedNameContract = await ctx.store.get(NameContract, { where: { contractID } })
-  if (savedNameContract) {
-    savedNameContract.state = ContractState.GracePeriod
-    await ctx.store.save<NameContract>(savedNameContract)
+    await ctx.store.save<Contract>(savedNodeContract)
     return
   }
 }
@@ -485,24 +485,10 @@ export async function contractGracePeriodEnded(
     contractID = contractGracePeriodEnded.asV105.contractId
   }
 
-  const savedNodeContract = await ctx.store.get(NodeContract, { where: { contractID } })
-  if (savedNodeContract) {
-    savedNodeContract.state = ContractState.Created
-    await ctx.store.save<NodeContract>(savedNodeContract)
-    return
-  }
-
-  const savedRentContract = await ctx.store.get(RentContract, { where: { contractID } })
-  if (savedRentContract) {
-    savedRentContract.state = ContractState.Created
-    await ctx.store.save<RentContract>(savedRentContract)
-    return
-  }
-
-  const savedNameContract = await ctx.store.get(NameContract, { where: { contractID } })
-  if (savedNameContract) {
-    savedNameContract.state = ContractState.Created
-    await ctx.store.save<NameContract>(savedNameContract)
+  const contract = await ctx.store.get(Contract, { where: { contractID } })
+  if (contract) {
+    contract.state = ContractState.Created
+    await ctx.store.save<Contract>(contract)
     return
   }
 }

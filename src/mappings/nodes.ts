@@ -1,8 +1,8 @@
-import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal, NodePower, PowerState, Power } from "../model";
-import { 
-  TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, 
-  TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, 
-  TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent, 
+import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodePower, PowerState, Power } from "../model";
+import {
+  TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent,
+  TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent,
+  TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent,
   TfgridModulePowerStateChangedEvent, TfgridModulePowerTargetChangedEvent,
   SmartContractModuleNodeExtraFeeSetEvent
 } from "../types/events";
@@ -14,6 +14,9 @@ import { PublicConfig as V105PublicConfig } from '../types/v105'
 import { Ctx } from '../processor'
 import assert from "assert";
 import { allowedNodeEnvironmentFlags } from "process";
+
+const ZOSUsedSRU = 107374182400;
+const ZOSMinUsedMemory = 2147483648;
 
 export async function nodeStored(
   ctx: Ctx,
@@ -77,8 +80,6 @@ export async function nodeStored(
 
   newNode.location = newLocation
 
-  await ctx.store.save<Node>(newNode)
-
   const pubConfig = getNodePublicConfig(node)
   const newPubConfig = new PublicConfig()
   newPubConfig.id = item.event.id
@@ -126,16 +127,17 @@ export async function nodeStored(
     newNode.connectionPrice = nodeEvent.connectionPrice
   }
 
-  await ctx.store.save<Node>(newNode)
+  newNode.totalCRU = nodeEvent.resources.cru
+  newNode.totalHRU = nodeEvent.resources.hru
+  newNode.totalSRU = nodeEvent.resources.sru
+  newNode.totalMRU = nodeEvent.resources.mru
 
-  const resourcesTotal = new NodeResourcesTotal()
-  resourcesTotal.node = newNode
-  resourcesTotal.id = item.event.id
-  resourcesTotal.sru = nodeEvent.resources.sru
-  resourcesTotal.hru = nodeEvent.resources.hru
-  resourcesTotal.mru = nodeEvent.resources.mru
-  resourcesTotal.cru = nodeEvent.resources.cru
-  await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
+  newNode.freeHRU = nodeEvent.resources.hru
+  newNode.freeSRU = nodeEvent.resources.sru - BigInt(ZOSUsedSRU)
+  let mruPercentage = nodeEvent.resources.mru / BigInt(10)
+  newNode.freeMRU = nodeEvent.resources.mru - (mruPercentage > BigInt(ZOSMinUsedMemory) ? mruPercentage : BigInt(ZOSMinUsedMemory))
+
+  await ctx.store.save<Node>(newNode)
 
   newNode.interfaces = []
 
@@ -189,15 +191,26 @@ export async function nodeUpdated(
   savedNode.updatedAt = timestamp
   savedNode.farmingPolicyId = nodeEvent.farmingPolicyId
 
-  // Recalculate total / free resoures when a node get's updated
-  let resourcesTotal = await ctx.store.get(NodeResourcesTotal, { where: { node: { nodeID: savedNode.nodeID } }, relations: { node: true } })
-  if (resourcesTotal) {
-    resourcesTotal.sru = nodeEvent.resources.sru
-    resourcesTotal.hru = nodeEvent.resources.hru
-    resourcesTotal.mru = nodeEvent.resources.mru
-    resourcesTotal.cru = nodeEvent.resources.cru
-    await ctx.store.save<NodeResourcesTotal>(resourcesTotal)
-  }
+  // calculate free resources difference
+  let prevMRUPercentage = savedNode.totalMRU / BigInt(10)
+  let prevZOSUsedMRU = savedNode.totalMRU - (prevMRUPercentage > BigInt(ZOSMinUsedMemory) ? prevMRUPercentage : BigInt(ZOSMinUsedMemory))
+  let curMRUPercentage = nodeEvent.resources.mru / BigInt(10)
+  let curZOSUsedMRU = nodeEvent.resources.mru - (curMRUPercentage > BigInt(ZOSMinUsedMemory) ? curMRUPercentage : BigInt(ZOSMinUsedMemory))
+
+  let contractsUsedMRU = savedNode.totalMRU - savedNode.freeMRU - prevZOSUsedMRU
+  let newFreeMRU = nodeEvent.resources.mru - contractsUsedMRU - curZOSUsedMRU
+
+  let hruDiff = nodeEvent.resources.hru - savedNode.totalHRU
+  let sruDiff = nodeEvent.resources.sru - savedNode.totalSRU
+
+  savedNode.freeMRU = newFreeMRU
+  savedNode.freeHRU += hruDiff
+  savedNode.freeSRU += sruDiff
+
+  savedNode.totalCRU = nodeEvent.resources.cru
+  savedNode.totalMRU = nodeEvent.resources.mru
+  savedNode.totalSRU = nodeEvent.resources.sru
+  savedNode.totalHRU = nodeEvent.resources.hru
 
   if (node.isV9) {
     nodeEvent = node.asV9
@@ -354,12 +367,6 @@ export async function nodeDeleted(
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeID }, relations: { location: true, interfaces: true } })
 
   if (savedNode) {
-    const resourcesTotal = await ctx.store.find(NodeResourcesTotal, { where: { node: { nodeID: savedNode.nodeID } }, relations: { node: true } })
-    if (resourcesTotal) {
-      const p = resourcesTotal.map(r => ctx.store.remove(r))
-      await Promise.all(p)
-    }
-
     const pubConfig = await ctx.store.get(PublicConfig, { where: { node: { nodeID: savedNode.nodeID } }, relations: { node: true } })
     if (pubConfig) {
       await ctx.store.remove(pubConfig)

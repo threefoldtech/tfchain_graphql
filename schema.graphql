@@ -9,7 +9,7 @@ type Entity @entity {
 
 type Twin @entity {
   gridVersion: Int!
-  twinID: Int!
+  twinID: Int! @index
   accountID: String!
   relay: String
   publicKey: String
@@ -23,12 +23,14 @@ type EntityProof @entity {
 
 type Farm @entity {
   gridVersion: Int!
-  farmID: Int!
+  farmID: Int! @index
   name: String!
   twinID: Int!
   pricingPolicyID: Int!
   certification: FarmCertification
   publicIPs: [PublicIp!] @derivedFrom(field: "farm")
+  totalIps: Int!
+  freeIps: Int!
   stellarAddress: String
   dedicatedFarm: Boolean
 }
@@ -37,19 +39,18 @@ type PublicIp @entity {
   farm: Farm!
   gateway: String!
   ip: String!
-  contractId: BigInt!
+  contractId: BigInt @index
 }
 
 type Node @entity {
   gridVersion: Int!
-  nodeID: Int!
+  nodeID: Int! @index
   farmID: Int!
   twinID: Int!
   location: Location!
   country: String
   city: String
   publicConfig: PublicConfig @derivedFrom(field: "node")
-  resourcesTotal: NodeResourcesTotal @derivedFrom(field: "node")
   uptime: BigInt
   created: Int!
   farmingPolicyId: Int!
@@ -64,6 +65,14 @@ type Node @entity {
   power: NodePower
   dedicated: Boolean!
   extraFee: BigInt
+  totalCRU: BigInt!
+  totalHRU: BigInt!
+  totalSRU: BigInt!
+  totalMRU: BigInt!
+  freeMRU: BigInt! @index
+  freeHRU: BigInt! @index
+  freeSRU: BigInt! @index
+  rentedBy: Int
 }
 
 type NodePower {
@@ -79,14 +88,6 @@ enum PowerState {
 enum Power {
   Up
   Down
-}
-
-type NodeResourcesTotal @entity {
-  node: Node! @unique
-  hru: BigInt!
-  sru: BigInt!
-  cru: BigInt!
-  mru: BigInt!
 }
 
 type Interfaces @entity {
@@ -154,46 +155,23 @@ type City @entity {
   name: String!
 }
 
-type NodeContract @entity {
+type Contract @entity{
   gridVersion: Int!
-  contractID: BigInt!
+  contractID: BigInt! @index
   twinID: Int!
-  nodeID: Int!
-  deploymentData: String!
-  deploymentHash: String!
-  numberOfPublicIPs: Int!
-  state: ContractState!
-  resourcesUsed: ContractResources
+  nodeID: Int
+  deploymentData: String
+  deploymentHash: String
+  numberOfPublicIPs: Int
+  state: ContractState! @index
   createdAt: BigInt!
   solutionProviderID: Int
-}
-
-type ContractResources @entity {
-  contract: NodeContract!
-  hru: BigInt!
-  sru: BigInt!
-  cru: BigInt!
-  mru: BigInt!
-}
-
-type NameContract @entity {
-  gridVersion: Int!
-  contractID: BigInt!
-  twinID: Int!
-  name: String!
-  state: ContractState!
-  createdAt: BigInt!
-  solutionProviderID: Int
-}
-
-type RentContract @entity {
-  gridVersion: Int!
-  contractID: BigInt!
-  twinID: Int!
-  nodeID: Int!
-  state: ContractState!
-  createdAt: BigInt!
-  solutionProviderID: Int
+  usedCRU: BigInt
+  usedMRU: BigInt
+  usedSRU: BigInt
+  usedHRU: BigInt
+  name: String
+  type: ContractType! @index
 }
 
 type SolutionProvider @entity {
@@ -216,6 +194,12 @@ enum ContractState {
   GracePeriod
 }
 
+enum ContractType {
+  Node
+  Name
+  Rent
+}
+
 type NruConsumption @entity {
   contractID: BigInt!
   timestamp: BigInt!
@@ -224,7 +208,7 @@ type NruConsumption @entity {
 }
 
 type ContractBillReport @entity {
-  contractID: BigInt!
+  contractID: BigInt! @index
   discountReceived: DiscountLevel!
   amountBilled: BigInt!
   timestamp: BigInt!

@@ -1,8 +1,7 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, ManyToOne as ManyToOne_, OneToMany as OneToMany_} from "typeorm"
 import * as marshal from "./marshal"
 import {Location} from "./location.model"
 import {PublicConfig} from "./publicConfig.model"
-import {NodeResourcesTotal} from "./nodeResourcesTotal.model"
 import {Interfaces} from "./interfaces.model"
 import {NodeCertification} from "./_nodeCertification"
 import {NodePower} from "./_nodePower"
@@ -19,6 +18,7 @@ export class Node {
     @Column_("int4", {nullable: false})
     gridVersion!: number
 
+    @Index_()
     @Column_("int4", {nullable: false})
     nodeID!: number
 
@@ -37,7 +37,6 @@ export class Node {
 
     @Column_("text", {nullable: true})
     city!: string | undefined | null
-
 
 
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
@@ -81,4 +80,31 @@ export class Node {
 
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
     extraFee!: bigint | undefined | null
+
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    totalCRU!: bigint
+
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    totalHRU!: bigint
+
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    totalSRU!: bigint
+
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    totalMRU!: bigint
+
+    @Index_()
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    freeMRU!: bigint
+
+    @Index_()
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    freeHRU!: bigint
+
+    @Index_()
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    freeSRU!: bigint
+
+    @Column_("int4", {nullable: true})
+    rentedBy!: number | undefined | null
 }
