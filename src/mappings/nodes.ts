@@ -1,8 +1,8 @@
 import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal, NodePower, PowerState, Power } from "../model";
-import { 
-  TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent, 
-  TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent, 
-  TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent, 
+import {
+  TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent,
+  TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent,
+  TfgridModuleNodeUpdatedEvent, TfgridModuleNodeUptimeReportedEvent,
   TfgridModulePowerStateChangedEvent, TfgridModulePowerTargetChangedEvent,
   SmartContractModuleNodeExtraFeeSetEvent
 } from "../types/events";
@@ -77,6 +77,13 @@ export async function nodeStored(
 
   newNode.location = newLocation
 
+  if (newNode.country?.toString().startsWith('0x')) {
+    newNode.country = ""
+  }
+  if (newNode.city?.toString().startsWith('0x')) {
+    newNode.city = ""
+  }
+
   await ctx.store.save<Node>(newNode)
 
   const pubConfig = getNodePublicConfig(node)
@@ -124,6 +131,13 @@ export async function nodeStored(
     newNode.virtualized = nodeEvent.virtualized ? true : false
     newNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
     newNode.connectionPrice = nodeEvent.connectionPrice
+  }
+
+  if (newNode.country?.toString().startsWith('0x')) {
+    newNode.country = ""
+  }
+  if (newNode.city?.toString().startsWith('0x')) {
+    newNode.city = ""
   }
 
   await ctx.store.save<Node>(newNode)
