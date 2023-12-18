@@ -47,6 +47,7 @@ const processor = new SubstrateBatchProcessor()
     chain: process.env.WS_URL || 'ws://localhost:9944'
   })
   .setPrometheusPort(44233)
+  .setBlockRange({ from: 0 })
   // Balances
   .addEvent('Balances.Transfer', eventOptions)
   // Twins
