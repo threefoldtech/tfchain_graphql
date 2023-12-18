@@ -76,11 +76,10 @@ export async function nodeStored(
   await ctx.store.save<Location>(newLocation)
 
   newNode.location = newLocation
-
-  if (newNode.country?.toString().startsWith('0x')) {
+  if (newNode.country?.includes('\x00')) {
     newNode.country = ""
   }
-  if (newNode.city?.toString().startsWith('0x')) {
+  if (newNode.city?.includes('\x00')) {
     newNode.city = ""
   }
 
@@ -133,10 +132,10 @@ export async function nodeStored(
     newNode.connectionPrice = nodeEvent.connectionPrice
   }
 
-  if (newNode.country?.toString().startsWith('0x')) {
+  if (newNode.country?.includes('\x00')) {
     newNode.country = ""
   }
-  if (newNode.city?.toString().startsWith('0x')) {
+  if (newNode.city?.includes('\x00')) {
     newNode.city = ""
   }
 
