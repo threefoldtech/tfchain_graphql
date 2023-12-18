@@ -27,7 +27,9 @@ services:
         "--out",
         "postgres://root@db:26257/defaultdb",
         "--types-bundle",
-        "/configs/typesBundle.json"
+        "/configs/typesBundle.json",
+        "--start-block",
+        "${START_HEIGHT}"
       ]
 
   gateway:
