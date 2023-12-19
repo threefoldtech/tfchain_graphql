@@ -2,15 +2,16 @@ import * as ss58 from "@subsquid/ss58";
 import { Ctx } from "../processor";
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 
-import { 
+import {
   PricingPolicy, FarmingPolicy,
-  Policy, FarmCertification, 
+  Policy, FarmCertification,
   NodeCertification
 } from "../model";
-import { 
-  TfgridModulePricingPolicyStoredEvent, TfgridModuleFarmingPolicyStoredEvent, 
+import {
+  TfgridModulePricingPolicyStoredEvent, TfgridModuleFarmingPolicyStoredEvent,
   TfgridModuleFarmingPolicyUpdatedEvent
 } from "../types/events";
+import { validateString } from "./nodes"
 
 export async function pricingPolicyStored(
   ctx: Ctx,
@@ -29,18 +30,18 @@ export async function pricingPolicyStored(
   }
 
   if (!pricingPolicyEventParsed) return
-  
+
   let pricingPolicy = new PricingPolicy()
   pricingPolicy.id = item.event.id
 
-  const savedPolicy = await ctx.store.get(PricingPolicy, { where: { pricingPolicyID: pricingPolicyEventParsed.id }})
+  const savedPolicy = await ctx.store.get(PricingPolicy, { where: { pricingPolicyID: pricingPolicyEventParsed.id } })
   if (savedPolicy) {
     pricingPolicy = savedPolicy
   }
 
   pricingPolicy.gridVersion = pricingPolicyEventParsed.version
   pricingPolicy.pricingPolicyID = pricingPolicyEventParsed.id
-  pricingPolicy.name = pricingPolicyEventParsed.name.toString()
+  pricingPolicy.name = validateString(ctx, pricingPolicyEventParsed.name.toString())
   pricingPolicy.dedicatedNodeDiscount = 0
 
   const foundationAccount = ss58.codec("substrate").encode(pricingPolicyEventParsed.foundationAccount);
@@ -51,19 +52,19 @@ export async function pricingPolicyStored(
 
   const suPolicy = new Policy()
   suPolicy.value = pricingPolicyEventParsed.su.value
-  suPolicy.unit = pricingPolicyEventParsed.su.unit.toString()
+  suPolicy.unit = validateString(ctx, pricingPolicyEventParsed.su.unit.toString())
 
   const nuPolicy = new Policy()
   nuPolicy.value = pricingPolicyEventParsed.nu.value
-  nuPolicy.unit = pricingPolicyEventParsed.nu.unit.toString()
+  nuPolicy.unit = validateString(ctx, pricingPolicyEventParsed.nu.unit.toString())
 
   const cuPolicy = new Policy()
   cuPolicy.value = pricingPolicyEventParsed.cu.value
-  cuPolicy.unit = pricingPolicyEventParsed.cu.unit.toString()
+  cuPolicy.unit = validateString(ctx, pricingPolicyEventParsed.cu.unit.toString())
 
   const IpuPolicy = new Policy()
   IpuPolicy.value = pricingPolicyEventParsed.ipu.value
-  IpuPolicy.unit = pricingPolicyEventParsed.ipu.unit.toString()
+  IpuPolicy.unit = validateString(ctx, pricingPolicyEventParsed.ipu.unit.toString())
 
   pricingPolicy.su = suPolicy
   pricingPolicy.cu = cuPolicy
@@ -94,7 +95,7 @@ export async function farmingPolicyStored(
   newFarmingPolicy.id = item.event.id
   newFarmingPolicy.gridVersion = farmingPolicyStoredEvent.version
   newFarmingPolicy.farmingPolicyID = farmingPolicyStoredEvent.id
-  newFarmingPolicy.name = farmingPolicyStoredEvent.name.toString()
+  newFarmingPolicy.name = validateString(ctx, farmingPolicyStoredEvent.name.toString())
 
   newFarmingPolicy.cu = farmingPolicyStoredEvent.cu
   newFarmingPolicy.su = farmingPolicyStoredEvent.su
@@ -108,10 +109,10 @@ export async function farmingPolicyStored(
   const certificationTypeAsString = farmingPolicyStoredEvent.nodeCertification.__kind.toString()
   let nodeCertType = NodeCertification.Diy
   switch (certificationTypeAsString) {
-    case 'Diy': 
+    case 'Diy':
       nodeCertType = NodeCertification.Diy
       break
-    case 'Certified': 
+    case 'Certified':
       nodeCertType = NodeCertification.Certified
       break
   }
@@ -120,10 +121,10 @@ export async function farmingPolicyStored(
   const farmCertificationTypeAsString = farmingPolicyStoredEvent.farmCertification.__kind.toString()
   let farmCertType = FarmCertification.NotCertified
   switch (farmCertificationTypeAsString) {
-    case 'NotCertified': 
+    case 'NotCertified':
       farmCertType = FarmCertification.NotCertified
       break
-    case 'Gold': 
+    case 'Gold':
       farmCertType = FarmCertification.Gold
       break
   }
@@ -149,7 +150,7 @@ export async function farmingPolicyUpdated(
 
   savedPolicy.gridVersion = farmingPolicyUpdatedEvent.version
   savedPolicy.farmingPolicyID = farmingPolicyUpdatedEvent.id
-  savedPolicy.name = farmingPolicyUpdatedEvent.name.toString()
+  savedPolicy.name = validateString(ctx, farmingPolicyUpdatedEvent.name.toString())
 
   savedPolicy.cu = farmingPolicyUpdatedEvent.cu
   savedPolicy.su = farmingPolicyUpdatedEvent.su
@@ -163,10 +164,10 @@ export async function farmingPolicyUpdated(
   const certificationTypeAsString = farmingPolicyUpdatedEvent.nodeCertification.__kind.toString()
   let nodeCertType = NodeCertification.Diy
   switch (certificationTypeAsString) {
-    case 'Diy': 
+    case 'Diy':
       nodeCertType = NodeCertification.Diy
       break
-    case 'Certified': 
+    case 'Certified':
       nodeCertType = NodeCertification.Certified
       break
   }
@@ -175,10 +176,10 @@ export async function farmingPolicyUpdated(
   const farmCertificationTypeAsString = farmingPolicyUpdatedEvent.farmCertification.__kind.toString()
   let farmCertType = FarmCertification.NotCertified
   switch (farmCertificationTypeAsString) {
-    case 'NotCertified': 
+    case 'NotCertified':
       farmCertType = FarmCertification.NotCertified
       break
-    case 'Gold': 
+    case 'Gold':
       farmCertType = FarmCertification.Gold
       break
   }

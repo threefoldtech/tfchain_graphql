@@ -3,10 +3,11 @@ import { Ctx } from '../processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 
 import { Provider, SolutionProvider } from "../model"
-import { 
-  SmartContractModuleSolutionProviderApprovedEvent, 
-  SmartContractModuleSolutionProviderCreatedEvent 
+import {
+  SmartContractModuleSolutionProviderApprovedEvent,
+  SmartContractModuleSolutionProviderCreatedEvent
 } from "../types/events"
+import { validateString } from "./nodes";
 
 export async function solutionProviderCreated(
   ctx: Ctx,
@@ -18,8 +19,8 @@ export async function solutionProviderCreated(
 
   provider.id = item.event.id
   provider.solutionProviderID = providerCreatedEvent.solutionProviderId
-  provider.description = providerCreatedEvent.description.toString()
-  provider.link = providerCreatedEvent.link.toString()
+  provider.description = validateString(ctx, providerCreatedEvent.description.toString())
+  provider.link = validateString(ctx, providerCreatedEvent.link.toString())
   provider.approved = false
   provider.providers = []
 

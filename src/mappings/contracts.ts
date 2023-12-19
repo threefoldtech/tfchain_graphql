@@ -15,6 +15,7 @@ import {
   SmartContractModuleNruConsumptionReportReceivedEvent, SmartContractModuleRentContractCanceledEvent,
   SmartContractModuleContractGracePeriodStartedEvent, SmartContractModuleContractGracePeriodEndedEvent
 } from "../types/events";
+import { validateString } from "./nodes"
 
 export async function contractCreated(
   ctx: Ctx,
@@ -47,7 +48,7 @@ export async function contractCreated(
     let newNameContract = new NameContract()
     newNameContract.id = item.event.id
     contract = contractEvent.contractType.value
-    newNameContract.name = contract.name.toString()
+    newNameContract.name = validateString(ctx, contract.name.toString())
     newNameContract.contractID = contractEvent.contractId
     newNameContract.gridVersion = contractEvent.version
     newNameContract.twinID = contractEvent.twinId
@@ -71,16 +72,9 @@ export async function contractCreated(
     newNodeContract.nodeID = contract.nodeId
     newNodeContract.numberOfPublicIPs = contract.publicIps
 
-    if (contract.deploymentData.toString().indexOf('\x00') >= 0) {
-      newNodeContract.deploymentData = ""
-    } else {
-      newNodeContract.deploymentData = contract.deploymentData.toString()
-    }
-    if (contract.deploymentHash.toString().indexOf('\x00') >= 0) {
-      newNodeContract.deploymentHash = ""
-    } else {
-      newNodeContract.deploymentHash = contract.deploymentHash.toString()
-    }
+
+    newNodeContract.deploymentData = validateString(ctx, contract.deploymentData.toString())
+    newNodeContract.deploymentHash = validateString(ctx, contract.deploymentHash.toString())
 
     // newNodeContract.deploymentHash = contract.deploymentHash.toString()
     newNodeContract.state = state
@@ -164,16 +158,16 @@ export async function contractUpdated(
 
   const SavedNodeContract = await ctx.store.get(NodeContract, { where: { contractID: contractEvent.contractId } })
   if (SavedNodeContract) {
-    await updateNodeContract(contractEvent, SavedNodeContract, ctx.store)
+    await updateNodeContract(ctx, contractEvent, SavedNodeContract, ctx.store)
   }
 
   const SavedNameContract = await ctx.store.get(NameContract, { where: { contractID: contractEvent.contractId } })
   if (SavedNameContract) {
-    await updateNameContract(contractEvent, SavedNameContract, ctx.store)
+    await updateNameContract(ctx, contractEvent, SavedNameContract, ctx.store)
   }
 }
 
-async function updateNodeContract(ctr: any, contract: NodeContract, store: Store) {
+async function updateNodeContract(ctx: Ctx, ctr: any, contract: NodeContract, store: Store) {
   if (ctr.contractType.__kind !== "NodeContract") return
 
   const parsedNodeContract = ctr.contractType.value
@@ -184,16 +178,9 @@ async function updateNodeContract(ctr: any, contract: NodeContract, store: Store
   contract.nodeID = parsedNodeContract.nodeId
   contract.numberOfPublicIPs = parsedNodeContract.publicIps
 
-  if (contract.deploymentData.toString().indexOf('\x00') >= 0) {
-    contract.deploymentData = ""
-  } else {
-    contract.deploymentData = contract.deploymentData.toString()
-  }
-  if (contract.deploymentHash.toString().indexOf('\x00') >= 0) {
-    contract.deploymentHash = ""
-  } else {
-    contract.deploymentHash = contract.deploymentHash.toString()
-  }
+
+  contract.deploymentData = validateString(ctx, contract.deploymentData.toString())
+  contract.deploymentHash = validateString(ctx, contract.deploymentHash.toString())
 
   let state = ContractState.OutOfFunds
   switch (ctr.state.__kind) {
@@ -208,7 +195,7 @@ async function updateNodeContract(ctr: any, contract: NodeContract, store: Store
   await store.save<NodeContract>(contract)
 }
 
-async function updateNameContract(ctr: any, contract: NameContract, store: Store) {
+async function updateNameContract(ctx: Ctx, ctr: any, contract: NameContract, store: Store) {
   if (ctr.contractType.__kind !== "NameContract") return
 
   const parsedNameContract = ctr.contractType.value
@@ -216,7 +203,7 @@ async function updateNameContract(ctr: any, contract: NameContract, store: Store
   contract.contractID = ctr.contractId
   contract.gridVersion = ctr.version
   contract.twinID = ctr.twinId
-  contract.name = parsedNameContract.name.toString()
+  contract.name = validateString(ctx, parsedNameContract.name.toString())
 
   let state = ContractState.OutOfFunds
   switch (ctr.state.__kind) {
