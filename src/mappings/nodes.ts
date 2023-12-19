@@ -56,13 +56,13 @@ export async function nodeStored(
 
   if (node.isV9) {
     nodeEvent = node.asV9
-    newNode.country = nodeEvent.country.toString()
-    newNode.city = nodeEvent.city.toString()
+    newNode.country = validateString(ctx, nodeEvent.country.toString())
+    newNode.city = validateString(ctx, nodeEvent.city.toString())
   }
   if (node.isV28) {
     nodeEvent = node.asV28
-    newNode.country = nodeEvent.country.toString()
-    newNode.city = nodeEvent.city.toString()
+    newNode.country = validateString(ctx, nodeEvent.country.toString())
+    newNode.city = validateString(ctx, nodeEvent.city.toString())
   }
 
   newNode.created = Number(nodeEvent.created)
@@ -71,22 +71,15 @@ export async function nodeStored(
 
   const newLocation = new Location()
   newLocation.id = item.event.id
-  newLocation.latitude = nodeEvent.location.latitude.toString()
-  newLocation.longitude = nodeEvent.location.longitude.toString()
+  newLocation.latitude = validateString(ctx, nodeEvent.location.latitude.toString())
+  newLocation.longitude = validateString(ctx, nodeEvent.location.longitude.toString())
   await ctx.store.save<Location>(newLocation)
 
   newNode.location = newLocation
 
-  if (newNode.country?.toString().startsWith('0x')) {
-    newNode.country = ""
-  }
-  if (newNode.city?.toString().startsWith('0x')) {
-    newNode.city = ""
-  }
-
   await ctx.store.save<Node>(newNode)
 
-  const pubConfig = getNodePublicConfig(node)
+  const pubConfig = getNodePublicConfig(ctx, node)
   const newPubConfig = new PublicConfig()
   newPubConfig.id = item.event.id
   newPubConfig.ipv4 = pubConfig?.ip4
@@ -97,11 +90,11 @@ export async function nodeStored(
 
   if (node.isV43) {
     const nodeAsV43 = node.asV43
-    newNode.country = nodeAsV43.country.toString()
-    newNode.city = nodeAsV43.city.toString()
+    newNode.country = validateString(ctx, nodeAsV43.country.toString())
+    newNode.city = validateString(ctx, nodeAsV43.city.toString())
     newNode.secure = nodeAsV43.secureBoot ? true : false
     newNode.virtualized = nodeAsV43.virtualized ? true : false
-    newNode.serialNumber = nodeAsV43.serialNumber.toString()
+    newNode.serialNumber = validateString(ctx, nodeAsV43.serialNumber.toString())
   }
 
   if (node.isV105 || node.isV101 || node.isV63) {
@@ -115,29 +108,22 @@ export async function nodeStored(
     } else {
       return
     }
-    newNode.country = nodeEvent.country.toString()
-    newNode.city = nodeEvent.city.toString()
+    newNode.country = validateString(ctx, nodeEvent.country.toString())
+    newNode.city = validateString(ctx, nodeEvent.city.toString())
     newNode.secure = nodeEvent.secureBoot ? true : false
     newNode.virtualized = nodeEvent.virtualized ? true : false
-    newNode.serialNumber = nodeEvent.serialNumber.toString()
+    newNode.serialNumber = validateString(ctx, nodeEvent.serialNumber.toString())
     newNode.connectionPrice = nodeEvent.connectionPrice
   }
 
   if (node.isV118) {
     let nodeEvent = node.asV118
-    newNode.country = nodeEvent.location.country.toString()
-    newNode.city = nodeEvent.location.city.toString()
+    newNode.country = validateString(ctx, nodeEvent.location.country.toString())
+    newNode.city = validateString(ctx, nodeEvent.location.city.toString())
     newNode.secure = nodeEvent.secureBoot ? true : false
     newNode.virtualized = nodeEvent.virtualized ? true : false
-    newNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
+    newNode.serialNumber = nodeEvent.serialNumber ? validateString(ctx, nodeEvent.serialNumber.toString()) : 'Unknown'
     newNode.connectionPrice = nodeEvent.connectionPrice
-  }
-
-  if (newNode.country?.toString().startsWith('0x')) {
-    newNode.country = ""
-  }
-  if (newNode.city?.toString().startsWith('0x')) {
-    newNode.city = ""
   }
 
   await ctx.store.save<Node>(newNode)
@@ -157,9 +143,9 @@ export async function nodeStored(
     const newInterface = new Interfaces()
     newInterface.id = item.event.id
     newInterface.node = newNode
-    newInterface.name = intf.name.toString()
-    newInterface.mac = intf.mac.toString()
-    newInterface.ips = intf.ips.map(ip => ip.toString()).join(',')
+    newInterface.name = validateString(ctx, intf.name.toString())
+    newInterface.mac = validateString(ctx, intf.mac.toString())
+    newInterface.ips = intf.ips.map(ip => validateString(ctx, ip.toString())).join(',')
     await ctx.store.save<Interfaces>(newInterface)
   })
 
@@ -215,21 +201,21 @@ export async function nodeUpdated(
 
   if (node.isV9) {
     nodeEvent = node.asV9
-    savedNode.country = nodeEvent.country.toString()
-    savedNode.city = nodeEvent.city.toString()
+    savedNode.country = validateString(ctx, nodeEvent.country.toString())
+    savedNode.city = validateString(ctx, nodeEvent.city.toString())
   }
 
   if (node.isV118) {
     nodeEvent = node.asV118
-    savedNode.country = nodeEvent.location.country.toString()
-    savedNode.city = nodeEvent.location.city.toString()
+    savedNode.country = validateString(ctx, nodeEvent.location.country.toString())
+    savedNode.city = validateString(ctx, nodeEvent.location.city.toString())
   }
 
   if (savedNode.location) {
     const location = await ctx.store.get(Location, { where: { id: savedNode.location.id } })
     if (location) {
-      location.latitude = nodeEvent.location.latitude.toString()
-      location.longitude = nodeEvent.location.longitude.toString()
+      location.latitude = validateString(ctx, nodeEvent.location.latitude.toString())
+      location.longitude = validateString(ctx, nodeEvent.location.longitude.toString())
       await ctx.store.save<Location>(location)
       savedNode.location = location
     }
@@ -237,8 +223,8 @@ export async function nodeUpdated(
 
   if (node.isV28) {
     const nodeAsV28 = node.asV28
-    savedNode.country = nodeAsV28.country.toString()
-    savedNode.city = nodeAsV28.city.toString()
+    savedNode.country = validateString(ctx, nodeAsV28.country.toString())
+    savedNode.city = validateString(ctx, nodeAsV28.city.toString())
 
     if (nodeAsV28.certificationType) {
       const certificationTypeAsString = nodeAsV28.certificationType.__kind.toString()
@@ -259,11 +245,11 @@ export async function nodeUpdated(
 
   if (node.isV43) {
     const nodeAsV43 = node.asV43
-    savedNode.country = nodeAsV43.country.toString()
-    savedNode.city = nodeAsV43.city.toString()
+    savedNode.country = validateString(ctx, nodeAsV43.country.toString())
+    savedNode.city = validateString(ctx, nodeAsV43.city.toString())
     savedNode.secure = nodeAsV43.secureBoot ? true : false
     savedNode.virtualized = nodeAsV43.virtualized ? true : false
-    savedNode.serialNumber = nodeAsV43.serialNumber.toString()
+    savedNode.serialNumber = validateString(ctx, nodeAsV43.serialNumber.toString())
     if (nodeAsV43.certificationType) {
       const certificationTypeAsString = nodeAsV43.certificationType.__kind.toString()
       let certType = NodeCertification.Diy
@@ -292,11 +278,11 @@ export async function nodeUpdated(
     } else {
       return
     }
-    savedNode.country = nodeEvent.country.toString()
-    savedNode.city = nodeEvent.city.toString()
+    savedNode.country = validateString(ctx, nodeEvent.country.toString())
+    savedNode.city = validateString(ctx, nodeEvent.city.toString())
     savedNode.secure = nodeEvent.secureBoot ? true : false
     savedNode.virtualized = nodeEvent.virtualized ? true : false
-    savedNode.serialNumber = nodeEvent.serialNumber.toString()
+    savedNode.serialNumber = validateString(ctx, nodeEvent.serialNumber.toString())
     if (nodeEvent.certification) {
       const certificationTypeAsString = nodeEvent.certification.__kind.toString()
       let certType = NodeCertification.Diy
@@ -317,11 +303,11 @@ export async function nodeUpdated(
   if (node.isV118) {
     const nodeEvent = node.asV118
 
-    savedNode.country = nodeEvent.location.country.toString()
-    savedNode.city = nodeEvent.location.city.toString()
+    savedNode.country = validateString(ctx, nodeEvent.location.country.toString())
+    savedNode.city = validateString(ctx, nodeEvent.location.city.toString())
     savedNode.secure = nodeEvent.secureBoot ? true : false
     savedNode.virtualized = nodeEvent.virtualized ? true : false
-    savedNode.serialNumber = nodeEvent.serialNumber ? nodeEvent.serialNumber.toString() : 'Unknown'
+    savedNode.serialNumber = nodeEvent.serialNumber ? validateString(ctx, nodeEvent.serialNumber.toString()) : 'Unknown'
     if (nodeEvent.certification) {
       const certificationTypeAsString = nodeEvent.certification.__kind.toString()
       let certType = NodeCertification.Diy
@@ -346,10 +332,10 @@ export async function nodeUpdated(
   // Save ones from update event
   await Promise.all(nodeEvent.interfaces.map(async intf => {
     const newInterface = new Interfaces()
-    newInterface.id = item.event.id + intf.name.toString()
-    newInterface.name = intf.name.toString()
-    newInterface.mac = intf.mac.toString()
-    newInterface.ips = intf.ips.map(ip => ip.toString()).join(',')
+    newInterface.id = item.event.id + validateString(ctx, intf.name.toString())
+    newInterface.name = validateString(ctx, intf.name.toString())
+    newInterface.mac = validateString(ctx, intf.mac.toString())
+    newInterface.ips = intf.ips.map(ip => validateString(ctx, ip.toString())).join(',')
     newInterface.node = savedNode
     await ctx.store.save<Interfaces>(newInterface)
 
@@ -445,10 +431,10 @@ export async function nodePublicConfigStored(
 
   if (storedEvent.isV49) {
     [nodeID, config] = storedEvent.asV49
-    ipv4 = config.ipv4.toString()
-    ipv6 = config.ipv6.toString()
-    gw4 = config.gw4.toString()
-    gw6 = config.gw6.toString()
+    ipv4 = validateString(ctx, config.ipv4.toString())
+    ipv6 = validateString(ctx, config.ipv6.toString())
+    gw4 = validateString(ctx, config.gw4.toString())
+    gw6 = validateString(ctx, config.gw6.toString())
     domain = config.domain.toString()
   } else if (storedEvent.isV105) {
     [nodeID, config] = storedEvent.asV105
@@ -496,11 +482,11 @@ async function handlePublicConfigV105(ctx: Ctx, eventID: string, nodeID: number,
     publicConfig.node = savedNode
   }
 
-  publicConfig.ipv4 = config?.ip4.ip ? config?.ip4.ip.toString() : null
-  publicConfig.gw4 = config?.ip4.gw ? config?.ip4.gw.toString() : null
-  publicConfig.ipv6 = config?.ip6?.ip ? config?.ip6?.ip.toString() : null
-  publicConfig.gw6 = config?.ip6?.gw ? config?.ip6?.gw.toString() : null
-  publicConfig.domain = config?.domain ? config.domain.toString() : null
+  publicConfig.ipv4 = config?.ip4.ip ? validateString(ctx, config?.ip4.ip.toString()) : null
+  publicConfig.gw4 = config?.ip4.gw ? validateString(ctx, config?.ip4.gw.toString()) : null
+  publicConfig.ipv6 = config?.ip6?.ip ? validateString(ctx, config?.ip6?.ip.toString()) : null
+  publicConfig.gw6 = config?.ip6?.gw ? validateString(ctx, config?.ip6?.gw.toString()) : null
+  publicConfig.domain = config?.domain ? validateString(ctx, config.domain.toString()) : null
 
   await ctx.store.save<PublicConfig>(publicConfig)
 }
@@ -610,61 +596,61 @@ interface NodePublicConfig {
   domain: string
 }
 
-function getNodePublicConfig(node: TfgridModuleNodeStoredEvent): NodePublicConfig | null | undefined {
+function getNodePublicConfig(ctx: Ctx, node: TfgridModuleNodeStoredEvent): NodePublicConfig | null | undefined {
   let nodeEvent
   if (node.isV9) {
     nodeEvent = node.asV9
     if (nodeEvent.publicConfig) {
       return {
-        ip4: nodeEvent.publicConfig?.ipv4.toString(),
-        gw4: nodeEvent.publicConfig?.gw4.toString(),
-        ip6: nodeEvent.publicConfig?.ipv6.toString(),
-        gw6: nodeEvent.publicConfig?.gw6.toString(),
-        domain: nodeEvent.publicConfig?.domain.toString()
+        ip4: validateString(ctx, nodeEvent.publicConfig?.ipv4.toString()),
+        gw4: validateString(ctx, nodeEvent.publicConfig?.gw4.toString()),
+        ip6: validateString(ctx, nodeEvent.publicConfig?.ipv6.toString()),
+        gw6: validateString(ctx, nodeEvent.publicConfig?.gw6.toString()),
+        domain: validateString(ctx, nodeEvent.publicConfig?.domain.toString())
       }
     }
   } else if (node.isV28) {
     nodeEvent = node.asV28
     if (nodeEvent.publicConfig) {
       return {
-        ip4: nodeEvent.publicConfig?.ipv4.toString(),
-        gw4: nodeEvent.publicConfig?.gw4.toString(),
-        ip6: nodeEvent.publicConfig?.ipv6.toString(),
-        gw6: nodeEvent.publicConfig?.gw6.toString(),
-        domain: nodeEvent.publicConfig?.domain.toString()
+        ip4: validateString(ctx, nodeEvent.publicConfig?.ipv4.toString()),
+        gw4: validateString(ctx, nodeEvent.publicConfig?.gw4.toString()),
+        ip6: validateString(ctx, nodeEvent.publicConfig?.ipv6.toString()),
+        gw6: validateString(ctx, nodeEvent.publicConfig?.gw6.toString()),
+        domain: validateString(ctx, nodeEvent.publicConfig?.domain.toString())
       }
     }
   } else if (node.isV43) {
     nodeEvent = node.asV43
     if (nodeEvent.publicConfig) {
       return {
-        ip4: nodeEvent.publicConfig?.ipv4.toString(),
-        gw4: nodeEvent.publicConfig?.gw4.toString(),
-        ip6: nodeEvent.publicConfig?.ipv6.toString(),
-        gw6: nodeEvent.publicConfig?.gw6.toString(),
-        domain: nodeEvent.publicConfig?.domain.toString()
+        ip4: validateString(ctx, nodeEvent.publicConfig?.ipv4.toString()),
+        gw4: validateString(ctx, nodeEvent.publicConfig?.gw4.toString()),
+        ip6: validateString(ctx, nodeEvent.publicConfig?.ipv6.toString()),
+        gw6: validateString(ctx, nodeEvent.publicConfig?.gw6.toString()),
+        domain: validateString(ctx, nodeEvent.publicConfig?.domain.toString())
       }
     }
   } else if (node.isV63) {
     nodeEvent = node.asV63
     if (nodeEvent.publicConfig) {
       return {
-        ip4: nodeEvent.publicConfig?.ipv4.toString(),
-        gw4: nodeEvent.publicConfig?.gw4.toString(),
-        ip6: nodeEvent.publicConfig?.ipv6.toString(),
-        gw6: nodeEvent.publicConfig?.gw6.toString(),
-        domain: nodeEvent.publicConfig?.domain.toString()
+        ip4: validateString(ctx, nodeEvent.publicConfig?.ipv4.toString()),
+        gw4: validateString(ctx, nodeEvent.publicConfig?.gw4.toString()),
+        ip6: validateString(ctx, nodeEvent.publicConfig?.ipv6.toString()),
+        gw6: validateString(ctx, nodeEvent.publicConfig?.gw6.toString()),
+        domain: validateString(ctx, nodeEvent.publicConfig?.domain.toString())
       }
     }
   } else if (node.isV101) {
     nodeEvent = node.asV101
     if (nodeEvent.publicConfig) {
       return {
-        ip4: nodeEvent.publicConfig?.ipv4.toString(),
-        gw4: nodeEvent.publicConfig?.gw4.toString(),
-        ip6: nodeEvent.publicConfig?.ipv6.toString(),
-        gw6: nodeEvent.publicConfig?.gw6.toString(),
-        domain: nodeEvent.publicConfig?.domain.toString()
+        ip4: validateString(ctx, nodeEvent.publicConfig?.ipv4.toString()),
+        gw4: validateString(ctx, nodeEvent.publicConfig?.gw4.toString()),
+        ip6: validateString(ctx, nodeEvent.publicConfig?.ipv6.toString()),
+        gw6: validateString(ctx, nodeEvent.publicConfig?.gw6.toString()),
+        domain: validateString(ctx, nodeEvent.publicConfig?.domain.toString())
       }
     }
   } else if (node.isV105) {
@@ -674,11 +660,13 @@ function getNodePublicConfig(node: TfgridModuleNodeStoredEvent): NodePublicConfi
       if (nodeEvent.publicConfig.domain) {
         domain = nodeEvent.publicConfig.domain.toString()
       }
+      let h = nodeEvent.publicConfig?.ip6?.ip.toString();
+      let r = nodeEvent.publicConfig?.ip4.ip.toString();
       return {
-        ip4: nodeEvent.publicConfig?.ip4.ip.toString(),
-        gw4: nodeEvent.publicConfig?.ip4.gw.toString(),
-        ip6: nodeEvent.publicConfig?.ip6?.ip.toString() || '',
-        gw6: nodeEvent.publicConfig?.ip6?.gw.toString() || '',
+        ip4: validateString(ctx, nodeEvent.publicConfig?.ip4.ip.toString()),
+        gw4: validateString(ctx, nodeEvent.publicConfig?.ip4.gw.toString()),
+        ip6: validateString(ctx, nodeEvent.publicConfig?.ip6?.ip.toString() || ''),
+        gw6: validateString(ctx, nodeEvent.publicConfig?.ip6?.gw.toString() || ''),
         domain
       }
     }
@@ -687,4 +675,15 @@ function getNodePublicConfig(node: TfgridModuleNodeStoredEvent): NodePublicConfi
   }
 
   return null
+}
+
+// validateString checks if the string includes '\x00' which is not accepted by postgres
+// if so, it replaces the string with invalid and logs the error
+export function validateString(ctx: Ctx, str: string): string {
+  if (str.includes('\x00')) {
+    ctx.log.error(`invalid string containing "\\x00": ${str}`)
+    return "invalid"
+  }
+
+  return str
 }

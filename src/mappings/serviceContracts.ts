@@ -3,6 +3,7 @@ import { Ctx } from '../processor'
 
 import { ServiceContract, ServiceContractState, ServiceContractBill } from "../model";
 import { SmartContractModuleServiceContractCreatedEvent, SmartContractModuleServiceContractMetadataSetEvent, SmartContractModuleServiceContractFeesSetEvent, SmartContractModuleServiceContractApprovedEvent, SmartContractModuleServiceContractCanceledEvent, SmartContractModuleServiceContractBilledEvent } from "../types/events";
+import { validateString } from "./nodes";
 
 export async function serviceContractCreated(
     ctx: Ctx,
@@ -34,7 +35,7 @@ export async function serviceContractMetadataSet(
 
     const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractID: serviceContractMetadataSetEvent.serviceContractId } })
     if (savedServiceContract) {
-        savedServiceContract.metadata = serviceContractMetadataSetEvent.metadata.toString()
+        savedServiceContract.metadata = validateString(ctx, serviceContractMetadataSetEvent.metadata.toString())
 
         let state = ServiceContractState.Created
         switch (serviceContractMetadataSetEvent.state.__kind) {
@@ -126,7 +127,7 @@ export async function serviceContractBilled(
     serviceContractBill.serviceContractID = serviceContractBilledEvent.serviceContract.serviceContractId
     serviceContractBill.variableAmount = serviceContractBilledEvent.bill.variableAmount
     serviceContractBill.window = serviceContractBilledEvent.bill.window
-    serviceContractBill.metadata = serviceContractBilledEvent.bill.metadata.toString()
+    serviceContractBill.metadata = validateString(ctx, serviceContractBilledEvent.bill.metadata.toString())
     serviceContractBill.amount = serviceContractBilledEvent.amount
     await ctx.store.save<ServiceContractBill>(serviceContractBill)
 

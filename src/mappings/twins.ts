@@ -5,6 +5,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 
 import { Twin } from "../model";
 import { TfgridModuleTwinStoredEvent, TfgridModuleTwinDeletedEvent, TfgridModuleTwinUpdatedEvent } from "../types/events";
+import { validateString } from "./nodes";
 
 export async function twinStored(
   ctx: Ctx,
@@ -134,21 +135,21 @@ function getTwinCreate(
     id = item.event.id
     twinID = twin.id
     version = twin.version
-    relay = twin.ip.toString()
+    relay = validateString(ctx, twin.ip.toString())
     accountID = ss58.codec("substrate").encode(twin.accountId)
   } else if (twinEvent.isV101) {
     twin = twinEvent.asV101
     id = item.event.id
     twinID = twin.id
     version = twin.version
-    relay = twin.ip.toString()
+    relay = validateString(ctx, twin.ip.toString())
     accountID = ss58.codec("substrate").encode(twin.accountId)
   } else if (twinEvent.isV124) {
     twin = twinEvent.asV124
     id = item.event.id
     twinID = twin.id
     if (twin.relay) {
-      relay = twin.relay?.toString()
+      relay = validateString(ctx, twin.relay?.toString())
     }
     accountID = ss58.codec("substrate").encode(twin.accountId)
     if (twin.pk) {
@@ -184,25 +185,25 @@ function getTwinUpdate(
     id = item.event.id
     twinID = twin.id
     version = twin.version
-    relay = twin.ip.toString()
+    relay = validateString(ctx, twin.ip.toString())
     accountID = ss58.codec("substrate").encode(twin.accountId)
   } else if (twinEvent.isV101) {
     twin = twinEvent.asV101
     id = item.event.id
     twinID = twin.id
     version = twin.version
-    relay = twin.ip.toString()
+    relay = validateString(ctx, twin.ip.toString())
     accountID = ss58.codec("substrate").encode(twin.accountId)
   } else if (twinEvent.isV124) {
     twin = twinEvent.asV124
     id = item.event.id
     twinID = twin.id
     if (twin.relay) {
-      relay = twin.relay?.toString()
+      relay = validateString(ctx, twin.relay?.toString())
     }
     accountID = ss58.codec("substrate").encode(twin.accountId)
     if (twin.pk) {
-      pk = '0x' + Buffer.from(twin.pk).toString('hex');
+      pk = validateString(ctx, '0x' + Buffer.from(twin.pk).toString('hex'));
     }
   }
 
