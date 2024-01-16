@@ -60,8 +60,8 @@ async function main () {
             }
             index++
             
-            const region = country.continent || "unknown region"
-            const subregion = country.region || "unknown subregion"
+            const region = country.region || "unknown region"
+            const subregion = country.subregion || "unknown subregion"
 
             return client.query(text, [index, index, country.name, code, region, subregion, lat, long]) 
         })
