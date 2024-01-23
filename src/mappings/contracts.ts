@@ -39,14 +39,12 @@ export async function contractCreated(
     contractEvent = contractCreatedEvent.asV105
   } else if (contractCreatedEvent.isV147) {
     contractEvent = contractCreatedEvent.asV147
-    ctx.log.debug(`v147: ${contractEvent}`);
   } else if (contractCreatedEvent.isV148) {
     contractEvent = contractCreatedEvent.asV148
-    ctx.log.debug(`v148: ${contractEvent}`);
   }
 
   if (!contractEvent) {
-    ctx.log.error(`unknown version: ${contractCreatedEvent}`);
+    ctx.log.error(`found contract with unknown version! make sure types are updated`);
     return
   }
 
@@ -165,14 +163,12 @@ export async function contractUpdated(
     contractEvent = contractUpdatedEvent.asV105
   } else if (contractUpdatedEvent.isV147) {
     contractEvent = contractUpdatedEvent.asV147
-    ctx.log.debug(`v147: ${contractEvent}`);
   } else if (contractUpdatedEvent.isV148) {
     contractEvent = contractUpdatedEvent.asV148
-    ctx.log.debug(`v148: ${contractEvent}`);
   }
 
   if (!contractEvent) {
-    ctx.log.error(`unknown version: ${contractUpdatedEvent}`);
+    ctx.log.error(`found contract with unknown version! make sure types are updated`);
     return
   }
 
