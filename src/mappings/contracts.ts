@@ -37,9 +37,18 @@ export async function contractCreated(
     contractEvent = contractCreatedEvent.asV101
   } else if (contractCreatedEvent.isV105) {
     contractEvent = contractCreatedEvent.asV105
+  } else if (contractCreatedEvent.isV147) {
+    contractEvent = contractCreatedEvent.asV147
+    ctx.log.debug(`v147: ${contractEvent}`);
+  } else if (contractCreatedEvent.isV148) {
+    contractEvent = contractCreatedEvent.asV148
+    ctx.log.debug(`v148: ${contractEvent}`);
   }
 
-  if (!contractEvent) return
+  if (!contractEvent) {
+    ctx.log.error(`unknown version: ${contractCreatedEvent}`);
+    return
+  }
 
   let state = ContractState.Created
 
@@ -152,9 +161,20 @@ export async function contractUpdated(
     contractEvent = contractUpdatedEvent.asV59
   } else if (contractUpdatedEvent.isV101) {
     contractEvent = contractUpdatedEvent.asV101
+  } else if (contractUpdatedEvent.isV105) {
+    contractEvent = contractUpdatedEvent.asV105
+  } else if (contractUpdatedEvent.isV147) {
+    contractEvent = contractUpdatedEvent.asV147
+    ctx.log.debug(`v147: ${contractEvent}`);
+  } else if (contractUpdatedEvent.isV148) {
+    contractEvent = contractUpdatedEvent.asV148
+    ctx.log.debug(`v148: ${contractEvent}`);
   }
 
-  if (!contractEvent) return
+  if (!contractEvent) {
+    ctx.log.error(`unknown version: ${contractUpdatedEvent}`);
+    return
+  }
 
   const SavedNodeContract = await ctx.store.get(NodeContract, { where: { contractID: contractEvent.contractId } })
   if (SavedNodeContract) {

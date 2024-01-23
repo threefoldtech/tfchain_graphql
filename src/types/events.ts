@@ -16,6 +16,8 @@ import * as v118 from './v118'
 import * as v122 from './v122'
 import * as v124 from './v124'
 import * as v125 from './v125'
+import * as v147 from './v147'
+import * as v148 from './v148'
 
 export type AccountId32 = Uint8Array
 
@@ -158,6 +160,36 @@ export class SmartContractModuleContractCreatedEvent {
     assert(this.isV105)
     return this._chain.decodeEvent(this.event)
   }
+
+  /**
+   * A contract got created
+   */
+  get isV147(): boolean {
+    return this._chain.getEventHash('SmartContractModule.ContractCreated') === '7b1fac3eee26bad6f35e60f95445eaff64030725c074c795899e96ed831a51bc'
+}
+
+    /**
+     * A contract got created
+     */
+    get asV147(): v147.Contract {
+        assert(this.isV147)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A contract got created
+     */
+    get isV148(): boolean {
+        return this._chain.getEventHash('SmartContractModule.ContractCreated') === '57619064e9c1f946a9889f41afe4d6c9cfb49c07403f39eac35870a7b5588845'
+    }
+
+    /**
+     * A contract got created
+     */
+    get asV148(): v148.Contract {
+        assert(this.isV148)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleContractUpdatedEvent {
@@ -230,6 +262,35 @@ export class SmartContractModuleContractUpdatedEvent {
    */
   get asV105(): v105.Contract {
     assert(this.isV105)
+    return this._chain.decodeEvent(this.event)
+  }
+    /**
+     * A contract was updated
+     */
+    get isV147(): boolean {
+      return this._chain.getEventHash('SmartContractModule.ContractUpdated') === '7b1fac3eee26bad6f35e60f95445eaff64030725c074c795899e96ed831a51bc'
+  }
+
+  /**
+   * A contract was updated
+   */
+  get asV147(): v147.Contract {
+    assert(this.isV147)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * A contract was updated
+   */
+  get isV148(): boolean {
+    return this._chain.getEventHash('SmartContractModule.ContractUpdated') === '57619064e9c1f946a9889f41afe4d6c9cfb49c07403f39eac35870a7b5588845'
+  }
+
+  /**
+   * A contract was updated
+   */
+  get asV148(): v148.Contract {
+    assert(this.isV148)
     return this._chain.decodeEvent(this.event)
   }
 }
