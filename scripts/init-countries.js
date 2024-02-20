@@ -48,9 +48,9 @@ async function main () {
     try {
         const countryPromises = countries.data.map((country, index) => {
             const text = 'INSERT INTO country(id, country_id, name, code, region, subregion, lat, long) VALUES($1, $2, $3, $4, $5, $6, $7, $8)'
-            let code = country.alpha2Code
+            let code = country.cca2
             if (!code) {
-                code = country.alpha3Code
+                code = country.cca3
             }
 
             let lat, long = ''
@@ -62,8 +62,8 @@ async function main () {
             
             const region = country.region || "unknown region"
             const subregion = country.subregion || "unknown subregion"
-
-            return client.query(text, [index, index, country.name, code, region, subregion, lat, long]) 
+            let name = country.name["common"]
+            return client.query(text, [index, index, name, code, region, subregion, lat, long]) 
         })
     
         await Promise.all(countryPromises)
@@ -112,7 +112,7 @@ async function main () {
 }
 
 async function getCountries () {
-    return axios.get('https://restcountries.com/v2/all')
+    return axios.get('https://restcountries.com/v3/all')
 }
 
 async function getCities () {
