@@ -11,7 +11,7 @@
     "db:create-migration": "npx squid-typeorm-migration generate",
     "db:migrate": "npx squid-typeorm-migration apply",
     "db:init": "node init-countries.js",
-    "db:up": "docker compose up -d db",
+    "db:up": "docker-compose up -d db",
     "process": "node db/init.js && node scripts/init-countries.js && node -r dotenv/config lib/processor.js",
     "api": "squid-graphql-server",
     "codegen": "npx squid-typeorm-codegen",
@@ -20,26 +20,26 @@
     "lint:prod": "eslint . --ext .ts --ignore-path .gitignore --max-warnings 0"
   },
   "dependencies": {
-    "@subsquid/archive-registry": "3.3.0",
-    "@subsquid/cli": "2.7.0",
-    "@subsquid/graphql-server": "3.3.2",
-    "@subsquid/ss58": "^0.1.4",
-    "@subsquid/substrate-processor": "2.4.1",
-    "@subsquid/typeorm-migration": "0.1.6",
-    "@subsquid/typeorm-store": "0.2.2",
-    "axios": "^1.6.7",
-    "dotenv": "^16.4.1",
+    "@subsquid/archive-registry": "1.0.18",
+    "@subsquid/cli": "2.0.1",
+    "@subsquid/graphql-server": "3.3.0",
+    "@subsquid/ss58": "^0.1.2",
+    "@subsquid/substrate-processor": "2.2.0",
+    "@subsquid/typeorm-migration": "0.1.4",
+    "@subsquid/typeorm-store": "0.2.0",
+    "axios": "^0.26.1",
+    "dotenv": "^16.0.0",
     "lodash": "^4.17.21",
-    "pg": "^8.11.3",
+    "pg": "^8.7.3",
     "pg-format": "^1.0.4",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.7"
   },
   "devDependencies": {
-    "@subsquid/substrate-metadata-explorer": "1.1.2",
-    "@subsquid/substrate-typegen": "2.2.1",
-    "@subsquid/typeorm-codegen": "0.3.3",
-    "@types/lodash": "^4.14.202",
-    "@types/node": "16.18.79",
-    "typescript": "4.9.5"
+    "@subsquid/substrate-metadata-explorer": "1.0.9",
+    "@subsquid/substrate-typegen": "2.0.0",
+    "@subsquid/typeorm-codegen": "0.3.1",
+    "@types/lodash": "^4.14.191",
+    "@types/node": "16.11.47",
+    "typescript": "4.7.4"
   }
 }
