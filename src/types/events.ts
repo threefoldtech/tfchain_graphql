@@ -601,6 +601,36 @@ export class SmartContractModuleServiceContractCanceledEvent {
         assert(this.isV122)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A Service contract is canceled
+     */
+    get isV147(): boolean {
+        return this._chain.getEventHash('SmartContractModule.ServiceContractCanceled') === 'c1b811383f4c46c79d9252b8f6dbe81b61a54f6c5220f0e27c08afc4e3bb7e05'
+    }
+
+    /**
+     * A Service contract is canceled
+     */
+    get asV147(): {serviceContractId: bigint, cause: v147.Cause} {
+        assert(this.isV147)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A Service contract is canceled
+     */
+    get isV148(): boolean {
+        return this._chain.getEventHash('SmartContractModule.ServiceContractCanceled') === '81b199eeeb3cc1475f804bd214247b4b1139b8030c6317968be94deb438b6e07'
+    }
+
+    /**
+     * A Service contract is canceled
+     */
+    get asV148(): {serviceContractId: bigint, cause: v148.Cause} {
+        assert(this.isV148)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SmartContractModuleServiceContractCreatedEvent {

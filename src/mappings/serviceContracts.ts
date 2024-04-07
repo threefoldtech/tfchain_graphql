@@ -106,8 +106,18 @@ export async function serviceContractCanceled(
     ctx: Ctx,
     item: EventItem<'SmartContractModule.ServiceContractCanceled', { event: { args: true } }>,
 ) {
-    const serviceContractCanceledEvent = new SmartContractModuleServiceContractCanceledEvent(ctx, item.event).asV122
-
+    const SmartContractModuleServiceContractCanceled = new SmartContractModuleServiceContractCanceledEvent(ctx, item.event)
+    let serviceContractCanceledEvent
+    if (SmartContractModuleServiceContractCanceled.isV122) {
+        serviceContractCanceledEvent = SmartContractModuleServiceContractCanceled.asV122
+    } else if (SmartContractModuleServiceContractCanceled.isV147) {
+        serviceContractCanceledEvent = SmartContractModuleServiceContractCanceled.asV147
+    } else if (SmartContractModuleServiceContractCanceled.isV148) {
+        serviceContractCanceledEvent = SmartContractModuleServiceContractCanceled.asV148
+    }
+    if (!serviceContractCanceledEvent) {
+        return
+    }
     const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractID: serviceContractCanceledEvent.serviceContractId } })
 
     if (savedServiceContract) {
