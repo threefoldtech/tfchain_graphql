@@ -30,6 +30,17 @@
     "SmartContractModule.NameContractCanceled",
     "SmartContractModule.ContractBilled",
     "SmartContractModule.UpdatedUsedResources",
-    "SmartContractModule.NodeExtraFeeSet"
+    "SmartContractModule.NodeExtraFeeSet",
+    "SmartContractModule.ServiceContractCreated",
+    "SmartContractModule.ServiceContractMetadataSet",
+    "SmartContractModule.ServiceContractFeesSet",
+    "SmartContractModule.ServiceContractApproved",
+    "SmartContractModule.ServiceContractCanceled",
+    "SmartContractModule.ServiceContractBilled",
+    "SmartContractModule.RentContractCanceled",
+    "SmartContractModule.ContractGracePeriodStarted",
+    "SmartContractModule.ContractGracePeriodEnded",
+    "SmartContractModule.SolutionProviderCreated",
+    "SmartContractModule.SolutionProviderApproved"
   ]
 }
