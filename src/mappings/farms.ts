@@ -110,7 +110,9 @@ export async function farmUpdated(
   savedFarm.gridVersion = farmUpdatedEventParsed.version
   savedFarm.name = validateString(ctx, farmUpdatedEventParsed.name.toString())
   savedFarm.twinID = farmUpdatedEventParsed.twinId
-  savedFarm.pricingPolicyID = farmUpdatedEventParsed.pricingPolicyId
+  // reason for commented the below line is that update_farm on-chain isnever meant to change the pricing policy attached to a farm
+  // see here https://github.com/threefoldtech/tfchain_graphql/issues/96#issuecomment-2068325597
+  // savedFarm.pricingPolicyID = farmUpdatedEventParsed.pricingPolicyId
   savedFarm.certification = certification
 
   let eventPublicIPs = farmUpdatedEventParsed.publicIps
