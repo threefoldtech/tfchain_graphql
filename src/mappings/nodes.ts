@@ -1,4 +1,4 @@
-import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal, NodePower, PowerState, Power } from "../model";
+import { Node, Location, PublicConfig, NodeCertification, Interfaces, UptimeEvent, NodeResourcesTotal, NodePower, PowerState, Power, PowerTargetReport, PowerStateReport } from "../model";
 import {
   TfgridModuleNodeCertificationSetEvent, TfgridModuleNodeDeletedEvent,
   TfgridModuleNodePublicConfigStoredEvent, TfgridModuleNodeStoredEvent,
@@ -517,7 +517,9 @@ export async function nodeCertificationSet(
 
 export async function powerTargetChanged(
   ctx: Ctx,
-  item: EventItem<'TfgridModule.PowerTargetChanged', { event: { args: true } }>
+  item: EventItem<'TfgridModule.PowerTargetChanged', { event: { args: true } }>,
+  timestamp: bigint,
+  block: SubstrateBlock
 ) {
   const { farmId, nodeId, powerTarget } = new TfgridModulePowerTargetChangedEvent(ctx, item.event).asV125
 
@@ -530,6 +532,13 @@ export async function powerTargetChanged(
       target = Power.Down
       break
   }
+  let powerReported = new PowerTargetReport()
+  powerReported.id = item.event.id
+  powerReported.farmID = farmId
+  powerReported.nodeID = nodeId
+  powerReported.newPowerTarget = target
+  powerReported.block = block.height
+  powerReported.timestamp = timestamp
 
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeId }, relations: { location: true, interfaces: true } })
   if (!savedNode) return
@@ -543,11 +552,14 @@ export async function powerTargetChanged(
   }
   savedNode.power.target = target
   await ctx.store.save<Node>(savedNode)
+  await ctx.store.save<PowerTargetReport>(powerReported)
 }
 
 export async function powerStateChanged(
   ctx: Ctx,
-  item: EventItem<'TfgridModule.PowerStateChanged', { event: { args: true } }>
+  item: EventItem<'TfgridModule.PowerStateChanged', { event: { args: true } }>,
+  timestamp: bigint,
+  block: SubstrateBlock
 ) {
   const { farmId, nodeId, powerState } = new TfgridModulePowerStateChangedEvent(ctx, item.event).asV125
 
@@ -561,6 +573,14 @@ export async function powerStateChanged(
       break
   }
 
+  let powerReported = new PowerStateReport()
+  powerReported.id = item.event.id
+  powerReported.farmID = farmId
+  powerReported.nodeID = nodeId
+  powerReported.newPowerStatus = state
+  powerReported.block = block.height
+  powerReported.timestamp = timestamp
+
   const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeId }, relations: { location: true, interfaces: true } })
   if (!savedNode) return
 
@@ -570,6 +590,7 @@ export async function powerStateChanged(
   }
   savedNode.power.state = state
   await ctx.store.save<Node>(savedNode)
+  await ctx.store.save<PowerStateReport>(powerReported)
 }
 
 export async function nodeExtraFeeSet(
