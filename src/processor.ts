@@ -128,8 +128,8 @@ async function handleEvents(ctx: Ctx, block: SubstrateBlock, item: Item) {
     case "TfgridModule.NodeDeleted": return nodeDeleted(ctx, item)
     case 'TfgridModule.NodePublicConfigStored': return nodePublicConfigStored(ctx, item)
     case 'TfgridModule.NodeCertificationSet': return nodeCertificationSet(ctx, item)
-    case 'TfgridModule.PowerTargetChanged': return powerTargetChanged(ctx, item)
-    case 'TfgridModule.PowerStateChanged': return powerStateChanged(ctx, item)
+    case 'TfgridModule.PowerTargetChanged': return powerTargetChanged(ctx, item, timestamp, block)
+    case 'TfgridModule.PowerStateChanged': return powerStateChanged(ctx, item, timestamp, block)
     // Policies
     case 'TfgridModule.PricingPolicyStored': return pricingPolicyStored(ctx, item)
     case 'TfgridModule.FarmingPolicyStored': return farmingPolicyStored(ctx, item)

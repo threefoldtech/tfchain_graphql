@@ -306,3 +306,19 @@ type ServiceContractBill @entity {
   metadata: String
   amount: BigInt!
 }
+
+type PowerTargetReport @entity {
+  farmID: Int!
+  nodeID: Int!
+  newPowerTarget: Power!
+  block: Int!
+  timestamp: BigInt!
+}
+
+type PowerStateReport @entity {
+  farmID: Int!
+  nodeID: Int!
+  newPowerState: PowerState!
+  block: Int!
+  timestamp: BigInt!
+}
