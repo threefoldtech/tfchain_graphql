@@ -18,7 +18,7 @@ export class PowerStateReport {
     nodeID!: number
 
     @Column_("varchar", {length: 4, nullable: false})
-    newPowerStatus!: PowerState
+    newPowerState!: PowerState
 
     @Column_("int4", {nullable: false})
     block!: number

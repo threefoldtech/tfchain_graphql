@@ -577,7 +577,7 @@ export async function powerStateChanged(
   powerReported.id = item.event.id
   powerReported.farmID = farmId
   powerReported.nodeID = nodeId
-  powerReported.newPowerStatus = state
+  powerReported.newPowerState = state
   powerReported.block = block.height
   powerReported.timestamp = timestamp
 

@@ -318,7 +318,7 @@ type PowerTargetReport @entity {
 type PowerStateReport @entity {
   farmID: Int!
   nodeID: Int!
-  newPowerStatus: PowerState!
+  newPowerState: PowerState!
   block: Int!
   timestamp: BigInt!
 }
