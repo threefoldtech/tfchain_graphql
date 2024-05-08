@@ -742,6 +742,70 @@ export class SmartContractModuleUpdatedUsedResourcesEvent {
     }
 }
 
+export class TftPriceModuleAveragePriceStoredEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TFTPriceModule.AveragePriceStored')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    get isV105(): boolean {
+        return this._chain.getEventHash('TFTPriceModule.AveragePriceStored') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
+
+    get asV105(): number {
+        assert(this.isV105)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class TftPriceModulePriceStoredEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'TFTPriceModule.PriceStored')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    get isV9(): boolean {
+        return this._chain.getEventHash('TFTPriceModule.PriceStored') === '0615ab106c98f0dc111aaa1aaa3901d19627e63c024251c1976f8f1d72de2e9c'
+    }
+
+    get asV9(): [Uint8Array, Uint8Array] {
+        assert(this.isV9)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    get isV49(): boolean {
+        return this._chain.getEventHash('TFTPriceModule.PriceStored') === '138dc2d5a73c044287c07ba8dc3d0b80e3ee48f0386b56d7e69282b25cb09dd0'
+    }
+
+    get asV49(): Uint8Array {
+        assert(this.isV49)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    get isV101(): boolean {
+        return this._chain.getEventHash('TFTPriceModule.PriceStored') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
+
+    get asV101(): number {
+        assert(this.isV101)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class TfgridModuleEntityDeletedEvent {
     private readonly _chain: Chain
     private readonly event: Event

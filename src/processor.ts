@@ -23,7 +23,7 @@ import {
   serviceContractFeesSet, serviceContractApproved,
   serviceContractCanceled, serviceContractBilled
 } from './mappings/serviceContracts';
-
+import { priceStored, averagePriceStored } from './mappings/tftPrice';
 import {
   SubstrateBlock
 } from "@subsquid/substrate-processor";
@@ -95,7 +95,10 @@ const processor = new SubstrateBatchProcessor()
   .addEvent('SmartContractModule.ServiceContractBilled', eventOptions)
   // Extra Fee For nodes
   .addEvent('SmartContractModule.NodeExtraFeeSet', eventOptions)
-
+  // Price Stored
+  .addEvent('TFTPriceModule.PriceStored', eventOptions)
+  // Average Price Stored
+  .addEvent('TFTPriceModule.AveragePriceStored', eventOptions)
 export type Item = BatchProcessorItem<typeof processor>
 export type Ctx = BatchContext<Store, Item>
 
@@ -146,6 +149,10 @@ async function handleEvents(ctx: Ctx, block: SubstrateBlock, item: Item) {
     case 'SmartContractModule.ServiceContractBilled': return serviceContractBilled(ctx, item)
     // Extra Fee For nodes
     case 'SmartContractModule.NodeExtraFeeSet': return nodeExtraFeeSet(ctx, item)
+    // PriceStored
+    case 'TFTPriceModule.PriceStored': return priceStored(ctx, item, timestamp, block)
+    // AveragePriceStored
+    case 'TFTPriceModule.AveragePriceStored': return averagePriceStored(ctx, item, timestamp, block)
   }
 }
 
