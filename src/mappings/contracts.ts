@@ -44,7 +44,7 @@ export async function contractCreated(
   }
 
   if (!contractEvent) {
-    ctx.log.error(`found contract with unknown version! make sure types are updated`);
+    ctx.log.error({eventName: item.name}, `found contract with unknown version! make sure types are updated`);
     return
   }
 
@@ -191,7 +191,7 @@ export async function contractUpdated(
   }
 
   if (!contractEvent) {
-    ctx.log.error(`found contract with unknown version! make sure types are updated`);
+    ctx.log.error({eventName: item.name}, `found contract with unknown version! make sure types are updated`);
     return
   }
 
