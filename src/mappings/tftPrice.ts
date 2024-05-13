@@ -17,11 +17,14 @@ export async function priceStored(
 
     let priceEvent
     if (priceStoredEvent.isV9) {
-        priceEvent = priceStoredEvent.asV9 // [Uint8Array, Uint8Array] <- U16F16, AccountId
-    } else if (priceStoredEvent.isV49) {
-        priceEvent = priceStoredEvent.asV49 // Uint8Array <-U16F16
+        // TODO: fix me U16F16 -> number
         // use @encointer/util to parse U16F16 to number
-        
+        // priceEvent = priceStoredEvent.asV9[0] // [Uint8Array, Uint8Array] <- U16F16, AccountId
+        return 
+    } else if (priceStoredEvent.isV49) {
+        // TODO: fix me U16F16 -> number
+        // priceEvent = priceStoredEvent.asV49 // Uint8Array <-U16F16
+        return
     } else if (priceStoredEvent.isV101) {
         priceEvent = priceStoredEvent.asV101 // number <- u32
     }
@@ -33,7 +36,7 @@ export async function priceStored(
     let newPrice = new PriceStored()
     newPrice.block = block.height
     newPrice.timestamp = timestamp
-    newPrice.newPrice = priceEvent // TODO: fix me U16F16 -> number
+    newPrice.newPrice = priceEvent
     
     await ctx.store.save<PriceStored>(newPrice)
 }
