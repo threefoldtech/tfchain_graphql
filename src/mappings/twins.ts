@@ -8,220 +8,220 @@ import { TfgridModuleTwinStoredEvent, TfgridModuleTwinDeletedEvent, TfgridModule
 import { validateString } from "./nodes";
 
 export async function twinStored(
-  ctx: Ctx,
-  item: EventItem<'TfgridModule.TwinStored', { event: { args: true } }>
+    ctx: Ctx,
+    item: EventItem<'TfgridModule.TwinStored', { event: { args: true } }>
 ) {
-  const twin = getTwinCreate(ctx, item)
+    const twin = getTwinCreate(ctx, item)
 
-  const newTwin = new Twin()
+    const newTwin = new Twin()
 
-  newTwin.id = item.event.id
-  newTwin.gridVersion = twin.version
-  newTwin.twinID = twin.twinID
-  newTwin.accountID = twin.accountID
-  newTwin.relay = twin.relay
-  newTwin.publicKey = twin.pk
+    newTwin.id = item.event.id
+    newTwin.gridVersion = twin.version
+    newTwin.twinID = twin.twinID
+    newTwin.accountID = twin.accountID
+    newTwin.relay = twin.relay
+    newTwin.publicKey = twin.pk
 
-  await ctx.store.save<Twin>(newTwin)
+    await ctx.store.save<Twin>(newTwin)
 }
 
 export async function twinUpdated(
-  ctx: Ctx,
-  item: EventItem<'TfgridModule.TwinUpdated', { event: { args: true } }>
+    ctx: Ctx,
+    item: EventItem<'TfgridModule.TwinUpdated', { event: { args: true } }>
 ) {
-  const twin = getTwinUpdate(ctx, item)
+    const twin = getTwinUpdate(ctx, item)
 
-  const savedTwin: any = await ctx.store.get(Twin, { where: { twinID: twin.twinID } })
-  if (!savedTwin) return
+    const savedTwin: any = await ctx.store.get(Twin, { where: { twinID: twin.twinID } })
+    if (!savedTwin) return
 
-  savedTwin.relay = twin.relay
-  savedTwin.publicKey = twin.pk
-  savedTwin.gridVersion = twin.version
+    savedTwin.relay = twin.relay
+    savedTwin.publicKey = twin.pk
+    savedTwin.gridVersion = twin.version
 
-  await ctx.store.save<Twin>(savedTwin)
+    await ctx.store.save<Twin>(savedTwin)
 }
 
 export async function twinDeleted(
-  ctx: Ctx,
-  item: EventItem<'TfgridModule.TwinDeleted', { event: { args: true } }>
+    ctx: Ctx,
+    item: EventItem<'TfgridModule.TwinDeleted', { event: { args: true } }>
 ) {
-  const twinDeletedEvent = new TfgridModuleTwinDeletedEvent(ctx, item.event).asV49
+    const twinDeletedEvent = new TfgridModuleTwinDeletedEvent(ctx, item.event).asV49
 
-  const savedTwin: any = await ctx.store.get(Twin, { where: { twinID: twinDeletedEvent } })
-  if (!savedTwin) return
+    const savedTwin: any = await ctx.store.get(Twin, { where: { twinID: twinDeletedEvent } })
+    if (!savedTwin) return
 
-  await ctx.store.remove<Twin>(savedTwin)
+    await ctx.store.remove<Twin>(savedTwin)
 }
 
 export async function twinCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Twin[], Twin[], Twin[]]> {
-  let newTwins = []
-  let updatedTwins = []
-  let deletedTwins = []
-  for (let block of ctx.blocks) {
-    for (let item of block.items) {
-      if (item.name === "TfgridModule.TwinStored") {
-        const twin = getTwinCreate(ctx, item)
+    let newTwins = []
+    let updatedTwins = []
+    let deletedTwins = []
+    for (let block of ctx.blocks) {
+        for (let item of block.items) {
+            if (item.name === "TfgridModule.TwinStored") {
+                const twin = getTwinCreate(ctx, item)
 
-        const newTwin = new Twin()
+                const newTwin = new Twin()
 
-        newTwin.id = item.event.id
-        newTwin.gridVersion = twin.version
-        newTwin.twinID = twin.twinID
-        newTwin.accountID = twin.accountID
-        newTwin.relay = twin.relay
-        newTwin.publicKey = twin.pk
+                newTwin.id = item.event.id
+                newTwin.gridVersion = twin.version
+                newTwin.twinID = twin.twinID
+                newTwin.accountID = twin.accountID
+                newTwin.relay = twin.relay
+                newTwin.publicKey = twin.pk
 
-        newTwins.push(newTwin)
-      }
-      if (item.name === "TfgridModule.TwinUpdated") {
-        const twin = getTwinUpdate(ctx, item)
+                newTwins.push(newTwin)
+            }
+            if (item.name === "TfgridModule.TwinUpdated") {
+                const twin = getTwinUpdate(ctx, item)
 
-        const foundInNewListIndex: number = newTwins.findIndex(t => t.twinID == twin.twinID);
-        if (foundInNewListIndex != -1) {
-          const savedTwin: Twin = newTwins[foundInNewListIndex]
-          savedTwin.relay = twin.relay
-          savedTwin.publicKey = twin.pk
-          savedTwin.gridVersion = twin.version
-          newTwins[foundInNewListIndex] = savedTwin
-          continue
+                const foundInNewListIndex: number = newTwins.findIndex(t => t.twinID == twin.twinID);
+                if (foundInNewListIndex != -1) {
+                    const savedTwin: Twin = newTwins[foundInNewListIndex]
+                    savedTwin.relay = twin.relay
+                    savedTwin.publicKey = twin.pk
+                    savedTwin.gridVersion = twin.version
+                    newTwins[foundInNewListIndex] = savedTwin
+                    continue
+                }
+
+                const foundInUpdatedListIndex: number = updatedTwins.findIndex(t => t.twinID == twin.twinID);
+                if (foundInUpdatedListIndex != -1) {
+                    let savedTwin: Twin = updatedTwins[foundInUpdatedListIndex]
+                    savedTwin.relay = twin.relay
+                    savedTwin.publicKey = twin.pk
+                    savedTwin.gridVersion = twin.version
+                    updatedTwins[foundInUpdatedListIndex] = savedTwin
+                    continue
+                }
+
+                const savedTwin: any = await ctx.store.get(Twin, { where: { twinID: twin.twinID } })
+                if (!savedTwin) continue
+                savedTwin.relay = twin.relay
+                savedTwin.publicKey = twin.pk
+                savedTwin.gridVersion = twin.version
+                updatedTwins.push(savedTwin)
+            }
+            if (item.name === "TfgridModule.TwinDeleted") {
+                const twinDeletedEvent = new TfgridModuleTwinDeletedEvent(ctx, item.event).asV49
+
+                const savedTwin = await ctx.store.get(Twin, { where: { twinID: twinDeletedEvent } })
+                if (savedTwin) {
+                    deletedTwins.push(savedTwin)
+                }
+            }
         }
-
-        const foundInUpdatedListIndex: number = updatedTwins.findIndex(t => t.twinID == twin.twinID);
-        if (foundInUpdatedListIndex != -1) {
-          let savedTwin: Twin = updatedTwins[foundInUpdatedListIndex]
-          savedTwin.relay = twin.relay
-          savedTwin.publicKey = twin.pk
-          savedTwin.gridVersion = twin.version
-          updatedTwins[foundInUpdatedListIndex] = savedTwin
-          continue
-        }
-
-        const savedTwin: any = await ctx.store.get(Twin, { where: { twinID: twin.twinID } })
-        if (!savedTwin) continue
-        savedTwin.relay = twin.relay
-        savedTwin.publicKey = twin.pk
-        savedTwin.gridVersion = twin.version
-        updatedTwins.push(savedTwin)
-      }
-      if (item.name === "TfgridModule.TwinDeleted") {
-        const twinDeletedEvent = new TfgridModuleTwinDeletedEvent(ctx, item.event).asV49
-
-        const savedTwin = await ctx.store.get(Twin, { where: { twinID: twinDeletedEvent } })
-        if (savedTwin) {
-          deletedTwins.push(savedTwin)
-        }
-      }
     }
-  }
 
-  return [newTwins, updatedTwins, deletedTwins]
+    return [newTwins, updatedTwins, deletedTwins]
 }
 
 function getTwinCreate(
-  ctx: Ctx,
-  item: EventItem<'TfgridModule.TwinStored', { event: { args: true } }>
+    ctx: Ctx,
+    item: EventItem<'TfgridModule.TwinStored', { event: { args: true } }>
 ): TwinEvent {
-  let id = ""
-  let twinID = 0
-  let version = 0
-  let relay = ""
-  let accountID = ""
-  let pk = ""
+    let id = ""
+    let twinID = 0
+    let version = 0
+    let relay = ""
+    let accountID = ""
+    let pk = ""
 
-  const twinEvent = new TfgridModuleTwinStoredEvent(ctx, item.event)
-  let twin
-  if (twinEvent.isV49) {
-    twin = twinEvent.asV49
-    id = item.event.id
-    twinID = twin.id
-    version = twin.version
-    relay = validateString(ctx, twin.ip.toString())
-    accountID = ss58.codec("substrate").encode(twin.accountId)
-  } else if (twinEvent.isV101) {
-    twin = twinEvent.asV101
-    id = item.event.id
-    twinID = twin.id
-    version = twin.version
-    relay = validateString(ctx, twin.ip.toString())
-    accountID = ss58.codec("substrate").encode(twin.accountId)
-  } else if (twinEvent.isV124) {
-    twin = twinEvent.asV124
-    id = item.event.id
-    twinID = twin.id
-    if (twin.relay) {
-      relay = validateString(ctx, twin.relay?.toString())
+    const twinEvent = new TfgridModuleTwinStoredEvent(ctx, item.event)
+    let twin
+    if (twinEvent.isV49) {
+        twin = twinEvent.asV49
+        id = item.event.id
+        twinID = twin.id
+        version = twin.version
+        relay = validateString(ctx, twin.ip.toString())
+        accountID = ss58.codec("substrate").encode(twin.accountId)
+    } else if (twinEvent.isV101) {
+        twin = twinEvent.asV101
+        id = item.event.id
+        twinID = twin.id
+        version = twin.version
+        relay = validateString(ctx, twin.ip.toString())
+        accountID = ss58.codec("substrate").encode(twin.accountId)
+    } else if (twinEvent.isV124) {
+        twin = twinEvent.asV124
+        id = item.event.id
+        twinID = twin.id
+        if (twin.relay) {
+            relay = validateString(ctx, twin.relay?.toString())
+        }
+        accountID = ss58.codec("substrate").encode(twin.accountId)
+        if (twin.pk) {
+            pk = '0x' + Buffer.from(twin.pk).toString('hex');
+        }
     }
-    accountID = ss58.codec("substrate").encode(twin.accountId)
-    if (twin.pk) {
-      pk = '0x' + Buffer.from(twin.pk).toString('hex');
-    }
-  }
 
-  return {
-    id,
-    twinID,
-    version,
-    relay,
-    accountID,
-    pk
-  }
+    return {
+        id,
+        twinID,
+        version,
+        relay,
+        accountID,
+        pk
+    }
 }
 
 function getTwinUpdate(
-  ctx: Ctx,
-  item: EventItem<'TfgridModule.TwinUpdated', { event: { args: true } }>
+    ctx: Ctx,
+    item: EventItem<'TfgridModule.TwinUpdated', { event: { args: true } }>
 ): TwinEvent {
-  let id = ""
-  let twinID = 0
-  let version = 0
-  let relay = ""
-  let accountID = ""
-  let pk = ""
+    let id = ""
+    let twinID = 0
+    let version = 0
+    let relay = ""
+    let accountID = ""
+    let pk = ""
 
-  const twinEvent = new TfgridModuleTwinUpdatedEvent(ctx, item.event)
-  let twin
-  if (twinEvent.isV49) {
-    twin = twinEvent.asV49
-    id = item.event.id
-    twinID = twin.id
-    version = twin.version
-    relay = validateString(ctx, twin.ip.toString())
-    accountID = ss58.codec("substrate").encode(twin.accountId)
-  } else if (twinEvent.isV101) {
-    twin = twinEvent.asV101
-    id = item.event.id
-    twinID = twin.id
-    version = twin.version
-    relay = validateString(ctx, twin.ip.toString())
-    accountID = ss58.codec("substrate").encode(twin.accountId)
-  } else if (twinEvent.isV124) {
-    twin = twinEvent.asV124
-    id = item.event.id
-    twinID = twin.id
-    if (twin.relay) {
-      relay = validateString(ctx, twin.relay?.toString())
+    const twinEvent = new TfgridModuleTwinUpdatedEvent(ctx, item.event)
+    let twin
+    if (twinEvent.isV49) {
+        twin = twinEvent.asV49
+        id = item.event.id
+        twinID = twin.id
+        version = twin.version
+        relay = validateString(ctx, twin.ip.toString())
+        accountID = ss58.codec("substrate").encode(twin.accountId)
+    } else if (twinEvent.isV101) {
+        twin = twinEvent.asV101
+        id = item.event.id
+        twinID = twin.id
+        version = twin.version
+        relay = validateString(ctx, twin.ip.toString())
+        accountID = ss58.codec("substrate").encode(twin.accountId)
+    } else if (twinEvent.isV124) {
+        twin = twinEvent.asV124
+        id = item.event.id
+        twinID = twin.id
+        if (twin.relay) {
+            relay = validateString(ctx, twin.relay?.toString())
+        }
+        accountID = ss58.codec("substrate").encode(twin.accountId)
+        if (twin.pk) {
+            pk = validateString(ctx, '0x' + Buffer.from(twin.pk).toString('hex'));
+        }
     }
-    accountID = ss58.codec("substrate").encode(twin.accountId)
-    if (twin.pk) {
-      pk = validateString(ctx, '0x' + Buffer.from(twin.pk).toString('hex'));
-    }
-  }
 
-  return {
-    id,
-    twinID,
-    version,
-    relay,
-    accountID,
-    pk
-  }
+    return {
+        id,
+        twinID,
+        version,
+        relay,
+        accountID,
+        pk
+    }
 }
 
 interface TwinEvent {
-  id: string
-  twinID: number
-  version: number
-  relay: string
-  accountID: string
-  pk: string
+    id: string
+    twinID: number
+    version: number
+    relay: string
+    accountID: string
+    pk: string
 }
