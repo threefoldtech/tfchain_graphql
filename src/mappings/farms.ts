@@ -30,12 +30,13 @@ export async function farmStored(
     } else if (farmStoredEvent.isV63) {
         farmStoredEventParsed = farmStoredEvent.asV63
     } else if (farmStoredEvent.isV101) {
-        let eventValue = item.event.args as v63.Farm
-        eventValue.dedicatedFarm = false
         farmStoredEventParsed = farmStoredEvent.asV101
     }
 
-    if (!farmStoredEventParsed) return
+    if (!farmStoredEventParsed) {
+        ctx.log.error({ eventName: item.name }, `found farm with unknown version! make sure types are updated`);
+        return
+    }
 
     const newFarm = new Farm()
 
@@ -92,8 +93,6 @@ export async function farmUpdated(
             }
         }
     } else if (farmUpdatedEvent.isV101) {
-        let eventValue = item.event.args as v63.Farm
-        eventValue.dedicatedFarm = false
         farmUpdatedEventParsed = farmUpdatedEvent.asV101
         switch (farmUpdatedEvent.asV101.certification.__kind) {
             case "Gold": {
@@ -102,7 +101,10 @@ export async function farmUpdated(
         }
     }
 
-    if (!farmUpdatedEventParsed) return
+    if (!farmUpdatedEventParsed) {
+        ctx.log.error({ eventName: item.name }, `found farm with unknown version! make sure types are updated`);
+        return
+    }
 
     const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmUpdatedEventParsed.id } })
     if (!savedFarm) return
@@ -201,6 +203,7 @@ export async function farmCertificationSet(
     const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmID } })
 
     if (!savedFarm) {
+        ctx.log.error({ eventName: item.name }, `found FarmCertification with unknown version! make sure types are updated`);
         return
     }
 
@@ -216,172 +219,4 @@ export async function farmCertificationSet(
 
     savedFarm.certification = certType
     await ctx.store.save<Farm>(savedFarm)
-}
-
-export async function farmCreateOrUpdateOrDelete(ctx: Ctx): Promise<[Farm[], Farm[], Farm[], FarmWithIPs[]]> {
-    let newFarms: Farm[] = []
-    let updatedFarms: Farm[] = []
-    let deletedFarms: Farm[] = []
-    let publicIPs: FarmWithIPs[] = []
-
-    for (let block of ctx.blocks) {
-        for (let item of block.items) {
-            if (item.name === "TfgridModule.FarmStored") {
-                const farmStoredEvent = new TfgridModuleFarmStoredEvent(ctx, item.event)
-                let farmStoredEventParsed
-                if (farmStoredEvent.isV9) {
-                    farmStoredEventParsed = farmStoredEvent.asV9
-                } else if (farmStoredEvent.isV50) {
-                    farmStoredEventParsed = farmStoredEvent.asV50
-                } else if (farmStoredEvent.isV63) {
-                    farmStoredEventParsed = farmStoredEvent.asV63
-                } else if (farmStoredEvent.isV101) {
-                    farmStoredEventParsed = farmStoredEvent.asV101
-                }
-
-                if (!farmStoredEventParsed) continue
-
-                const newFarm = new Farm()
-
-                let eventID = item.event.id
-
-                newFarm.id = eventID
-                newFarm.gridVersion = farmStoredEventParsed.version
-                newFarm.farmID = farmStoredEventParsed.id
-                newFarm.name = validateString(ctx, farmStoredEventParsed.name.toString())
-                newFarm.twinID = farmStoredEventParsed.twinId
-                newFarm.pricingPolicyID = farmStoredEventParsed.pricingPolicyId
-                newFarm.dedicatedFarm = false
-                newFarm.certification = FarmCertification.NotCertified
-
-                newFarm.publicIPs = []
-
-                let ips: PublicIp[] = []
-                farmStoredEventParsed.publicIps.forEach(ip => {
-                    // ctx.log.info("storing ips")
-                    const newIP = new PublicIp()
-
-                    newIP.id = eventID
-
-                    newIP.ip = validateString(ctx, ip.ip.toString())
-                    newIP.gateway = validateString(ctx, ip.gateway.toString())
-
-                    newIP.contractId = ip.contractId
-                    newIP.farm = newFarm
-
-                    ips.push(newIP)
-                })
-
-                // ctx.log.info(`storing farm: ${newFarm.id}`)
-
-                newFarms.push(newFarm)
-                publicIPs.push(new FarmWithIPs(newFarm.farmID, ips))
-            }
-            if (item.name === "TfgridModule.FarmUpdated") {
-                const farmUpdatedEvent = new TfgridModuleFarmUpdatedEvent(ctx, item.event)
-
-                let farmUpdatedEventParsed: any
-                if (farmUpdatedEvent.isV9) {
-                    farmUpdatedEventParsed = farmUpdatedEvent.asV9
-                } else if (farmUpdatedEvent.isV50) {
-                    farmUpdatedEventParsed = farmUpdatedEvent.asV50
-                } else if (farmUpdatedEvent.isV63) {
-                    farmUpdatedEventParsed = farmUpdatedEvent.asV63
-                } else if (farmUpdatedEvent.isV101) {
-                    farmUpdatedEventParsed = farmUpdatedEvent.asV101
-                }
-
-                if (!farmUpdatedEventParsed) {
-                    ctx.log.error('cannot parse farm updated event')
-                    continue
-                }
-
-                const eventID = item.event.id
-
-                const foundInNewListIndex: number = newFarms.findIndex(t => t.farmID == farmUpdatedEventParsed.id)
-                if (foundInNewListIndex != -1) {
-                    const savedFarm: Farm = newFarms[foundInNewListIndex]
-                    savedFarm.gridVersion = farmUpdatedEventParsed.version
-                    savedFarm.name = validateString(ctx, farmUpdatedEventParsed.name.toString())
-                    savedFarm.twinID = farmUpdatedEventParsed.twinId
-                    savedFarm.pricingPolicyID = farmUpdatedEventParsed.pricingPolicyId
-                    // const pubIps = updatePublicIPs(ctx, farmUpdatedEventParsed.publicIps, eventID, savedFarm)
-                    newFarms[foundInNewListIndex] = savedFarm
-
-                    publicIPs = getPublicIPs(ctx, savedFarm, publicIPs, farmUpdatedEventParsed.publicIps, eventID)
-
-                    continue
-                }
-
-                const foundInUpdatedListIndex: number = updatedFarms.findIndex(t => t.farmID == farmUpdatedEventParsed.id)
-                if (foundInUpdatedListIndex != -1) {
-                    let savedFarm: Farm = updatedFarms[foundInUpdatedListIndex]
-                    savedFarm.gridVersion = farmUpdatedEventParsed.version
-                    savedFarm.name = validateString(ctx, farmUpdatedEventParsed.name.toString())
-                    savedFarm.twinID = farmUpdatedEventParsed.twinId
-                    savedFarm.pricingPolicyID = farmUpdatedEventParsed.pricingPolicyId
-                    updatedFarms[foundInUpdatedListIndex] = savedFarm
-
-                    publicIPs = getPublicIPs(ctx, savedFarm, publicIPs, farmUpdatedEventParsed.publicIps, eventID)
-
-                    continue
-                }
-
-                const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmUpdatedEventParsed.id } })
-                if (!savedFarm) continue
-
-                savedFarm.gridVersion = farmUpdatedEventParsed.version
-                savedFarm.name = validateString(ctx, farmUpdatedEventParsed.name.toString())
-                savedFarm.twinID = farmUpdatedEventParsed.twinId
-                savedFarm.pricingPolicyID = farmUpdatedEventParsed.pricingPolicyId
-
-                // ctx.log.info(`updating farm: ${savedFarm.id}`)
-
-                publicIPs = getPublicIPs(ctx, savedFarm, publicIPs, farmUpdatedEventParsed.publicIps, eventID)
-
-                updatedFarms.push(savedFarm)
-            }
-            if (item.name === "TfgridModule.FarmDeleted") {
-                const farmID = new TfgridModuleFarmDeletedEvent(ctx, item.event).asV49
-                const savedFarm = await ctx.store.get(Farm, { where: { farmID: farmID } })
-                if (savedFarm) {
-                    deletedFarms.push(savedFarm)
-                }
-            }
-        }
-    }
-
-    return [newFarms, updatedFarms, deletedFarms, publicIPs]
-}
-
-function getPublicIPs(ctx: Ctx, farm: Farm, savedFarmIps: FarmWithIPs[], newIps: PublicIp[], eventID: any): FarmWithIPs[] {
-    let toModify = savedFarmIps.filter(f => f.farmID === farm.farmID)
-    if (toModify.length === 0) {
-        return []
-    }
-
-    // For every IP in the updated event:
-    // Check if it's already in the savedFarmIps to be saved, if so, update the value
-    // If it's not there, add it
-    newIps.forEach((ip: PublicIp) => {
-        let foundIdx = toModify[0].publicIPs.findIndex(pubip => pubip.ip === ip.ip.toString())
-        // console.log(`found index: ${foundIdx}`)
-        if (foundIdx !== -1) {
-            toModify[0].publicIPs[foundIdx].contractId = ip.contractId
-            toModify[0].publicIPs[foundIdx].ip = validateString(ctx, ip.ip.toString())
-            toModify[0].publicIPs[foundIdx].gateway = validateString(ctx, ip.gateway.toString())
-        } else {
-            const newIP = new PublicIp()
-            newIP.id = eventID
-            newIP.ip = ip.ip.toString()
-            newIP.gateway = validateString(ctx, ip.gateway.toString())
-            newIP.contractId = ip.contractId
-            newIP.farm = farm
-            // ctx.log.info(`saving new ip: ${newIP.ip}`)
-            // ctx.log.warn(`farm ips: ${toModify[0].publicIPs}`)
-            toModify[0].publicIPs.push(newIP)
-        }
-    })
-
-    return savedFarmIps
 }

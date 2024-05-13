@@ -40,6 +40,7 @@ export async function nodeStored(
     }
 
     if (!nodeEvent) {
+        ctx.log.error({ eventName: item.name }, `found Node with unknown version! make sure types are updated`);
         return
     }
 
@@ -176,8 +177,10 @@ export async function nodeUpdated(
         nodeEvent = node.asV118
     }
 
-    if (!nodeEvent) return
-
+    if (!nodeEvent) {
+        ctx.log.error({ eventName: item.name }, `found Node with unknown version! make sure types are updated`);
+        return
+    }
     const savedNode = await ctx.store.get(Node, { where: { nodeID: nodeEvent.id }, relations: { location: true, interfaces: true } })
 
     if (!savedNode) return
@@ -692,6 +695,7 @@ function getNodePublicConfig(ctx: Ctx, node: TfgridModuleNodeStoredEvent): NodeP
             }
         }
     } else {
+        ctx.log.error(`found Node with unknown version during parsing NodePublicConfig! make sure types are updated`);
         return null
     }
 

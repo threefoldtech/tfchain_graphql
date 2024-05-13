@@ -116,6 +116,7 @@ export async function serviceContractCanceled(
         serviceContractCanceledEvent = SmartContractModuleServiceContractCanceled.asV148
     }
     if (!serviceContractCanceledEvent) {
+        ctx.log.error({eventName: item.name}, `found serviceContract with unknown version! make sure types are updated`);
         return
     }
     const savedServiceContract = await ctx.store.get(ServiceContract, { where: { serviceContractID: serviceContractCanceledEvent.serviceContractId } })

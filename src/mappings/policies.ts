@@ -29,8 +29,10 @@ export async function pricingPolicyStored(
         pricingPolicyEventParsed = pricingPolicyEvent.asV101
     }
 
-    if (!pricingPolicyEventParsed) return
-
+    if (!pricingPolicyEventParsed) {
+        ctx.log.error({ eventName: item.name }, `found pricingPolicy with unknown version! make sure types are updated`);
+        return
+    }
     let pricingPolicy = new PricingPolicy()
     pricingPolicy.id = item.event.id
 
@@ -86,6 +88,7 @@ export async function farmingPolicyStored(
     const farmingPolicyEvent = new TfgridModuleFarmingPolicyStoredEvent(ctx, item.event)
 
     if (!farmingPolicyEvent.isV63) {
+        ctx.log.error({ eventName: item.name }, `found pricingPolicy with unknown version! make sure types are updated`);
         return
     }
 
@@ -140,6 +143,7 @@ export async function farmingPolicyUpdated(
     const farmingPolicyEvent = new TfgridModuleFarmingPolicyUpdatedEvent(ctx, item.event)
 
     if (!farmingPolicyEvent.isV63) {
+        ctx.log.error({ eventName: item.name }, `found pricingPolicy with unknown version! make sure types are updated`);
         return
     }
 
