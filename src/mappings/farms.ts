@@ -30,6 +30,8 @@ export async function farmStored(
     } else if (farmStoredEvent.isV63) {
         farmStoredEventParsed = farmStoredEvent.asV63
     } else if (farmStoredEvent.isV101) {
+        let eventValue = item.event.args as v63.Farm
+        eventValue.dedicatedFarm = false
         farmStoredEventParsed = farmStoredEvent.asV101
     }
 
@@ -86,6 +88,8 @@ export async function farmUpdated(
     } else if (farmUpdatedEvent.isV50) {
         farmUpdatedEventParsed = farmUpdatedEvent.asV50
     } else if (farmUpdatedEvent.isV63) {
+        let eventValue = item.event.args as v63.Farm
+        eventValue.dedicatedFarm = false
         farmUpdatedEventParsed = farmUpdatedEvent.asV63
         switch (farmUpdatedEvent.asV101.certification.__kind) {
             case "Gold": {
