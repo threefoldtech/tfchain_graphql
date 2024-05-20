@@ -5,7 +5,9 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { In } from 'typeorm'
 import { TftPriceModulePriceStoredEvent, TftPriceModuleAveragePriceStoredEvent } from '../types/events';
 import { PriceStored, AveragePriceStored } from '../model';
-import { ParserFixPointFn } from '@encointer/util'
+import { ParserFixPointFn, parseI16F16 } from '@encointer/util'
+import BN from 'bn.js'
+import { BigDecimal } from '@subsquid/big-decimal';
 
 export async function priceStored(
     ctx: Ctx,
@@ -19,21 +21,27 @@ export async function priceStored(
     if (priceStoredEvent.isV9) {
         // TODO: fix me U16F16 -> number
         // use @encointer/util to parse U16F16 to number
-        // priceEvent = priceStoredEvent.asV9[0] // [Uint8Array, Uint8Array] <- U16F16, AccountId
-        return 
+        priceEvent = BigDecimal(parseI16F16(new BN(priceStoredEvent.asV9[0], 'le'))) // [Uint8Array, Uint8Array] <- U16F16, AccountId
+        ctx.log.info("V9: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Price: " + priceEvent.toString() + ", Raw: " + priceStoredEvent.asV9[0])
+
     } else if (priceStoredEvent.isV49) {
         // TODO: fix me U16F16 -> number
-        // priceEvent = priceStoredEvent.asV49 // Uint8Array <-U16F16
-        return
+        priceEvent = BigDecimal(parseI16F16(new BN(priceStoredEvent.asV49, 'le'))) // Uint8Array <-U16F16
+        ctx.log.info("V49: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Price: " + priceEvent.toString() + ", Raw: " + priceStoredEvent.asV49[0])
+
     } else if (priceStoredEvent.isV101) {
-        priceEvent = priceStoredEvent.asV101 // number <- u32
+        priceEvent = BigDecimal(priceStoredEvent.asV101/1000) // number <- u32 (milli USD)
+        ctx.log.info("V101: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Price: " + priceEvent.toString() + ", Raw: " + priceStoredEvent.asV101)
+
     }
 
     if (!priceEvent) {
+        ctx.log.error({ eventName: item.name }, `found PriceStored with unknown version! make sure types are updated`);
         return
     }
 
     let newPrice = new PriceStored()
+    newPrice.id = item.event.id
     newPrice.block = block.height
     newPrice.timestamp = timestamp
     newPrice.newPrice = priceEvent
@@ -51,17 +59,20 @@ export async function averagePriceStored(
 
     let priceEvent
     if (averagePriceStoredEvent.isV105) {
-        priceEvent = averagePriceStoredEvent.asV105
+        priceEvent = BigDecimal(averagePriceStoredEvent.asV105/1000)
     }
 
     if (!priceEvent) {
+        ctx.log.error({ eventName: item.name }, `found averagePriceStored with unknown version! make sure types are updated`);
         return
     }
 
-    let newPrice = new PriceStored()
+    let newPrice = new AveragePriceStored()
+    newPrice.id = item.event.id
     newPrice.block = block.height
     newPrice.timestamp = timestamp
-    newPrice.newPrice = priceEvent
-    
-    await ctx.store.save<PriceStored>(newPrice)
+    newPrice.newAveragePrice = priceEvent
+    ctx.log.info("V49: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Average Price: " + priceEvent.toString() + ", Raw: " + averagePriceStoredEvent.asV105)
+
+    await ctx.store.save<AveragePriceStored>(newPrice)
 }

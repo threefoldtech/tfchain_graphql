@@ -1,3 +1,4 @@
+import {BigDecimal} from "@subsquid/big-decimal"
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_} from "typeorm"
 import * as marshal from "./marshal"
 
@@ -10,8 +11,8 @@ export class PriceStored {
     @PrimaryColumn_()
     id!: string
 
-    @Column_("int4", {nullable: false})
-    newPrice!: number
+    @Column_("numeric", {transformer: marshal.bigdecimalTransformer, nullable: false})
+    newPrice!: BigDecimal
 
     @Column_("int4", {nullable: false})
     block!: number
