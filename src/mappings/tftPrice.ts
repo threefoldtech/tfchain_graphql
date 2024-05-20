@@ -21,17 +21,17 @@ export async function priceStored(
     if (priceStoredEvent.isV9) {
         // TODO: fix me U16F16 -> number
         // use @encointer/util to parse U16F16 to number
-        priceEvent = BigDecimal(parseI16F16(new BN(priceStoredEvent.asV9[0], 'le'))) // [Uint8Array, Uint8Array] <- U16F16, AccountId
-        ctx.log.info("V9: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Price: " + priceEvent.toString() + ", Raw: " + priceStoredEvent.asV9[0])
+        priceEvent = BigDecimal(parseI16F16(new BN(priceStoredEvent.asV9[0], 'le'), 6)) // [Uint8Array, Uint8Array] <- U16F16, AccountId
+        ctx.log.debug("V9: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Price: " + priceEvent.toString() + ", Raw: " + priceStoredEvent.asV9[0])
 
     } else if (priceStoredEvent.isV49) {
         // TODO: fix me U16F16 -> number
-        priceEvent = BigDecimal(parseI16F16(new BN(priceStoredEvent.asV49, 'le'))) // Uint8Array <-U16F16
-        ctx.log.info("V49: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Price: " + priceEvent.toString() + ", Raw: " + priceStoredEvent.asV49[0])
+        priceEvent = BigDecimal(parseI16F16(new BN(priceStoredEvent.asV49, 'le'), 6)) // Uint8Array <-U16F16
+        ctx.log.debug("V49: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Price: " + priceEvent.toString() + ", Raw: " + priceStoredEvent.asV49[0])
 
     } else if (priceStoredEvent.isV101) {
         priceEvent = BigDecimal(priceStoredEvent.asV101/1000) // number <- u32 (milli USD)
-        ctx.log.info("V101: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Price: " + priceEvent.toString() + ", Raw: " + priceStoredEvent.asV101)
+        ctx.log.debug("V101: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Price: " + priceEvent.toString() + ", Raw: " + priceStoredEvent.asV101)
 
     }
 
@@ -59,7 +59,7 @@ export async function averagePriceStored(
 
     let priceEvent
     if (averagePriceStoredEvent.isV105) {
-        priceEvent = BigDecimal(averagePriceStoredEvent.asV105/1000)
+        priceEvent = BigDecimal(averagePriceStoredEvent.asV105/1000) // number <- u32 (milli USD)
     }
 
     if (!priceEvent) {
@@ -72,7 +72,7 @@ export async function averagePriceStored(
     newPrice.block = block.height
     newPrice.timestamp = timestamp
     newPrice.newAveragePrice = priceEvent
-    ctx.log.info("V49: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Average Price: " + priceEvent.toString() + ", Raw: " + averagePriceStoredEvent.asV105)
+    ctx.log.debug("V49: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Average Price: " + priceEvent.toString() + ", Raw: " + averagePriceStoredEvent.asV105)
 
     await ctx.store.save<AveragePriceStored>(newPrice)
 }
