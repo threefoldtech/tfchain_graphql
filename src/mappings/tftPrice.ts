@@ -19,14 +19,12 @@ export async function priceStored(
 
     let priceEvent
     if (priceStoredEvent.isV9) {
-        // TODO: fix me U16F16 -> number
-        // use @encointer/util to parse U16F16 to number
-        priceEvent = BigDecimal(parseI16F16(new BN(priceStoredEvent.asV9[0], 'le'), 6)) // [Uint8Array, Uint8Array] <- U16F16, AccountId
+        priceEvent = BigDecimal(parseI16F16(new BN(priceStoredEvent.asV9[0], 'le'))) // [Uint8Array, Uint8Array] <- U16F16, AccountId
         ctx.log.debug("V9: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Price: " + priceEvent.toString() + ", Raw: " + priceStoredEvent.asV9[0])
 
     } else if (priceStoredEvent.isV49) {
         // TODO: fix me U16F16 -> number
-        priceEvent = BigDecimal(parseI16F16(new BN(priceStoredEvent.asV49, 'le'), 6)) // Uint8Array <-U16F16
+        priceEvent = BigDecimal(parseI16F16(new BN(priceStoredEvent.asV49, 'le'))) // Uint8Array <-U16F16
         ctx.log.debug("V49: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Price: " + priceEvent.toString() + ", Raw: " + priceStoredEvent.asV49[0])
 
     } else if (priceStoredEvent.isV101) {
