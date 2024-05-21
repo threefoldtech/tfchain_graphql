@@ -14,7 +14,7 @@ services:
       POSTGRES_DB: ${DB_NAME}
 
   processor:
-    image: processor:latest
+    image: ghcr.io/threefoldtech/tfchain_graphql_processor:latest
     restart: unless-stopped
     build:
       dockerfile: Dockerfile
@@ -32,7 +32,7 @@ services:
     command: ["yarn", "process"]
 
   query-node:
-    image: query-node:latest
+    image: ghcr.io/threefoldtech/tfchain_graphql_query-node:latest
     restart: unless-stopped
     build:
       dockerfile: Dockerfile
