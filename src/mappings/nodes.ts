@@ -677,8 +677,8 @@ function getNodePublicConfig(ctx: Ctx, node: TfgridModuleNodeStoredEvent): NodeP
                 domain: validateString(ctx, nodeEvent.publicConfig?.domain.toString())
             }
         }
-    } else if (node.isV105) {
-        nodeEvent = node.asV105
+    } else if (node.isV105 || node.isV118) {
+        nodeEvent = node.isV105? node.asV105:node.asV118
         if (nodeEvent.publicConfig) {
             let domain = ''
             if (nodeEvent.publicConfig.domain) {
