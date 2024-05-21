@@ -322,3 +322,15 @@ type PowerStateReport @entity {
   block: Int!
   timestamp: BigInt!
 }
+
+type PriceStored @entity {
+  newPrice: BigDecimal!
+  block: Int!
+  timestamp: BigInt!
+}
+
+type AveragePriceStored @entity {
+  newAveragePrice: BigDecimal!
+  block: Int!
+  timestamp: BigInt!
+}

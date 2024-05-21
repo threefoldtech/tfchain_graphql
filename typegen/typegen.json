@@ -43,6 +43,8 @@
     "SmartContractModule.ContractGracePeriodStarted",
     "SmartContractModule.ContractGracePeriodEnded",
     "SmartContractModule.SolutionProviderCreated",
-    "SmartContractModule.SolutionProviderApproved"
+    "SmartContractModule.SolutionProviderApproved",
+    "TFTPriceModule.PriceStored",
+    "TFTPriceModule.AveragePriceStored"
   ]
 }
