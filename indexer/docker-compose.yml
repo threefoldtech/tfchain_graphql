@@ -1,4 +1,4 @@
-version: "3.4"
+version: "3.8"
 
 services:
   db:
@@ -11,9 +11,21 @@ services:
     volumes:
       - /cockroach/cockroach-data
 
-  ingest:
+  db-init:
     depends_on:
       - db
+    image: cockroachdb/cockroach:v22.2.2
+
+    volumes:
+      - ./setup_db.sh:/setup_db.sh
+    entrypoint: "/bin/bash"
+    command: /setup_db.sh
+    restart: on-failure
+  
+  ingest:
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
     restart: on-failure
     image: subsquid/substrate-ingest:1
     volumes:
@@ -34,7 +46,8 @@ services:
 
   gateway:
     depends_on:
-      - db
+      db-init:
+        condition: service_completed_successfully
     image: subsquid/substrate-gateway:2.5.0
     environment:
       DATABASE_MAX_CONNECTIONS: 5
@@ -44,6 +57,9 @@ services:
       - "8888:8000"
 
   explorer:
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
     image: subsquid/substrate-explorer:firesquid
     environment:
       DB_TYPE: cockroach
