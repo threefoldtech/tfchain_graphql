@@ -16,7 +16,7 @@ import {
     SmartContractModuleContractGracePeriodStartedEvent, SmartContractModuleContractGracePeriodEndedEvent
 } from "../types/events";
 import { validateString } from "./nodes"
-
+    
 export async function contractCreated(
     ctx: Ctx,
     item: EventItem<'SmartContractModule.ContractCreated', { event: { args: true } }>,
@@ -119,13 +119,8 @@ export async function contractCreated(
         })
 
         if (contract.publicIps > 0 && touchedIps.length == 0) {
-            console.log(`something went wrong with contract ${contractEvent.contractId}`)
-            console.log(`ips: ${contract.publicIpsList}`)
-        }
-
-        if (newNodeContract.contractID === BigInt(17661)) {
-            console.log('contract found')
-            console.log(touchedIps)
+            ctx.log.warn(`Can't update IPs for contract ${contractEvent.contractId}`)
+            ctx.log.warn(`ips: ${JSON.stringify(contract.publicIpsList.map(ip => {return {ip: ip.ip.toString(), gateway: ip.gateway.toString()}}))}`)
         }
 
         await ctx.store.save(touchedIps)

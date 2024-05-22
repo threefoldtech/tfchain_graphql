@@ -20,17 +20,15 @@ export async function priceStored(
     let priceEvent
     if (priceStoredEvent.isV9) {
         priceEvent = BigDecimal(parseI16F16(new BN(priceStoredEvent.asV9[0], 'le'))) // [Uint8Array, Uint8Array] <- U16F16, AccountId
-        ctx.log.debug("V9: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Price: " + priceEvent.toString() + ", Raw: " + priceStoredEvent.asV9[0])
+        ctx.log.trace(`V9: block number: ${block.height}, timestamp: ${timestamp}, Price: ${priceEvent}, Raw: ${priceStoredEvent.asV9[0]}`)
 
     } else if (priceStoredEvent.isV49) {
-        // TODO: fix me U16F16 -> number
         priceEvent = BigDecimal(parseI16F16(new BN(priceStoredEvent.asV49, 'le'))) // Uint8Array <-U16F16
-        ctx.log.debug("V49: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Price: " + priceEvent.toString() + ", Raw: " + priceStoredEvent.asV49[0])
+        ctx.log.trace(`V49: block number: ${block.height}, timestamp: ${timestamp}, Price: ${priceEvent}, Raw: ${priceStoredEvent.asV49}`)
 
     } else if (priceStoredEvent.isV101) {
         priceEvent = BigDecimal(priceStoredEvent.asV101/1000) // number <- u32 (milli USD)
-        ctx.log.debug("V101: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Price: " + priceEvent.toString() + ", Raw: " + priceStoredEvent.asV101)
-
+        ctx.log.trace(`V101: block number: ${block.height}, timestamp: ${timestamp}, Price: ${priceEvent}, Raw: ${priceStoredEvent.asV101}`)
     }
 
     if (!priceEvent) {
@@ -70,7 +68,7 @@ export async function averagePriceStored(
     newPrice.block = block.height
     newPrice.timestamp = timestamp
     newPrice.newAveragePrice = priceEvent
-    ctx.log.debug("V49: block number: " + block.height.toString() + ", timestamp: " +  timestamp.toString() + ", Average Price: " + priceEvent.toString() + ", Raw: " + averagePriceStoredEvent.asV105)
+    ctx.log.trace(`V105: block number: ${block.height}, timestamp: ${timestamp}, Average Price: ${priceEvent}, Raw: ${averagePriceStoredEvent.asV105}`);
 
     await ctx.store.save<AveragePriceStored>(newPrice)
 }
