@@ -171,7 +171,6 @@ export async function farmUpdated(
     savedFarm.certification = certification
 
     let eventPublicIPs = farmUpdatedEventParsed.publicIps
-    let ipsCount = eventPublicIPs.length
     farmUpdatedEventParsed.publicIps.forEach(async ip => {
         if (!checkIPs(ctx, ip.ip.toString(), ip.gateway.toString())) {
             return
