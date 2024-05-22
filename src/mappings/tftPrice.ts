@@ -27,7 +27,7 @@ export async function priceStored(
         ctx.log.trace(`V49: block number: ${block.height}, timestamp: ${timestamp}, Price: ${priceEvent}, Raw: ${priceStoredEvent.asV49}`)
 
     } else if (priceStoredEvent.isV101) {
-        priceEvent = BigDecimal(priceStoredEvent.asV101/1000) // number <- u32 (milli USD)
+        priceEvent = BigDecimal(priceStoredEvent.asV101 / 1000) // number <- u32 (milli USD)
         ctx.log.trace(`V101: block number: ${block.height}, timestamp: ${timestamp}, Price: ${priceEvent}, Raw: ${priceStoredEvent.asV101}`)
     }
 
@@ -41,7 +41,7 @@ export async function priceStored(
     newPrice.block = block.height
     newPrice.timestamp = timestamp
     newPrice.newPrice = priceEvent
-    
+
     await ctx.store.save<PriceStored>(newPrice)
 }
 
@@ -55,7 +55,7 @@ export async function averagePriceStored(
 
     let priceEvent
     if (averagePriceStoredEvent.isV105) {
-        priceEvent = BigDecimal(averagePriceStoredEvent.asV105/1000) // number <- u32 (milli USD)
+        priceEvent = BigDecimal(averagePriceStoredEvent.asV105 / 1000) // number <- u32 (milli USD)
     }
 
     if (!priceEvent) {

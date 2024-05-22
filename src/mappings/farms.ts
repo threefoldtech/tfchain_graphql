@@ -86,7 +86,7 @@ function checkIPs(ctx: Ctx, ipv4_a: string, ipv4_b: string): boolean {
         if (!ipaddr.isValidCIDR(ipv4_a) || !ipaddr.isValid(ipv4_b)) {
             ctx.log.warn(`One or both IP addresses are invalid. Public IP: ${ipv4_a}, Gateway: ${ipv4_b}`);
             return false;
-        }       
+        }
         // Parse the IP addresses
         const ip_a = ipaddr.parseCIDR(ipv4_a);
         const ip_b = ipaddr.parse(ipv4_b);
