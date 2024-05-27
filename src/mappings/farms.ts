@@ -6,6 +6,8 @@ import { Ctx } from '../processor'
 import * as v63 from '../types/v63'
 import { validateString } from "./nodes"
 
+import * as ipaddr from 'ipaddr.js';
+
 export class FarmWithIPs {
     constructor(farmID: number, ips: PublicIp[]) {
         this.farmID = farmID
@@ -56,6 +58,10 @@ export async function farmStored(
     await ctx.store.save<Farm>(newFarm)
 
     const ipPromises = farmStoredEventParsed.publicIps.map(ip => {
+        if (!checkIPs(ctx, ip.ip.toString(), ip.gateway.toString())) {
+            return Promise.resolve()
+        }
+
         const newIP = new PublicIp()
 
         newIP.id = item.event.id
@@ -67,11 +73,54 @@ export async function farmStored(
         newIP.farm = newFarm
 
         newFarm.publicIPs?.push(newIP)
-
+        ctx.log.debug({ eventName: item.name, ip: newIP.ip }, `Public IP: ${newIP.ip} added with farm id: ${newFarm.farmID}`);
         return ctx.store.save<PublicIp>(newIP)
     })
     await Promise.all(ipPromises)
     await ctx.store.save<Farm>(newFarm)
+}
+
+function checkIPs(ctx: Ctx, ipv4_a: string, ipv4_b: string): boolean {
+    try {
+        // Check if both IP addresses are valid
+        if (!ipaddr.isValidCIDR(ipv4_a) || !ipaddr.isValid(ipv4_b)) {
+            ctx.log.warn(`One or both IP addresses are invalid. Public IP: ${ipv4_a}, Gateway: ${ipv4_b}`);
+            return false;
+        }
+        // Parse the IP addresses
+        const ip_a = ipaddr.parseCIDR(ipv4_a);
+        const ip_b = ipaddr.parse(ipv4_b);
+
+        // check if both IP addresses are the same
+        if (ip_a[0] == ip_b) {
+            ctx.log.warn(`The IP addresses are the same. Public IP: ${ipv4_a}, Gateway: ${ipv4_b}`);
+            return false;
+        }
+
+        // Check if both IP addresses are public
+        if (ip_a[0].range() == 'private' || ip_b.range() == 'private') {
+            ctx.log.warn(`One or both IP addresses are not public. Public IP: ${ipv4_a}, Gateway: ${ipv4_b}`);
+            return false;
+        }
+
+        // Check if both IP addresses are unicast addresses
+        if (ip_a[0].range() !== 'unicast' || ip_b.range() !== 'unicast') {
+            ctx.log.warn(`One or both IP addresses are not unicast addresses. Public IP: ${ipv4_a}, Gateway: ${ipv4_b}`);
+            return false;
+        }
+
+
+        // Check if the gateway is in the same subnet as the host
+        if (!ip_b.match(ip_a)) {
+            ctx.log.warn(`The gateway is not in the same subnet as the host. Public IP: ${ipv4_a}, Gateway: ${ipv4_b}`);
+            return false;
+        }
+
+        return true;
+    } catch (error: any) {
+        ctx.log.error(`An error occurred: ${error.message}. Public IP: ${ipv4_a}, Gateway: ${ipv4_b}`);
+        return false;
+    }
 }
 
 export async function farmUpdated(
@@ -122,8 +171,10 @@ export async function farmUpdated(
     savedFarm.certification = certification
 
     let eventPublicIPs = farmUpdatedEventParsed.publicIps
-
-    await farmUpdatedEventParsed.publicIps.forEach(async ip => {
+    farmUpdatedEventParsed.publicIps.forEach(async ip => {
+        if (!checkIPs(ctx, ip.ip.toString(), ip.gateway.toString())) {
+            return
+        }
         if (ip.ip.toString().indexOf('\x00') >= 0) {
             return
         }
@@ -132,20 +183,24 @@ export async function farmUpdated(
         if (savedIP) {
             savedIP.ip = validateString(ctx, ip.ip.toString()) // not effective, but for since we already check for \x00
             savedIP.gateway = validateString(ctx, ip.gateway.toString())
+            if (savedIP.farm.id !== savedFarm.id) {
+                ctx.log.error({ eventName: item.name, ip: ip.ip.toString() }, `PublicIP: ${ip.ip.toString()} already exists on farm: ${savedIP.farm.farmID}, skiped adding it to farm with ID: ${savedFarm.farmID}`);
+            }
             await ctx.store.save<PublicIp>(savedIP)
         } else {
+
             const newIP = new PublicIp()
             newIP.id = item.event.id
             newIP.ip = validateString(ctx, ip.ip.toString())
             newIP.gateway = validateString(ctx, ip.gateway.toString())
             newIP.contractId = ip.contractId
             newIP.farm = savedFarm
-
             await ctx.store.save<PublicIp>(newIP)
             if (!savedFarm.publicIPs) {
                 savedFarm.publicIPs = []
             }
             savedFarm.publicIPs.push(newIP)
+            ctx.log.debug({ eventName: item.name, ip: ip.ip.toString() }, `PublicIP: ${ip.ip.toString()} added with farm id: ${savedFarm.farmID}`);
         }
     })
 
@@ -156,14 +211,19 @@ export async function farmUpdated(
         if (eventPublicIPs.filter(eventIp => validateString(ctx, eventIp.ip.toString()) === ip.ip).length === 0) {
             // IP got removed from farm
             await ctx.store.remove<PublicIp>(ip)
+            // remove ip from savedFarm.publicIPs
+            // savedFarm.publicIPs = savedFarm.publicIPs.filter(savedIP => savedIP.id !== ip.id)
+            // TODO: check if we need this code above? or Cascade delete involving here?
+            ctx.log.debug({ eventName: item.name, ip: ip.ip.toString() }, `PublicIP: ${ip.ip.toString()} in farm: ${savedFarm.farmID} removed from publicIPs`);
         }
     })
 
     let farm = item.event.args as Farm
     if (farm.dedicatedFarm) {
         savedFarm.dedicatedFarm = farm.dedicatedFarm
-        await ctx.store.save<Farm>(savedFarm)
     }
+    await ctx.store.save<Farm>(savedFarm)
+
 }
 
 export async function farmDeleted(
@@ -176,6 +236,7 @@ export async function farmDeleted(
 
     if (savedFarm) {
         await ctx.store.remove(savedFarm)
+        ctx.log.debug({ eventName: item.name, farmID: savedFarm.farmID }, `Farm: ${savedFarm.farmID} removed from storage`);
     }
 }
 
