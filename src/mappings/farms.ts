@@ -92,7 +92,7 @@ function checkIPs(ctx: Ctx, ipv4_a: string, ipv4_b: string): boolean {
         const ip_b = ipaddr.parse(ipv4_b);
 
         // check if both IP addresses are the same
-        if (ip_a[0] == ip_b) {
+        if (ip_a[0].toString() == ip_b.toString()) {
             ctx.log.warn(`The IP addresses are the same. Public IP: ${ipv4_a}, Gateway: ${ipv4_b}`);
             return false;
         }
