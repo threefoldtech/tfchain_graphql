@@ -140,14 +140,14 @@ export async function farmUpdated(
         let eventValue = item.event.args as v63.Farm
         eventValue.dedicatedFarm = false
         farmUpdatedEventParsed = farmUpdatedEvent.asV63
-        switch (farmUpdatedEvent.asV101.certification.__kind) {
+        switch (farmUpdatedEventParsed.certification.__kind) {
             case "Gold": {
                 certification = FarmCertification.Gold
             }
         }
     } else if (farmUpdatedEvent.isV101) {
         farmUpdatedEventParsed = farmUpdatedEvent.asV101
-        switch (farmUpdatedEvent.asV101.certification.__kind) {
+        switch (farmUpdatedEventParsed.certification.__kind) {
             case "Gold": {
                 certification = FarmCertification.Gold
             }
