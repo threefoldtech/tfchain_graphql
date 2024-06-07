@@ -25,16 +25,18 @@ async function main () {
     try {
         countries = await getCountries()
     } catch (error) {
+        console.log(error)
         console.log('--- No Countries were found, a restart is suggested ---')
-        process.exit(0)
+        process.exit(-3)
     }
 
     let cities = []
     try {
         cities = await getCities()
     } catch (error) {
+        console.log(error)
         console.log('--- No Cities were found, a restart is suggested ---')
-        process.exit(0)
+        process.exit(-2)
     }
     
     const pool = new Pool(config)
@@ -102,12 +104,12 @@ async function main () {
             .then(res => {
                 console.log(res)
             })
-            .catch(err => console.log(err))
+            .catch(err => { console.log(err); process.exit(1)})
             .then(process.exit(0))
 
     } catch (error) {
         console.log(error)
-        process.exit(0)
+        process.exit(2)
     }
 }
 
