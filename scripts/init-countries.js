@@ -75,7 +75,7 @@ async function main () {
     
     try {
         const countryPromises = countries.data.map((country, index) => {
-            const text = 'INSERT INTO country(id, country_id, name, code, region, subregion, lat, long) VALUES($1, $2, $3, $4, $5, $6, $7, $8)'
+            const text = 'INSERT INTO country(id, country_id, name, code, region, subregion, lat, long) VALUES($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, code = EXCLUDED.code, region = EXCLUDED.region, subregion = EXCLUDED.subregion, lat = EXCLUDED.lat, long = EXCLUDED.long'
             let code = country.cca2
             if (!code) {
                 code = country.cca3
@@ -120,14 +120,13 @@ async function main () {
                     countryCity = 'Unknown'
                 }
 
-                const text = 'INSERT INTO city(id, city_id, country_id, name) VALUES($1, $2, $3, $4) RETURNING *'
                 index++
                
                 return [index, index, foundCountryID, countryCity]
             })
         }).filter(g => g)
 
-        const inserts = format('INSERT INTO city(id, city_id, country_id, name) VALUES %L', flatten(mappedCities))
+        const inserts = format('INSERT INTO city(id, city_id, country_id, name) VALUES %L ON CONFLICT (id) DO UPDATE SET country_id = EXCLUDED.country_id, name = EXCLUDED.name', flatten(mappedCities))
 
         // console.log(inserts)
         client.query(inserts)
@@ -152,7 +151,7 @@ async function main () {
 }
 
 async function getCountries () {
-    return axios.get('https://raw.githubusercontent.com/threefoldtech/tfchain_graphql/master/scripts/countries.json')
+    return axios.get('https://restcountries.com/v3/all')
 }
 
 async function getCities () {
