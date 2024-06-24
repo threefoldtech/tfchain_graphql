@@ -151,7 +151,7 @@ async function main () {
 }
 
 async function getCountries () {
-    return axios.get('https://restcountries.com/v3/all')
+    return axios.get('https://raw.githubusercontent.com/threefoldtech/tfchain_graphql/master/scripts/countries.json')
 }
 
 async function getCities () {
