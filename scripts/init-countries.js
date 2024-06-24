@@ -12,6 +12,13 @@ const {
     DB_USER
 } = process.env
 
+// Exit Codes
+// 0 - Success
+// 2 - Unexpected error
+// 10 - Unexpected error on idle client
+// 20 - Unexpected error on inserting data to the database
+// 30 - Unexpected error on fetching data from the data source
+
 async function main () {
     const config = {
         user: DB_USER,
@@ -21,33 +28,54 @@ async function main () {
         database: DB_NAME
     }
 
+    const pool = new Pool(config)
+    pool.on('error', (err, client) => {
+        console.error(err)
+        console.error('--- Unexpected error on idle client, exiting ---')
+        process.exit(10)
+    })
+    
+    const client = await pool.connect()
+    
+    // check first if countries and cities already exist
+    const ExpectedCountriesCount = 250
+    const ExpectedCitiesCount = 77786
+    const countriesQuery = 'SELECT * FROM country'
+    const citiesQuery = 'SELECT * FROM city'
+
+    const countriesExist = await client.query(countriesQuery)
+    const citiesExist = await client.query(citiesQuery)
+
+    if (countriesExist.rowCount >= ExpectedCountriesCount && citiesExist.rowCount >= ExpectedCitiesCount) {
+        console.log('--- Countries and cities already exist, skipping ---')
+        process.exit(0)
+    } else {
+        console.log('Countries or cities do not exist, creating...')
+    }
+
+    // fetch countries
     let countries = []
     try {
         countries = await getCountries()
     } catch (error) {
-        console.log('--- No Countries were found, a restart is suggested ---')
-        process.exit(0)
+        console.error(error)
+        console.error("--- Can't fetch countries, exiting ---")
+        process.exit(30)
     }
 
+    // fetch cities
     let cities = []
     try {
         cities = await getCities()
     } catch (error) {
-        console.log('--- No Cities were found, a restart is suggested ---')
-        process.exit(0)
+        console.error(error)
+        console.error("--- Can't fetch cities, exiting ---")
+        process.exit(30)
     }
     
-    const pool = new Pool(config)
-    pool.on('error', (err, client) => {
-        console.error('Unexpected error on idle client', err)
-        process.exit(-1)
-    })
-    
-    const client = await pool.connect()
-
     try {
         const countryPromises = countries.data.map((country, index) => {
-            const text = 'INSERT INTO country(id, country_id, name, code, region, subregion, lat, long) VALUES($1, $2, $3, $4, $5, $6, $7, $8)'
+            const text = 'INSERT INTO country(id, country_id, name, code, region, subregion, lat, long) VALUES($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, code = EXCLUDED.code, region = EXCLUDED.region, subregion = EXCLUDED.subregion, lat = EXCLUDED.lat, long = EXCLUDED.long'
             let code = country.cca2
             if (!code) {
                 code = country.cca3
@@ -66,7 +94,11 @@ async function main () {
             return client.query(text, [index, index, name, code, region, subregion, lat, long]) 
         })
     
-        await Promise.all(countryPromises)
+        await Promise.all(countryPromises).catch(err => {
+            console.error(err)
+            console.error("--- Can't insert countries, exiting ---")
+            process.exit(20)
+        })
 
         const query = {
             name: 'fetch',
@@ -88,31 +120,38 @@ async function main () {
                     countryCity = 'Unknown'
                 }
 
-                const text = 'INSERT INTO city(id, city_id, country_id, name) VALUES($1, $2, $3, $4) RETURNING *'
                 index++
                
                 return [index, index, foundCountryID, countryCity]
             })
         }).filter(g => g)
 
-        const inserts = format('INSERT INTO city(id, city_id, country_id, name) VALUES %L', flatten(mappedCities))
+        const inserts = format('INSERT INTO city(id, city_id, country_id, name) VALUES %L ON CONFLICT (id) DO UPDATE SET country_id = EXCLUDED.country_id, name = EXCLUDED.name', flatten(mappedCities))
 
         // console.log(inserts)
         client.query(inserts)
             .then(res => {
                 console.log(res)
             })
-            .catch(err => console.log(err))
-            .then(process.exit(0))
+            .catch(err => { 
+                console.error(err);
+                console.error("--- Can't insert cities, exiting ---")
+                process.exit(20)
+            })
+            .then(_ => {
+                console.log('--- Countries and cities inserted successfully ---');
+                process.exit(0);
+            })
 
     } catch (error) {
-        console.log(error)
-        process.exit(0)
+        console.error(error)
+        console.error("--- Failed to init countries and cities, exiting ---")
+        process.exit(2)
     }
 }
 
 async function getCountries () {
-    return axios.get('https://restcountries.com/v3/all')
+    return axios.get('https://raw.githubusercontent.com/threefoldtech/tfchain_graphql/master/scripts/countries.json')
 }
 
 async function getCities () {
