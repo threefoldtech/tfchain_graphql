@@ -12,6 +12,13 @@ const {
     DB_USER
 } = process.env
 
+// Exit Codes
+// 0 - Success
+// 2 - Unexpected error
+// 10 - Unexpected error on idle client
+// 20 - Unexpected error on inserting data to the database
+// 30 - Unexpected error on fetching data from the data source
+
 async function main () {
     const config = {
         user: DB_USER,
@@ -25,7 +32,7 @@ async function main () {
     pool.on('error', (err, client) => {
         console.error(err)
         console.error('--- Unexpected error on idle client, exiting ---')
-        process.exit(-1)
+        process.exit(10)
     })
     
     const client = await pool.connect()
@@ -53,7 +60,7 @@ async function main () {
     } catch (error) {
         console.error(error)
         console.error("--- Can't fetch countries, exiting ---")
-        process.exit(-3)
+        process.exit(30)
     }
 
     // fetch cities
@@ -62,8 +69,8 @@ async function main () {
         cities = await getCities()
     } catch (error) {
         console.error(error)
-        console.error("--- Can\'t fetch cities, exiting ---")
-        process.exit(-2)
+        console.error("--- Can't fetch cities, exiting ---")
+        process.exit(30)
     }
     
     try {
@@ -87,7 +94,11 @@ async function main () {
             return client.query(text, [index, index, name, code, region, subregion, lat, long]) 
         })
     
-        await Promise.all(countryPromises)
+        await Promise.all(countryPromises).catch(err => {
+            console.error(err)
+            console.error("--- Can't insert countries, exiting ---")
+            process.exit(20)
+        })
 
         const query = {
             name: 'fetch',
@@ -125,7 +136,8 @@ async function main () {
             })
             .catch(err => { 
                 console.error(err);
-                process.exit(1)
+                console.error("--- Can't insert cities, exiting ---")
+                process.exit(20)
             })
             .then(_ => {
                 console.log('--- Countries and cities inserted successfully ---');
@@ -134,7 +146,7 @@ async function main () {
 
     } catch (error) {
         console.error(error)
-        console.error("--- Error while inserting countries and cities into db, exiting ---")
+        console.error("--- Failed to init countries and cities, exiting ---")
         process.exit(2)
     }
 }
