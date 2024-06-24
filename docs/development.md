@@ -25,7 +25,7 @@ docker-compose up -d
 Indexer services should now be started, you can check if it's syncing properly by streaming the logs for the indexer:
 
 ```
-docker logs indexer_indexer_1 -f
+docker logs indexer-ingest-1 -f
 ```
 
 You should be able to follow tfchain blocks processing:

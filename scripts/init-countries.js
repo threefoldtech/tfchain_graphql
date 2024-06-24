@@ -21,32 +21,51 @@ async function main () {
         database: DB_NAME
     }
 
-    let countries = []
-    try {
-        countries = await getCountries()
-    } catch (error) {
-        console.log(error)
-        console.log('--- No Countries were found, a restart is suggested ---')
-        process.exit(-3)
-    }
-
-    let cities = []
-    try {
-        cities = await getCities()
-    } catch (error) {
-        console.log(error)
-        console.log('--- No Cities were found, a restart is suggested ---')
-        process.exit(-2)
-    }
-    
     const pool = new Pool(config)
     pool.on('error', (err, client) => {
-        console.error('Unexpected error on idle client', err)
+        console.error(err)
+        console.error('--- Unexpected error on idle client, exiting ---')
         process.exit(-1)
     })
     
     const client = await pool.connect()
+    
+    // check first if countries and cities already exist
+    const ExpectedCountriesCount = 250
+    const ExpectedCitiesCount = 77786
+    const countriesQuery = 'SELECT * FROM country'
+    const citiesQuery = 'SELECT * FROM city'
 
+    const countriesExist = await client.query(countriesQuery)
+    const citiesExist = await client.query(citiesQuery)
+
+    if (countriesExist.rowCount >= ExpectedCountriesCount && citiesExist.rowCount >= ExpectedCitiesCount) {
+        console.log('--- Countries and cities already exist, skipping ---')
+        process.exit(0)
+    } else {
+        console.log('Countries or cities do not exist, creating...')
+    }
+
+    // fetch countries
+    let countries = []
+    try {
+        countries = await getCountries()
+    } catch (error) {
+        console.error(error)
+        console.error("--- Can't fetch countries, exiting ---")
+        process.exit(-3)
+    }
+
+    // fetch cities
+    let cities = []
+    try {
+        cities = await getCities()
+    } catch (error) {
+        console.error(error)
+        console.error("--- Can\'t fetch cities, exiting ---")
+        process.exit(-2)
+    }
+    
     try {
         const countryPromises = countries.data.map((country, index) => {
             const text = 'INSERT INTO country(id, country_id, name, code, region, subregion, lat, long) VALUES($1, $2, $3, $4, $5, $6, $7, $8)'
@@ -104,17 +123,24 @@ async function main () {
             .then(res => {
                 console.log(res)
             })
-            .catch(err => { console.log(err); process.exit(1)})
-            .then(process.exit(0))
+            .catch(err => { 
+                console.error(err);
+                process.exit(1)
+            })
+            .then(_ => {
+                console.log('--- Countries and cities inserted successfully ---');
+                process.exit(0);
+            })
 
     } catch (error) {
-        console.log(error)
+        console.error(error)
+        console.error("--- Error while inserting countries and cities into db, exiting ---")
         process.exit(2)
     }
 }
 
 async function getCountries () {
-    return axios.get('https://restcountries.com/v3/all')
+    return axios.get('https://raw.githubusercontent.com/threefoldtech/tfchain_graphql/master/scripts/countries.json')
 }
 
 async function getCities () {
